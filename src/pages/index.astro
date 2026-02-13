@@ -10,11 +10,23 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
         <!-- Core Logic Libraries -->
         <script
             is:inline
-            src={import.meta.env.BASE_URL + "assets/js/lunar-core.js"}></script>
-        <script
-            is:inline
-            src={import.meta.env.BASE_URL + "assets/gallery/manifest.js"}
-        ></script>
+            set:html={`
+            (function() {
+                let base = "${import.meta.env.BASE_URL}";
+                if (!base.endsWith('/')) base += '/';
+                
+                function loadScript(src) {
+                    const s = document.createElement('script');
+                    s.src = base + src;
+                    s.async = false; // 必須按順序執行
+                    document.head.appendChild(s);
+                }
+                
+                loadScript("assets/js/lunar-core.js");
+                loadScript("assets/gallery/manifest.js");
+            })();
+        `}
+        />
     </Fragment>
 
     <div class="app-container" id="appContainer">
