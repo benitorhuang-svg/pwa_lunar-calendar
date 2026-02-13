@@ -1,7 +1,7 @@
-@import 'base.css';
-@import 'hero.css';
-@import 'calendar.css';
-@import 'panels.css';
+@import './tokens.css';
+@import './hero.css';
+@import './calendar.css';
+@import './panels.css';
 
 /* Global Overrides or Specific Page Styles not captured elsewhere */
 

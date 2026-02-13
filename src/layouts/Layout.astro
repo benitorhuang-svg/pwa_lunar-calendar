@@ -1,59 +1,86 @@
 ---
-import '../styles/global.css';
+import "../styles/global.css";
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#C41E3A">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>農民曆 PWA</title>
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/assets/icons/icon-192.png">
-    <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap"
-        as="style">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
-    <slot name="head" />
-</head>
-<body>
-    <slot />
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        />
+        <meta name="theme-color" content="#C41E3A" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="black-translucent"
+        />
+        <title>農民曆 PWA</title>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/assets/icons/icon-192.png" />
+        <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            rel="preload"
+            href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&display=swap"
+            as="style"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&display=swap"
+            rel="stylesheet"
+        />
+        <slot name="head" />
+    </head>
+    <body>
+        <slot />
+    </body>
 </html>
 
 <script is:inline>
     // Ensure form inputs have a name/id for autofill and accessibility checks.
     (function () {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', addNames);
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", addNames);
         } else {
             addNames();
         }
 
         function addNames() {
-            const inputs = Array.from(document.querySelectorAll('input'));
+            const inputs = Array.from(document.querySelectorAll("input"));
             const missing = inputs.filter((el) => !el.name && !el.id);
             if (missing.length > 0) {
-                console.warn(`[autofix] Found ${missing.length} input(s) without id/name. Listing for inspection:`);
+                console.warn(
+                    `[autofix] Found ${missing.length} input(s) without id/name. Listing for inspection:`,
+                );
                 missing.forEach((el, i) => {
                     try {
-                        console.groupCollapsed && console.groupCollapsed(`[autofix] input #${i}`);
+                        console.groupCollapsed &&
+                            console.groupCollapsed(`[autofix] input #${i}`);
                         console.warn(el);
-                        console.warn('outerHTML:', el.outerHTML ? el.outerHTML.slice(0, 500) : '(no outerHTML)');
-                        console.warn('baseURI:', el.baseURI || document.baseURI);
-                        console.warn('inShadowRoot:', !!el.getRootNode && el.getRootNode() !== document);
+                        console.warn(
+                            "outerHTML:",
+                            el.outerHTML
+                                ? el.outerHTML.slice(0, 500)
+                                : "(no outerHTML)",
+                        );
+                        console.warn(
+                            "baseURI:",
+                            el.baseURI || document.baseURI,
+                        );
+                        console.warn(
+                            "inShadowRoot:",
+                            !!el.getRootNode && el.getRootNode() !== document,
+                        );
                         console.groupEnd && console.groupEnd();
                     } catch (err) {
-                        console.warn('[autofix] error logging element', err);
+                        console.warn("[autofix] error logging element", err);
                     }
                 });
-                console.warn('[autofix] The script will assign temporary names/ids to these inputs to satisfy autofill checks.');
+                console.warn(
+                    "[autofix] The script will assign temporary names/ids to these inputs to satisfy autofill checks.",
+                );
             }
 
             let counter = 0;

@@ -17,7 +17,15 @@
 
     /* Typography */
     --font-serif: 'Noto Serif TC', serif;
+    --font-serif-num: 'Playfair Display', 'Noto Serif TC', serif;
+    /* Premium Numbers */
     --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+    /* Semantic Colors */
+    --color-festive-red: #C41E3A;
+    /* Palace Wall Red (Base) */
+    --color-festive-red-dark: #8E141A;
+    /* Deep Imperial Red */
 
     /* Dimensions - V4 Full Screen */
     --hero-height: 100vh;
@@ -39,9 +47,10 @@ body {
     overflow: hidden;
     -webkit-overflow-scrolling: touch;
     font-family: var(--font-serif);
-    background-color: #f2f2f2;
-    /* Desktop background */
-    color: var(--ink-black);
+    background-color: #141414;
+    /* Dark Premium Background */
+    color: #e0e0e0;
+    /* Light text for dark mode base */
     overscroll-behavior: none;
 }
 

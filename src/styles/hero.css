@@ -1,64 +1,6 @@
-/* Hero Section & Navigation Styles */
-
-/* Hero Background Container (Bottom Layer) */
-#heroBgContainer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    overflow: hidden;
-    /* 動畫改在容器上：確保換圖時縮放動作不中斷、不跳動 */
-    animation: kenBurnsSmooth 40s ease-in-out infinite alternate;
-}
-
-.hero-bg-item {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    will-change: opacity, transform;
-    /* 取消濾鏡過渡，專注於透明度與位移，讓視覺更穩定 */
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-@keyframes kenBurnsSmooth {
-    0% {
-        transform: scale(1.0);
-    }
-
-    100% {
-        transform: scale(1.15);
-    }
-}
-
-/* 霧化淡出狀態：改為輕微淡出，不強烈干擾視覺 */
-.hero-bg-item.blur-out {
-    opacity: 0 !important;
-    filter: brightness(0.8);
-    /* 移除模糊淡出，改用亮度微調 */
-}
-
-/* 初始進入狀態：預設 */
-.hero-bg-item.is-new {
-    opacity: 0;
-}
-
-/* 景深切換：下一張 (走進風景) */
-.hero-bg-item.is-next {
-    opacity: 0;
-    transform: scale(1.03);
-}
-
-/* 景深切換：上一張 (退後觀察) */
-.hero-bg-item.is-prev {
-    opacity: 0;
-    transform: scale(0.97);
-}
+@import "./hero/background.css";
+@import "./hero/header.css";
+@import "./hero/dock.css";
 
 /* 1. Hero Section (UI & Overlay Layer) */
 .hero-section {
@@ -76,7 +18,6 @@
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     z-index: 10;
     pointer-events: none;
-    /* Let clicks pass through empty areas */
 }
 
 /* Dark Vignette Overlay for readability */
@@ -90,210 +31,13 @@
     z-index: -1;
 }
 
-/* Navigation Container (Within Container) */
-.nav-container {
-    position: absolute;
-    top: 25px;
-    left: 15px;
-    right: 10px;
-    z-index: 200;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    justify-content: flex-start;
-    align-items: flex-start;
-    pointer-events: none;
-    /* Container doesn't block */
-}
-
-.nav-group-left {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    pointer-events: auto;
-    /* Buttons block */
-}
-
-.nav-group-right {
-    position: absolute;
-    top: 15px;
-    left: 0;
-    right: 0;
-    padding: 0 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    pointer-events: none;
-    z-index: 160;
-}
-
-.nav-group-top-right {
-    position: absolute;
-    top: 0;
-    right: 0;
-    pointer-events: auto;
-    z-index: 300;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-end;
-}
-
-/* Nav Boxes (Year/Month/Day/Today) - Premium Pill Style */
-.nav-box {
-    min-width: 90px;
-    height: 44px;
-    border-radius: 50px;
-    /* Full Pill Shape */
-    padding: 0 24px;
-
-    /* Premium Dark Glass */
-    background: rgba(20, 20, 20, 0.5);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    color: white;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-family: var(--font-serif);
-    font-size: 0.9rem;
-    font-weight: 300;
-    /* More elegant light weight */
-    letter-spacing: 0.12em;
-    /* Breathable spacing */
-
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    pointer-events: auto;
-    position: relative;
-    overflow: hidden;
-    /* For sheen */
-}
-
-.nav-box:hover {
-    transform: translateY(-2px);
-    background: rgba(30, 30, 30, 0.7);
-    border-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-}
-
-.nav-box:active,
-.nav-box.active {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    transform: scale(0.96);
-    border-radius: 50px !important;
-    font-weight: 500;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    /* Champagne Gold Gradient */
-    background: linear-gradient(135deg, #e6d5a7 0%, #d4af37 100%) !important;
-    color: #1a1a1a !important;
-    /* Dark text on gold for premium contrast */
-    text-shadow: none;
-    box-shadow: 0 6px 18px rgba(212, 175, 55, 0.2);
-}
-
-/* Metallic Sheen Animation for Active Button */
-.nav-box.active::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 60%;
-    height: 100%;
-    background: linear-gradient(to right,
-            transparent,
-            rgba(255, 255, 255, 0.4),
-            transparent);
-    transform: skewX(-30deg);
-    animation: metallicSheen 6s infinite ease-in-out;
-}
-
-@keyframes metallicSheen {
-    0% {
-        left: -100%;
-    }
-
-    15% {
-        left: 150%;
-    }
-
-    100% {
-        left: 150%;
-    }
-}
-
-/* Specific text styling inside nav buttons */
-.ym-text {
-    font-size: 0.85rem;
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-/* Bottom Controls (Previous / Next) - Corner Layout */
-.bottom-controls {
-    position: absolute;
-    bottom: 40px;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 30px;
-    pointer-events: none;
-    z-index: 100;
-    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.bottom-controls.hidden {
-    opacity: 0;
-    transform: translateY(20px);
-    pointer-events: none;
-}
-
-.control-btn {
-    pointer-events: auto;
-    background: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.9);
-    padding: 8px 24px;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 300;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-serif);
-    transition: all 0.3s ease;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-}
-
-.control-btn:hover {
-    background: rgba(0, 0, 0, 0.45);
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.control-btn:active {
-    transform: scale(0.95);
-}
-
-/* Install Button */
+/* Misc Controls & Legacy Styles */
 #installBtn {
     position: absolute;
     top: 15px;
     right: 15px;
     z-index: 50;
     display: none;
-    /* JS toggles this */
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.35);
     padding: 4px 10px;
@@ -302,42 +46,6 @@
     color: white;
     cursor: pointer;
     opacity: 0.95;
-    pointer-events: auto;
-}
-
-/* Current Period (Legacy/Visual Background) */
-.current-period {
-    z-index: 500;
-    position: absolute;
-    top: env(safe-area-inset-top, 15px);
-    left: 15px;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    padding: 10px 24px;
-    border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    display: flex;
-    align-items: center;
-    gap: 1px;
-    color: var(--ink-black);
-    font-weight: 700;
-    font-size: 1.5rem;
-    font-family: var(--font-serif);
-}
-
-.hide-bg-text .current-period {
-    opacity: 1 !important;
-}
-
-/* Nav Center Group (Used in Calendar Header) */
-.nav-center-group {
-    display: flex;
-    align-items: center;
-    gap: 30px;
     pointer-events: auto;
 }
 

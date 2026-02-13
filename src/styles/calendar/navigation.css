@@ -1,0 +1,39 @@
+/* Calendar Nav Buttons & Shared Elements */
+.nav-btn {
+    background: var(--cal-nav-bg);
+    border: 1px solid var(--cal-border);
+    color: var(--cal-nav-color);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+    background: var(--cal-bg);
+    color: var(--cal-today-bg);
+}
+
+.btn-today-quick {
+    background: var(--cal-nav-bg);
+    color: var(--cal-nav-color);
+    border: 1px solid var(--cal-border);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: var(--font-serif);
+    white-space: nowrap;
+}
+
+.btn-today-quick:hover {
+    background: var(--cal-border);
+    color: var(--cal-text);
+    transform: translateY(-1px);
+}

@@ -2,17 +2,43 @@
 
 ---
 
-<main class="calendar-section" id="calendarSection">
+<main class="calendar-section hidden" id="calendarSection">
     <!-- Navigation Group (Title, Prev/Next) -->
     <div class="nav-group-right">
-        <button class="nav-btn prev" id="btnPrevMonth">‹</button>
-        <div class="nav-center-group">
-            <button class="btn-today-quick" id="btnTodayQuick" title="回到今日"
-                >今日</button
+        <button class="nav-btn prev" id="btnPrevMonth" title="上個月">
+            <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><polyline points="15 18 9 12 15 6"></polyline></svg
             >
-            <div id="calendarTitle" class="calendar-title"></div>
+        </button>
+        <div class="nav-center-group">
+            <div class="title-row">
+                <button class="btn-today-quick" id="btnTodayQuick"
+                    >回到今日</button
+                >
+                <div id="calendarTitle" class="calendar-title"></div>
+            </div>
         </div>
-        <button class="nav-btn next" id="btnNextMonth">›</button>
+        <button class="nav-btn next" id="btnNextMonth" title="下個月">
+            <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><polyline points="9 18 15 12 9 6"></polyline></svg
+            >
+        </button>
     </div>
 
     <!-- Week Header -->
@@ -92,6 +118,18 @@
             );
         }
 
+        // Trailing padding (Next Month) - Fill to complete 5 or 6 rows (35 or 42 cells)
+        // Trailing padding (Next Month) - Fill to complete 5 or 6 rows (35 or 42 cells)
+        const totalCells = startDay + lastDay.getDate();
+        const targetCells = totalCells <= 35 ? 35 : 42;
+        const trailingDays = targetCells - totalCells;
+
+        for (let day = 1; day <= trailingDays; day++) {
+            fragment.appendChild(
+                createDayCell(year, month + 1, day, true, today, selectedDay),
+            );
+        }
+
         grid.appendChild(fragment);
     }
 
@@ -129,12 +167,10 @@
         let bottomText = lunarDateStr;
         if (festival) {
             bottomText = festival;
-            lunarDiv.style.color = "var(--primary-red)";
-            cell.style.fontWeight = "600";
+            lunarDiv.style.color = "#ff6b6b";
         } else if (term) {
             bottomText = term;
-            lunarDiv.style.color = "var(--primary-red)";
-            cell.style.fontWeight = "600";
+            lunarDiv.style.color = "#e6d5a7"; // Terms in Gold
         }
         lunarDiv.textContent = bottomText;
 
@@ -160,7 +196,7 @@
 
     grid.addEventListener("click", (e) => {
         const cell = e.target.closest(".day-cell");
-        if (!cell || cell.dataset.other) return;
+        if (!cell) return;
 
         // Ensure long press doesn't block legitimate clicks if logic is fuzzy
         if (longPressFired) {
@@ -168,7 +204,7 @@
             return;
         }
 
-        // Stop bubbling to prevent FloatingPanels from immediately closing the panel we are about to open
+        // Stop bubbling to prevent FloatingPanels from immediately closing the panel
         e.stopPropagation();
 
         const day = parseInt(cell.dataset.day);
@@ -274,19 +310,36 @@
     });
 
     window.addEventListener("update-calendar-title", (e) => {
-        const { year, month, day } = e.detail;
-        const yearStr = year + "年";
-        const monthStr = (month + 1).toString().padStart(2, "0") + "月";
-        const dayStr = day.toString().padStart(2, "0") + "日";
-        calendarTitle.textContent = `${yearStr} ${monthStr} ${dayStr}`;
+        const { lunarText } = e.detail;
+        if (lunarText) {
+            calendarTitle.textContent = `${lunarText.ganzhi}年 · ${lunarText.month}月 · ${lunarText.day}`;
+        }
     });
 
     window.addEventListener("toggle-grid-view", (e) => {
         const { show } = e.detail;
         if (show) {
+            calendarSection.classList.remove("hidden");
+            // Force reflow to ensure transition happens
+            void calendarSection.offsetWidth;
             calendarSection.classList.add("show-grid");
         } else {
             calendarSection.classList.remove("show-grid");
+            // Wait for transition to finish before hiding (0.5s match CSS)
+            // Or use transitionend event
+            const onTransitionEnd = () => {
+                if (!calendarSection.classList.contains("show-grid")) {
+                    calendarSection.classList.add("hidden");
+                }
+                calendarSection.removeEventListener(
+                    "transitionend",
+                    onTransitionEnd,
+                );
+            };
+            calendarSection.addEventListener("transitionend", onTransitionEnd);
+
+            // Backup timeout in case transitionend doesn't fire (e.g. if hidden)
+            setTimeout(onTransitionEnd, 550);
         }
     });
 </script>

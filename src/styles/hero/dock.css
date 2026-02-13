@@ -1,0 +1,97 @@
+/* Hero Dock - Bottom Center */
+.hero-dock-wrapper {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2100;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+}
+
+.hero-dock-wrapper.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+    pointer-events: none;
+}
+
+.hero-dock {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.07'/%3E%3C/svg%3E"),
+        rgba(20, 20, 20, 0.65);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    pointer-events: auto;
+}
+
+.dock-item {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    padding: 10px 18px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-serif);
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    white-space: nowrap;
+}
+
+/* Functional Color Differentiation */
+.dock-item.group-image {
+    color: #d1d9e0;
+}
+
+.dock-item.group-calendar {
+    color: #e6d5a7;
+}
+
+/* Active States */
+.dock-item.group-calendar.active {
+    background: linear-gradient(135deg, #e6d5a7 0%, #d4af37 100%);
+    color: #1a1a1a !important;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.dock-item.group-image.active {
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e0 100%);
+    color: #1a1a1a !important;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+.dock-item.group-image:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.dock-item.group-calendar:hover {
+    color: #fff;
+    background: rgba(212, 175, 55, 0.15);
+}
+
+.dock-item.prev,
+.dock-item.next {
+    padding: 10px 14px;
+}
+
+.dock-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.25);
+    margin: 0 6px;
+}

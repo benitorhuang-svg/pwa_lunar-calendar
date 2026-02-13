@@ -1,0 +1,41 @@
+/* 
+   Festive Crimson Theme (Lunar New Year / 春節 / 臘月)
+   A rich, celebratory, and culturally resonant aesthetic with Imperial Red and Gold.
+*/
+
+.theme-festive {
+    /* Background & Texture - Deep Traditional Red */
+    --cal-bg: rgba(142, 20, 26, 0.96);
+    /* Intentionally slightly darker/opaque for readability */
+    --cal-inner-glow: rgba(255, 215, 0, 0.25);
+    --cal-shadow: 0 25px 60px rgba(139, 0, 0, 0.5);
+    --cal-border: rgba(255, 215, 0, 0.2);
+
+    /* Typography - Cream/Ivory for better contrast on red */
+    --cal-text: #fdf5e6;
+    --cal-lunar-text: rgba(253, 245, 230, 0.6);
+    --cal-header-text: rgba(255, 215, 0, 0.5);
+
+    /* Interactive Elements - Radiant Gold */
+    --cal-nav-bg: rgba(255, 215, 0, 0.1);
+    --cal-nav-color: #ffd700;
+    --cal-today-bg: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+    --cal-today-text: var(--color-festive-red-dark);
+    --cal-term-color: #ffd700;
+
+    /* Panel Specifics */
+    --panel-accent: #ffd700;
+    --panel-side-bg: linear-gradient(to bottom, rgba(255, 215, 0, 0.15), transparent);
+}
+
+/* Global Atmosphere Overrides during Festive Season */
+.theme-festive .suspension-panel {
+    border: 1.5px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 15px 40px rgba(139, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+.theme-festive .traditional-seal {
+    background: #ffd700;
+    color: var(--color-festive-red-dark);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}

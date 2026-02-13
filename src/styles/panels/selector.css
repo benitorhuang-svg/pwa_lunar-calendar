@@ -1,0 +1,74 @@
+/* Selection Panel (Year / Month Selector) */
+.suspension-panel.bottom-panel {
+    top: auto;
+    bottom: 100px;
+    left: 20px;
+    right: 20px;
+    width: calc(100% - 40px);
+    max-width: 500px;
+    margin: 0 auto;
+    min-height: 68dvh;
+    max-height: 72dvh;
+    display: flex;
+    cursor: pointer;
+}
+
+.panel-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 0 4px;
+}
+
+.panel-section-container {
+    padding: 16px 20px 24px 20px;
+}
+
+.panel-section-header {
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: var(--cal-lunar-text);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    text-align: left;
+    padding-left: 2px;
+    opacity: 0.6;
+    border: none;
+    margin-top: 5px;
+}
+
+.panel-item {
+    padding: 0;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--cal-text) !important;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    font-family: var(--font-serif-num);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.panel-item:hover {
+    background: var(--cal-border);
+    color: var(--cal-text) !important;
+    transform: translateY(-2px);
+}
+
+.panel-item.selected {
+    background: linear-gradient(135deg, #e6d5a7 0%, #d4af37 100%) !important;
+    color: #1a1a1a !important;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    border: none;
+    transform: scale(1.05);
+}
+
+.panel-item.today {
+    border: 1px solid var(--panel-accent);
+}

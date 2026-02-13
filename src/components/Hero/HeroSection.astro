@@ -4,31 +4,116 @@
 
 <div id="heroBgContainer"></div>
 
-<header class="hero-section" id="heroSection">
-    <!-- Install Button -->
-    <button id="installBtn">安裝</button>
+<!-- Welcome Interaction Overlay: Top-most layer to catch all clicks during Welcome Mode -->
+<div
+    id="welcomeInteractionOverlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; cursor: pointer;"
+>
+</div>
 
-    <!-- Navigation -->
-    <nav class="nav-container" aria-label="日曆導覽">
-        <div class="nav-group-left">
-            <button class="nav-box" id="btnChangeImage">看圖片</button>
-        </div>
-        <div class="nav-group-top-right">
-            <button class="nav-box" id="btnDay" aria-expanded="false"
-                >日曆</button
-            >
-            <button class="nav-box" id="btnYearMonth" aria-expanded="false">
-                <span class="ym-text">年月</span>
-            </button>
-        </div>
-    </nav>
-
-    <!-- Bottom Controls (Previous / Next) -->
-    <div class="bottom-controls" id="bottomControls">
-        <button class="control-btn" id="btnPrevHero"> ◀ 上一張 </button>
-        <button class="control-btn" id="btnNextHero"> 下一張 ▶ </button>
+<!-- Dynamic Header: Only the Info Strip remains for a clean magazine look -->
+<header class="hero-header">
+    <div class="hero-info-strip" id="heroInfoStrip">
+        <span id="infoYear"></span><span class="label">年</span>
+        <span class="info-dot">·</span>
+        <span id="infoMonth"></span><span class="label">月</span>
+        <span class="info-dot">·</span>
+        <span id="infoDay"></span><span class="label">日</span>
     </div>
 </header>
+
+<!-- Unified Floating Dock: Centered at the bottom -->
+<div class="hero-dock-wrapper">
+    <div class="hero-dock" id="heroDock">
+        <button
+            class="dock-item prev group-image"
+            id="btnPrevHero"
+            title="上一張"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><polyline points="15 18 9 12 15 6"></polyline></svg
+            >
+        </button>
+        <div class="dock-divider"></div>
+        <button class="dock-item main-btn group-image" id="btnChangeImage">
+            <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><rect x="3" y="3" width="18" height="18" rx="2" ry="2"
+                ></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline
+                    points="21 15 16 10 5 21"></polyline></svg
+            >
+            <span>映畫</span>
+        </button>
+        <button class="dock-item main-btn group-calendar" id="btnDay">
+            <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><rect x="3" y="4" width="18" height="18" rx="2" ry="2"
+                ></rect><line x1="16" y1="2" x2="16" y2="6"></line><line
+                    x1="8"
+                    y1="2"
+                    x2="8"
+                    y2="6"></line><line x1="3" y1="10" x2="21" y2="10"
+                ></line></svg
+            >
+            <span>日曆</span>
+        </button>
+        <button class="dock-item main-btn group-calendar" id="btnYearMonth">
+            <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><circle cx="12" cy="12" r="10"></circle><polyline
+                    points="12 6 12 12 16 14"></polyline></svg
+            >
+            <span class="ym-text">年月</span>
+        </button>
+        <div class="dock-divider"></div>
+        <button
+            class="dock-item next group-image"
+            id="btnNextHero"
+            title="下一張"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><polyline points="9 18 15 12 9 6"></polyline></svg
+            >
+        </button>
+    </div>
+</div>
 
 <script is:inline>
     // Hero images — organized by seasons in assets/gallery/
@@ -44,7 +129,9 @@
 
     // DOM Elements
     const heroBgContainer = document.getElementById("heroBgContainer");
-    const bottomControls = document.getElementById("bottomControls");
+    const heroDockWrapper = document.querySelector(".hero-dock-wrapper");
+    const heroHeader = document.querySelector(".hero-header");
+    const welcomeOverlay = document.getElementById("welcomeInteractionOverlay");
 
     function getSeason(date) {
         const m = date.getMonth(); // 0-indexed
@@ -159,7 +246,7 @@
 
         // Only trigger update if this isn't a deep recursive call
         if (!isFallback) {
-            window.dispatchEvent(new CustomEvent("hero-update-required"));
+            window.dispatchEvent(new CustomEvent("request-hero-change"));
         }
     }
 
@@ -376,11 +463,32 @@
             }
             setHeroBackground(finalUrl, transType);
         }
+
+        // Update Center Info Strip
+        const infoYear = document.getElementById("infoYear");
+        const infoMonth = document.getElementById("infoMonth");
+        const infoDay = document.getElementById("infoDay");
+
+        if (infoYear) {
+            infoYear.innerText = date.getFullYear();
+            infoYear.style.fontFamily = "var(--font-serif-num)";
+        }
+        if (infoMonth) {
+            infoMonth.innerText = (date.getMonth() + 1)
+                .toString()
+                .padStart(2, "0");
+            infoMonth.style.fontFamily = "var(--font-serif-num)";
+        }
+        if (infoDay) {
+            infoDay.innerText = date.getDate().toString().padStart(2, "0");
+            infoDay.style.fontFamily = "var(--font-serif-num)";
+            infoDay.style.color = "inherit"; // Reset festive color if any
+        }
     }
 
     // Expose functions globally for event handlers if needed, or attach events directly
     // Ideally we use Custom Events for communication
-    window.addEventListener("hero-update-request", (e) => {
+    window.addEventListener("render-hero", (e) => {
         const { date, lunar, changeBg, transitionOverride } = e.detail;
         updateHeroLogic(changeBg, transitionOverride, date, lunar);
     });
@@ -389,10 +497,16 @@
         const { action } = e.detail;
         if (action === "start") startSlideshow();
         if (action === "stop") stopSlideshow();
-        if (action === "check") {
-            // Check logic requires knowing panel/grid state.
-            // Better to let main logic decide when to start/stop based on state changes.
-        }
+    });
+
+    // Handle Entry from Welcome Screen via dedicated overlay
+    welcomeOverlay.addEventListener("click", () => {
+        window.dispatchEvent(
+            new CustomEvent("welcome-mode", { detail: { active: false } }),
+        );
+        window.dispatchEvent(
+            new CustomEvent("close-panels", { detail: { showGrid: true } }),
+        );
     });
 
     // Initialize
@@ -403,7 +517,7 @@
     document.getElementById("btnChangeImage").onclick = () => {
         // Trigger update with slide effect
         window.dispatchEvent(
-            new CustomEvent("hero-update-required", {
+            new CustomEvent("request-hero-change", {
                 detail: {
                     changeBg: true,
                     transitionOverride: "slide-from-right",
@@ -427,46 +541,67 @@
     document.getElementById("btnDay").onclick = () =>
         window.dispatchEvent(new CustomEvent("toggle-grid"));
 
-    // Listen for UI state changes to toggle bottom controls & button states
-
     window.addEventListener("toggle-grid-view", (e) => {
         const { show } = e.detail;
         const btnYM = document.getElementById("btnYearMonth");
         if (show) {
-            bottomControls.classList.add("hidden");
+            heroDockWrapper.classList.remove("hidden");
             document.getElementById("btnDay").classList.add("active");
             document
                 .getElementById("btnChangeImage")
                 .classList.remove("active");
             btnYM.classList.remove("active");
-            btnYM.style.display = "flex"; // Ensure visible in calendar mode
+            btnYM.style.display = "flex";
+
+            // Ensure header and dock are visible
+            heroHeader.style.opacity = "1";
+            heroDockWrapper.style.opacity = "1";
+            heroDockWrapper.style.pointerEvents = "auto";
         } else {
-            // Logic for hiding grid controls is handled by slideshow-control mainly or other events
             document.getElementById("btnDay").classList.remove("active");
         }
     });
 
     window.addEventListener("render-panels", (e) => {
-        bottomControls.classList.add("hidden");
-        const btnYM = document.getElementById("btnYearMonth");
         const { type } = e.detail || {};
+        const btnYM = document.getElementById("btnYearMonth");
 
         if (type === "yearMonth") {
-            btnYM.style.display = "flex"; // Show in yearMonth selection
+            btnYM.style.display = "flex";
             btnYM.classList.add("active");
+            heroHeader.style.opacity = "1";
+            heroDockWrapper.style.opacity = "1";
+            heroDockWrapper.style.pointerEvents = "auto";
         } else if (type === "today") {
-            btnYM.style.display = "none"; // Hide on Welcome/Today screen
+            btnYM.style.display = "none";
             btnYM.classList.remove("active");
+            // Hide header and dock for detail view
+            heroHeader.style.opacity = "0";
+            heroDockWrapper.style.opacity = "0";
+            heroDockWrapper.style.pointerEvents = "none";
         }
 
         document.getElementById("btnDay").classList.remove("active");
         document.getElementById("btnChangeImage").classList.remove("active");
     });
 
-    window.addEventListener("close-panels-view", () => {
-        // Panels closed.
+    window.addEventListener("welcome-mode", (e) => {
+        const { active } = e.detail;
+        if (active) {
+            heroDockWrapper.style.opacity = "0";
+            heroDockWrapper.style.pointerEvents = "none";
+            heroHeader.style.opacity = "0";
+            welcomeOverlay.style.display = "block"; // Open the dedicated interaction layer
+        } else {
+            heroDockWrapper.style.opacity = "1";
+            heroDockWrapper.style.pointerEvents = "auto";
+            heroHeader.style.opacity = "1";
+            welcomeOverlay.style.display = "none"; // Close the layer
+        }
+    });
+
+    window.addEventListener("hide-panels", () => {
         document.getElementById("btnYearMonth").classList.remove("active");
-        // Don't show bottom controls yet; let slideshow-control or subsequent grid event decide
     });
 
     window.addEventListener("slideshow-control", (e) => {
@@ -475,31 +610,17 @@
 
         if (action === "start") {
             startSlideshow();
-            // Start Slideshow means View Image Mode -> Show Controls, Light up Image Button
-            bottomControls.classList.remove("hidden");
             document.getElementById("btnChangeImage").classList.add("active");
-
-            // Hide Year/Month selection in View Image mode
             btnYM.style.display = "none";
-
-            // Ensure others are off
             document.getElementById("btnDay").classList.remove("active");
             btnYM.classList.remove("active");
         }
         if (action === "stop") {
             stopSlideshow();
-            // Stop Slideshow means we are in Grid or Panel mode.
-            // Just ensure Image button is off.
             document
                 .getElementById("btnChangeImage")
                 .classList.remove("active");
-
-            // Show Year/Month selection when returning from View Image mode
             btnYM.style.display = "flex";
-
-            // Should we hide bottom controls?
-            // Usually Yes. If slideshow stops, we are likely reading content.
-            bottomControls.classList.add("hidden");
         }
     });
 

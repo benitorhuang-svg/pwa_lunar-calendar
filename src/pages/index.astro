@@ -6,7 +6,7 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
 ---
 
 <Layout>
-    <div class="app-container">
+    <div class="app-container" id="appContainer">
         <!-- Components -->
         <HeroSection />
         <FloatingPanels />
@@ -31,6 +31,34 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
         // --- Core Functions ---
 
         function updateState() {
+            const date = new Date(selectedYear, selectedMonth, selectedDay);
+            const lunar = Lunar.fromDate(date);
+            const festival = lunar.getFestival();
+            const lunarMonth = lunar._lunarMonth; // Lunar month: 1-12 from internal state
+
+            let theme = "theme-light";
+            // Lunar New Year / Year End Atmosphere (臘月 & 正月)
+            if (
+                lunarMonth === 12 ||
+                lunarMonth === 1 ||
+                (festival && festival.includes("春節"))
+            ) {
+                theme = "theme-festive";
+            } else if (festival && festival.includes("清明")) {
+                theme = "theme-dark";
+            }
+
+            // Sync Theme to App Container for global variable propagation
+            const appContainer = document.getElementById("appContainer");
+            if (appContainer) {
+                appContainer.classList.remove(
+                    "theme-light",
+                    "theme-dark",
+                    "theme-festive",
+                );
+                appContainer.classList.add(theme);
+            }
+
             // Render Panels if active
             if (activePanel) {
                 window.dispatchEvent(
@@ -41,14 +69,13 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
                             selectedMonth,
                             selectedDay,
                             today,
+                            theme,
                         },
                     }),
                 );
             }
 
             // Render Calendar Grid
-            // Trigger calendar render. We might not need to re-render grid on every state change if only year changed and panel is open?
-            // But let's keep consistency.
             window.dispatchEvent(
                 new CustomEvent("render-calendar", {
                     detail: {
@@ -56,30 +83,29 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
                         month: selectedMonth,
                         today,
                         selectedDay,
+                        theme,
                     },
                 }),
             );
 
-            // Update Header Title
+            // Update Header Title (Now passing both for flexibility)
             window.dispatchEvent(
                 new CustomEvent("update-calendar-title", {
                     detail: {
                         year: selectedYear,
                         month: selectedMonth,
                         day: selectedDay,
+                        lunarText: {
+                            ganzhi: lunar.getYearInGanZhi(),
+                            month: lunar.getMonthInChinese(),
+                            day: lunar.getDayInChinese(),
+                        },
                     },
                 }),
             );
 
-            // Highlighting active button logic remains... needs to be sent to HeroSection?
-            // Actually HeroSection contains the buttons.
-            // We need to tell HeroSection to update button states (btnYearMonth, btnDay).
-            // This is getting tricky. Let's ask HeroSection to handle its own UI or expose a method.
-            // For now, let's just trigger hero update.
-            const date = new Date(selectedYear, selectedMonth, selectedDay);
-            const lunar = Lunar.fromDate(date);
             window.dispatchEvent(
-                new CustomEvent("hero-update-request", {
+                new CustomEvent("render-hero", {
                     detail: { date, lunar, changeBg: false },
                 }),
             );
@@ -164,7 +190,7 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
 
             // Close all first
             activePanel = null;
-            window.dispatchEvent(new CustomEvent("close-panels-view"));
+            window.dispatchEvent(new CustomEvent("hide-panels"));
 
             if (isSamePanel) {
                 // Return to Grid
@@ -199,7 +225,7 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
         window.addEventListener("close-panels", (e) => {
             const { showGrid } = e.detail || {};
             activePanel = null;
-            window.dispatchEvent(new CustomEvent("close-panels-view"));
+            window.dispatchEvent(new CustomEvent("hide-panels"));
             if (showGrid !== undefined) {
                 window.dispatchEvent(
                     new CustomEvent("toggle-grid-view", {
@@ -229,31 +255,42 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
 
         window.addEventListener("month-selected", (e) => {
             selectedMonth = e.detail;
+
+            // Date Safety: Ensure selectedDay is valid for the new month (e.g., avoid Feb 30)
+            const daysInMonth = new Date(
+                selectedYear,
+                selectedMonth + 1,
+                0,
+            ).getDate();
+            if (selectedDay > daysInMonth) {
+                selectedDay = daysInMonth;
+            }
+
             updateState();
+
+            // UX Optimization: Automatically close year/month panel and return to Grid
             window.dispatchEvent(
-                new CustomEvent("render-panels", {
-                    detail: {
-                        type: "yearMonth",
-                        selectedYear,
-                        selectedMonth,
-                        selectedDay,
-                        today,
-                    },
-                }),
+                new CustomEvent("close-panels", { detail: { showGrid: true } }),
             );
         });
 
         window.addEventListener("date-selected", (e) => {
             const { year, month, day } = e.detail;
-            selectedYear = year;
-            selectedMonth = month;
+
+            // UX Improvement: If clicking a day from another month, navigate to that month
+            if (month !== selectedMonth || year !== selectedYear) {
+                selectedYear = year;
+                selectedMonth = month;
+                updateState();
+            }
+
             selectedDay = day;
 
             // Update Hero (background might not change unless necessary, but text updates)
             const date = new Date(selectedYear, selectedMonth, selectedDay);
             const lunar = Lunar.fromDate(date);
             window.dispatchEvent(
-                new CustomEvent("hero-update-request", {
+                new CustomEvent("render-hero", {
                     detail: { date, lunar, changeBg: false },
                 }),
             );
@@ -285,7 +322,7 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
             const isShowing = calendarSection.classList.contains("show-grid");
 
             activePanel = null;
-            window.dispatchEvent(new CustomEvent("close-panels-view"));
+            window.dispatchEvent(new CustomEvent("hide-panels"));
 
             window.dispatchEvent(
                 new CustomEvent("toggle-grid-view", {
@@ -297,10 +334,22 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
 
         // Init
         updateState();
-        window.dispatchEvent(new CustomEvent("go-to-today")); // Initial load -> Today
+
+        // Boutique Entrance: Start in Welcome Mode
+        setTimeout(() => {
+            window.dispatchEvent(
+                new CustomEvent("welcome-mode", { detail: { active: true } }),
+            );
+            window.dispatchEvent(new CustomEvent("go-to-today"));
+            window.dispatchEvent(
+                new CustomEvent("toggle-grid-view", {
+                    detail: { show: false },
+                }),
+            );
+        }, 100);
 
         // Listen from Hero
-        window.addEventListener("hero-update-required", (e) => {
+        window.addEventListener("request-hero-change", (e) => {
             const { changeBg, transitionOverride } = e.detail || {};
             const date = new Date(selectedYear, selectedMonth, selectedDay);
             const lunar = Lunar.fromDate(date);
@@ -309,7 +358,7 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
             // "updateHero" in legacy code handled both text update and bg update.
             // Here we just pass it through.
             window.dispatchEvent(
-                new CustomEvent("hero-update-request", {
+                new CustomEvent("render-hero", {
                     detail: { date, lunar, changeBg, transitionOverride },
                 }),
             );

@@ -1,0 +1,28 @@
+/* 
+   Midnight Glass Theme (Dark/Solemn)
+   A deep, focused, and prestigious aesthetic for night or solemn festivals (Qingming).
+*/
+
+.theme-dark {
+    /* Background & Texture */
+    --cal-bg: rgba(12, 12, 12, 0.95);
+    --cal-inner-glow: rgba(255, 255, 255, 0.05);
+    --cal-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+    --cal-border: rgba(255, 255, 255, 0.12);
+
+    /* Typography */
+    --cal-text: #fff;
+    --cal-lunar-text: rgba(255, 255, 255, 0.4);
+    --cal-header-text: rgba(255, 255, 255, 0.3);
+
+    /* Interactive Elements */
+    --cal-nav-bg: rgba(255, 255, 255, 0.05);
+    --cal-nav-color: rgba(255, 255, 255, 0.6);
+    --cal-today-bg: linear-gradient(135deg, #e6d5a7 0%, #d4af37 100%);
+    --cal-today-text: #1a1a1a;
+    --cal-term-color: #e6d5a7;
+
+    /* Panel Specifics */
+    --panel-accent: #d4af37;
+    --panel-side-bg: linear-gradient(to bottom, rgba(230, 213, 167, 0.12), transparent);
+}

@@ -1,0 +1,29 @@
+/* 
+   Natural Breeze Theme (Light/Default)
+   A clear, comfortable, and pearl-like aesthetic for daily use.
+*/
+
+:root,
+.theme-light {
+    /* Background & Texture */
+    --cal-bg: rgba(255, 255, 255, 0.85);
+    --cal-inner-glow: rgba(255, 255, 255, 0.6);
+    --cal-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+    --cal-border: rgba(0, 0, 0, 0.05);
+
+    /* Typography */
+    --cal-text: #333;
+    --cal-lunar-text: #999;
+    --cal-header-text: #999;
+
+    /* Interactive Elements */
+    --cal-nav-bg: rgba(0, 0, 0, 0.02);
+    --cal-nav-color: #888;
+    --cal-today-bg: #c41e3a;
+    --cal-today-text: #fff;
+    --cal-term-color: #c41e3a;
+
+    /* Panel Specifics */
+    --panel-accent: #c41e3a;
+    --panel-side-bg: linear-gradient(to bottom, rgba(196, 30, 58, 0.05), transparent);
+}

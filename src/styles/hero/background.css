@@ -1,0 +1,58 @@
+/* Hero Background Container (Bottom Layer) */
+#heroBgContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+    /* 動畫改在容器上：確保換圖時縮放動作不中斷、不跳動 */
+    animation: kenBurnsSmooth 40s ease-in-out infinite alternate;
+}
+
+.hero-bg-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    will-change: opacity, transform;
+    /* 取消濾鏡過渡，專注於透明度與位移，讓視覺更穩定 */
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes kenBurnsSmooth {
+    0% {
+        transform: scale(1.0);
+    }
+
+    100% {
+        transform: scale(1.15);
+    }
+}
+
+/* 霧化淡出狀態：改為輕微淡出，不強烈干擾視覺 */
+.hero-bg-item.blur-out {
+    opacity: 0 !important;
+    filter: brightness(0.8);
+}
+
+/* 初始進入狀態：預設 */
+.hero-bg-item.is-new {
+    opacity: 0;
+}
+
+/* 景深切換：下一張 (走進風景) */
+.hero-bg-item.is-next {
+    opacity: 0;
+    transform: scale(1.03);
+}
+
+/* 景深切換：上一張 (退後觀察) */
+.hero-bg-item.is-prev {
+    opacity: 0;
+    transform: scale(0.97);
+}

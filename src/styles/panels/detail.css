@@ -1,0 +1,171 @@
+/* Detail Panels (Suitable / Unsuitable Activities) */
+
+/* Today Panel Layout Structure */
+#panelToday {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    /* Ensure rounded corners clip content */
+}
+
+.panel-side-accent {
+    width: 60px;
+    background: var(--cal-border);
+    /* Or a slightly darker variant of bg */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--cal-border);
+    flex-shrink: 0;
+}
+
+.vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    letter-spacing: 0.3em;
+    color: var(--cal-lunar-text);
+    opacity: 0.8;
+    white-space: nowrap;
+}
+
+.panel-main-content {
+    flex: 1;
+    padding: 24px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Detail Elements inside Main Content */
+.detail-header-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.detail-header {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+    letter-spacing: 0.05em;
+    color: var(--cal-text);
+    font-family: var(--font-serif-num);
+    line-height: 1;
+}
+
+.detail-sub-main {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--cal-lunar-text);
+    font-weight: 300;
+    letter-spacing: 0.12em;
+}
+
+.detail-info-row {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: var(--cal-lunar-text);
+    margin-bottom: 20px;
+    font-family: var(--font-serif);
+    opacity: 0.8;
+}
+
+.detail-lucky-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cal-nav-bg);
+    border: 1px solid var(--cal-border);
+    padding: 10px 24px;
+    border-radius: 50px;
+    color: var(--cal-nav-color);
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 25px;
+    align-self: flex-start;
+}
+
+/* Yiji Section (Suitable/Unsuitable Activities) */
+.detail-yiji {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--cal-border);
+    width: 100%;
+}
+
+.traditional-seal {
+    width: 48px;
+    height: 48px;
+    background: #c62828;
+    /* Default Seal Red */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.yiji-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.yiji-label {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    opacity: 1;
+    margin-top: 2px;
+    /* Align with tags */
+    min-width: 24px;
+}
+
+.yiji-label--good {
+    color: var(--cal-text);
+}
+
+/* Use theme color for Yi/Ji text if desired, or keep simple */
+.yiji-label--good {
+    color: #d4af37;
+}
+
+.yiji-label--bad {
+    color: #ff6b6b;
+}
+
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
+    flex: 1;
+}
+
+.tag {
+    font-size: 0.9rem;
+    opacity: 0.85;
+    letter-spacing: 0.05em;
+    color: var(--cal-text);
+}
+
+.tag::after {
+    content: ' / ';
+    margin: 0 6px;
+    opacity: 0.3;
+}
+
+.tag:last-child::after {
+    content: '';
+}

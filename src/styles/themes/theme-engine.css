@@ -1,0 +1,16 @@
+/* 
+   Thematic Design System - Base Definitions
+   Handles shared transitions and core variable structures.
+*/
+
+:root {
+    --theme-transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Global Component Theme Integration */
+.calendar-section,
+.suspension-panel,
+.control-dock,
+.info-strip {
+    transition: var(--theme-transition);
+}
