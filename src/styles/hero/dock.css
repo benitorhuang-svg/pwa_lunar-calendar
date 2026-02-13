@@ -97,6 +97,53 @@
     padding: 10px 14px;
 }
 
+.dock-item.music-btn {
+    display: none;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    margin-left: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(165, 214, 167, 0.4);
+    /* 淡綠裝飾邊框 */
+    background: rgba(165, 214, 167, 0.2);
+    /* 柔和淡綠底色 */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: rgba(255, 255, 255, 0.75);
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(165, 214, 167, 0.1);
+}
+
+.dock-item.music-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+}
+
+.dock-item.music-btn.playing {
+    color: #ffffff;
+    border-color: rgba(165, 214, 167, 0.6);
+    background: rgba(165, 214, 167, 0.25);
+    box-shadow: 0 0 15px rgba(165, 214, 167, 0.2);
+}
+
+.dock-item.music-btn.playing svg {
+    animation: rotate-music 4s linear infinite;
+    filter: drop-shadow(0 0 8px rgba(165, 214, 167, 0.4));
+}
+
+@keyframes rotate-music {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .dock-divider {
     width: 1px;
     height: 28px;

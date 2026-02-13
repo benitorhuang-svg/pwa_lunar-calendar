@@ -1,38 +1,11 @@
 ---
-
+import CalendarHeader from "./CalendarHeader.astro";
+import CalendarGridContainer from "./CalendarGridContainer.astro";
 ---
 
 <main class="calendar-section hidden" id="calendarSection">
-    <!-- Navigation Group (Title, Prev/Next) -->
-    <div class="nav-group-right">
-        <div class="nav-center-group">
-            <div
-                class="title-row"
-                style="display: flex; align-items: baseline; justify-content: center;"
-            >
-                <button class="btn-today-quick" id="btnTodayQuick"
-                    >回到今日</button
-                >
-                <div id="calendarTitle" class="calendar-title"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Week Header -->
-    <div class="week-header">
-        <div>日</div>
-        <div>一</div>
-        <div>二</div>
-        <div>三</div>
-        <div>四</div>
-        <div>五</div>
-        <div>六</div>
-    </div>
-
-    <!-- Grid Container -->
-    <div class="days-grid" id="calendarGrid">
-        <!-- JS Grid Items -->
-    </div>
+    <CalendarHeader />
+    <CalendarGridContainer />
 </main>
 
 <script is:inline>

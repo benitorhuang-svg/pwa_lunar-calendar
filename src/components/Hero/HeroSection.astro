@@ -1,131 +1,98 @@
 ---
-
+import HeroBackground from "./HeroBackground.astro";
+import WelcomeOverlay from "./WelcomeOverlay.astro";
+import HeroHeader from "./HeroHeader.astro";
+import HeroDock from "./HeroDock.astro";
+import MusicPlayer from "./MusicPlayer.astro";
 ---
 
-<div id="heroBgContainer"></div>
-
-<!-- Welcome Interaction Overlay: Top-most layer to catch all clicks during Welcome Mode -->
-<div
-    id="welcomeInteractionOverlay"
-    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; cursor: pointer;"
->
-</div>
-
-<!-- Dynamic Header: Only the Info Strip remains for a clean magazine look -->
-<header class="hero-header">
-    <div class="hero-info-strip" id="heroInfoStrip">
-        <span id="infoYear"></span><span class="label">年</span>
-        <span class="info-dot">·</span>
-        <span id="infoMonth"></span><span class="label">月</span>
-        <span class="info-dot">·</span>
-        <span id="infoDay"></span><span class="label">日</span>
-    </div>
-</header>
-
-<!-- Unified Floating Dock: Centered at the bottom -->
-<div class="hero-dock-wrapper">
-    <div class="hero-dock" id="heroDock">
-        <button
-            class="dock-item prev group-image"
-            id="btnPrevHero"
-            title="上一張"
-        >
-            <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><polyline points="15 18 9 12 15 6"></polyline></svg
-            >
-        </button>
-        <div class="dock-divider"></div>
-        <button class="dock-item main-btn group-image" id="btnChangeImage">
-            <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><rect x="3" y="3" width="18" height="18" rx="2" ry="2"
-                ></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline
-                    points="21 15 16 10 5 21"></polyline></svg
-            >
-            <span>映畫</span>
-        </button>
-        <button class="dock-item main-btn group-calendar" id="btnYearMonth">
-            <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><circle cx="12" cy="12" r="10"></circle><polyline
-                    points="12 6 12 12 16 14"></polyline></svg
-            >
-            <span class="ym-text">年月</span>
-        </button>
-        <button class="dock-item main-btn group-calendar" id="btnDay">
-            <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><rect x="3" y="4" width="18" height="18" rx="2" ry="2"
-                ></rect><line x1="16" y1="2" x2="16" y2="6"></line><line
-                    x1="8"
-                    y1="2"
-                    x2="8"
-                    y2="6"></line><line x1="3" y1="10" x2="21" y2="10"
-                ></line></svg
-            >
-            <span>日曆</span>
-        </button>
-        <div class="dock-divider"></div>
-        <button
-            class="dock-item next group-image"
-            id="btnNextHero"
-            title="下一張"
-        >
-            <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><polyline points="9 18 15 12 9 6"></polyline></svg
-            >
-        </button>
-    </div>
-</div>
+<HeroBackground />
+<WelcomeOverlay />
+<HeroHeader />
+<HeroDock />
+<MusicPlayer />
 
 <script is:inline>
     // Hero images — organized by seasons in assets/gallery/
     const BASE_HERO_DIR = "assets/gallery/";
-    let heroList = [];
-    let _heroIdx = 0;
-    let _requestedSeason = null; // last season we tried to load
-    let _currentSpecialName = null;
-    let _specialHeroList = [];
-    let _specialHeroIdx = 0;
-    let slideshowTimer = null;
+    var heroList = [];
+    var _heroIdx = 0;
+    var _requestedSeason = null; // last season we tried to load
+    var _currentSpecialName = null;
+    var _specialHeroList = [];
+    var _specialHeroIdx = 0;
+    window.slideshowTimer = null;
+    window.idleTimer = null;
     const SLIDESHOW_INTERVAL_MS = 10000;
+    const SLIDESHOW_IDLE_TIMEOUT = 10000; // 恢復 10 秒閒置
+    var _isArtworkMode = false; // 明確標記當前是否為映畫模式
+
+    function resetIdleTimer() {
+        if (window.idleTimer) {
+            clearTimeout(window.idleTimer);
+            window.idleTimer = null;
+        }
+
+        const isInitialWelcome =
+            document.body.classList.contains("initial-welcome");
+        const isImmersion = document.body.classList.contains("immersion-mode");
+
+        // 路線 A：啟動歡迎頁面 (只要有標記就計時)
+        if (isInitialWelcome) {
+            window.idleTimer = setTimeout(() => {
+                if (document.body.classList.contains("initial-welcome")) {
+                    console.log(
+                        "[Route A] 1s idle reached: Hiding Welcome Card",
+                    );
+                    document.body.classList.remove("initial-welcome");
+                    window.dispatchEvent(
+                        new CustomEvent("welcome-mode", {
+                            detail: { active: true },
+                        }),
+                    );
+                }
+            }, SLIDESHOW_IDLE_TIMEOUT);
+        }
+        // 路線 B：映畫模式 (且非沉浸時才計時)
+        else if (_isArtworkMode && !isImmersion) {
+            window.idleTimer = setTimeout(() => {
+                console.log("[Route B] 1s idle reached: Hiding Artwork UI");
+                window.dispatchEvent(
+                    new CustomEvent("welcome-mode", {
+                        detail: { active: true },
+                    }),
+                );
+            }, SLIDESHOW_IDLE_TIMEOUT);
+        }
+    }
+
+    // 監聽 DOM 變化，確保 initial-welcome 一出現就啟動計時
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((m) => {
+            if (
+                m.attributeName === "class" &&
+                document.body.classList.contains("initial-welcome")
+            ) {
+                resetIdleTimer();
+            }
+        });
+    });
+    observer.observe(document.body, { attributes: true });
+
+    // 監控範圍：監聽螢幕觸碰與點擊
+    ["mousedown", "touchstart"].forEach((evt) => {
+        window.addEventListener(evt, resetIdleTimer, { passive: true });
+    });
+
+    // 滑鼠移動：僅在非歡迎畫面重置
+    window.addEventListener(
+        "mousemove",
+        (e) => {
+            if (document.body.classList.contains("initial-welcome")) return;
+            resetIdleTimer();
+        },
+        { passive: true },
+    );
 
     // DOM Elements
     const heroBgContainer = document.getElementById("heroBgContainer");
@@ -356,18 +323,18 @@
     }
 
     function startSlideshow() {
-        if (slideshowTimer) return;
+        if (window.slideshowTimer) return;
         if (_specialHeroList.length < 2 && heroList.length < 2) return;
 
-        slideshowTimer = setInterval(() => {
+        window.slideshowTimer = setInterval(() => {
             switchHero(1, true);
         }, SLIDESHOW_INTERVAL_MS);
     }
 
     function stopSlideshow() {
-        if (slideshowTimer) {
-            clearInterval(slideshowTimer);
-            slideshowTimer = null;
+        if (window.slideshowTimer) {
+            clearInterval(window.slideshowTimer);
+            window.slideshowTimer = null;
         }
     }
 
@@ -507,13 +474,28 @@
     });
 
     // Handle Entry from Welcome Screen via dedicated overlay
-    welcomeOverlay.addEventListener("click", () => {
+    welcomeOverlay.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        // 退出沉浸狀態
         window.dispatchEvent(
             new CustomEvent("welcome-mode", { detail: { active: false } }),
         );
-        window.dispatchEvent(
-            new CustomEvent("close-panels", { detail: { showGrid: true } }),
-        );
+
+        if (!_isArtworkMode) {
+            // 路線 A：非映畫模式 (啟動/歡迎/沉浸) -> 直接喚醒日曆網格
+            document.body.classList.remove("initial-welcome");
+            window.dispatchEvent(
+                new CustomEvent("close-panels", { detail: { showGrid: true } }),
+            );
+        } else {
+            // 路線 B：映畫模式下喚醒 -> 僅恢復映畫介面
+            window.dispatchEvent(
+                new CustomEvent("close-panels", {
+                    detail: { showGrid: false },
+                }),
+            );
+        }
     });
 
     // Initialize
@@ -522,7 +504,13 @@
 
     // Event Listeners for UI
     document.getElementById("btnChangeImage").onclick = () => {
-        // Trigger update with slide effect
+        // 使用者點選「映畫」按鈕，明確進入映畫模式
+        window.dispatchEvent(
+            new CustomEvent("slideshow-control", {
+                detail: { action: "start", isArtwork: true },
+            }),
+        );
+
         window.dispatchEvent(
             new CustomEvent("request-hero-change", {
                 detail: {
@@ -534,11 +522,10 @@
         window.dispatchEvent(
             new CustomEvent("close-panels", { detail: { showGrid: false } }),
         );
-
-        // Remove setTimeout. Let slideshow-control event handle active state.
     };
 
     function handleDockNavigation(direction) {
+        resetIdleTimer();
         const isCalendarActive = document
             .getElementById("btnDay")
             .classList.contains("active");
@@ -559,12 +546,16 @@
     document.getElementById("btnNextHero").onclick = () =>
         handleDockNavigation(1);
 
-    document.getElementById("btnYearMonth").onclick = () =>
+    document.getElementById("btnYearMonth").onclick = () => {
+        resetIdleTimer();
         window.dispatchEvent(
             new CustomEvent("toggle-panel", { detail: "yearMonth" }),
         );
-    document.getElementById("btnDay").onclick = () =>
+    };
+    document.getElementById("btnDay").onclick = () => {
+        resetIdleTimer();
         window.dispatchEvent(new CustomEvent("toggle-grid"));
+    };
 
     window.addEventListener("toggle-grid-view", (e) => {
         const { show } = e.detail;
@@ -613,15 +604,21 @@
     window.addEventListener("welcome-mode", (e) => {
         const { active } = e.detail;
         if (active) {
-            heroDockWrapper.style.opacity = "0";
-            heroDockWrapper.style.pointerEvents = "none";
-            heroHeader.style.opacity = "0";
-            welcomeOverlay.style.display = "block"; // Open the dedicated interaction layer
+            document.body.classList.add("immersion-mode");
+            if (window.idleTimer) {
+                clearTimeout(window.idleTimer);
+                window.idleTimer = null;
+            }
+            // 路線 A：如果是初始歡迎畫面，激活沉浸後仍需計時隱藏卡片
+            if (document.body.classList.contains("initial-welcome")) {
+                resetIdleTimer();
+            }
         } else {
-            heroDockWrapper.style.opacity = "1";
-            heroDockWrapper.style.pointerEvents = "auto";
-            heroHeader.style.opacity = "1";
-            welcomeOverlay.style.display = "none"; // Close the layer
+            document.body.classList.remove("immersion-mode");
+            document.body.classList.remove("initial-welcome");
+
+            // 喚醒後，如果仍在映畫模式，不應該「立刻」重啟計時，而是等下一次互動或給予緩衝
+            // 避免進入無法退出的死循環。這裡我們不直接調用 resetIdleTimer，而是靠用戶點擊/移動來重置。
         }
     });
 
@@ -630,22 +627,37 @@
     });
 
     window.addEventListener("slideshow-control", (e) => {
-        const { action } = e.detail;
+        const { action, isArtwork } = e.detail;
         const btnYM = document.getElementById("btnYearMonth");
+        const btnMusic = document.getElementById("btnMusic");
 
         if (action === "start") {
+            // 如果 isArtwork 為 true，表示進入「映畫播放器」狀態，需要開啟閒置監控
+            // 如果僅是啟動背景輪播 (如啟動畫面)，則不開啟監控
+            _isArtworkMode = isArtwork !== false;
+
             startSlideshow();
-            document.getElementById("btnChangeImage").classList.add("active");
-            btnYM.style.display = "none";
-            document.getElementById("btnDay").classList.remove("active");
-            btnYM.classList.remove("active");
+
+            if (_isArtworkMode) {
+                document
+                    .getElementById("btnChangeImage")
+                    .classList.add("active");
+                if (btnYM) btnYM.style.display = "none";
+                if (btnMusic) btnMusic.style.display = "flex";
+                document.getElementById("btnDay").classList.remove("active");
+                if (btnYM) btnYM.classList.remove("active");
+                resetIdleTimer();
+            }
         }
         if (action === "stop") {
+            _isArtworkMode = false;
             stopSlideshow();
+            if (idleTimer) clearTimeout(idleTimer);
             document
                 .getElementById("btnChangeImage")
                 .classList.remove("active");
-            btnYM.style.display = "flex";
+            if (btnYM) btnYM.style.display = "flex";
+            if (btnMusic) btnMusic.style.display = "none";
         }
     });
 
@@ -666,4 +678,56 @@
             }
         });
     }
+
+    // Music Control
+    const btnMusic = document.getElementById("btnMusic");
+    const bgMusic = document.getElementById("bgMusic");
+    const zenPlaylist = [
+        "/assets/audio/ambient.mp3",
+        "/assets/audio/danyvin.mp3",
+        "/assets/audio/danyvin-journey.mp3",
+    ];
+    window._zenTrackIdx = Math.floor(Math.random() * zenPlaylist.length);
+
+    if (btnMusic && bgMusic) {
+        // 音樂守護：當一首結束，自動接下一首
+        bgMusic.onended = () => {
+            window._zenTrackIdx =
+                (window._zenTrackIdx + 1) % zenPlaylist.length;
+            bgMusic.src = zenPlaylist[window._zenTrackIdx];
+            bgMusic.play();
+        };
+
+        btnMusic.onclick = () => {
+            if (bgMusic.paused) {
+                // 如果是空的，初始化第一首
+                if (!bgMusic.src || bgMusic.src === "" || bgMusic.ended) {
+                    bgMusic.src = zenPlaylist[window._zenTrackIdx];
+                }
+
+                bgMusic
+                    .play()
+                    .then(() => {
+                        console.log(
+                            "[ZenMusic] Flowing:",
+                            zenPlaylist[window._zenTrackIdx],
+                        );
+                    })
+                    .catch((e) => {
+                        console.log("[ZenMusic] Blocked:", e);
+                    });
+                btnMusic.classList.add("playing");
+            } else {
+                bgMusic.pause();
+                btnMusic.classList.remove("playing");
+                // 巧妙設計：暫停即預備下一首，再次點擊就會換歌
+                window._zenTrackIdx =
+                    (window._zenTrackIdx + 1) % zenPlaylist.length;
+                bgMusic.src = zenPlaylist[window._zenTrackIdx];
+            }
+        };
+    }
+
+    // 啟動時先跑一次閒置計時，確保歡迎畫面 10 秒後會自動進入沉浸
+    resetIdleTimer();
 </script>

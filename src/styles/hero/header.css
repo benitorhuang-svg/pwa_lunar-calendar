@@ -9,6 +9,11 @@
 }
 
 .hero-info-strip {
+    pointer-events: auto;
+    /* 允許點擊日期條 */
+}
+
+.hero-info-strip {
     display: flex;
     align-items: center;
     gap: 4px;

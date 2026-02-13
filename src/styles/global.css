@@ -12,3 +12,45 @@
 .hidden {
     display: none !important;
 }
+
+/* Immersion Mode (Auto-slideshow feel) */
+body.immersion-mode .hero-header,
+body.immersion-mode .hero-dock-wrapper,
+body.immersion-mode #calendarSection,
+body.immersion-mode .suspension-panel {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.8s ease;
+}
+
+/* 歡迎畫面特定顯示今日宜忌 */
+body.initial-welcome .suspension-panel#panelToday {
+    display: flex !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 10000 !important;
+    /* 置中顯示 */
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+    width: min(90%, 550px) !important;
+    animation: welcomeCardFadeIn 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes welcomeCardFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -45%) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+body.immersion-mode #welcomeInteractionOverlay {
+    display: block !important;
+    z-index: 9999;
+}

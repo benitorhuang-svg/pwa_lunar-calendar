@@ -357,17 +357,37 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
         updateState();
 
         // Boutique Entrance: Start in Welcome Mode
-        setTimeout(() => {
-            window.dispatchEvent(
-                new CustomEvent("welcome-mode", { detail: { active: true } }),
-            );
-            window.dispatchEvent(new CustomEvent("go-to-today"));
-            window.dispatchEvent(
-                new CustomEvent("toggle-grid-view", {
-                    detail: { show: false },
-                }),
-            );
-        }, 100);
+        // 一進場立刻進入「歡迎/沉浸」狀態，避免 UI 閃爍
+        document.body.classList.add("initial-welcome");
+        window.dispatchEvent(
+            new CustomEvent("welcome-mode", { detail: { active: true } }),
+        );
+
+        // 預設背景切換為「今日」
+        activePanel = "today";
+        window.dispatchEvent(
+            new CustomEvent("toggle-grid-view", { detail: { show: false } }),
+        );
+
+        // 渲染今日宜忌面板 (歡迎畫面)
+        window.dispatchEvent(
+            new CustomEvent("render-panels", {
+                detail: {
+                    type: "today",
+                    selectedYear,
+                    selectedMonth,
+                    selectedDay,
+                    today,
+                },
+            }),
+        );
+
+        // 啟動背景圖片輪播，但此時尚未進入「映畫模式」的閒置監控
+        window.dispatchEvent(
+            new CustomEvent("slideshow-control", {
+                detail: { action: "start", isArtwork: false },
+            }),
+        );
 
         // Listen from Hero
         window.addEventListener("request-hero-change", (e) => {
