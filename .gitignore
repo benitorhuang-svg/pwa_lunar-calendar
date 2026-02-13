@@ -1,0 +1,40 @@
+# Astro
+.astro/
+dist/
+
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environments
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# Temporary / Backups
+*.bak
+unnamed.png
+SDD/
+ecliptic-ellipse/
+
+# Note: package.json and package-lock.json are usually included in git. 
+# Removing them from ignore list if they were there by mistake.
+# .eslint.config.mjs
+# .eslint_output.json
+# _test_lunar.js

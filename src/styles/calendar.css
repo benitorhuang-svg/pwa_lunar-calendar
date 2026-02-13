@@ -1,0 +1,226 @@
+/* Calendar Grid Styles */
+
+.calendar-section {
+    height: auto;
+    min-height: 40dvh;
+    max-height: 64dvh;
+    width: calc(100% - 30px);
+    margin: 0 15px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    padding: 35px 20px 100px 20px;
+    /* Increased bottom padding for more breathing room at the bottom */
+
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    z-index: 900;
+    /* Ensure on top of Hero */
+
+    border-radius: 24px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+
+    touch-action: manipulation;
+    overflow: hidden;
+
+    /* Animation States */
+    transform: translateY(110%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+}
+
+.calendar-section.show-grid {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* Calendar Header */
+.calendar-title {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink-black);
+}
+
+.btn-today-quick {
+    background: var(--primary-red);
+    color: white;
+    border: none;
+    width: 80px;
+    height: 35px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(196, 30, 58, 0.2);
+    transition: all 0.2s;
+    font-family: var(--font-serif);
+}
+
+.btn-today-quick:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+.btn-today-quick:active {
+    transform: scale(0.9);
+}
+
+/* Month Navigation Buttons */
+.nav-btn {
+    background: rgba(0, 0, 0, 0.04);
+    /* Light subtle background */
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: var(--ink-black);
+    /* Dark arrow color */
+
+    min-width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    /* Soft rounded */
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    /* Slightly larger arrow */
+    line-height: 1;
+
+    cursor: pointer;
+    pointer-events: auto;
+    /* Ensure clickable */
+    z-index: 200;
+    /* Ensure on top */
+
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    backdrop-filter: blur(4px);
+}
+
+.nav-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    /* Darken slightly on hover */
+    transform: scale(1.05);
+}
+
+.nav-btn:active {
+    background: rgba(0, 0, 0, 0.12);
+    transform: scale(0.95);
+}
+
+/* Week Header */
+.week-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    padding: 25px 0 10px 0;
+    /* Increased top padding from 15px */
+    font-size: 12px;
+    color: var(--text-gray);
+    font-family: var(--font-serif);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Days Grid */
+.days-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: auto;
+    padding-top: 5px;
+    row-gap: 0px;
+    color: var(--ink-black);
+}
+
+/* Day Cell */
+.day-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 0;
+    cursor: pointer;
+    position: relative;
+    border-radius: 8px;
+    transition: background 0.1s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.day-cell:active {
+    background: rgba(0, 0, 0, 0.03);
+    transform: scale(0.95);
+}
+
+.day-cell:focus {
+    outline: 3px solid rgba(196, 30, 58, 0.18);
+    outline-offset: 2px;
+}
+
+.gregorian-num {
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.lunar-text {
+    font-size: 0.65rem;
+    color: var(--text-gray);
+    margin-top: 2px;
+    font-weight: 400;
+}
+
+/* Weekend Color */
+.day-cell:nth-child(7n),
+.day-cell:nth-child(7n+1) {
+    color: var(--primary-red);
+}
+
+.day-cell:nth-child(7n) .lunar-text,
+.day-cell:nth-child(7n+1) .lunar-text {
+    color: rgba(196, 30, 58, 0.7);
+}
+
+/* Today State */
+.day-cell.today {
+    background: var(--primary-red) !important;
+    color: #fff !important;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(196, 30, 58, 0.25);
+    font-weight: 700;
+}
+
+.day-cell.today .lunar-text {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Selected State */
+.day-cell.selected {
+    border: 2px solid rgba(76, 110, 245, 0.5);
+    background: rgba(200, 220, 255, 0.3);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Other Month */
+.day-cell.other-month {
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+/* Term Indicator */
+.term-dot {
+    width: 4px;
+    height: 4px;
+    background: var(--primary-red);
+    border-radius: 50%;
+    position: absolute;
+    bottom: 4px;
+}

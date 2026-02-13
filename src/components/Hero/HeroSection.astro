@@ -1,0 +1,558 @@
+---
+
+---
+
+<div id="heroBgContainer"></div>
+
+<header class="hero-section" id="heroSection">
+    <!-- Install Button -->
+    <button id="installBtn">安裝</button>
+
+    <!-- Navigation -->
+    <nav class="nav-container" aria-label="日曆導覽">
+        <div class="nav-group-left">
+            <button class="nav-box" id="btnChangeImage">看圖片</button>
+        </div>
+        <div class="nav-group-top-right">
+            <button class="nav-box" id="btnDay" aria-expanded="false"
+                >日曆</button
+            >
+            <button class="nav-box" id="btnYearMonth" aria-expanded="false">
+                <span class="ym-text">年月</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Bottom Controls (Previous / Next) -->
+    <div class="bottom-controls" id="bottomControls">
+        <button class="control-btn" id="btnPrevHero"> ◀ 上一張 </button>
+        <button class="control-btn" id="btnNextHero"> 下一張 ▶ </button>
+    </div>
+</header>
+
+<script is:inline>
+    // Hero images — organized by seasons in assets/gallery/
+    const BASE_HERO_DIR = "assets/gallery/";
+    let heroList = [];
+    let _heroIdx = 0;
+    let _currentSeason = null; // last successfully loaded folder
+    let _requestedSeason = null; // last season we tried to load
+    let _currentSpecialName = null;
+    let _specialHeroList = [];
+    let _specialHeroIdx = 0;
+    let slideshowTimer = null;
+    const SLIDESHOW_INTERVAL_MS = 10000;
+    const ACTIVE_FEEDBACK_MS = 300;
+
+    // DOM Elements
+    const heroBgContainer = document.getElementById("heroBgContainer");
+    const bottomControls = document.getElementById("bottomControls");
+
+    function getSeason(date) {
+        const m = date.getMonth(); // 0-indexed
+        if (m >= 2 && m <= 4) return "spring";
+        if (m >= 5 && m <= 7) return "summer";
+        if (m >= 8 && m <= 10) return "autumn";
+        return "winter";
+    }
+
+    /* Helper: Check if image exists */
+    function checkImageExists(src) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = src;
+        });
+    }
+
+    /**
+     * Auto-detect hero images in the specific seasonal folder
+     */
+    async function detectHeroImages(season = "default", isFallback = false) {
+        const seasonDir = `${BASE_HERO_DIR}${season}/`;
+        let detected = [];
+
+        // 1. Try to load from Global Manifest JS (Best for file:// protocol)
+        if (typeof GALLERY_MANIFEST !== "undefined") {
+            if (
+                GALLERY_MANIFEST[season] &&
+                GALLERY_MANIFEST[season].length > 0
+            ) {
+                detected = GALLERY_MANIFEST[season].map(
+                    (filename) => `${seasonDir}${filename}`,
+                );
+                console.log(
+                    `[Hero] Loaded ${detected.length} images from JS Manifest for ${season}`,
+                );
+            }
+        }
+        // 2. Try to load from JSON manifest (Best for local server / web)
+        else {
+            try {
+                const response = await fetch("assets/gallery/gallery.json");
+                if (response.ok) {
+                    const manifest = await response.json();
+                    if (manifest[season] && manifest[season].length > 0) {
+                        detected = manifest[season].map(
+                            (filename) => `${seasonDir}${filename}`,
+                        );
+                        console.log(
+                            `[Hero] Loaded ${detected.length} images from JSON Manifest for ${season}`,
+                        );
+                    }
+                }
+            } catch (e) {
+                // Expected fail on file:// without local server
+            }
+        }
+
+        // 3. Fallback to probing if manifest failed or returned empty
+        if (detected.length === 0) {
+            console.log(`[Hero] Probing images in: ${seasonDir}`);
+            let i = 1;
+            const maxProbe = 20; // Limit probing
+
+            while (i <= maxProbe) {
+                let found = false;
+                const exts = [".png", ".webp", ".jpg"];
+                for (const ext of exts) {
+                    const src = `${seasonDir}${i}${ext}`;
+                    try {
+                        const exists = await new Promise((resolve) => {
+                            const img = new Image();
+                            img.onload = () => resolve(true);
+                            img.onerror = () => resolve(false);
+                            img.src = src;
+                        });
+                        if (exists) {
+                            detected.push(src);
+                            found = true;
+                            i++;
+                            break;
+                        }
+                    } catch (e) {}
+                }
+                if (!found) break;
+            }
+        }
+
+        // Fallback to default gallery if no images found in seasonal folder
+        if (detected.length === 0 && season !== "default") {
+            console.log(
+                `[Hero] No images in ${season}, falling back to default.`,
+            );
+            await detectHeroImages("default", true);
+            if (!isFallback) _currentSeason = season; // Keep target season to prevent re-trigger
+            return;
+        }
+
+        heroList =
+            detected.length > 0 ? detected : [`${BASE_HERO_DIR}default/1.png`];
+        // Shuffle
+        heroList.sort(() => Math.random() - 0.5);
+
+        _heroIdx = 0;
+        _currentSeason = season;
+
+        preloadHeroImages();
+
+        // Only trigger update if this isn't a deep recursive call
+        if (!isFallback) {
+            window.dispatchEvent(new CustomEvent("hero-update-required"));
+        }
+    }
+
+    const _heroCache = {};
+    function preloadHeroImages() {
+        heroList.forEach((src) => {
+            const img = new Image();
+            img.src = src;
+            _heroCache[src] = img;
+        });
+    }
+
+    /**
+     * Switch Hero Image directly
+     * @param {number} offset - -1 for previous, 1 for next
+     * @param {boolean} isAuto - true if triggered by slideshow
+     */
+    function switchHero(offset, isAuto = false) {
+        // User interaction resets the timer
+        if (!isAuto && slideshowTimer) {
+            resetSlideshow();
+        }
+
+        let list = [];
+        let idx = 0;
+        let isSpecial = false;
+
+        // Determine which list is active
+        if (_specialHeroList && _specialHeroList.length > 0) {
+            list = _specialHeroList;
+            idx = _specialHeroIdx;
+            isSpecial = true;
+        } else if (heroList && heroList.length > 0) {
+            list = heroList;
+            idx = _heroIdx;
+        } else {
+            return; // No images
+        }
+
+        // Calculate new index
+        let newIdx = idx + offset;
+        if (newIdx >= list.length) newIdx = 0;
+        if (newIdx < 0) newIdx = list.length - 1;
+
+        // Update state
+        if (isSpecial) {
+            _specialHeroIdx = newIdx;
+        } else {
+            _heroIdx = newIdx;
+        }
+
+        // Direction logic for slide
+        const direction = offset > 0 ? "slide-from-right" : "slide-from-left";
+
+        setHeroBackground(list[newIdx], direction);
+
+        // Ensure panels are closed in view mode
+        window.dispatchEvent(
+            new CustomEvent("close-panels", { detail: { showGrid: false } }),
+        );
+    }
+
+    /**
+     * Sets the background image with animation
+     */
+    function setHeroBackground(url, transition) {
+        const newItem = document.createElement("div");
+        newItem.className = "hero-bg-item";
+        newItem.style.backgroundImage = `url('${url}')`;
+
+        const currentItem = heroBgContainer.querySelector(
+            ".hero-bg-item:last-child",
+        );
+
+        let startTransform = "";
+        let endTransform = "translateX(0)";
+        let exitTransform = "";
+
+        if (transition === "slide-from-right") {
+            startTransform = "translateX(100%)";
+            exitTransform = "translateX(-100%)";
+        } else if (transition === "slide-from-left") {
+            startTransform = "translateX(-100%)";
+            exitTransform = "translateX(100%)";
+        } else if (transition === "slide") {
+            startTransform = "translateX(100%)";
+            exitTransform = "translateX(-100%)";
+        }
+
+        if (transition.includes("slide")) {
+            newItem.style.transform = startTransform;
+            newItem.style.zIndex = "2";
+            if (currentItem) currentItem.style.zIndex = "1";
+        } else if (transition === "fade") {
+            newItem.style.opacity = "0";
+            newItem.style.zIndex = "2";
+            newItem.style.transition = "opacity 0.8s ease-in-out";
+            if (currentItem) currentItem.style.zIndex = "1";
+        } else {
+            newItem.style.zIndex = "2";
+            if (currentItem) currentItem.style.zIndex = "1";
+        }
+
+        heroBgContainer.appendChild(newItem);
+        newItem.offsetHeight; // Reflow
+
+        requestAnimationFrame(() => {
+            if (transition.includes("slide")) {
+                newItem.style.transition =
+                    "transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)";
+                if (currentItem)
+                    currentItem.style.transition =
+                        "transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)";
+
+                newItem.style.transform = endTransform;
+                if (currentItem) currentItem.style.transform = exitTransform;
+
+                setTimeout(() => {
+                    if (currentItem && currentItem.parentNode)
+                        heroBgContainer.removeChild(currentItem);
+                    newItem.style.zIndex = "";
+                    newItem.style.transform = "";
+                    newItem.style.transition = "";
+                }, 550);
+            } else if (transition === "fade") {
+                newItem.style.opacity = "1";
+                setTimeout(() => {
+                    if (currentItem && currentItem.parentNode)
+                        heroBgContainer.removeChild(currentItem);
+                    newItem.style.zIndex = "";
+                    newItem.style.transition = "";
+                }, 800);
+            } else {
+                if (currentItem && currentItem.parentNode)
+                    heroBgContainer.removeChild(currentItem);
+            }
+        });
+    }
+
+    function startSlideshow() {
+        if (slideshowTimer) return;
+        if (_specialHeroList.length < 2 && heroList.length < 2) return;
+
+        slideshowTimer = setInterval(() => {
+            switchHero(1, true);
+        }, SLIDESHOW_INTERVAL_MS);
+    }
+
+    function stopSlideshow() {
+        if (slideshowTimer) {
+            clearInterval(slideshowTimer);
+            slideshowTimer = null;
+        }
+    }
+
+    function resetSlideshow() {
+        stopSlideshow();
+        startSlideshow();
+    }
+
+    async function updateHeroLogic(changeBg, transitionOverride, date, lunar) {
+        // 當次資料日期對應的季節
+        const targetSeason = getSeason(date);
+        // 如果季節改變了，重新探測該季節的圖庫
+        if (targetSeason !== _requestedSeason) {
+            _requestedSeason = targetSeason;
+            await detectHeroImages(targetSeason);
+            return; // detectHeroImages 會觸發 updateHero
+        }
+
+        const festival = lunar.getFestival();
+        const term = lunar.getJieQi();
+        const specialName = festival || term;
+
+        let finalUrl = null;
+
+        // Logic A: Festival/Term Multi-Image Support (Sequential Probing)
+        if (specialName) {
+            if (specialName !== _currentSpecialName) {
+                _currentSpecialName = specialName;
+                _specialHeroList = [];
+                _specialHeroIdx = 0;
+
+                const exts = [".png", ".webp", ".jpg"];
+
+                // 1. Probe Base Name
+                let baseFound = false;
+                for (const ext of exts) {
+                    const src = `${BASE_HERO_DIR}${targetSeason}/${specialName}${ext}`;
+                    const exists = await checkImageExists(src);
+                    if (exists) {
+                        _specialHeroList.push(src);
+                        baseFound = true;
+                        // We found one format, we stop checking other formats for SAME base name to avoid duplicates?
+                        // Or we allow multiple formats? Usually one format per image.
+                        // Let's assume one.
+                        break;
+                    }
+                }
+
+                // 2. If Base Found, Probe Numbered Variants (1..5)
+                // If Base NOT found, we skip numbered variants to avoid 404 storms.
+                if (baseFound) {
+                    for (let i = 1; i <= 5; i++) {
+                        let variantFound = false;
+                        for (const ext of exts) {
+                            const src = `${BASE_HERO_DIR}${targetSeason}/${specialName}${i}${ext}`;
+                            const exists = await checkImageExists(src);
+                            if (exists) {
+                                _specialHeroList.push(src);
+                                variantFound = true;
+                                break;
+                            }
+                        }
+                        if (!variantFound) break; // Break if "Name1" missing, don't check "Name2"
+                    }
+                }
+            }
+
+            if (_specialHeroList.length > 0) {
+                if (changeBg) {
+                    _specialHeroIdx =
+                        (_specialHeroIdx + 1) % _specialHeroList.length;
+                }
+                finalUrl = _specialHeroList[_specialHeroIdx];
+            }
+        } else {
+            _currentSpecialName = null;
+            _specialHeroList = [];
+        }
+
+        // 邏輯 B：普通日子，或該節慶沒圖，使用數字圖庫
+        if (!finalUrl && heroList.length > 0) {
+            if (changeBg) {
+                _heroIdx = (_heroIdx + 1) % heroList.length;
+            }
+            finalUrl = heroList[_heroIdx];
+        }
+
+        if (finalUrl) {
+            let transType = "fade";
+            if (changeBg) {
+                transType = transitionOverride || "slide";
+            }
+            setHeroBackground(finalUrl, transType);
+        }
+    }
+
+    // Expose functions globally for event handlers if needed, or attach events directly
+    // Ideally we use Custom Events for communication
+    window.addEventListener("hero-update-request", (e) => {
+        const { date, lunar, changeBg, transitionOverride } = e.detail;
+        updateHeroLogic(changeBg, transitionOverride, date, lunar);
+    });
+
+    window.addEventListener("slideshow-control", (e) => {
+        const { action } = e.detail;
+        if (action === "start") startSlideshow();
+        if (action === "stop") stopSlideshow();
+        if (action === "check") {
+            // Check logic requires knowing panel/grid state.
+            // Better to let main logic decide when to start/stop based on state changes.
+        }
+    });
+
+    // Initialize
+    const season = getSeason(new Date());
+    detectHeroImages(season);
+
+    // Event Listeners for UI
+    document.getElementById("btnChangeImage").onclick = () => {
+        // Trigger update with slide effect
+        window.dispatchEvent(
+            new CustomEvent("hero-update-required", {
+                detail: {
+                    changeBg: true,
+                    transitionOverride: "slide-from-right",
+                },
+            }),
+        );
+        window.dispatchEvent(
+            new CustomEvent("close-panels", { detail: { showGrid: false } }),
+        );
+
+        // Remove setTimeout. Let slideshow-control event handle active state.
+    };
+
+    document.getElementById("btnPrevHero").onclick = () => switchHero(-1);
+    document.getElementById("btnNextHero").onclick = () => switchHero(1);
+
+    document.getElementById("btnYearMonth").onclick = () =>
+        window.dispatchEvent(
+            new CustomEvent("toggle-panel", { detail: "yearMonth" }),
+        );
+    document.getElementById("btnDay").onclick = () =>
+        window.dispatchEvent(new CustomEvent("toggle-grid"));
+
+    // Listen for UI state changes to toggle bottom controls & button states
+    let isYearMonthOpen = false;
+
+    window.addEventListener("toggle-grid-view", (e) => {
+        const { show } = e.detail;
+        const btnYM = document.getElementById("btnYearMonth");
+        if (show) {
+            bottomControls.classList.add("hidden");
+            document.getElementById("btnDay").classList.add("active");
+            document
+                .getElementById("btnChangeImage")
+                .classList.remove("active");
+            btnYM.classList.remove("active");
+            btnYM.style.display = "flex"; // Ensure visible in calendar mode
+            isYearMonthOpen = false;
+        } else {
+            // Logic for hiding grid controls is handled by slideshow-control mainly or other events
+            document.getElementById("btnDay").classList.remove("active");
+        }
+    });
+
+    window.addEventListener("render-panels", (e) => {
+        bottomControls.classList.add("hidden");
+        const btnYM = document.getElementById("btnYearMonth");
+        const { type } = e.detail || {};
+
+        if (type === "yearMonth") {
+            btnYM.style.display = "flex"; // Show in yearMonth selection
+            btnYM.classList.add("active");
+            isYearMonthOpen = true;
+        } else if (type === "today") {
+            btnYM.style.display = "none"; // Hide on Welcome/Today screen
+            btnYM.classList.remove("active");
+            isYearMonthOpen = false;
+        }
+
+        document.getElementById("btnDay").classList.remove("active");
+        document.getElementById("btnChangeImage").classList.remove("active");
+    });
+
+    window.addEventListener("close-panels-view", () => {
+        // Panels closed.
+        document.getElementById("btnYearMonth").classList.remove("active");
+        isYearMonthOpen = false;
+        // Don't show bottom controls yet; let slideshow-control or subsequent grid event decide
+    });
+
+    window.addEventListener("slideshow-control", (e) => {
+        const { action } = e.detail;
+        const btnYM = document.getElementById("btnYearMonth");
+
+        if (action === "start") {
+            startSlideshow();
+            // Start Slideshow means View Image Mode -> Show Controls, Light up Image Button
+            bottomControls.classList.remove("hidden");
+            document.getElementById("btnChangeImage").classList.add("active");
+
+            // Hide Year/Month selection in View Image mode
+            btnYM.style.display = "none";
+
+            // Ensure others are off
+            document.getElementById("btnDay").classList.remove("active");
+            btnYM.classList.remove("active");
+        }
+        if (action === "stop") {
+            stopSlideshow();
+            // Stop Slideshow means we are in Grid or Panel mode.
+            // Just ensure Image button is off.
+            document
+                .getElementById("btnChangeImage")
+                .classList.remove("active");
+
+            // Show Year/Month selection when returning from View Image mode
+            btnYM.style.display = "flex";
+
+            // Should we hide bottom controls?
+            // Usually Yes. If slideshow stops, we are likely reading content.
+            bottomControls.classList.add("hidden");
+        }
+    });
+
+    // PWA Install
+    let deferredPrompt;
+    const installBtn = document.getElementById("installBtn");
+    window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installBtn) installBtn.style.display = "block";
+    });
+    if (installBtn) {
+        installBtn.addEventListener("click", async () => {
+            if (deferredPrompt) {
+                await deferredPrompt.prompt();
+                deferredPrompt = null;
+                installBtn.style.display = "none";
+            }
+        });
+    }
+</script>

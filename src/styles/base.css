@@ -1,0 +1,61 @@
+/* Base Styles: Reset, Variables, Layout Structure */
+:root {
+    /* V2 Color Palette */
+    --primary-red: #C41E3A;
+    /* 宮牆紅 */
+    --ink-black: #2C2C2C;
+    /* 墨黑 */
+    --paper-white: #FDFBF7;
+    /* 紙白 */
+    --text-gray: #666666;
+    --border-color: rgba(0, 0, 0, 0.05);
+
+    /* Typography */
+    --font-serif: 'Noto Serif TC', serif;
+    --font-sans: 'Microsoft JhengHei', sans-serif;
+
+    /* Dimensions - V4 Full Screen */
+    --hero-height: 100vh;
+    --grid-height: 85vh;
+}
+
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+    font-family: var(--font-serif);
+    background-color: #f2f2f2;
+    /* Desktop background */
+    color: var(--ink-black);
+    overscroll-behavior: none;
+}
+
+/* App Container - Mobile Panel Constraint */
+.app-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    height: 100dvh;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--paper-white);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
