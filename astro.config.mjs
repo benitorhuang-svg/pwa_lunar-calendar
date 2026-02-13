@@ -13,7 +13,7 @@ export default defineConfig({
             injectRegister: 'script',
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,mp3}'],
-                maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
+                maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB limit to support high-quality audio
             },
             manifest: {
                 name: "農民曆 PWA",
