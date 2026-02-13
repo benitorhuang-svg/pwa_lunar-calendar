@@ -202,7 +202,7 @@
      * @returns {{ current: string, next: string, daysToNext: number }}
      */
     function getSolarTermPeriod(date) {
-        const y = date.getFullYear(), m = date.getMonth() + 1, d = date.getDate();
+        const y = date.getFullYear();
         const { termList } = buildTermCache(y);
         const prevList = buildTermCache(y - 1).termList;
         const nextList = buildTermCache(y + 1).termList;

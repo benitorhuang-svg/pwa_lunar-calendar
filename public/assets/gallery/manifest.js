@@ -25,3 +25,7 @@ const GALLERY_MANIFEST = {
     "2.webp"
   ]
 };
+
+if (typeof window !== 'undefined') {
+  window.GALLERY_MANIFEST = GALLERY_MANIFEST;
+}

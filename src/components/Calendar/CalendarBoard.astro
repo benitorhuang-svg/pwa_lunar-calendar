@@ -37,7 +37,6 @@
     const calendarTitle = document.getElementById("calendarTitle");
     const calendarSection = document.getElementById("calendarSection");
     const SWIPE_THRESHOLD_PX = 50;
-    const LONG_PRESS_MS = 600;
 
     // State (Received via props/attributes or initialized here if self-contained)
     // For now we assume main orchestrator passes state, or we manage local state and emit changes.
@@ -45,7 +44,32 @@
     // Actually, to fully componentize, CalendarBoard should render based on inputs.
     // But since we are using Vanilla JS (no React/Vue), we update DOM imperatively.
 
+    let _prevRenderedMonth = null;
+    let _prevRenderedYear = null;
+
     function renderCalendar(year, month, today, selectedDay = null) {
+        // Determine animation direction
+        let animationClass = "";
+        if (_prevRenderedMonth !== null) {
+            const currentTotal = year * 12 + month;
+            const prevTotal = _prevRenderedYear * 12 + _prevRenderedMonth;
+            if (currentTotal > prevTotal)
+                animationClass = "animate-slide-right";
+            else if (currentTotal < prevTotal)
+                animationClass = "animate-slide-left";
+        }
+        _prevRenderedMonth = month;
+        _prevRenderedYear = year;
+
+        // Apply fade-out before rendering new content?
+        // Actually, let's just apply the animation to the new content.
+        grid.className = "days-grid"; // Reset
+        if (animationClass) {
+            grid.classList.add(animationClass);
+            // Remove class after animation ends to allow re-trigger
+            grid.onanimationend = () => grid.classList.remove(animationClass);
+        }
+
         grid.textContent = "";
         const fragment = document.createDocumentFragment();
         const firstDay = new Date(year, month, 1);
@@ -69,8 +93,6 @@
         }
 
         grid.appendChild(fragment);
-
-        // Update Title - Handled by separate event mostly, but good to double check
     }
 
     function createDayCell(year, month, day, isOtherMonth, today, selectedDay) {
@@ -134,7 +156,6 @@
     }
 
     // Event Listeners
-    let longPressTimer = null;
     let longPressFired = false;
 
     grid.addEventListener("click", (e) => {
@@ -226,18 +247,23 @@
     grid.addEventListener("pointerleave", cancelLongPress);
     */
 
+    // eslint-disable-next-line no-unused-vars
     async function handleLongPress(date, lunar) {
         const title = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate()}`;
         const text = `農曆 ${lunar.getMonthInChinese()}${lunar.getDayInChinese()}`;
         if (navigator.share) {
             try {
                 await navigator.share({ title, text });
-            } catch {}
+            } catch (e) {
+                console.error("Share failed", e);
+            }
         } else if (navigator.clipboard) {
             try {
                 await navigator.clipboard.writeText(`${title} ${text}`);
                 alert("已複製日期資訊到剪貼簿");
-            } catch {}
+            } catch (e) {
+                console.error("Clipboard copy failed", e);
+            }
         }
     }
 

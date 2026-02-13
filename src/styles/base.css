@@ -3,16 +3,21 @@
     /* V2 Color Palette */
     --primary-red: #C41E3A;
     /* 宮牆紅 */
+    --gold-accent: #D4AF37;
+    /* 金色 */
+    --gold-glow: rgba(212, 175, 55, 0.4);
     --ink-black: #2C2C2C;
     /* 墨黑 */
     --paper-white: #FDFBF7;
     /* 紙白 */
     --text-gray: #666666;
-    --border-color: rgba(0, 0, 0, 0.05);
+    --border-color: rgba(255, 255, 255, 0.2);
+    --glass-background: rgba(255, 255, 255, 0.72);
+    --panel-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 
     /* Typography */
     --font-serif: 'Noto Serif TC', serif;
-    --font-sans: 'Microsoft JhengHei', sans-serif;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 
     /* Dimensions - V4 Full Screen */
     --hero-height: 100vh;

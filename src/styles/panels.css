@@ -144,21 +144,21 @@
 
 .detail-sub {
     font-size: 1.05rem;
-    opacity: 0.7;
+    opacity: 0.8;
     margin-bottom: 8px;
     color: var(--ink-black);
+    font-weight: 500;
 }
 
 .detail-yiji {
     display: flex;
-    gap: 40px;
+    gap: 30px;
     align-items: flex-start;
     justify-content: center;
-    padding: 5px 0;
+    padding: 15px 0 5px 0;
     position: relative;
-    padding-top: 15px;
-    margin-top: 10px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    margin-top: 15px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* Vertical Divider for Yi/Ji */
@@ -184,16 +184,20 @@
 
 .yiji-label {
     grid-column: 1 / -1;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    margin-bottom: 5px;
-    color: #2e7d32;
-    /* Yi color default */
+    margin-bottom: 8px;
+    color: #388E3C;
+    /* Darker Green */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .yiji-label--bad {
-    color: #c62828;
-    /* Ji color */
+    color: #D32F2F;
+    /* Darker Red */
 }
 
 .tag {

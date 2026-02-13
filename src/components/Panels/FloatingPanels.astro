@@ -102,12 +102,13 @@
         panelToday.innerHTML = `
     <div class="detail-content">
         <div class="detail-header">${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日</div>
-        <div class="detail-sub">農曆 ${zodiac} · ${monthText}月${dayText} · ${termPeriod.current}～${termPeriod.next}</div>
-        <div class="detail-sub">${ganzhi}年 · ${monthGZ}月 · ${dayGZ}日 · ${jianchu}日（${luck}）</div>
+        <div class="detail-sub" style="color:var(--gold-accent)">${zodiac}年 · ${monthText}月${dayText}</div>
+        <div class="detail-sub" style="font-size:0.9rem; opacity:0.6">${ganzhi}年 · ${monthGZ}月 · ${dayGZ}日</div>
+        <div class="detail-sub" style="font-size:0.95rem">${jianchu}日 · ${luck} · ${termPeriod.current}～${termPeriod.next}</div>
         ${festivalHtml}
         <div class="detail-yiji">
             <div class="tag-list">
-                <span class="yiji-label yiji-label--bad">忌</span>
+                <span class="yiji-label yiji-label--bad"><span>🚫</span> 忌</span>
                 ${ji
                     .slice(0, 6)
                     .map((t) => `<span class="tag bad-styled">${t}</span>`)
@@ -115,7 +116,7 @@
                 ${ji.length === 0 ? '<span class="tag bad-styled">諸事不宜</span>' : ""}
             </div>
             <div class="tag-list">
-                <span class="yiji-label">宜</span>
+                <span class="yiji-label"><span>✅</span> 宜</span>
                 ${yi
                     .slice(0, 6)
                     .map((t) => `<span class="tag good">${t}</span>`)
@@ -131,9 +132,6 @@
             e.detail;
 
         if (type === "yearMonth") {
-            const todayDate = new Date(today); // Reconstruct directly? Passed as timestamp or string?
-            // Better to assume today is available or passed as timestamp
-            // For simplicity, re-instantiate today here if needed, or rely on passed object
             const todayObj = new Date(today);
             renderYearMonthPanel(
                 selectedYear,

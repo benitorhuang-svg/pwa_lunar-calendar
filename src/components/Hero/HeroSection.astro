@@ -4,6 +4,14 @@
 
 <div id="heroBgContainer"></div>
 
+<!-- Vertical Traditional Info -->
+<div class="vertical-info" id="verticalInfo">
+    <div class="v-text v-year" id="vYear">乙巳年</div>
+    <div class="v-text v-month" id="vMonth">正月</div>
+    <div class="v-divider"></div>
+    <div class="v-text v-term" id="vTerm">立春</div>
+</div>
+
 <header class="hero-section" id="heroSection">
     <!-- Install Button -->
     <button id="installBtn">安裝</button>
@@ -35,14 +43,12 @@
     const BASE_HERO_DIR = "assets/gallery/";
     let heroList = [];
     let _heroIdx = 0;
-    let _currentSeason = null; // last successfully loaded folder
     let _requestedSeason = null; // last season we tried to load
     let _currentSpecialName = null;
     let _specialHeroList = [];
     let _specialHeroIdx = 0;
     let slideshowTimer = null;
     const SLIDESHOW_INTERVAL_MS = 10000;
-    const ACTIVE_FEEDBACK_MS = 300;
 
     // DOM Elements
     const heroBgContainer = document.getElementById("heroBgContainer");
@@ -102,7 +108,7 @@
                         );
                     }
                 }
-            } catch (e) {
+            } catch {
                 // Expected fail on file:// without local server
             }
         }
@@ -131,7 +137,9 @@
                             i++;
                             break;
                         }
-                    } catch (e) {}
+                    } catch {
+                        // Ignore
+                    }
                 }
                 if (!found) break;
             }
@@ -143,7 +151,7 @@
                 `[Hero] No images in ${season}, falling back to default.`,
             );
             await detectHeroImages("default", true);
-            if (!isFallback) _currentSeason = season; // Keep target season to prevent re-trigger
+            if (!isFallback) /* keep requested season (no-op) */ null;
             return;
         }
 
@@ -183,20 +191,17 @@
             resetSlideshow();
         }
 
-        let list = [];
-        let idx = 0;
-        let isSpecial = false;
-
         // Determine which list is active
+        let list;
+        let idx;
+        let isSpecial = false;
         if (_specialHeroList && _specialHeroList.length > 0) {
             list = _specialHeroList;
             idx = _specialHeroIdx;
             isSpecial = true;
-        } else if (heroList && heroList.length > 0) {
+        } else {
             list = heroList;
             idx = _heroIdx;
-        } else {
-            return; // No images
         }
 
         // Calculate new index
@@ -406,6 +411,18 @@
             }
             setHeroBackground(finalUrl, transType);
         }
+
+        // Update Vertical Info
+        const vYear = document.getElementById("vYear");
+        const vMonth = document.getElementById("vMonth");
+        const vTerm = document.getElementById("vTerm");
+
+        if (vYear) vYear.innerText = `${lunar.getYearInGanZhi()}年`;
+        if (vMonth) vMonth.innerText = `${lunar.getMonthInChinese()}月`;
+        if (vTerm) {
+            vTerm.innerText = specialName || "";
+            vTerm.style.opacity = specialName ? "1" : "0";
+        }
     }
 
     // Expose functions globally for event handlers if needed, or attach events directly
@@ -458,7 +475,6 @@
         window.dispatchEvent(new CustomEvent("toggle-grid"));
 
     // Listen for UI state changes to toggle bottom controls & button states
-    let isYearMonthOpen = false;
 
     window.addEventListener("toggle-grid-view", (e) => {
         const { show } = e.detail;
@@ -471,7 +487,6 @@
                 .classList.remove("active");
             btnYM.classList.remove("active");
             btnYM.style.display = "flex"; // Ensure visible in calendar mode
-            isYearMonthOpen = false;
         } else {
             // Logic for hiding grid controls is handled by slideshow-control mainly or other events
             document.getElementById("btnDay").classList.remove("active");
@@ -486,11 +501,9 @@
         if (type === "yearMonth") {
             btnYM.style.display = "flex"; // Show in yearMonth selection
             btnYM.classList.add("active");
-            isYearMonthOpen = true;
         } else if (type === "today") {
             btnYM.style.display = "none"; // Hide on Welcome/Today screen
             btnYM.classList.remove("active");
-            isYearMonthOpen = false;
         }
 
         document.getElementById("btnDay").classList.remove("active");
@@ -500,7 +513,6 @@
     window.addEventListener("close-panels-view", () => {
         // Panels closed.
         document.getElementById("btnYearMonth").classList.remove("active");
-        isYearMonthOpen = false;
         // Don't show bottom controls yet; let slideshow-control or subsequent grid event decide
     });
 
