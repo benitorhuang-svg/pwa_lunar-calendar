@@ -48,7 +48,7 @@
 .calendar-section .nav-group-right {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     margin-bottom: 8px;
     position: relative;
     pointer-events: auto;

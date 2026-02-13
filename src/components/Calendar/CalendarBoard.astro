@@ -5,19 +5,6 @@
 <main class="calendar-section hidden" id="calendarSection">
     <!-- Navigation Group (Title, Prev/Next) -->
     <div class="nav-group-right">
-        <button class="nav-btn prev" id="btnPrevMonth" title="上個月">
-            <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><polyline points="15 18 9 12 15 6"></polyline></svg
-            >
-        </button>
         <div class="nav-center-group">
             <div
                 class="title-row"
@@ -29,19 +16,6 @@
                 <div id="calendarTitle" class="calendar-title"></div>
             </div>
         </div>
-        <button class="nav-btn next" id="btnNextMonth" title="下個月">
-            <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><polyline points="9 18 15 12 9 6"></polyline></svg
-            >
-        </button>
     </div>
 
     <!-- Week Header -->
@@ -248,10 +222,6 @@
         { passive: true },
     );
 
-    document.getElementById("btnPrevMonth").onclick = () =>
-        window.dispatchEvent(new CustomEvent("navigate-month", { detail: -1 }));
-    document.getElementById("btnNextMonth").onclick = () =>
-        window.dispatchEvent(new CustomEvent("navigate-month", { detail: 1 }));
     document.getElementById("btnTodayQuick").onclick = () =>
         window.dispatchEvent(new CustomEvent("go-to-today"));
 

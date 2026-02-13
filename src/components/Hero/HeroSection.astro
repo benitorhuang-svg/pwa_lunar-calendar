@@ -59,6 +59,21 @@
             >
             <span>映畫</span>
         </button>
+        <button class="dock-item main-btn group-calendar" id="btnYearMonth">
+            <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><circle cx="12" cy="12" r="10"></circle><polyline
+                    points="12 6 12 12 16 14"></polyline></svg
+            >
+            <span class="ym-text">年月</span>
+        </button>
         <button class="dock-item main-btn group-calendar" id="btnDay">
             <svg
                 viewBox="0 0 24 24"
@@ -78,21 +93,6 @@
                 ></line></svg
             >
             <span>日曆</span>
-        </button>
-        <button class="dock-item main-btn group-calendar" id="btnYearMonth">
-            <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><circle cx="12" cy="12" r="10"></circle><polyline
-                    points="12 6 12 12 16 14"></polyline></svg
-            >
-            <span class="ym-text">年月</span>
         </button>
         <div class="dock-divider"></div>
         <button
@@ -538,8 +538,26 @@
         // Remove setTimeout. Let slideshow-control event handle active state.
     };
 
-    document.getElementById("btnPrevHero").onclick = () => switchHero(-1);
-    document.getElementById("btnNextHero").onclick = () => switchHero(1);
+    function handleDockNavigation(direction) {
+        const isCalendarActive = document
+            .getElementById("btnDay")
+            .classList.contains("active");
+
+        if (isCalendarActive) {
+            // Calendar Mode: Navigate Months
+            window.dispatchEvent(
+                new CustomEvent("navigate-month", { detail: direction }),
+            );
+        } else {
+            // Artwork Mode: Navigate Images
+            switchHero(direction);
+        }
+    }
+
+    document.getElementById("btnPrevHero").onclick = () =>
+        handleDockNavigation(-1);
+    document.getElementById("btnNextHero").onclick = () =>
+        handleDockNavigation(1);
 
     document.getElementById("btnYearMonth").onclick = () =>
         window.dispatchEvent(
