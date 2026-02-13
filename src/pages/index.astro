@@ -192,9 +192,6 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
                         },
                     }),
                 );
-                document
-                    .querySelector(".app-container")
-                    .classList.add("panel-open");
             }
             checkAutoSlideshow();
         });
@@ -203,9 +200,6 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
             const { showGrid } = e.detail || {};
             activePanel = null;
             window.dispatchEvent(new CustomEvent("close-panels-view"));
-            document
-                .querySelector(".app-container")
-                .classList.remove("panel-open");
             if (showGrid !== undefined) {
                 window.dispatchEvent(
                     new CustomEvent("toggle-grid-view", {
@@ -284,9 +278,6 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
                     },
                 }),
             );
-            document
-                .querySelector(".app-container")
-                .classList.add("panel-open");
         });
 
         window.addEventListener("toggle-grid", () => {
@@ -301,17 +292,6 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
                     detail: { show: !isShowing },
                 }),
             );
-
-            if (!isShowing) {
-                document
-                    .querySelector(".app-container")
-                    .classList.add("panel-open");
-            } else {
-                document
-                    .querySelector(".app-container")
-                    .classList.remove("panel-open");
-            }
-
             checkAutoSlideshow();
         });
 

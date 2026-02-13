@@ -4,14 +4,6 @@
 
 <div id="heroBgContainer"></div>
 
-<!-- Vertical Traditional Info -->
-<div class="vertical-info" id="verticalInfo">
-    <div class="v-text v-year" id="vYear">乙巳年</div>
-    <div class="v-text v-month" id="vMonth">正月</div>
-    <div class="v-divider"></div>
-    <div class="v-text v-term" id="vTerm">立春</div>
-</div>
-
 <header class="hero-section" id="heroSection">
     <!-- Install Button -->
     <button id="installBtn">安裝</button>
@@ -410,18 +402,6 @@
                 transType = transitionOverride || "slide";
             }
             setHeroBackground(finalUrl, transType);
-        }
-
-        // Update Vertical Info
-        const vYear = document.getElementById("vYear");
-        const vMonth = document.getElementById("vMonth");
-        const vTerm = document.getElementById("vTerm");
-
-        if (vYear) vYear.innerText = `${lunar.getYearInGanZhi()}年`;
-        if (vMonth) vMonth.innerText = `${lunar.getMonthInChinese()}月`;
-        if (vTerm) {
-            vTerm.innerText = specialName || "";
-            vTerm.style.opacity = specialName ? "1" : "0";
         }
     }
 
