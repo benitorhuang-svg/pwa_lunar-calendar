@@ -11,8 +11,9 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
         <div class="loading-content">
             <div class="loading-text">農民曆</div>
             <div class="loading-bar-container">
-                <div class="loading-bar"></div>
+                <div class="loading-bar" id="loadingBar"></div>
             </div>
+            <div class="loading-percent" id="loadingPercent">0%</div>
         </div>
     </div>
 
@@ -24,8 +25,7 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(15, 15, 26, 0.6); /* Semi-transparent */
-            backdrop-filter: blur(8px); /* Nice blur over the background */
+            background-color: rgba(0, 0, 0, 0.85);
             z-index: 99999;
             display: flex;
             align-items: center;
@@ -42,9 +42,9 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
 
         .loading-text {
             font-family: "Zhi Mang Xing", cursive;
-            font-size: 3.5rem; /* Adjusted for 3 characters */
+            font-size: 3.5rem;
             letter-spacing: 0.5rem;
-            color: #d4af37; /* Gold */
+            color: #d4af37;
             opacity: 0.8;
             animation: pulseText 2s infinite ease-in-out;
             text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
@@ -52,19 +52,26 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
         }
 
         .loading-bar-container {
-            width: 120px; /* Wider for balance */
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
+            width: 200px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
             overflow: hidden;
         }
 
         .loading-bar {
-            width: 100%;
+            width: 0%;
             height: 100%;
-            background: #d4af37;
-            transform: translateX(-100%);
-            animation: loadProgress 1.5s infinite ease-in-out;
+            background: linear-gradient(90deg, #d4af37, #f0d060);
+            border-radius: 3px;
+            transition: width 0.3s ease-out;
+        }
+
+        .loading-percent {
+            font-family: "Playfair Display", serif;
+            font-size: 1rem;
+            color: rgba(212, 175, 55, 0.7);
+            letter-spacing: 0.1rem;
         }
 
         @keyframes pulseText {
@@ -79,18 +86,6 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
             }
         }
 
-        @keyframes loadProgress {
-            0% {
-                transform: translateX(-100%);
-            }
-            50% {
-                transform: translateX(0%);
-            }
-            100% {
-                transform: translateX(100%);
-            }
-        }
-
         /* App Reveal State */
         body.app-loaded #loadingOverlay {
             opacity: 0;
@@ -98,7 +93,6 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
         }
 
         /* Initial Hidden State for UI Elements only (Background stays visible) */
-        /* We hide the complex UI parts until loaded to prevent FOUC */
         .hero-dock-wrapper,
         .hero-header,
         .suspension-panel,
@@ -123,44 +117,203 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
     </div>
 
     <script is:inline>
+        // ============================================================
         // Resource Loading & Splash Screen Logic
+        // MODE: dev (本地端) — 實際追蹤資源載入進度百分比
+        // TODO [deploy]: GitHub Pages 部署時可調整 fallback 邏輯
+        // ============================================================
         (function () {
             let isLoaded = false;
+            const loadingBar = document.getElementById("loadingBar");
+            const loadingPercent = document.getElementById("loadingPercent");
+
+            // --- 資源追蹤器 ---
+            // 權重分配: scripts 20%, fonts 20%, hero images 50%, audio 10%
+            const progress = {
+                scripts: false,   // 20%
+                fonts: false,     // 20%
+                heroFirst: false, // 30% (第一張背景圖)
+                heroAll: false,   // 20% (其餘背景圖預載)
+                audio: false,     // 10%
+            };
+            const weights = {
+                scripts: 20,
+                fonts: 20,
+                heroFirst: 30,
+                heroAll: 20,
+                audio: 10,
+            };
+
+            function calcPercent() {
+                let total = 0;
+                for (const key in progress) {
+                    if (progress[key]) total += weights[key];
+                }
+                return total;
+            }
+
+            function updateUI() {
+                const pct = calcPercent();
+                if (loadingBar) loadingBar.style.width = pct + "%";
+                if (loadingPercent) loadingPercent.textContent = pct + "%";
+
+                if (pct >= 100) {
+                    revealApp();
+                }
+            }
+
+            function markDone(key) {
+                if (!progress[key]) {
+                    progress[key] = true;
+                    console.log("[Loader] ✓ " + key + " (" + calcPercent() + "%)");
+                    updateUI();
+                }
+            }
 
             function revealApp() {
                 if (isLoaded) return;
                 isLoaded = true;
 
-                // Add class to fade out overlay and fade in app
                 document.body.classList.add("app-loaded");
 
-                // Remove overlay from DOM after transition strictly
                 setTimeout(() => {
                     const overlay = document.getElementById("loadingOverlay");
                     if (overlay) overlay.style.display = "none";
                 }, 1000);
             }
 
-            window.addEventListener("load", () => {
-                // Check critical resources
-                const checkResources = setInterval(() => {
-                    const fontsReady = document.fonts.status === "loaded";
-                    const scriptsReady =
-                        typeof Lunar !== "undefined" &&
-                        typeof GALLERY_MANIFEST !== "undefined";
+            // --- 1. 檢查 Scripts (Lunar + GALLERY_MANIFEST) ---
+            function checkScripts() {
+                if (typeof Lunar !== "undefined" && typeof GALLERY_MANIFEST !== "undefined") {
+                    markDone("scripts");
+                    return true;
+                }
+                return false;
+            }
 
-                    if (fontsReady && scriptsReady) {
-                        clearInterval(checkResources);
-                        // Slight delay for aesthetic smoothness (seeing the logo for a sec)
-                        setTimeout(revealApp, 600);
+            // --- 2. 檢查 Fonts ---
+            function checkFonts() {
+                if (document.fonts && document.fonts.status === "loaded") {
+                    markDone("fonts");
+                    return true;
+                }
+                return false;
+            }
+
+            // --- 3. 預載 Hero 圖片 ---
+            function preloadHeroImages() {
+                if (typeof GALLERY_MANIFEST === "undefined") return;
+
+                // 決定當季
+                const m = new Date().getMonth() + 1;
+                let season;
+                if (m >= 2 && m <= 4) season = "spring";
+                else if (m >= 5 && m <= 7) season = "summer";
+                else if (m >= 8 && m <= 10) season = "autumn";
+                else season = "winter";
+
+                const baseDir = window.APP_BASE_URL || "/";
+                const galleryDir = (baseDir + "assets/gallery/" + season + "/").replace(/\/+/g, "/");
+
+                let imageList = (GALLERY_MANIFEST[season] || []).map(f => galleryDir + f);
+                // fallback to default
+                if (imageList.length === 0) {
+                    const defaultDir = (baseDir + "assets/gallery/default/").replace(/\/+/g, "/");
+                    imageList = (GALLERY_MANIFEST["default"] || []).map(f => defaultDir + f);
+                }
+
+                if (imageList.length === 0) {
+                    markDone("heroFirst");
+                    markDone("heroAll");
+                    return;
+                }
+
+                // 載入第一張 (權重最高)
+                const firstImg = new Image();
+                firstImg.onload = firstImg.onerror = () => {
+                    markDone("heroFirst");
+                };
+                firstImg.src = imageList[0];
+
+                // 載入其餘
+                if (imageList.length <= 1) {
+                    markDone("heroAll");
+                } else {
+                    let remaining = imageList.length - 1;
+                    let loaded = 0;
+                    for (let i = 1; i < imageList.length; i++) {
+                        const img = new Image();
+                        img.onload = img.onerror = () => {
+                            loaded++;
+                            if (loaded >= remaining) {
+                                markDone("heroAll");
+                            }
+                        };
+                        img.src = imageList[i];
                     }
-                }, 100);
+                }
+            }
 
-                // Fallback safety net (3s max wait)
+            // --- 4. 預載 Audio ---
+            function preloadAudio() {
+                const baseDir = window.APP_BASE_URL || "/";
+                const audioFiles = [
+                    (baseDir + "assets/audio/ambient.mp3").replace(/\/+/g, "/"),
+                ];
+                // 只測試第一個音頻是否可載入
+                if (audioFiles.length === 0) {
+                    markDone("audio");
+                    return;
+                }
+                const audio = new Audio();
+                audio.preload = "auto";
+                // [dev] 本地端音頻載入通常很快
+                audio.oncanplaythrough = () => markDone("audio");
+                audio.onerror = () => markDone("audio"); // 即使失敗也不阻塞
+                audio.src = audioFiles[0];
+
+                // [dev] 音頻 fallback 超時 2 秒
+                setTimeout(() => markDone("audio"), 2000);
+            }
+
+            // --- 主邏輯 ---
+            window.addEventListener("load", () => {
+                // 立即檢查 scripts
+                if (!checkScripts()) {
+                    const si = setInterval(() => {
+                        if (checkScripts()) clearInterval(si);
+                    }, 50);
+                }
+
+                // 字體
+                if (!checkFonts()) {
+                    document.fonts.ready.then(() => markDone("fonts"));
+                    // fallback
+                    setTimeout(() => markDone("fonts"), 3000);
+                }
+
+                // 圖片 — 等 scripts ready 後才知道 manifest
+                const waitManifest = setInterval(() => {
+                    if (progress.scripts) {
+                        clearInterval(waitManifest);
+                        preloadHeroImages();
+                    }
+                }, 50);
+
+                // 音頻
+                preloadAudio();
+
+                // [dev] 安全網：最多等 8 秒強制進入
+                // TODO [deploy]: GitHub Pages 可能需要更長時間，可調整此值
                 setTimeout(() => {
-                    clearInterval(checkResources);
-                    revealApp();
-                }, 3000);
+                    for (const key in progress) {
+                        if (!progress[key]) {
+                            console.warn("[Loader] Force-completing: " + key);
+                            progress[key] = true;
+                        }
+                    }
+                    updateUI();
+                }, 8000);
             });
         })();
     </script>
@@ -501,38 +654,59 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
         // Init
         updateState();
 
-        // Boutique Entrance: Start in Welcome Mode
-        // 一進場立刻進入「歡迎/沉浸」狀態，避免 UI 閃爍
-        document.body.classList.add("initial-welcome");
-        window.dispatchEvent(
-            new CustomEvent("welcome-mode", { detail: { active: true } }),
-        );
+        // ============================================================
+        // Welcome Mode: 等待載入完成 (100%) 才進入歡迎頁面
+        // [dev] 本地端：監聽 body.app-loaded 確認資源已全部載入
+        // TODO [deploy]: GitHub Pages 部署時邏輯相同，無需調整
+        // ============================================================
+        function enterWelcomeMode() {
+            // 一進場立刻進入「歡迎/沉浸」狀態
+            document.body.classList.add("initial-welcome");
+            window.dispatchEvent(
+                new CustomEvent("welcome-mode", { detail: { active: true } }),
+            );
 
-        // 預設背景切換為「今日」
-        activePanel = "today";
-        window.dispatchEvent(
-            new CustomEvent("toggle-grid-view", { detail: { show: false } }),
-        );
+            activePanel = "today";
+            window.dispatchEvent(
+                new CustomEvent("toggle-grid-view", { detail: { show: false } }),
+            );
 
-        // 渲染今日宜忌面板 (歡迎畫面)
-        window.dispatchEvent(
-            new CustomEvent("render-panels", {
-                detail: {
-                    type: "today",
-                    selectedYear,
-                    selectedMonth,
-                    selectedDay,
-                    today,
-                },
-            }),
-        );
+            // 渲染今日宜忌面板 (歡迎畫面)
+            window.dispatchEvent(
+                new CustomEvent("render-panels", {
+                    detail: {
+                        type: "today",
+                        selectedYear,
+                        selectedMonth,
+                        selectedDay,
+                        today,
+                    },
+                }),
+            );
 
-        // 啟動背景圖片輪播，但此時尚未進入「映畫模式」的閒置監控
-        window.dispatchEvent(
-            new CustomEvent("slideshow-control", {
-                detail: { action: "start", isArtwork: false },
-            }),
-        );
+            // 啟動背景圖片輪播（非映畫模式）
+            window.dispatchEvent(
+                new CustomEvent("slideshow-control", {
+                    detail: { action: "start", isArtwork: false },
+                }),
+            );
+        }
+
+        // 當載入完成才進入歡迎頁面
+        if (document.body.classList.contains("app-loaded")) {
+            enterWelcomeMode();
+        } else {
+            const loadObserver = new MutationObserver((mutations) => {
+                for (const m of mutations) {
+                    if (m.attributeName === "class" && document.body.classList.contains("app-loaded")) {
+                        loadObserver.disconnect();
+                        enterWelcomeMode();
+                        break;
+                    }
+                }
+            });
+            loadObserver.observe(document.body, { attributes: true });
+        }
 
         // Listen from Hero
         window.addEventListener("request-hero-change", (e) => {

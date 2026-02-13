@@ -23,6 +23,16 @@ body.immersion-mode .suspension-panel {
     transition: opacity 0.8s ease;
 }
 
+/* Ensure the welcome "today" panel is hidden while the loading overlay is active.
+   This prevents the loading overlay and welcome card from appearing visually stacked.
+   The loading overlay adds `body.app-loaded` when loading completes; until then
+   keep the welcome panel hidden. */
+body:not(.app-loaded) .suspension-panel#panelToday {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
 /* 歡迎畫面特定顯示今日宜忌 */
 body.initial-welcome .suspension-panel#panelToday {
     display: flex !important;
