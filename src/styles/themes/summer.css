@@ -1,0 +1,77 @@
+/* 
+   Summer Season Theme - "Ocean Sky Haze" (海天霞 / Misty Blue)
+   Cool, airy, and transparent like summer breeze.
+   Enhanced with "Azure Glazed" (天青釉) texture for premium depth and clarity.
+*/
+
+.theme-summer {
+    /* Background & Texture - Azure Glaze */
+    --cal-bg: rgba(224, 255, 255, 0.9);
+    /* More opaque, porcelain-like */
+    --cal-inner-glow: rgba(0, 191, 255, 0.15);
+    /* Deep Sky Blue Tint */
+
+    /* Shadows - Deep Sea Depth */
+    --cal-shadow:
+        0 25px 60px rgba(0, 60, 90, 0.15),
+        /* Deeper navy shadow */
+        0 1px 2px rgba(255, 255, 255, 0.6) inset;
+
+    --cal-shadow-glow:
+        0 30px 70px rgba(72, 209, 204, 0.2),
+        /* Turquoise Glow */
+        0 0 50px rgba(224, 255, 255, 0.5);
+
+    /* Borders - Silver Ripple */
+    --cal-border: rgba(255, 255, 255, 0.5);
+    --cal-border-glow: rgba(0, 191, 255, 0.6);
+
+    /* Typography - Deep Abyss */
+    --cal-text: #002244;
+    /* Darker Navy */
+    --cal-lunar-text: #4682b4;
+    /* Steel Blue */
+    --cal-header-text: #001f3f;
+
+    /* Hero Text Color Override */
+    --hero-text-color: #002244;
+    --hero-bg-overlay: rgba(255, 255, 255, 0.85);
+
+    /* Panel Item Specifics */
+    --panel-item-bg: rgba(0, 100, 150, 0.05);
+    /* Very light blue tint */
+    --panel-border: rgba(135, 206, 250, 0.3);
+    --panel-divider: linear-gradient(90deg, transparent 0%, rgba(135, 206, 250, 0.3) 20%, rgba(135, 206, 250, 0.3) 80%, transparent 100%);
+
+    /* Interactive Elements - Ocean Gems */
+    --cal-nav-bg: rgba(255, 255, 255, 0.4);
+    --cal-nav-color: #0077be;
+
+    --cal-today-bg: linear-gradient(135deg, #00bfff 0%, #0077be 100%);
+    /* Ocean Gradient */
+    --cal-today-text: #fff;
+
+    --cal-term-color: #ff6347;
+    /* Tomato pop */
+
+    /* Panel Specifics */
+    --panel-accent: #00bfff;
+    --panel-side-bg: linear-gradient(to bottom, rgba(0, 191, 255, 0.1), transparent);
+
+    /* Glass Overrides */
+    --glass-blur: blur(25px);
+    --glass-saturation: saturate(120%);
+}
+
+/* Global Atmosphere Overrides - Summer */
+.theme-summer .suspension-panel {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 20px 50px rgba(0, 60, 90, 0.12), 0 0 20px rgba(255, 255, 255, 0.3) inset;
+}
+
+.theme-summer .nav-box.active {
+    background: linear-gradient(135deg, #e0ffff 0%, #b0e0e6 100%) !important;
+    color: #003366 !important;
+    box-shadow: 0 6px 18px rgba(0, 191, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}

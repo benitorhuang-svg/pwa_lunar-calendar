@@ -1,29 +1,52 @@
 /* 
    Natural Breeze Theme (Light/Default)
    A clear, comfortable, and pearl-like aesthetic for daily use.
+   Inspired by Rice Paper (Xuan Paper) and minimalist tranquility.
 */
 
-:root,
 .theme-light {
-    /* Background & Texture */
-    --cal-bg: rgba(255, 255, 255, 0.85);
-    --cal-inner-glow: rgba(255, 255, 255, 0.6);
-    --cal-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
-    --cal-border: rgba(0, 0, 0, 0.05);
+    /* Background & Texture - Xuan Paper */
+    --cal-bg: rgba(253, 251, 247, 0.85);
+    /* Off-white, paper-like */
+    --cal-inner-glow: rgba(255, 255, 255, 0.9);
 
-    /* Typography */
-    --cal-text: #333;
-    --cal-lunar-text: #999;
-    --cal-header-text: #999;
+    /* Shadows - Soft Daylight */
+    --cal-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.05),
+        0 1px 2px rgba(0, 0, 0, 0.02);
 
-    /* Interactive Elements */
-    --cal-nav-bg: rgba(0, 0, 0, 0.02);
-    --cal-nav-color: #888;
+    --cal-shadow-glow:
+        0 25px 60px rgba(0, 0, 0, 0.08),
+        0 0 40px rgba(255, 250, 240, 0.6);
+
+    /* Borders - Subtle Pencil Line */
+    --cal-border: rgba(0, 0, 0, 0.08);
+    --cal-border-glow: rgba(0, 0, 0, 0.15);
+
+    /* Typography - Ink Grinds */
+    --cal-text: #2c2c2c;
+    /* Soft Charcoal */
+    --cal-lunar-text: #6e6e6e;
+    /* Stone Gray */
+    --cal-header-text: #1a1a1a;
+    /* Dark Ink */
+
+    /* Interactive Elements - Vermilion Stamp */
+    --cal-nav-bg: rgba(0, 0, 0, 0.03);
+    --cal-nav-color: #555;
+
     --cal-today-bg: #c41e3a;
+    /* Traditional Seal Red */
     --cal-today-text: #fff;
-    --cal-term-color: #c41e3a;
+
+    --cal-term-color: #8b4513;
+    /* Saddle Brown */
 
     /* Panel Specifics */
     --panel-accent: #c41e3a;
-    --panel-side-bg: linear-gradient(to bottom, rgba(196, 30, 58, 0.05), transparent);
+    --panel-side-bg: linear-gradient(to bottom, rgba(196, 30, 58, 0.03), transparent);
+
+    /* Glass Overrides */
+    --glass-blur: blur(20px);
+    --glass-saturation: saturate(100%);
 }

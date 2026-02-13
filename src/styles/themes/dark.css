@@ -1,28 +1,56 @@
 /* 
    Midnight Glass Theme (Dark/Solemn)
    A deep, focused, and prestigious aesthetic for night or solemn festivals (Qingming).
+   Inspired by Obsidian and calm lake water at night.
 */
 
 .theme-dark {
-    /* Background & Texture */
-    --cal-bg: rgba(12, 12, 12, 0.95);
-    --cal-inner-glow: rgba(255, 255, 255, 0.05);
-    --cal-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
-    --cal-border: rgba(255, 255, 255, 0.12);
+    /* Background & Texture - Obsidian Glass */
+    --cal-bg: rgba(15, 15, 18, 0.88);
+    /* Deep Charcoal */
+    --cal-inner-glow: rgba(255, 255, 255, 0.03);
+    /* Moonlight Glint */
 
-    /* Typography */
-    --cal-text: #fff;
-    --cal-lunar-text: rgba(255, 255, 255, 0.4);
-    --cal-header-text: rgba(255, 255, 255, 0.3);
+    /* Shadows - Deep Void */
+    --cal-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        /* Heavy Shadow */
+        0 1px 1px rgba(255, 255, 255, 0.1);
+    /* Top Rim Light */
 
-    /* Interactive Elements */
-    --cal-nav-bg: rgba(255, 255, 255, 0.05);
-    --cal-nav-color: rgba(255, 255, 255, 0.6);
-    --cal-today-bg: linear-gradient(135deg, #e6d5a7 0%, #d4af37 100%);
+    --cal-shadow-glow:
+        0 35px 80px rgba(0, 0, 0, 0.8),
+        0 0 50px rgba(255, 255, 255, 0.05);
+    /* Soft Lunar Glow */
+
+    /* Borders - Moonlight Edge */
+    --cal-border: rgba(255, 255, 255, 0.1);
+    --cal-border-glow: rgba(255, 255, 255, 0.18);
+
+    /* Typography - Starlight */
+    --cal-text: #e0e0e0;
+    /* Off-White */
+    --cal-lunar-text: #a0a0a0;
+    /* Silver */
+    --cal-header-text: #ffffff;
+
+    /* Interactive Elements - Gold/Platinum */
+    --cal-nav-bg: rgba(255, 255, 255, 0.06);
+    --cal-nav-color: #d4af37;
+    /* Muted Gold */
+
+    --cal-today-bg: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+    /* Gold Foil */
     --cal-today-text: #1a1a1a;
-    --cal-term-color: #e6d5a7;
+
+    --cal-term-color: #e6e6fa;
+    /* Lavender Mist */
 
     /* Panel Specifics */
     --panel-accent: #d4af37;
-    --panel-side-bg: linear-gradient(to bottom, rgba(230, 213, 167, 0.12), transparent);
+    --panel-side-bg: linear-gradient(to bottom, rgba(212, 175, 55, 0.08), transparent);
+
+    /* Glass Overrides */
+    --glass-blur: blur(20px);
+    --glass-saturation: saturate(110%);
 }

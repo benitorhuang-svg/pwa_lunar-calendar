@@ -18,7 +18,8 @@
     /* Typography */
     --font-serif: 'Noto Serif TC', serif;
     --font-serif-num: 'Playfair Display', 'Noto Serif TC', serif;
-    /* Premium Numbers */
+    --font-calligraphy: 'Zhi Mang Xing', cursive;
+    /* Premium Numbers & Calligraphy */
     --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 
     /* Semantic Colors */

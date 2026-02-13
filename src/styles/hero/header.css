@@ -1,9 +1,8 @@
-/* Hero Header - Info Strip at Top Center */
+/* Hero Header - Magazine Editorial Style */
 .hero-header {
     position: absolute;
-    top: env(safe-area-inset-top, 20px);
-    left: 50%;
-    transform: translateX(-50%);
+    top: env(safe-area-inset-top, 16px);
+    left: 24px;
     z-index: 2100;
     pointer-events: none;
     transition: opacity 0.4s ease;
@@ -11,27 +10,70 @@
 
 .hero-info-strip {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 24px;
-    background:
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.07'/%3E%3C/svg%3E"),
-        rgba(20, 20, 20, 0.5);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 50px;
-    color: white;
-    font-family: var(--font-serif);
-    font-size: 0.9rem;
-    font-weight: 300;
-    letter-spacing: 0.12em;
+    align-items: baseline;
+    gap: 0;
+    padding: 0 20px;
+    /* Reduced vertical padding */
+    background: var(--hero-bg-overlay, rgba(0, 0, 0, 0.3));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.3));
+    /* Subtle white border */
+    border-radius: 30px;
+    color: var(--hero-text-color, #ffffff);
+    font-family: var(--font-serif-num);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    /* Soft shadow to separate from bg */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+#infoYear {
+    font-size: 1.1rem;
+    font-weight: 300;
+    opacity: 0.9;
+    letter-spacing: 0.05em;
+    margin-right: 12px;
+    position: relative;
+    font-style: italic;
+    /* Keep year slightly italic for style */
+}
+
+/* Vertical Separator after Year */
+#infoYear::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%) skewX(-10deg);
+    width: 1px;
+    height: 14px;
+    background-color: rgba(255, 255, 255, 0.8);
+    opacity: 0.8;
+}
+
+#infoMonth,
+#infoDay {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* Dot between Month and Day */
+#infoMonth::after {
+    content: '.';
+    margin: 0 4px;
+    font-weight: 400;
+    opacity: 0.8;
+    position: relative;
+    top: -2px;
 }
 
 .info-dot {
-    opacity: 0.5;
-    font-size: 0.7rem;
+    display: none;
+}
+
+.label {
+    display: none;
 }
 
 /* Nav Boxes (Year/Month/Day/Today) - Premium Pill Style */

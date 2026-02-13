@@ -34,9 +34,26 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
             const date = new Date(selectedYear, selectedMonth, selectedDay);
             const lunar = Lunar.fromDate(date);
             const festival = lunar.getFestival();
-            const lunarMonth = lunar._lunarMonth; // Lunar month: 1-12 from internal state
+            const lunarMonth =
+                typeof lunar.getMonth === "function"
+                    ? lunar.getMonth()
+                    : lunar._lunarMonth || date.getMonth() + 1;
 
-            let theme = "theme-light";
+            let theme;
+
+            // Seasonal Logic (Month-based)
+            const m = date.getMonth() + 1; // 1-12
+            if (m >= 2 && m <= 4) {
+                theme = "theme-spring";
+            } else if (m >= 5 && m <= 7) {
+                theme = "theme-summer";
+            } else if (m >= 8 && m <= 10) {
+                theme = "theme-autumn";
+            } else {
+                theme = "theme-winter";
+            }
+
+            // Festival Overrides
             // Lunar New Year / Year End Atmosphere (臘月 & 正月)
             if (
                 lunarMonth === 12 ||
@@ -55,6 +72,10 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
                     "theme-light",
                     "theme-dark",
                     "theme-festive",
+                    "theme-spring",
+                    "theme-summer",
+                    "theme-autumn",
+                    "theme-winter",
                 );
                 appContainer.classList.add(theme);
             }

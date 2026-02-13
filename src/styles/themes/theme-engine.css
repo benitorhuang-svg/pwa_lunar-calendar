@@ -4,13 +4,58 @@
 */
 
 :root {
+    /* --- Premium Interaction Physics --- */
     --theme-transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+    --hover-transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* --- Premium Typography System --- */
+    --font-serif-display: 'Playfair Display', serif;
+    --font-sans-body: 'Inter', system-ui, sans-serif;
+    --spacing-title: 0.15em;
+
+    /* --- Material Depth (Glassmorphism & Shadows) --- */
+    --glass-blur: blur(20px);
+    --glass-saturation: saturate(120%);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.15);
+
+    --shadow-ambient: 0 0 40px rgba(0, 0, 0, 0.05);
+    --shadow-depth: 0 15px 45px rgba(0, 0, 0, 0.1);
+    --shadow-glow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+/* Breathing Animation - The Soul of the Calendar */
+@keyframes breathe-glow {
+
+    0%,
+    100% {
+        box-shadow: var(--cal-shadow);
+        border-color: var(--cal-border);
+        /* background-color: var(--cal-bg); - Keep bg static */
+    }
+
+    50% {
+        box-shadow: var(--cal-shadow-glow);
+        border-color: var(--cal-border-glow);
+        /* background-color: var(--cal-bg-glow); - Keep bg static */
+    }
 }
 
 /* Global Component Theme Integration */
-.calendar-section,
+.calendar-section {
+    transition: var(--theme-transition);
+    /* Apply subtle border/shadow breathing */
+    animation: breathe-glow 8s ease-in-out infinite;
+    will-change: box-shadow, border-color;
+
+    /* Enforce Glassmorphism Base */
+    backdrop-filter: var(--glass-blur) var(--glass-saturation);
+    -webkit-backdrop-filter: var(--glass-blur) var(--glass-saturation);
+}
+
 .suspension-panel,
 .control-dock,
 .info-strip {
     transition: var(--theme-transition);
+    backdrop-filter: var(--glass-blur) var(--glass-saturation);
+    -webkit-backdrop-filter: var(--glass-blur) var(--glass-saturation);
 }

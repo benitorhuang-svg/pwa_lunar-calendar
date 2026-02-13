@@ -464,27 +464,34 @@
             setHeroBackground(finalUrl, transType);
         }
 
-        // Update Center Info Strip
+        // Logic for Center Info Strip (Year/Month/Day) removed to keep it static to Today
+    }
+
+    // Initialize Static Header Date (Fixed to 'Today')
+    function initHeaderDate() {
+        const now = new Date();
         const infoYear = document.getElementById("infoYear");
         const infoMonth = document.getElementById("infoMonth");
         const infoDay = document.getElementById("infoDay");
 
         if (infoYear) {
-            infoYear.innerText = date.getFullYear();
+            infoYear.innerText = now.getFullYear();
             infoYear.style.fontFamily = "var(--font-serif-num)";
         }
         if (infoMonth) {
-            infoMonth.innerText = (date.getMonth() + 1)
+            infoMonth.innerText = (now.getMonth() + 1)
                 .toString()
                 .padStart(2, "0");
             infoMonth.style.fontFamily = "var(--font-serif-num)";
         }
         if (infoDay) {
-            infoDay.innerText = date.getDate().toString().padStart(2, "0");
+            infoDay.innerText = now.getDate().toString().padStart(2, "0");
             infoDay.style.fontFamily = "var(--font-serif-num)";
-            infoDay.style.color = "inherit"; // Reset festive color if any
         }
     }
+
+    // Call immediately
+    initHeaderDate();
 
     // Expose functions globally for event handlers if needed, or attach events directly
     // Ideally we use Custom Events for communication

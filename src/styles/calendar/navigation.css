@@ -3,8 +3,8 @@
     background: var(--cal-nav-bg);
     border: 1px solid var(--cal-border);
     color: var(--cal-nav-color);
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -19,21 +19,29 @@
 }
 
 .btn-today-quick {
-    background: var(--cal-nav-bg);
-    color: var(--cal-nav-color);
+    background: rgba(255, 255, 255, 0.15);
+    /* Gray-ish transparent */
+    color: var(--cal-lunar-text);
     border: 1px solid var(--cal-border);
-    padding: 6px 16px;
-    border-radius: 50px;
+    padding: 4px 10px;
+    border-radius: 6px;
     font-size: 0.8rem;
     font-weight: 400;
     cursor: pointer;
-    transition: all 0.3s ease;
     font-family: var(--font-serif);
     white-space: nowrap;
+    opacity: 0.9;
+    margin-right: 12px;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    /* Ensure it behaves like a box in flex */
+    align-items: center;
 }
 
 .btn-today-quick:hover {
-    background: var(--cal-border);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--cal-text);
     color: var(--cal-text);
+    opacity: 1;
     transform: translateY(-1px);
 }

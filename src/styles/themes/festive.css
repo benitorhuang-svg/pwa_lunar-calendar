@@ -1,41 +1,72 @@
 /* 
    Festive Crimson Theme (Lunar New Year / 春節 / 臘月)
    A rich, celebratory, and culturally resonant aesthetic with Imperial Red and Gold.
+   Inspired by Lacquerware and Palace Lanterns.
 */
 
 .theme-festive {
-    /* Background & Texture - Deep Traditional Red */
-    --cal-bg: rgba(142, 20, 26, 0.96);
-    /* Intentionally slightly darker/opaque for readability */
-    --cal-inner-glow: rgba(255, 215, 0, 0.25);
-    --cal-shadow: 0 25px 60px rgba(139, 0, 0, 0.5);
-    --cal-border: rgba(255, 215, 0, 0.2);
+    /* Background & Texture - Red Lacquer Glass */
+    --cal-bg: rgba(139, 0, 0, 0.92);
+    /* Dark Red, very opaque for richness */
+    --cal-inner-glow: rgba(255, 215, 0, 0.15);
+    /* Gold Dust */
 
-    /* Typography - Cream/Ivory for better contrast on red */
-    --cal-text: #fdf5e6;
-    --cal-lunar-text: rgba(253, 245, 230, 0.6);
-    --cal-header-text: rgba(255, 215, 0, 0.5);
+    /* Shadows - Lantern Glow */
+    --cal-shadow:
+        0 25px 60px rgba(50, 0, 0, 0.6),
+        /* Black Red Deep Shadow */
+        0 1px 2px rgba(255, 215, 0, 0.4);
+    /* Gold Rim */
 
-    /* Interactive Elements - Radiant Gold */
-    --cal-nav-bg: rgba(255, 215, 0, 0.1);
+    --cal-shadow-glow:
+        0 30px 80px rgba(100, 0, 0, 0.5),
+        0 0 60px rgba(255, 215, 0, 0.3);
+    /* Radiant Gold Aura */
+
+    /* Borders - Gilded Edge */
+    --cal-border: rgba(255, 215, 0, 0.3);
+    --cal-border-glow: rgba(255, 215, 0, 0.6);
+
+    /* Typography - Ivory on Red */
+    --cal-text: #fffaf0;
+    /* Floral White */
+    --cal-lunar-text: #ffe4b5;
+    /* Moccasin */
+    --cal-header-text: #ffd700;
+    /* Gold */
+
+    /* Interactive Elements - Pure Gold */
+    --cal-nav-bg: rgba(255, 215, 0, 0.12);
     --cal-nav-color: #ffd700;
+
     --cal-today-bg: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
-    --cal-today-text: var(--color-festive-red-dark);
+    /* Gold Ingot */
+    --cal-today-text: #8b0000;
+    /* Deep Red Text */
+
     --cal-term-color: #ffd700;
 
     /* Panel Specifics */
     --panel-accent: #ffd700;
-    --panel-side-bg: linear-gradient(to bottom, rgba(255, 215, 0, 0.15), transparent);
+    --panel-side-bg: linear-gradient(to bottom, rgba(255, 215, 0, 0.2), transparent);
+    /* Stronger gold wash */
+
+    /* Glass Overrides */
+    --glass-blur: blur(25px);
+    --glass-saturation: saturate(150%);
+    /* Intense saturation for red */
 }
 
 /* Global Atmosphere Overrides during Festive Season */
 .theme-festive .suspension-panel {
-    border: 1.5px solid rgba(255, 215, 0, 0.3);
-    box-shadow: 0 15px 40px rgba(139, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    /* More visible gold border */
+    box-shadow: 0 15px 40px rgba(50, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.15);
 }
 
 .theme-festive .traditional-seal {
-    background: #ffd700;
-    color: var(--color-festive-red-dark);
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    background: linear-gradient(135deg, #ffd700, #eedd82);
+    color: #8b0000;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2), 0 0 10px rgba(255, 215, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }

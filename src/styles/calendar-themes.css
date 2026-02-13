@@ -5,5 +5,10 @@
 
 @import "./themes/theme-engine.css";
 @import "./themes/light.css";
+/* Maps to Fall/Taupe default for now */
 @import "./themes/dark.css";
 @import "./themes/festive.css";
+@import "./themes/spring.css";
+@import "./themes/summer.css";
+@import "./themes/autumn.css";
+@import "./themes/winter.css";

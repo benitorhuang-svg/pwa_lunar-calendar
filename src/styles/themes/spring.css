@@ -1,0 +1,81 @@
+/* 
+   Fresh Verdure Theme (Spring)
+   A lively, rejuvenating aesthetic inspired by first buds and morning dew.
+   Enhanced with "Jade Porcelain" (玉瓷) texture for premium depth.
+*/
+
+.theme-spring {
+    /* Background & Texture - Jade Porcelain */
+    --cal-bg: rgba(240, 250, 245, 0.94);
+    /* Very opaque, almost like fine porcelain */
+    --cal-inner-glow: rgba(152, 251, 152, 0.15);
+    /* Subtle PaleGreen tint inside */
+
+    /* Shadows - Morning Mist & Depth */
+    --cal-shadow:
+        0 25px 60px rgba(22, 59, 34, 0.15),
+        /* Deep forest shadow */
+        0 1px 2px rgba(255, 255, 255, 0.6) inset;
+    /* Top rim light */
+
+    --cal-shadow-glow:
+        0 30px 80px rgba(34, 139, 34, 0.2),
+        0 0 60px rgba(144, 238, 144, 0.3);
+    /* Radiant Spring Aura */
+
+    /* Borders - Gold Inlaid Jade */
+    --cal-border: rgba(189, 154, 122, 0.3);
+    /* Muted Gold/Bronze hint */
+    --cal-border-glow: rgba(34, 139, 34, 0.6);
+
+    /* Typography - Ink on Jade */
+    --cal-text: #051a0d;
+    /* Deepest Green Black */
+    --cal-lunar-text: #4a6741;
+    /* Muted Green */
+    --cal-header-text: #1a1a1a;
+
+    /* Hero Text Color Override */
+    --hero-text-color: #0d2613;
+    --hero-bg-overlay: rgba(255, 255, 255, 0.85);
+    /* Porcelain tablet feel */
+
+    /* Panel Item Specifics (Selectors) */
+    --panel-item-bg: linear-gradient(to right, rgba(0, 50, 20, 0.03), rgba(0, 50, 20, 0.06));
+    --panel-border: rgba(189, 154, 122, 0.2);
+    /* Subtle Gold border */
+    --panel-divider: linear-gradient(90deg, transparent 0%, rgba(189, 154, 122, 0.3) 20%, rgba(189, 154, 122, 0.3) 80%, transparent 100%);
+
+    /* Interactive Elements - Blossoms & Gold */
+    --cal-nav-bg: rgba(34, 139, 34, 0.08);
+    --cal-nav-color: #228b22;
+
+    --cal-today-bg: linear-gradient(135deg, #ff9aa2 0%, #ff6f61 100%);
+    --cal-today-text: #fff;
+    --cal-term-color: #c71585;
+
+    /* Panel Specifics */
+    --panel-accent: #ff6f61;
+    /* Coral Accent */
+    --panel-side-bg: linear-gradient(to bottom, rgba(34, 139, 34, 0.12), transparent);
+
+    /* Glass Overrides */
+    --glass-blur: blur(30px);
+    /* Deep blur for solid feel */
+    --glass-saturation: saturate(115%);
+}
+
+/* Global Atmosphere Overrides during Spring Season */
+.theme-spring .suspension-panel {
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    /* Porcelain Edge */
+    box-shadow: 0 20px 50px rgba(22, 59, 34, 0.12), 0 0 30px rgba(255, 255, 255, 0.4) inset;
+}
+
+.theme-spring .nav-box.active {
+    background: linear-gradient(135deg, #d8f5d8 0%, #b0e0b0 100%) !important;
+    /* Jade Green active state */
+    color: #051a0d !important;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 6px 18px rgba(34, 139, 34, 0.15);
+}

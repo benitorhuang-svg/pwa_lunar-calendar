@@ -1,0 +1,81 @@
+/* 
+   Winter Season Theme - "Ink in Snow" (雪中墨 / Silver Grey)
+   Symbolizing silence, clarity, and cold elegance.
+   Enhanced with "Frost Jade" (冰種) texture for crystal clear, high-end feel.
+*/
+
+.theme-winter {
+    /* Background & Texture - Frost Jade */
+    --cal-bg: rgba(240, 248, 255, 0.94);
+    /* Alice Blue, very opaque like ice block */
+    --cal-inner-glow: rgba(176, 196, 222, 0.2);
+    /* LightSteelBlue tint */
+
+    /* Shadows - Deep Ice Crevasse */
+    --cal-shadow:
+        0 25px 50px rgba(47, 79, 79, 0.15),
+        /* Dark Slate Gray shadow */
+        0 1px 2px rgba(255, 255, 255, 0.8) inset;
+    /* Top glint */
+
+    --cal-shadow-glow:
+        0 30px 80px rgba(119, 136, 153, 0.2),
+        /* LightSlateGray Glow */
+        0 0 60px rgba(255, 255, 255, 0.9);
+    /* Intense White Halo */
+
+    /* Borders - Silver Frost */
+    --cal-border: rgba(192, 192, 192, 0.5);
+    --cal-border-glow: rgba(255, 255, 255, 0.95);
+
+    /* Typography - Deep Ink */
+    --cal-text: #1a2a33;
+    /* Dark Slate Grey almost black */
+    --cal-lunar-text: #546e7a;
+    /* Blue Grey */
+    --cal-header-text: #102027;
+
+    /* Hero Text Color Override */
+    --hero-text-color: #1a2a33;
+    --hero-bg-overlay: rgba(255, 255, 255, 0.9);
+    /* Pure white frost */
+
+    /* Panel Item Specifics */
+    --panel-item-bg: rgba(119, 136, 153, 0.05);
+    /* Cool Grey tint */
+    --panel-border: rgba(176, 196, 222, 0.3);
+    --panel-divider: linear-gradient(90deg, transparent 0%, rgba(176, 196, 222, 0.3) 20%, rgba(176, 196, 222, 0.3) 80%, transparent 100%);
+
+    /* Interactive Elements - Deep Plum/Ice Blue */
+    --cal-nav-bg: rgba(176, 196, 222, 0.2);
+    --cal-nav-color: #4682b4;
+
+    --cal-today-bg: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
+    /* Deep Winter Night Gradient */
+    --cal-today-text: #fff;
+    --cal-term-color: #4682b4;
+
+    /* Panel Specifics */
+    --panel-accent: #5f9ea0;
+    --panel-side-bg: linear-gradient(to bottom, rgba(44, 62, 80, 0.05), transparent);
+
+    /* Glass Overrides */
+    --glass-blur: blur(25px);
+    --glass-saturation: saturate(90%);
+    /* Desaturated elegance */
+}
+
+/* Global Atmosphere Overrides - Winter */
+.theme-winter .suspension-panel {
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    /* Frosted Border */
+    box-shadow: 0 20px 50px rgba(47, 79, 79, 0.1), 0 0 30px rgba(255, 255, 255, 0.5) inset;
+}
+
+.theme-winter .nav-box.active {
+    background: linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%) !important;
+    /* Silver active */
+    color: #1a2a33 !important;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 6px 18px rgba(119, 136, 153, 0.15);
+}

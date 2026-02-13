@@ -23,6 +23,8 @@
 
     background: var(--cal-bg);
     color: var(--cal-text);
+    border: 1px solid var(--cal-border);
+    box-shadow: var(--cal-shadow, 0 10px 30px rgba(0, 0, 0, 0.1));
 
     touch-action: manipulation;
     overflow: hidden;
@@ -54,10 +56,20 @@
 
 .calendar-title {
     font-family: var(--font-serif-num);
-    font-size: 1.45rem;
+    font-size: 1.35rem;
     font-weight: 500;
     color: var(--cal-text);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.1em;
+}
+
+.title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+    /* Prevent wrapping */
+    flex-wrap: nowrap;
 }
 
 /* Navigation & Grid Container */

@@ -22,18 +22,14 @@ import "../styles/global.css";
         <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
         <link
-            rel="preload"
-            href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&display=swap"
-            as="style"
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Zhi+Mang+Xing&display=swap"
             rel="stylesheet"
         />
         <slot name="head" />
     </head>
-    <body>
+    <body class="theme-autumn">
         <slot />
     </body>
 </html>
@@ -94,5 +90,48 @@ import "../styles/global.css";
                 }
             });
         }
+    })();
+</script>
+
+<script is:inline>
+    // Automatic Seasonal Theme Switcher
+    (function () {
+        const month = new Date().getMonth() + 1;
+        const body = document.body;
+
+        // Remove existing theme classes to prevent conflicts
+        body.classList.remove(
+            "theme-spring",
+            "theme-summer",
+            "theme-autumn",
+            "theme-winter",
+            "theme-light",
+            "theme-dark",
+            "theme-festive",
+        );
+
+        let seasonClass;
+
+        // Season Logic (Lunar-Aligned)
+        if (month >= 2 && month <= 4) {
+            seasonClass = "theme-spring";
+        } else if (month >= 5 && month <= 7) {
+            seasonClass = "theme-summer";
+        } else if (month >= 8 && month <= 10) {
+            seasonClass = "theme-autumn";
+        } else {
+            // Winter: Nov, Dec, Jan
+            seasonClass = "theme-winter";
+        }
+
+        // Festive Override Check (Simple check for Lunar New Year period - roughly Jan/Feb)
+        // For a more accurate check, we'd need the Lunar library here.
+        // For now, let's keep it strictly seasonal as requested, unless specifically Jan/Feb.
+        // Actually, let's stick to the 4 seasons first.
+
+        body.classList.add(seasonClass);
+        console.log(
+            `[Theme] Auto-switched to ${seasonClass} for month ${month}`,
+        );
     })();
 </script>

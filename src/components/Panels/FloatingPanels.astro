@@ -63,6 +63,11 @@
         yearSection.appendChild(yearGrid);
         container.appendChild(yearSection);
 
+        // Divider
+        const divider = document.createElement("div");
+        divider.className = "panel-section-divider";
+        container.appendChild(divider);
+
         // Month Section
         const monthSection = document.createElement("div");
         const monthHeader = document.createElement("div");
@@ -77,7 +82,8 @@
                 selectedYear === today.getFullYear() && i === today.getMonth();
             const item = document.createElement("div");
             item.className = `panel-item ${i === selectedMonth ? "selected" : ""} ${isTodayMonth ? "today" : ""}`;
-            item.textContent = i + 1 + "月";
+            // Use spans for styling: Number (Serif) + Label (Calligraphy)
+            item.innerHTML = `<span class="month-num">${i + 1}</span><span class="month-label">月</span>`;
             item.onclick = (e) => {
                 e.stopPropagation();
                 window.dispatchEvent(
@@ -109,7 +115,7 @@
         const festival = lunar.getFestival() || lunar.getSolarFestival();
 
         const festivalHtml = festival
-            ? `<div class="detail-sub-main" style="color:#ff6b6b; margin-top:10px">✨ ${festival}</div>`
+            ? `<div class="detail-sub-main" style="color:#ff6b6b; margin-top:10px">${festival}</div>`
             : "";
 
         panelToday.innerHTML = `
@@ -120,7 +126,7 @@
         <div class="detail-header-group" style="display:flex; justify-content:space-between; align-items:flex-start; border-left:none; padding-left:0;">
             <div>
                 <div class="detail-header" style="margin-bottom:5px">${date.getMonth() + 1}/${date.getDate()}</div>
-                <div class="detail-sub-main" style="font-size:1.1rem; opacity:0.7">${date.getFullYear()} · ${ganzhi}年</div>
+                <div class="detail-sub-main" style="font-size:1.2rem; opacity:0.7">${date.getFullYear()} · ${ganzhi}年</div>
             </div>
             <div class="traditional-seal">${zodiac.charAt(0)}</div>
         </div>
@@ -132,7 +138,7 @@
         </div>
 
         <div class="detail-lucky-pill">
-            ✨ ${jianchu}日 · ${luck}
+            ${jianchu}日 · ${luck}
         </div>
         
         ${festivalHtml}
