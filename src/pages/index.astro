@@ -6,12 +6,152 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
 ---
 
 <Layout>
+    <!-- Loading Overlay (Splash Screen) -->
+    <div id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-text">農</div>
+            <div class="loading-bar-container">
+                <div class="loading-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Critical CSS for Loading Screen */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0f0f1a; /* Match Main Dark Theme */
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loading-text {
+            font-family: "Zhi Mang Xing", cursive;
+            font-size: 5rem;
+            color: #d4af37; /* Gold */
+            opacity: 0.8;
+            animation: pulseText 2s infinite ease-in-out;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .loading-bar-container {
+            width: 60px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 100%;
+            background: #d4af37;
+            transform: translateX(-100%);
+            animation: loadProgress 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulseText {
+            0%,
+            100% {
+                opacity: 0.6;
+                transform: scale(0.98);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes loadProgress {
+            0% {
+                transform: translateX(-100%);
+            }
+            50% {
+                transform: translateX(0%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* App Reveal State */
+        body.app-loaded #loadingOverlay {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Initial Hidden State for App */
+        #appContainer {
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+
+        body.app-loaded #appContainer {
+            opacity: 1;
+        }
+    </style>
+
     <div class="app-container" id="appContainer">
         <!-- Components -->
         <HeroSection />
         <FloatingPanels />
         <CalendarBoard />
     </div>
+
+    <script is:inline>
+        // Resource Loading & Splash Screen Logic
+        (function () {
+            let isLoaded = false;
+
+            function revealApp() {
+                if (isLoaded) return;
+                isLoaded = true;
+
+                // Add class to fade out overlay and fade in app
+                document.body.classList.add("app-loaded");
+
+                // Remove overlay from DOM after transition strictly
+                setTimeout(() => {
+                    const overlay = document.getElementById("loadingOverlay");
+                    if (overlay) overlay.style.display = "none";
+                }, 1000);
+            }
+
+            window.addEventListener("load", () => {
+                // Check critical resources
+                const checkResources = setInterval(() => {
+                    if (
+                        typeof Lunar !== "undefined" &&
+                        typeof GALLERY_MANIFEST !== "undefined"
+                    ) {
+                        clearInterval(checkResources);
+                        // Slight delay for aesthetic smoothness (seeing the logo for a sec)
+                        setTimeout(revealApp, 500);
+                    }
+                }, 100);
+
+                // Fallback safety net (3s max wait)
+                setTimeout(() => {
+                    clearInterval(checkResources);
+                    revealApp();
+                }, 3000);
+            });
+        })();
+    </script>
 
     <script is:inline>
         // State Management
