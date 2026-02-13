@@ -8,8 +8,9 @@
     width: 100%;
     height: 100%;
     z-index: 1;
-    /* Below UI */
     overflow: hidden;
+    /* 動畫改在容器上：確保換圖時縮放動作不中斷、不跳動 */
+    animation: kenBurnsSmooth 40s ease-in-out infinite alternate;
 }
 
 .hero-bg-item {
@@ -20,7 +21,43 @@
     height: 100%;
     background-size: cover;
     background-position: center;
-    will-change: transform;
+    will-change: opacity, transform;
+    /* 取消濾鏡過渡，專注於透明度與位移，讓視覺更穩定 */
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes kenBurnsSmooth {
+    0% {
+        transform: scale(1.0);
+    }
+
+    100% {
+        transform: scale(1.15);
+    }
+}
+
+/* 霧化淡出狀態：改為輕微淡出，不強烈干擾視覺 */
+.hero-bg-item.blur-out {
+    opacity: 0 !important;
+    filter: brightness(0.8);
+    /* 移除模糊淡出，改用亮度微調 */
+}
+
+/* 初始進入狀態：預設 */
+.hero-bg-item.is-new {
+    opacity: 0;
+}
+
+/* 景深切換：下一張 (走進風景) */
+.hero-bg-item.is-next {
+    opacity: 0;
+    transform: scale(1.03);
+}
+
+/* 景深切換：上一張 (退後觀察) */
+.hero-bg-item.is-prev {
+    opacity: 0;
+    transform: scale(0.97);
 }
 
 /* 1. Hero Section (UI & Overlay Layer) */
@@ -122,14 +159,19 @@
     justify-content: center;
 
     font-family: var(--font-serif);
-    font-size: 1.05rem;
-    font-weight: 500;
-    letter-spacing: 0.05em;
+    font-size: 0.9rem;
+    font-weight: 300;
+    /* More elegant light weight */
+    letter-spacing: 0.12em;
+    /* Breathable spacing */
 
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     pointer-events: auto;
+    position: relative;
+    overflow: hidden;
+    /* For sheen */
 }
 
 .nav-box:hover {
@@ -142,26 +184,58 @@
 
 .nav-box:active,
 .nav-box.active {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transform: scale(0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transform: scale(0.96);
     border-radius: 50px !important;
-    font-weight: 600;
-    border: 1px solid rgba(255, 215, 0, 0.6);
-    background: linear-gradient(135deg, #d4af37 0%, #c5a028 100%) !important;
-    color: #fff !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    /* Champagne Gold Gradient */
+    background: linear-gradient(135deg, #e6d5a7 0%, #d4af37 100%) !important;
+    color: #1a1a1a !important;
+    /* Dark text on gold for premium contrast */
+    text-shadow: none;
+    box-shadow: 0 6px 18px rgba(212, 175, 55, 0.2);
+}
+
+/* Metallic Sheen Animation for Active Button */
+.nav-box.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(to right,
+            transparent,
+            rgba(255, 255, 255, 0.4),
+            transparent);
+    transform: skewX(-30deg);
+    animation: metallicSheen 6s infinite ease-in-out;
+}
+
+@keyframes metallicSheen {
+    0% {
+        left: -100%;
+    }
+
+    15% {
+        left: 150%;
+    }
+
+    100% {
+        left: 150%;
+    }
 }
 
 /* Specific text styling inside nav buttons */
 .ym-text {
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 0.85rem;
+    font-weight: 500;
     white-space: nowrap;
 }
 
-/* Bottom Controls (Previous / Next) */
+/* Bottom Controls (Previous / Next) - Corner Layout */
 .bottom-controls {
     position: absolute;
     bottom: 40px;
@@ -171,9 +245,8 @@
     justify-content: space-between;
     padding: 0 30px;
     pointer-events: none;
-    /* Let clicks pass through gap */
     z-index: 100;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .bottom-controls.hidden {
@@ -184,39 +257,33 @@
 
 .control-btn {
     pointer-events: auto;
-    /* Minimalist Style */
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.8);
-
+    color: rgba(255, 255, 255, 0.9);
     padding: 8px 24px;
     border-radius: 12px;
-    /* Soft Rect for contrast with Top Pills */
-    font-size: 0.95rem;
-    font-weight: 400;
-    letter-spacing: 0.05em;
-
+    font-size: 0.85rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
     font-family: var(--font-serif);
-
     transition: all 0.3s ease;
-    opacity: 0.8;
-    /* Subtle normally */
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
-.control-btn:hover,
+.control-btn:hover {
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
 .control-btn:active {
-    opacity: 1;
-    background: rgba(0, 0, 0, 0.5);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-1px);
+    transform: scale(0.95);
 }
 
 /* Install Button */
