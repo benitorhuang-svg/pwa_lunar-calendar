@@ -9,7 +9,7 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
     <!-- Loading Overlay (Splash Screen) -->
     <div id="loadingOverlay">
         <div class="loading-content">
-            <div class="loading-text">農</div>
+            <div class="loading-text">農民曆</div>
             <div class="loading-bar-container">
                 <div class="loading-bar"></div>
             </div>
@@ -41,15 +41,17 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
 
         .loading-text {
             font-family: "Zhi Mang Xing", cursive;
-            font-size: 5rem;
+            font-size: 3.5rem; /* Adjusted for 3 characters */
+            letter-spacing: 0.5rem;
             color: #d4af37; /* Gold */
             opacity: 0.8;
             animation: pulseText 2s infinite ease-in-out;
             text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            white-space: nowrap;
         }
 
         .loading-bar-container {
-            width: 60px;
+            width: 120px; /* Wider for balance */
             height: 2px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 2px;
@@ -134,13 +136,15 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
             window.addEventListener("load", () => {
                 // Check critical resources
                 const checkResources = setInterval(() => {
-                    if (
+                    const fontsReady = document.fonts.status === "loaded";
+                    const scriptsReady =
                         typeof Lunar !== "undefined" &&
-                        typeof GALLERY_MANIFEST !== "undefined"
-                    ) {
+                        typeof GALLERY_MANIFEST !== "undefined";
+
+                    if (fontsReady && scriptsReady) {
                         clearInterval(checkResources);
                         // Slight delay for aesthetic smoothness (seeing the logo for a sec)
-                        setTimeout(revealApp, 500);
+                        setTimeout(revealApp, 600);
                     }
                 }, 100);
 
