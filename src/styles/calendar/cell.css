@@ -4,10 +4,12 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2px 0;
+    padding: 0;
     cursor: pointer;
     position: relative;
     border-radius: 12px;
+    height: 100%;
+    /* 確保填滿 grid 格子 */
     transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -22,24 +24,27 @@
 }
 
 .gregorian-num {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
+    /* 稍微放大增加層次 */
     font-weight: 300;
-    /* Thinner for premium feel */
-    line-height: 1.2;
+    line-height: 1;
     color: inherit;
     font-family: var(--font-serif-num);
     letter-spacing: -0.02em;
+    transform: translate(-3px, -2px);
+    /* 往左上微移 */
 }
 
 .lunar-text {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: var(--cal-lunar-text);
-    margin-top: 2px;
+    margin-top: -3px;
+    /* 緊貼數字 */
     font-weight: 500;
-    /* 使用中等字重，與節氣區隔 */
     opacity: 0.5;
-    /* 加入適度透明度，建立層次感 */
-    letter-spacing: 0.02em;
+    letter-spacing: 0.05em;
+    transform: translate(4px, 1px);
+    /* 往右下微移，形成對角排版節奏 */
 }
 
 .day-cell:nth-child(7n),
