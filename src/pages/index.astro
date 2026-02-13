@@ -24,7 +24,8 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #0f0f1a; /* Match Main Dark Theme */
+            background-color: rgba(15, 15, 26, 0.6); /* Semi-transparent */
+            backdrop-filter: blur(8px); /* Nice blur over the background */
             z-index: 99999;
             display: flex;
             align-items: center;
@@ -96,13 +97,20 @@ import FloatingPanels from "../components/Panels/FloatingPanels.astro";
             pointer-events: none;
         }
 
-        /* Initial Hidden State for App */
-        #appContainer {
+        /* Initial Hidden State for UI Elements only (Background stays visible) */
+        /* We hide the complex UI parts until loaded to prevent FOUC */
+        .hero-dock-wrapper,
+        .hero-header,
+        .suspension-panel,
+        #calendarSection {
             opacity: 0;
             transition: opacity 1s ease-out;
         }
 
-        body.app-loaded #appContainer {
+        body.app-loaded .hero-dock-wrapper,
+        body.app-loaded .hero-header,
+        body.app-loaded .suspension-panel,
+        body.app-loaded #calendarSection {
             opacity: 1;
         }
     </style>
