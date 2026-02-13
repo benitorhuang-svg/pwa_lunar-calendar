@@ -11,7 +11,10 @@
         "lint": "eslint ."
     },
     "dependencies": {
-        "astro": "^4.16.18"
+        "@vite-pwa/astro": "^1.2.0",
+        "astro": "^4.16.18",
+        "vite-plugin-pwa": "^1.2.0",
+        "workbox-window": "^7.4.0"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",

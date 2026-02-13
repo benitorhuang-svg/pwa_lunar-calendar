@@ -14,7 +14,8 @@ import MusicPlayer from "./MusicPlayer.astro";
 
 <script is:inline>
     // Hero images — organized by seasons in assets/gallery/
-    const BASE_HERO_DIR = "assets/gallery/";
+    const baseDir = window.APP_BASE_URL || "/";
+    const BASE_HERO_DIR = (baseDir + "assets/gallery/").replace(/\/+/g, "/");
     var heroList = [];
     var _heroIdx = 0;
     var _requestedSeason = null; // last season we tried to load
@@ -683,9 +684,9 @@ import MusicPlayer from "./MusicPlayer.astro";
     const btnMusic = document.getElementById("btnMusic");
     const bgMusic = document.getElementById("bgMusic");
     const zenPlaylist = [
-        "/assets/audio/ambient.mp3",
-        "/assets/audio/danyvin.mp3",
-        "/assets/audio/danyvin-journey.mp3",
+        (baseDir + "assets/audio/ambient.mp3").replace(/\/+/g, "/"),
+        (baseDir + "assets/audio/danyvin.mp3").replace(/\/+/g, "/"),
+        (baseDir + "assets/audio/danyvin-journey.mp3").replace(/\/+/g, "/"),
     ];
     window._zenTrackIdx = Math.floor(Math.random() * zenPlaylist.length);
 
