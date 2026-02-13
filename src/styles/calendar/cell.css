@@ -8,64 +8,79 @@
     cursor: pointer;
     position: relative;
     border-radius: 12px;
-    transition: all 0.2s ease;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.day-cell:active {
+    transform: scale(0.94);
+    transition: transform 0.1s ease;
 }
 
 .day-cell:hover:not(.other-month):not(.today) {
-    background: rgba(128, 128, 128, 0.08);
-    transform: scale(1.02);
+    background: rgba(128, 128, 128, 0.05);
+    transform: scale(1.08);
 }
 
 .gregorian-num {
-    font-size: 1.3rem;
-    font-weight: 500;
-    line-height: 1.1;
+    font-size: 1.25rem;
+    font-weight: 300;
+    /* Thinner for premium feel */
+    line-height: 1.2;
     color: inherit;
     font-family: var(--font-serif-num);
+    letter-spacing: -0.02em;
 }
 
 .lunar-text {
-    font-size: 0.62rem;
+    font-size: 0.7rem;
     color: var(--cal-lunar-text);
-    margin-top: 1px;
-    font-weight: 400;
-    opacity: 0.85;
+    margin-top: 2px;
+    font-weight: 500;
+    /* 使用中等字重，與節氣區隔 */
+    opacity: 0.5;
+    /* 加入適度透明度，建立層次感 */
+    letter-spacing: 0.02em;
 }
 
-/* Weekend Color Styling (Natural Vermilion) */
 .day-cell:nth-child(7n),
 .day-cell:nth-child(7n+1) {
-    color: #d65a5a;
+    color: #b05a5a;
+    /* Slightly more muted vermilion */
 }
 
 /* Cell States */
 /* Cell States */
 .day-cell.today {
-    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%) !important;
-    /* Richer yellow */
-    color: #5c3a21 !important;
-    /* Dark brown/wood text for contrast */
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-    /* Golden glow */
-    transform: scale(1.05);
+    background: var(--cal-today-bg, linear-gradient(135deg, #ffd700 0%, #ffcc00 100%)) !important;
+    color: var(--cal-today-text, #5c3a21) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 0 15px rgba(255, 215, 0, 0.3);
+    transform: scale(1.1);
     z-index: 2;
-    font-weight: 600;
-    border-radius: 14px;
-    /* Softer shape */
+    font-weight: 500;
+    border-radius: 50%;
+    /* Perfect circle for today often looks more special */
+    width: 44px;
+    height: 44px;
+    margin: auto;
 }
 
 .day-cell.today .lunar-text {
-    color: #5c3a21 !important;
+    color: currentColor !important;
     opacity: 0.9;
 }
 
 .day-cell.selected:not(.today) {
-    background: transparent;
-    box-shadow: none;
-    border: 1.5px solid #d4af37;
-    /* Gold ring */
-    color: #d4af37;
-    font-weight: 500;
+    background: var(--cal-border);
+    /* 加入實體感背景 */
+    box-shadow: 0 0 0 1px var(--cal-text) inset, 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: var(--cal-text);
+    font-weight: 600;
+    border-radius: 10px;
+}
+
+.day-cell.selected:not(.today) .lunar-text {
+    color: var(--cal-text) !important;
+    opacity: 1;
 }
 
 .other-month {

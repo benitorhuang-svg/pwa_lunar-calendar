@@ -1,44 +1,35 @@
 /* 
+/*
    Winter Season Theme - "Ink in Snow" (雪中墨 / Silver Grey)
    Symbolizing silence, clarity, and cold elegance.
    Enhanced with "Frost Jade" (冰種) texture for crystal clear, high-end feel.
 */
 
 .theme-winter {
-    /* Background & Texture - Frost Jade */
-    --cal-bg: rgba(240, 248, 255, 0.94);
-    /* Alice Blue, very opaque like ice block */
-    --cal-inner-glow: rgba(176, 196, 222, 0.2);
-    /* LightSteelBlue tint */
+    /* Background & Texture - Frost Jade (Alice blue ice porcelain) */
+    --cal-bg: rgba(245, 250, 255, 0.94);
+    --cal-inner-glow: rgba(255, 255, 255, 0.6);
 
     /* Shadows - Deep Ice Crevasse */
     --cal-shadow:
-        0 25px 50px rgba(47, 79, 79, 0.15),
-        /* Dark Slate Gray shadow */
-        0 1px 2px rgba(255, 255, 255, 0.8) inset;
-    /* Top glint */
+        0 30px 60px rgba(30, 45, 55, 0.12),
+        0 1px 1px rgba(255, 255, 255, 0.8) inset;
 
     --cal-shadow-glow:
-        0 30px 80px rgba(119, 136, 153, 0.2),
-        /* LightSlateGray Glow */
-        0 0 60px rgba(255, 255, 255, 0.9);
-    /* Intense White Halo */
+        0 0 40px rgba(255, 255, 255, 0.4);
 
     /* Borders - Silver Frost */
-    --cal-border: rgba(192, 192, 192, 0.5);
-    --cal-border-glow: rgba(255, 255, 255, 0.95);
+    --cal-border: rgba(176, 196, 222, 0.15);
+    --cal-border-glow: rgba(255, 255, 255, 0.8);
 
-    /* Typography - Deep Ink */
+    /* Typography - Deep Winter Ink */
     --cal-text: #1a2a33;
-    /* Dark Slate Grey almost black */
     --cal-lunar-text: #546e7a;
-    /* Blue Grey */
-    --cal-header-text: #102027;
+    --cal-header-text: #1a2a33;
 
-    /* Hero Text Color Override */
+    /* Hero Overrides */
     --hero-text-color: #1a2a33;
-    --hero-bg-overlay: rgba(255, 255, 255, 0.9);
-    /* Pure white frost */
+    --hero-bg-overlay: rgba(255, 255, 255, 0.15);
 
     /* Panel Item Specifics */
     --panel-item-bg: rgba(119, 136, 153, 0.05);
@@ -46,23 +37,24 @@
     --panel-border: rgba(176, 196, 222, 0.3);
     --panel-divider: linear-gradient(90deg, transparent 0%, rgba(176, 196, 222, 0.3) 20%, rgba(176, 196, 222, 0.3) 80%, transparent 100%);
 
-    /* Interactive Elements - Deep Plum/Ice Blue */
-    --cal-nav-bg: rgba(176, 196, 222, 0.2);
+    /* Interactive Elements - Frozen Lake */
+    --cal-nav-bg: rgba(176, 196, 222, 0.05);
     --cal-nav-color: #4682b4;
 
     --cal-today-bg: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
-    /* Deep Winter Night Gradient */
-    --cal-today-text: #fff;
-    --cal-term-color: #4682b4;
+    --cal-today-text: #ffffff;
+    --cal-term-color: #455a64;
+    /* 深藍灰色，提升冬天淺背景下的清晰度 */
+    --cal-festival-red: #d32f2f;
+    /* 鮮紅 */
 
     /* Panel Specifics */
     --panel-accent: #5f9ea0;
     --panel-side-bg: linear-gradient(to bottom, rgba(44, 62, 80, 0.05), transparent);
 
-    /* Glass Overrides */
-    --glass-blur: blur(25px);
+    /* Glass Effect Overrides */
+    --glass-blur: blur(30px);
     --glass-saturation: saturate(90%);
-    /* Desaturated elegance */
 }
 
 /* Global Atmosphere Overrides - Winter */

@@ -144,21 +144,19 @@
         let bottomText = lunarDateStr;
         if (festival) {
             bottomText = festival;
-            lunarDiv.style.color = "#ff6b6b";
+            lunarDiv.style.color = "var(--cal-festival-red, #ff6b6b)";
+            lunarDiv.style.fontWeight = "700";
+            lunarDiv.style.opacity = "1"; // 確保重要資訊不透明
         } else if (term) {
             bottomText = term;
-            lunarDiv.style.color = "#e6d5a7"; // Terms in Gold
+            lunarDiv.style.color = "var(--cal-term-color, #d4af37)";
+            lunarDiv.style.fontWeight = "700";
+            lunarDiv.style.opacity = "1"; // 確保重要資訊不透明
         }
         lunarDiv.textContent = bottomText;
 
         cell.appendChild(greg);
         cell.appendChild(lunarDiv);
-
-        if (term && !isOtherMonth) {
-            const dot = document.createElement("div");
-            dot.className = "term-dot";
-            cell.appendChild(dot);
-        }
 
         cell.setAttribute(
             "aria-label",

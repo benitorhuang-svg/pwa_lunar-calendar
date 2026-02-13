@@ -5,40 +5,30 @@
 */
 
 .theme-spring {
-    /* Background & Texture - Jade Porcelain */
-    --cal-bg: rgba(240, 250, 245, 0.94);
-    /* Very opaque, almost like fine porcelain */
-    --cal-inner-glow: rgba(152, 251, 152, 0.15);
-    /* Subtle PaleGreen tint inside */
+    /* Background & Texture - Jade Porcelain (Pale celadon green) */
+    --cal-bg: rgba(242, 250, 245, 0.94);
+    --cal-inner-glow: rgba(255, 255, 255, 0.6);
 
-    /* Shadows - Morning Mist & Depth */
+    /* Shadows - Morning Mist Depth */
     --cal-shadow:
-        0 25px 60px rgba(22, 59, 34, 0.15),
-        /* Deep forest shadow */
-        0 1px 2px rgba(255, 255, 255, 0.6) inset;
-    /* Top rim light */
+        0 30px 60px rgba(22, 50, 35, 0.12),
+        0 1px 1px rgba(255, 255, 255, 0.8) inset;
 
     --cal-shadow-glow:
-        0 30px 80px rgba(34, 139, 34, 0.2),
-        0 0 60px rgba(144, 238, 144, 0.3);
-    /* Radiant Spring Aura */
+        0 0 40px rgba(152, 251, 152, 0.15);
 
-    /* Borders - Gold Inlaid Jade */
-    --cal-border: rgba(189, 154, 122, 0.3);
-    /* Muted Gold/Bronze hint */
-    --cal-border-glow: rgba(34, 139, 34, 0.6);
+    /* Borders - Muted Bronze Shell */
+    --cal-border: rgba(189, 154, 122, 0.15);
+    --cal-border-glow: rgba(34, 139, 34, 0.4);
 
-    /* Typography - Ink on Jade */
-    --cal-text: #051a0d;
-    /* Deepest Green Black */
-    --cal-lunar-text: #4a6741;
-    /* Muted Green */
-    --cal-header-text: #1a1a1a;
+    /* Typography - Deep Moss & Sage */
+    --cal-text: #0a2414;
+    --cal-lunar-text: #2e4d2a;
+    --cal-header-text: #0a2414;
 
-    /* Hero Text Color Override */
-    --hero-text-color: #0d2613;
-    --hero-bg-overlay: rgba(255, 255, 255, 0.85);
-    /* Porcelain tablet feel */
+    /* Hero Overrides */
+    --hero-text-color: #0a2414;
+    --hero-bg-overlay: rgba(255, 255, 255, 0.15);
 
     /* Panel Item Specifics (Selectors) */
     --panel-item-bg: linear-gradient(to right, rgba(0, 50, 20, 0.03), rgba(0, 50, 20, 0.06));
@@ -46,22 +36,25 @@
     /* Subtle Gold border */
     --panel-divider: linear-gradient(90deg, transparent 0%, rgba(189, 154, 122, 0.3) 20%, rgba(189, 154, 122, 0.3) 80%, transparent 100%);
 
-    /* Interactive Elements - Blossoms & Gold */
-    --cal-nav-bg: rgba(34, 139, 34, 0.08);
+    /* Interactive Elements - Blossoms */
+    --cal-nav-bg: rgba(34, 139, 34, 0.04);
     --cal-nav-color: #228b22;
 
     --cal-today-bg: linear-gradient(135deg, #ff9aa2 0%, #ff6f61 100%);
-    --cal-today-text: #fff;
-    --cal-term-color: #c71585;
+    --cal-today-text: #ffffff;
+
+    --cal-term-color: #1b5e20;
+    /* 深綠色，確保在淡綠背景下清晰 */
+    --cal-festival-red: #c62828;
+    /* 深紅 */
 
     /* Panel Specifics */
     --panel-accent: #ff6f61;
     /* Coral Accent */
     --panel-side-bg: linear-gradient(to bottom, rgba(34, 139, 34, 0.12), transparent);
 
-    /* Glass Overrides */
+    /* Glass Effect Overrides */
     --glass-blur: blur(30px);
-    /* Deep blur for solid feel */
     --glass-saturation: saturate(115%);
 }
 

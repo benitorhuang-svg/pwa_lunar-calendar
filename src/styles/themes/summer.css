@@ -5,37 +5,31 @@
 */
 
 .theme-summer {
-    /* Background & Texture - Azure Glaze */
-    --cal-bg: rgba(224, 255, 255, 0.9);
-    /* More opaque, porcelain-like */
-    --cal-inner-glow: rgba(0, 191, 255, 0.15);
-    /* Deep Sky Blue Tint */
+    /* Background & Texture - Azure Glaze (Pale misty blue-green porcelain) */
+    --cal-bg: rgba(228, 245, 245, 0.92);
+    --cal-inner-glow: rgba(255, 255, 255, 0.6);
 
-    /* Shadows - Deep Sea Depth */
+    /* Shadows - Deep Ocean Depth */
     --cal-shadow:
-        0 25px 60px rgba(0, 60, 90, 0.15),
-        /* Deeper navy shadow */
-        0 1px 2px rgba(255, 255, 255, 0.6) inset;
+        0 30px 60px rgba(0, 40, 60, 0.12),
+        0 1px 1px rgba(255, 255, 255, 0.8) inset;
 
     --cal-shadow-glow:
-        0 30px 70px rgba(72, 209, 204, 0.2),
-        /* Turquoise Glow */
-        0 0 50px rgba(224, 255, 255, 0.5);
+        0 0 40px rgba(176, 224, 230, 0.2);
 
     /* Borders - Silver Ripple */
-    --cal-border: rgba(255, 255, 255, 0.5);
-    --cal-border-glow: rgba(0, 191, 255, 0.6);
+    --cal-border: rgba(0, 100, 120, 0.12);
+    /* Very subtle teal border */
+    --cal-border-glow: rgba(0, 191, 255, 0.4);
 
-    /* Typography - Deep Abyss */
-    --cal-text: #002244;
-    /* Darker Navy */
-    --cal-lunar-text: #4682b4;
-    /* Steel Blue */
-    --cal-header-text: #001f3f;
+    /* Typography - Deep Abyss & Steel Blue */
+    --cal-text: #003355;
+    --cal-lunar-text: #5a8da0;
+    --cal-header-text: #003355;
 
-    /* Hero Text Color Override */
-    --hero-text-color: #002244;
-    --hero-bg-overlay: rgba(255, 255, 255, 0.85);
+    /* Hero Overrides */
+    --hero-text-color: #003355;
+    --hero-bg-overlay: rgba(255, 255, 255, 0.15);
 
     /* Panel Item Specifics */
     --panel-item-bg: rgba(0, 100, 150, 0.05);
@@ -44,23 +38,24 @@
     --panel-divider: linear-gradient(90deg, transparent 0%, rgba(135, 206, 250, 0.3) 20%, rgba(135, 206, 250, 0.3) 80%, transparent 100%);
 
     /* Interactive Elements - Ocean Gems */
-    --cal-nav-bg: rgba(255, 255, 255, 0.4);
+    --cal-nav-bg: rgba(0, 120, 180, 0.05);
     --cal-nav-color: #0077be;
 
-    --cal-today-bg: linear-gradient(135deg, #00bfff 0%, #0077be 100%);
-    /* Ocean Gradient */
-    --cal-today-text: #fff;
+    --cal-today-bg: linear-gradient(135deg, #48cae4 0%, #0077b6 100%);
+    --cal-today-text: #ffffff;
 
-    --cal-term-color: #ff6347;
-    /* Tomato pop */
+    --cal-term-color: #d81b60;
+    /* 更鮮豔的粉紅，提高對比 */
+    --cal-festival-red: #c2185b;
+    /* 節慶紅 */
 
     /* Panel Specifics */
     --panel-accent: #00bfff;
     --panel-side-bg: linear-gradient(to bottom, rgba(0, 191, 255, 0.1), transparent);
 
-    /* Glass Overrides */
-    --glass-blur: blur(25px);
-    --glass-saturation: saturate(120%);
+    /* Glass Effect Overrides */
+    --glass-blur: blur(30px);
+    --glass-saturation: saturate(110%);
 }
 
 /* Global Atmosphere Overrides - Summer */

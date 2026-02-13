@@ -53,6 +53,11 @@
     white-space: nowrap;
 }
 
+.dock-item:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+}
+
 /* Functional Color Differentiation */
 .dock-item.group-image {
     color: #d1d9e0;
@@ -67,14 +72,14 @@
     background: linear-gradient(135deg, #e6d5a7 0%, #d4af37 100%);
     color: #1a1a1a !important;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3), 0 0 20px rgba(212, 175, 55, 0.4);
 }
 
 .dock-item.group-image.active {
     background: linear-gradient(135deg, #ffffff 0%, #cbd5e0 100%);
     color: #1a1a1a !important;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2), 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
 .dock-item.group-image:hover {

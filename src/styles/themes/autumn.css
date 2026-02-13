@@ -5,40 +5,30 @@
 */
 
 .theme-autumn {
-    /* Background & Texture - Warm Amber Glass */
-    --cal-bg: rgba(253, 245, 230, 0.92);
-    /* Old Lace, highly opaque */
-    --cal-inner-glow: rgba(210, 180, 140, 0.2);
-    /* Tan Glow */
+    /* Background & Texture - Amber Glaze (Old lace taupe porcelain) */
+    --cal-bg: rgba(253, 245, 230, 0.94);
+    --cal-inner-glow: rgba(255, 255, 255, 0.6);
 
     /* Shadows - Golden Hour Depth */
     --cal-shadow:
-        0 20px 50px rgba(101, 67, 33, 0.15),
-        /* Dark Brown Shadow */
-        0 1px 2px rgba(255, 255, 255, 0.5) inset;
-    /* Top Highlight */
+        0 30px 60px rgba(60, 40, 20, 0.12),
+        0 1px 1px rgba(255, 255, 255, 0.8) inset;
 
     --cal-shadow-glow:
-        0 25px 60px rgba(160, 82, 45, 0.2),
-        /* Sienna Glow */
-        0 0 50px rgba(218, 165, 32, 0.3);
-    /* GoldenRod Halo */
+        0 0 40px rgba(218, 165, 32, 0.15);
 
     /* Borders - Antique Gold */
-    --cal-border: rgba(184, 134, 11, 0.4);
-    --cal-border-glow: rgba(218, 165, 32, 0.6);
+    --cal-border: rgba(184, 134, 11, 0.15);
+    --cal-border-glow: rgba(218, 165, 32, 0.4);
 
-    /* Typography - Deep Earth */
-    --cal-text: #3e2723;
-    /* Very Dark Brown */
+    /* Typography - Deep Amber Earth */
+    --cal-text: #3c2a1e;
     --cal-lunar-text: #8d6e63;
-    /* Brown Grey */
-    --cal-header-text: #2c1a16;
+    --cal-header-text: #3c2a1e;
 
-    /* Hero Text Color Override */
-    --hero-text-color: #3e2723;
-    --hero-bg-overlay: rgba(255, 248, 220, 0.85);
-    /* Cornsilk tint */
+    /* Hero Overrides */
+    --hero-text-color: #3c2a1e;
+    --hero-bg-overlay: rgba(255, 248, 220, 0.15);
 
     /* Panel Item Specifics */
     --panel-item-bg: rgba(139, 69, 19, 0.05);
@@ -46,21 +36,24 @@
     --panel-border: rgba(184, 134, 11, 0.25);
     --panel-divider: linear-gradient(90deg, transparent 0%, rgba(184, 134, 11, 0.3) 20%, rgba(184, 134, 11, 0.3) 80%, transparent 100%);
 
-    /* Interactive Elements - Persimmon */
-    --cal-nav-bg: rgba(210, 105, 30, 0.1);
+    /* Interactive Elements - Harvest */
+    --cal-nav-bg: rgba(139, 69, 19, 0.04);
     --cal-nav-color: #8b4513;
 
     --cal-today-bg: linear-gradient(135deg, #d35400 0%, #a04000 100%);
     /* Pumpkin/Rust */
-    --cal-today-text: #fff;
-    --cal-term-color: #d2691e;
+    --cal-today-text: #ffffff;
+    --cal-term-color: #af6000;
+    /* 更深焦橙色，確保在米色背景上清晰 */
+    --cal-festival-red: #bf360c;
+    /* 深橘紅 */
 
     /* Panel Specifics */
     --panel-accent: #d35400;
     --panel-side-bg: linear-gradient(to bottom, rgba(211, 84, 0, 0.1), transparent);
 
-    /* Glass Overrides */
-    --glass-blur: blur(25px);
+    /* Glass Effect Overrides */
+    --glass-blur: blur(30px);
     --glass-saturation: saturate(115%);
 }
 

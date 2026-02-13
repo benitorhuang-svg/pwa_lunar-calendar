@@ -19,29 +19,33 @@
 }
 
 .btn-today-quick {
-    background: rgba(255, 255, 255, 0.15);
-    /* Gray-ish transparent */
-    color: var(--cal-lunar-text);
-    border: 1px solid var(--cal-border);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 400;
+    background: rgba(255, 255, 255, 0.4);
+    color: var(--cal-text);
+    border: 0.5px solid var(--cal-border);
+    padding: 3px 12px;
+    border-radius: 20px;
+    /* Pill shape is more modern */
+    font-size: 0.7rem;
+    font-weight: 500;
     cursor: pointer;
     font-family: var(--font-serif);
     white-space: nowrap;
-    opacity: 0.9;
-    margin-right: 12px;
-    letter-spacing: 0.05em;
+    opacity: 0.8;
+    margin-right: 4px;
+    letter-spacing: 0.1em;
     display: inline-flex;
-    /* Ensure it behaves like a box in flex */
     align-items: center;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-today-quick:active {
+    transform: scale(0.92);
 }
 
 .btn-today-quick:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--cal-bg);
     border-color: var(--cal-text);
-    color: var(--cal-text);
     opacity: 1;
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
