@@ -230,6 +230,25 @@ export class HeroEventHandlers {
             );
         });
 
+        // 藝廊管理 (Gallery Management)
+        this.uiManager.bindGalleryControls(
+            async (files) => {
+                const { galleryStorage } = await import("./galleryStorage");
+                await galleryStorage.saveImages(files);
+                // 重新載入圖片 (Reload images once saved)
+                const season = this.imageManager.getSeason(new Date());
+                await this.imageManager.detectHeroImages(season);
+                console.log("[Hero] Gallery updated with new files");
+            },
+            async (mode) => {
+                await this.imageManager.setGalleryMode(mode);
+                console.log(`[Hero] Gallery mode switched to: ${mode}`);
+            },
+            (isContain) => {
+                this.uiManager.setBackgroundFit(isContain);
+            }
+        );
+
         // 背景點擊 (沉浸模式) (Background Click - Immersion)
         this.uiManager.bindBackgroundClick(() => this.idleManager.isArtwork);
     }

@@ -34,6 +34,13 @@
         transform 1.8s cubic-bezier(0.1, 0, 0, 1);
 }
 
+/* 完整顯示模式 (Contain Mode) */
+body.bg-fit-contain .hero-bg-item {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: #000;
+}
+
 @keyframes kenBurnsSmooth {
     0% {
         transform: scale(1);

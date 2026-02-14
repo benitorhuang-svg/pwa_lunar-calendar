@@ -17,35 +17,52 @@ export class HeroImageManager {
     private manifest: null | Record<string, string[]> = null;
     private requestedSeason: null | string = null;
     private specialHeroIdx = 0;
+    private galleryMode: "default" | "custom" | "hybrid" = "default";
+    private customHeroList: string[] = [];
 
     constructor(baseDir: string) {
         this.BASE_HERO_DIR = (baseDir + "assets/gallery/").replace(/\/+/g, "/");
     }
 
     public async detectHeroImages(targetSeason = "default", isFallback = false): Promise<void> {
-        const fullPlaylist: string[] = [];
+        const seasonalPlaylist: string[] = [];
         this.manifest = await this.loadManifest(); // Ensure manifest is loaded once
 
+        // 1. 取得季節圖片 (Get seasonal images)
         for (const season of ImageRules.SEASONS) {
             const images = await this.getImagesForSeason(season);
-
-            // Randomize if enabled
             if (ImageRules.ENABLE_RANDOM_SHUFFLE) {
                 images.sort(() => Math.random() - 0.5);
             }
-
             const selected = images.slice(0, ImageRules.MAX_IMAGES_PER_SEASON);
-            fullPlaylist.push(...selected);
-            console.log(`[Hero] Season ${season}: selected ${selected.length} images`);
+            seasonalPlaylist.push(...selected);
         }
 
-        // Fallback: If absolutely no images found across all seasons, try legacy default
+        // 2. 取得自訂圖片 (Get custom images)
+        const { galleryStorage } = await import("./galleryStorage");
+        const customImages = await galleryStorage.getAllImages();
+        this.customHeroList = customImages.map(img => URL.createObjectURL(img.blob));
+
+        // 3. 根據模式合成清單 (Compose list based on mode)
+        let fullPlaylist: string[] = [];
+
+        if (this.galleryMode === "default") {
+            fullPlaylist = seasonalPlaylist;
+        } else if (this.galleryMode === "custom") {
+            fullPlaylist = this.customHeroList.length > 0 ? this.customHeroList : seasonalPlaylist;
+        } else if (this.galleryMode === "hybrid") {
+            // 混合模式：交叉排列或隨機隨機混合 (Hybrid: Mixed)
+            fullPlaylist = [...seasonalPlaylist, ...this.customHeroList];
+            if (ImageRules.ENABLE_RANDOM_SHUFFLE) {
+                fullPlaylist.sort(() => Math.random() - 0.5);
+            }
+        }
+
+        // Fallback: If absolutely no images found
         if (fullPlaylist.length === 0) {
             if (targetSeason !== "default") {
-                console.log(`[Hero] No images found in seasonal flow, falling back to default.`);
                 await this.detectHeroImages("default", true);
             } else {
-                // Last resort
                 this.heroList = [`${this.BASE_HERO_DIR}default/1.png`];
                 this.heroIdx = 0;
             }
@@ -54,20 +71,27 @@ export class HeroImageManager {
 
         this.heroList = fullPlaylist;
 
-        // Set initial index to the start of the requested target season
-        // We look for the first image that contains the season path
-        const startIdx = this.heroList.findIndex((path) => path.includes(`/${targetSeason}/`));
+        // Set initial index
+        let startIdx = 0;
+        if (this.galleryMode !== "custom") {
+            startIdx = this.heroList.findIndex((path) => path.includes(`/${targetSeason}/`));
+        }
         this.heroIdx = startIdx !== -1 ? startIdx : 0;
 
-        console.log(
-            `[Hero] Global Playlist Ready: ${this.heroList.length} images. Starting at index ${this.heroIdx} (${targetSeason})`,
-        );
+        console.log(`[Hero] Mode: ${this.galleryMode}, Playlist Size: ${this.heroList.length}`);
 
         await this.preloadHeroImages();
 
         if (!isFallback) {
             window.dispatchEvent(new CustomEvent("request-hero-change"));
         }
+    }
+
+    public async setGalleryMode(mode: "default" | "custom" | "hybrid"): Promise<void> {
+        if (this.galleryMode === mode) return;
+        this.galleryMode = mode;
+        const season = this.getSeason(new Date());
+        await this.detectHeroImages(season);
     }
 
     public getSeason(date: Date): string {

@@ -26,6 +26,15 @@ export class HeroUIManager {
     private btnPrevHero: HTMLElement | null = null;
 
     private btnYearMonth: HTMLElement | null = null;
+
+    // Gallery Management
+    private btnGalleryMenu: HTMLElement | null = null;
+    private gallerySubmenu: HTMLElement | null = null;
+    private btnGalleryAdd: HTMLElement | null = null;
+    private btnGalleryFitToggle: HTMLElement | null = null;
+    private textGalleryFit: HTMLElement | null = null;
+    private galleryInput: HTMLInputElement | null = null;
+    private submenuItems: NodeListOf<HTMLElement> | null = null;
     // Containers & Overlays
     private heroBgContainer: HTMLElement | null = null;
     private heroDockWrapper: HTMLElement | null = null;
@@ -145,6 +154,67 @@ export class HeroUIManager {
         }
     }
 
+    public bindGalleryControls(
+        onFileSelect: (files: FileList) => void,
+        onModeChange: (mode: "default" | "custom" | "hybrid") => void,
+        onFitToggle: (isContain: boolean) => void
+    ): void {
+        // Toggle Submenu
+        this.btnGalleryMenu?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.gallerySubmenu?.classList.toggle("show");
+        });
+
+        // Toggle Fit Mode
+        this.btnGalleryFitToggle?.addEventListener("click", () => {
+            const isContain = !document.body.classList.contains("bg-fit-contain");
+            onFitToggle(isContain);
+
+            if (this.textGalleryFit) {
+                this.textGalleryFit.textContent = isContain ? "填滿畫面" : "完整顯示";
+            }
+            this.gallerySubmenu?.classList.remove("show");
+        });
+
+        // Close submenu when clicking outside
+        const closeSubmenu = (e: MouseEvent) => {
+            if (this.gallerySubmenu?.classList.contains("show") &&
+                !this.gallerySubmenu.contains(e.target as Node) &&
+                e.target !== this.btnGalleryMenu) {
+                this.gallerySubmenu.classList.remove("show");
+            }
+        };
+        document.addEventListener("click", closeSubmenu);
+
+        // Add Button -> Trigger hidden input
+        this.btnGalleryAdd?.addEventListener("click", () => {
+            this.galleryInput?.click();
+            this.gallerySubmenu?.classList.remove("show");
+        });
+
+        // File Input Change
+        this.galleryInput?.addEventListener("change", (e) => {
+            const files = (e.target as HTMLInputElement).files;
+            if (files && files.length > 0) {
+                onFileSelect(files);
+            }
+        });
+
+        // Mode Switching
+        this.submenuItems?.forEach(item => {
+            item.addEventListener("click", () => {
+                const mode = item.dataset.mode as "default" | "custom" | "hybrid";
+                if (mode) {
+                    onModeChange(mode);
+                    // Update Active UI
+                    this.submenuItems?.forEach(i => i.classList.remove("active"));
+                    item.classList.add("active");
+                    this.gallerySubmenu?.classList.remove("show");
+                }
+            });
+        });
+    }
+
     public hideInstallButton(): void {
         if (this.installBtn) this.installBtn.style.display = "none";
     }
@@ -172,6 +242,15 @@ export class HeroUIManager {
 
         this.heroBgContainer = document.getElementById("heroBgContainer");
         this.installBtn = document.getElementById("installBtn");
+
+        // Gallery
+        this.btnGalleryMenu = document.getElementById("btnGalleryMenu");
+        this.gallerySubmenu = document.getElementById("gallerySubmenu");
+        this.btnGalleryAdd = document.getElementById("btnGalleryAdd");
+        this.btnGalleryFitToggle = document.getElementById("btnGalleryFitToggle");
+        this.textGalleryFit = document.getElementById("textGalleryFit");
+        this.galleryInput = document.getElementById("galleryInput") as HTMLInputElement;
+        this.submenuItems = document.querySelectorAll(".submenu-item[data-mode]");
     }
 
     public showInstallButton(): void {
@@ -196,6 +275,9 @@ export class HeroUIManager {
                 this.btnYearMonth.style.display = "flex";
             }
             if (this.heroHeader) this.heroHeader.style.opacity = "1";
+
+            // 日曆模式隱藏藝廊選單 (Hide gallery menu in calendar mode)
+            if (this.btnGalleryMenu) this.btnGalleryMenu.style.display = "none";
         } else {
             this.btnDay?.classList.remove("active");
         }
@@ -226,6 +308,28 @@ export class HeroUIManager {
                 this.heroHeader.style.opacity = "1";
                 this.heroHeader.style.pointerEvents = "auto";
             }
+
+            // 非映畫模式隱藏藝廊選單 (Hide gallery menu when not in artwork mode)
+            if (this.btnGalleryMenu) this.btnGalleryMenu.style.display = "none";
+        }
+    }
+
+    /**
+     * 切換背景適應模式 (Toggle background fit mode)
+     */
+    public setBackgroundFit(isContain: boolean): void {
+        const items = document.querySelectorAll(".hero-bg-item");
+        items.forEach(item => {
+            (item as HTMLElement).style.backgroundSize = isContain ? "contain" : "cover";
+            (item as HTMLElement).style.backgroundRepeat = "no-repeat";
+            (item as HTMLElement).style.backgroundColor = isContain ? "#000" : "transparent";
+        });
+
+        // Update persistent default via body class
+        if (isContain) {
+            document.body.classList.add("bg-fit-contain");
+        } else {
+            document.body.classList.remove("bg-fit-contain");
         }
     }
 

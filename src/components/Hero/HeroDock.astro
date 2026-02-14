@@ -24,6 +24,81 @@
             >
         </button>
         <div class="dock-divider"></div>
+
+        <!-- 藝廊管理 (Gallery Management) -->
+        <div class="gallery-control-wrapper">
+            <button
+                aria-label="藝廊設置"
+                class="dock-item gallery-btn"
+                id="btnGalleryMenu"
+                title="藝廊設置"
+                type="button"
+            >
+                <svg
+                    fill="none"
+                    height="20"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="20"
+                    ><path d="M12 20v-6M9 20v-10M15 20v-2M18 20v-8M21 20V4M6 20v-4M3 20v-2"
+                    ></path></svg
+                >
+            </button>
+
+            <!-- 藝廊選單 (Gallery Submenu) -->
+            <div class="gallery-submenu" id="gallerySubmenu">
+                <button class="submenu-item active" data-mode="default" id="btnGalleryDefault">
+                    <span>預設</span>
+                </button>
+                <button class="submenu-item" data-mode="custom" id="btnGalleryCustom">
+                    <span>自訂</span>
+                </button>
+                <button class="submenu-item" data-mode="hybrid" id="btnGalleryHybrid">
+                    <span>混合模式</span>
+                </button>
+                <div class="submenu-divider"></div>
+                <!-- 縮放模式切換 (Fit Mode Toggle) -->
+                <button class="submenu-item" id="btnGalleryFitToggle">
+                    <svg
+                        fill="none"
+                        height="14"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="14"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg
+                    >
+                    <span id="textGalleryFit">完整顯示</span>
+                </button>
+                <div class="submenu-divider"></div>
+                <button class="submenu-item add-btn" id="btnGalleryAdd">
+                    <svg
+                        fill="none"
+                        height="14"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="14"
+                        ><line x1="12" x2="12" y1="5" y2="19"></line><line
+                            x1="5"
+                            x2="19"
+                            y1="12"
+                            y2="12"></line></svg
+                    >
+                    <span>新增</span>
+                </button>
+            </div>
+
+            <input accept="image/*" id="galleryInput" multiple style="display: none;" type="file" />
+        </div>
+
+        <div class="dock-divider"></div>
         <button
             aria-label="切換映畫模式"
             class="dock-item main-btn group-image"
@@ -46,6 +121,84 @@
             >
             <span>映畫</span>
         </button>
+
+        <style is:global>
+            .gallery-control-wrapper {
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+
+            .gallery-submenu {
+                position: absolute;
+                bottom: 60px;
+                left: 50%;
+                transform: translateX(-50%) translateY(10px);
+                background: rgba(20, 20, 25, 0.85);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                border-radius: 16px;
+                padding: 6px;
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+                min-width: 100px;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                pointer-events: auto;
+                z-index: 2200;
+            }
+
+            .gallery-submenu.show {
+                opacity: 1;
+                visibility: visible;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            .submenu-item {
+                background: transparent;
+                border: none;
+                color: rgba(255, 255, 255, 0.7);
+                padding: 8px 14px;
+                border-radius: 10px;
+                font-size: 0.85rem;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                white-space: nowrap;
+                text-align: left;
+            }
+
+            .submenu-item:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+            }
+
+            .submenu-item.active {
+                background: rgba(255, 255, 255, 0.2);
+                color: var(--gold-accent);
+                font-weight: 600;
+            }
+
+            .submenu-divider {
+                height: 1px;
+                background: rgba(255, 255, 255, 0.1);
+                margin: 4px 0;
+            }
+
+            .submenu-item.add-btn {
+                color: #a5d6a7;
+            }
+
+            .submenu-item.add-btn:hover {
+                background: rgba(165, 214, 167, 0.2);
+            }
+        </style>
 
         <button
             aria-label="選擇年/月"
