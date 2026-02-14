@@ -163,6 +163,13 @@ export class HeroEventHandlers {
                         detail: { action: "stop" },
                     }),
                 );
+
+                // 喚醒時回到日曆網格封面 (Return to calendar grid on wake up)
+                window.dispatchEvent(
+                    new CustomEvent<ClosePanelsDetail>("close-panels", {
+                        detail: { showGrid: true },
+                    }),
+                );
             }
         }) as EventListener);
 

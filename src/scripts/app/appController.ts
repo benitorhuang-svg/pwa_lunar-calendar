@@ -64,20 +64,28 @@ function activateWelcome(): void {
  * 負責歡迎模式初始化邏輯
  */
 function initWelcomeMode(): void {
-    // 監聽來自 ResourceLoader 的完成事件 (已包含開場動畫結束)
-    // Listen for completion event from ResourceLoader (includes mask animation end)
-    window.addEventListener("loader-finished", () => {
-        console.log("[AppController] Loader finished, activating welcome sequence.");
-        activateWelcome();
-    }, { once: true });
-
-    // Fallback: 如果因為某種原因沒收到事件但 body 已載入
-    if (document.body.classList.contains("app-loaded")) {
-        // 如果 overlay 已經隱藏 (display: none)，則直接進入
-        const overlay = document.getElementById("loadingOverlay");
-        if (overlay && overlay.style.display === "none") {
-            activateWelcome();
+    const checkAndActivate = () => {
+        if (document.body.classList.contains("app-loaded")) {
+            // Apply initial-welcome immediately to prevent HUD flash
+            if (!document.body.classList.contains("initial-welcome")) {
+                document.body.classList.add("initial-welcome");
+                activateWelcome();
+            }
+            return true;
         }
+        return false;
+    };
+
+    if (!checkAndActivate()) {
+        const observer = new MutationObserver((mutations) => {
+            for (const m of mutations) {
+                if (m.attributeName === "class" && checkAndActivate()) {
+                    observer.disconnect();
+                    break;
+                }
+            }
+        });
+        observer.observe(document.body, { attributes: true });
     }
 }
 

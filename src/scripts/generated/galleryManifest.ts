@@ -21,7 +21,6 @@ export const GALLERY_MANIFEST = {
     ],
     "autumn": [
         "1.webp",
-        "2.webp",
         "3.webp"
     ],
     "winter": [

@@ -131,10 +131,18 @@ export class HeroUIManager {
     }
 
     public bindWelcomeOverlay(callback: () => void): void {
-        this.welcomeOverlay?.addEventListener("click", (e) => {
+        const handler = (e: Event) => {
+            e.preventDefault();
             e.stopPropagation();
             callback();
-        });
+        };
+
+        if (this.welcomeOverlay) {
+            this.welcomeOverlay.addEventListener("click", handler);
+            this.welcomeOverlay.addEventListener("touchstart", handler, { passive: false });
+            // Add a transparent background to ensure it's clickable in all browsers
+            this.welcomeOverlay.style.background = "rgba(0,0,0,0)";
+        }
     }
 
     public hideInstallButton(): void {

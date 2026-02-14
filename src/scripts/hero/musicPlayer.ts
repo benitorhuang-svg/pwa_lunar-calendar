@@ -29,37 +29,52 @@ export class HeroMusicPlayer {
             if (!this.bgMusic) return;
             this.trackIdx = (this.trackIdx + 1) % this.zenPlaylist.length;
             this.bgMusic.src = this.zenPlaylist[this.trackIdx] || "";
-            this.bgMusic.play();
+            this.play();
         };
 
         this.btnMusic.onclick = () => {
-            if (!this.bgMusic || !this.btnMusic) return;
-
+            if (!this.bgMusic) return;
             if (this.bgMusic.paused) {
-                // 初始化第一首
-                if (!this.bgMusic.src || this.bgMusic.src === "" || this.bgMusic.ended) {
-                    this.bgMusic.src = this.zenPlaylist[this.trackIdx] || "";
-                }
-
-                this.bgMusic
-                    .play()
-                    .then(() => {
-                        console.log(
-                            "[ZenMusic] Flowing:",
-                            this.zenPlaylist[this.trackIdx] || "unknown",
-                        );
-                    })
-                    .catch((e) => {
-                        console.log("[ZenMusic] Blocked:", e);
-                    });
-                this.btnMusic.classList.add("playing");
+                this.play();
             } else {
-                this.bgMusic.pause();
-                this.btnMusic.classList.remove("playing");
-                // 暫停即預備下一首
-                this.trackIdx = (this.trackIdx + 1) % this.zenPlaylist.length;
-                this.bgMusic.src = this.zenPlaylist[this.trackIdx] || "";
+                this.pause();
             }
         };
+    }
+
+    /**
+     * 播放音樂 (Play Music)
+     */
+    public play(): void {
+        if (!this.bgMusic) return;
+
+        // 初始化第一首
+        if (!this.bgMusic.src || this.bgMusic.src === "" || this.bgMusic.ended) {
+            this.bgMusic.src = this.zenPlaylist[this.trackIdx] || "";
+        }
+
+        this.bgMusic
+            .play()
+            .then(() => {
+                console.log("[ZenMusic] Flowing:", this.zenPlaylist[this.trackIdx] || "unknown");
+                if (this.btnMusic) this.btnMusic.classList.add("playing");
+            })
+            .catch((e) => {
+                // 通常是瀏覽器自動播放限制 (Usually browser autoplay restriction)
+                console.log("[ZenMusic] Playback blocked or failed:", e.message);
+            });
+    }
+
+    /**
+     * 暫停音樂 (Pause Music)
+     */
+    public pause(): void {
+        if (!this.bgMusic) return;
+        this.bgMusic.pause();
+        if (this.btnMusic) this.btnMusic.classList.remove("playing");
+
+        // 預備下一首
+        this.trackIdx = (this.trackIdx + 1) % this.zenPlaylist.length;
+        this.bgMusic.src = this.zenPlaylist[this.trackIdx] || "";
     }
 }

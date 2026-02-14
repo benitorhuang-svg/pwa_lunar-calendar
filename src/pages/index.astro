@@ -63,7 +63,10 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             transform: translateX(-100%);
             opacity: 1;
             pointer-events: none;
-            transition: transform var(--duration-splash-clip) var(--ease-zen);
+            transition:
+                transform var(--duration-splash-clip) var(--ease-zen),
+                filter var(--duration-splash-clip) var(--ease-zen);
+            filter: brightness(1.2); /* 離開時輕微提亮，增加透明感 */
         }
 
         /* Prevent background from repositioning abruptly */
@@ -86,7 +89,9 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             align-items: center;
             z-index: 10;
             text-align: center;
-            transform: translateY(-20vh); /* 文字向上調動 */
+            transform: translateY(
+                -25vh
+            ); /* 向上偏移，優化視覺重心 (Shift up for better optical center) */
         }
 
         /* 毛筆字體進化：進度條嵌入文字 (墨染填滿效果 - 徹底修復殘影) */
@@ -120,11 +125,11 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             0%,
             100% {
                 filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.4));
-                transform: translateY(-20vh) scale(1);
+                transform: translateY(0) scale(1);
             }
             50% {
                 filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.6));
-                transform: translateY(-20vh) scale(1.02);
+                transform: translateY(0) scale(1.02);
             }
         }
 
@@ -147,7 +152,7 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
                 transform var(--duration-hero-entrance) var(--ease-zen),
                 opacity var(--duration-hero-entrance) var(--ease-standard) !important;
         }
-        body.app-loaded .hero-header {
+        body.app-loaded:not(.initial-welcome) .hero-header {
             transform: translateY(0);
             opacity: 1;
         }
@@ -160,7 +165,7 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
                 opacity var(--duration-panel-transition) var(--ease-standard) !important;
             transition-delay: 0.2s !important;
         }
-        body.app-loaded .hero-dock-wrapper {
+        body.app-loaded:not(.initial-welcome) .hero-dock-wrapper {
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
