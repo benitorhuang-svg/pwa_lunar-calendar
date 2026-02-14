@@ -13,12 +13,12 @@ export class ImageRules {
     /**
      * Maximum number of images to select per season for the global playlist.
      */
-    public static readonly MAX_IMAGES_PER_SEASON = 10;
+    public static readonly MAX_IMAGES_PER_SEASON = 100;
 
     /**
      * Maximum number of images to try probing for when manifest is not available.
      */
-    public static readonly MAX_PROBE_COUNT = 20;
+    public static readonly MAX_PROBE_COUNT = 50;
 
     /**
      * Maximum number of variant images to look for (e.g., DragonBoat1...DragonBoat5).
@@ -28,7 +28,7 @@ export class ImageRules {
     /**
      * The ordered list of seasons.
      */
-    public static readonly SEASONS = ["spring", "summer", "autumn", "winter"];
+    public static readonly SEASONS = ["default", "spring", "summer", "autumn", "winter"];
 
     /**
      * The list of supported image extensions in order of preference.
