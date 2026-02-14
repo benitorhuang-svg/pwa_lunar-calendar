@@ -2,6 +2,8 @@
  * Resource Loading & Splash Screen Logic
  * 負責首屏加載遮罩邏輯
  */
+import { Lunar } from "../core/lunar";
+import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
 (function () {
     let isLoaded = false;
@@ -16,7 +18,7 @@
         fonts: false, // 20%
         heroAll: false, // 20% (Preload remaining hero images)
         heroFirst: false, // 30% (First hero image)
-        scripts: false, // 20%
+        scripts: true, // 20% (Always true since we bundle imports)
     };
 
     const weights: Record<ProgressKey, number> = {
@@ -90,15 +92,6 @@
         }, 1500);
     }
 
-    // --- 1. 檢查 Scripts (Lunar + GALLERY_MANIFEST) ---
-    function checkScripts(): boolean {
-        if (typeof Lunar !== "undefined" && typeof GALLERY_MANIFEST !== "undefined") {
-            markDone("scripts");
-            return true;
-        }
-        return false;
-    }
-
     // --- 2. 檢查 Fonts ---
     function checkFonts(): boolean {
         if (document.fonts && document.fonts.status === "loaded") {
@@ -110,8 +103,6 @@
 
     // --- 3. 預載 Hero 圖片 ---
     function preloadHeroImages(): void {
-        if (typeof GALLERY_MANIFEST === "undefined") return;
-
         // 決定當季
         const m = new Date().getMonth() + 1;
         let season: string;
@@ -120,7 +111,7 @@
         else if (m >= 8 && m <= 10) season = "autumn";
         else season = "winter";
 
-        const baseDir = window.APP_BASE_URL || "/";
+        const baseDir = (window as any).APP_BASE_URL || "/";
         const galleryDir = (baseDir + "assets/gallery/" + season + "/").replace(/\/+/g, "/");
 
         const manifest = GALLERY_MANIFEST as Record<string, string[]>;
@@ -165,7 +156,7 @@
 
     // --- 4. 預載 Audio ---
     function preloadAudio(): void {
-        const baseDir = window.APP_BASE_URL || "/";
+        const baseDir = (window as any).APP_BASE_URL || "/";
         const audioFiles = [(baseDir + "assets/audio/ambient.mp3").replace(/\/+/g, "/")];
         // 只測試第一個音頻是否可載入
         if (audioFiles.length === 0) {
@@ -188,44 +179,28 @@
     }
 
     // --- 主邏輯 ---
-    window.addEventListener("load", () => {
-        // 立即檢查 scripts
-        if (!checkScripts()) {
-            const si = setInterval(() => {
-                if (checkScripts()) clearInterval(si);
-            }, 50);
-        }
+    // Make sure we mark scripts as done immediately since we imported them
+    markDone("scripts");
 
-        // 字體
-        if (!checkFonts()) {
-            document.fonts.ready.then(() => markDone("fonts"));
-            // fallback
-            setTimeout(() => markDone("fonts"), 3000);
-        }
+    // Start checking other resources
+    if (!checkFonts()) {
+        document.fonts.ready.then(() => markDone("fonts"));
+        // fallback
+        setTimeout(() => markDone("fonts"), 3000);
+    }
 
-        // 圖片 — 等 scripts ready 後才知道 manifest
-        const waitManifest = setInterval(() => {
-            if (progress.scripts) {
-                clearInterval(waitManifest);
-                preloadHeroImages();
+    preloadHeroImages();
+    preloadAudio();
+    startAnimationLoop();
+
+    // 安全網：最多等 8 秒強制進入
+    setTimeout(() => {
+        let key: ProgressKey;
+        for (key in progress) {
+            if (!progress[key]) {
+                console.warn("[Loader] Force-completing: " + key);
+                markDone(key);
             }
-        }, 50);
-
-        // 音頻
-        preloadAudio();
-
-        // 啟動動畫循環
-        startAnimationLoop();
-
-        // 安全網：最多等 8 秒強制進入
-        setTimeout(() => {
-            let key: ProgressKey;
-            for (key in progress) {
-                if (!progress[key]) {
-                    console.warn("[Loader] Force-completing: " + key);
-                    markDone(key);
-                }
-            }
-        }, 8000);
-    });
+        }
+    }, 8000);
 })();

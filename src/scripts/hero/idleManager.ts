@@ -62,6 +62,10 @@ export class HeroIdleManager {
         this.isArtworkMode = value;
     }
 
+    public get isArtwork(): boolean {
+        return this.isArtworkMode;
+    }
+
     public setupListeners(): void {
         // 監聽觸碰、點擊、鍵盤 (全域 reset)
         // 根據使用者要求：只追蹤觸摸/點擊，不追蹤滑鼠移動 (No mousemove tracking)

@@ -3,6 +3,8 @@
  * 負責建構日曆單元格 (Responsible for constructing calendar grid cells)
  */
 
+import { Lunar } from "../core/lunar";
+
 export class CalendarCellBuilder {
     public createDayCell(
         year: number,

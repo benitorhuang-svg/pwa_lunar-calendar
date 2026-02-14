@@ -3,11 +3,13 @@
  * 負責渲染年月選擇面板和今日詳情面板 (Responsible for rendering Year/Month selection panel and Today's detail panel)
  */
 
+import { Lunar } from "../core/lunar";
+
 export class PanelRenderers {
     private panelToday: HTMLElement | null = null;
     private panelYearMonth: HTMLElement | null = null;
 
-    constructor() {}
+    constructor() { }
 
     public init(): void {
         this.panelYearMonth = document.getElementById("panelYearMonth");
@@ -69,9 +71,9 @@ export class PanelRenderers {
                 <span class="yiji-label yiji-label--good">宜</span>
                 <div class="tag-container">
                     ${yi
-                        .slice(0, 5)
-                        .map((t: string) => `<span class="tag">${t}</span>`)
-                        .join("")}
+                .slice(0, 5)
+                .map((t: string) => `<span class="tag">${t}</span>`)
+                .join("")}
                     ${yi.length === 0 ? '<span class="tag">諸事平吉</span>' : ""}
                 </div>
             </div>
@@ -79,9 +81,9 @@ export class PanelRenderers {
                 <span class="yiji-label yiji-label--bad">忌</span>
                 <div class="tag-container">
                     ${ji
-                        .slice(0, 5)
-                        .map((t: string) => `<span class="tag">${t}</span>`)
-                        .join("")}
+                .slice(0, 5)
+                .map((t: string) => `<span class="tag">${t}</span>`)
+                .join("")}
                     ${ji.length === 0 ? '<span class="tag">諸事不忌</span>' : ""}
                 </div>
             </div>

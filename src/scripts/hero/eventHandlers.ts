@@ -301,6 +301,25 @@ export class HeroEventHandlers {
         const btnPrevHero = document.getElementById("btnPrevHero");
         const btnNextHero = document.getElementById("btnNextHero");
         const btnYearMonth = document.getElementById("btnYearMonth");
+        const heroBgContainer = document.getElementById("heroBgContainer");
+
+        // Background Click: Toggle Immersion Mode (Hide Dock) if in Artwork Mode
+        if (heroBgContainer) {
+            heroBgContainer.onclick = (e) => {
+                // Ensure we don't trigger if clicking buttons inside (though they are separate elements usually)
+                if (e.target !== heroBgContainer && !(e.target as HTMLElement).classList.contains("hero-bg-item")) return;
+
+                const isImmersion = document.body.classList.contains("immersion-mode");
+                const isArtwork = this.idleManager.isArtwork;
+
+                if (!isImmersion && isArtwork) {
+                    // Manually enter immersion mode (Hide Dock)
+                    window.dispatchEvent(
+                        new CustomEvent("welcome-mode", { detail: { active: true } }),
+                    );
+                }
+            };
+        }
 
         // Welcome Overlay Click
         if (this.welcomeOverlay) {
@@ -324,23 +343,39 @@ export class HeroEventHandlers {
         // Change Image Button
         if (btnChangeImage) {
             btnChangeImage.onclick = () => {
-                window.dispatchEvent(
-                    new CustomEvent("slideshow-control", {
-                        detail: { action: "start", isArtwork: true },
-                    }),
-                );
+                this.idleManager.reset(); // Also reset idle on click
 
-                window.dispatchEvent(
-                    new CustomEvent("request-hero-change", {
-                        detail: {
-                            changeBg: true,
-                            transitionOverride: "slide-from-right",
-                        },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent("close-panels", { detail: { showGrid: false } }),
-                );
+                if (this.idleManager.isArtwork) {
+                    // Toggle Off: Exit Artwork Mode
+                    window.dispatchEvent(
+                        new CustomEvent("slideshow-control", {
+                            detail: { action: "stop" },
+                        }),
+                    );
+                    // Open Panels (Grid) to return to normal state
+                    window.dispatchEvent(
+                        new CustomEvent("close-panels", { detail: { showGrid: true } }),
+                    );
+                } else {
+                    // Toggle On: Enter Artwork Mode
+                    window.dispatchEvent(
+                        new CustomEvent("slideshow-control", {
+                            detail: { action: "start", isArtwork: true },
+                        }),
+                    );
+
+                    window.dispatchEvent(
+                        new CustomEvent("request-hero-change", {
+                            detail: {
+                                changeBg: true,
+                                transitionOverride: "slide-from-right",
+                            },
+                        }),
+                    );
+                    window.dispatchEvent(
+                        new CustomEvent("close-panels", { detail: { showGrid: false } }),
+                    );
+                }
             };
         }
 

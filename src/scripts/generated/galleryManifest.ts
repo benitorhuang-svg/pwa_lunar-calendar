@@ -2,7 +2,7 @@
  * Generated Gallery Manifest
  * Do not edit manually.
  */
-window.GALLERY_MANIFEST = {
+export const GALLERY_MANIFEST = {
     "default": [
         "1.webp",
         "3.webp",
@@ -26,7 +26,6 @@ window.GALLERY_MANIFEST = {
     ],
     "winter": [
         "1.webp",
-        "2.webp",
-        "lunar_icon_calendar_corrected_li_v1_1770957646414.png"
+        "2.webp"
     ]
 };

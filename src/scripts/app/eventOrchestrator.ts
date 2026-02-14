@@ -4,6 +4,7 @@
  */
 
 import type { AppStateManager } from "./stateManager";
+import { Lunar } from "../core/lunar";
 
 export class AppEventOrchestrator {
     private state: AppStateManager;

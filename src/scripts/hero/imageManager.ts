@@ -3,6 +3,9 @@
  * 負責圖片偵測、切換、預載邏輯 (Responsible for image detection, switching, and preloading logic)
  */
 
+import { ImageRules } from "./imageRules";
+import { GALLERY_MANIFEST } from "../generated/galleryManifest";
+
 export class HeroImageManager {
     public heroList: string[] = [];
     public specialHeroList: string[] = [];
@@ -19,95 +22,100 @@ export class HeroImageManager {
         this.BASE_HERO_DIR = (baseDir + "assets/gallery/").replace(/\/+/g, "/");
     }
 
-    public async detectHeroImages(season = "default", isFallback = false): Promise<void> {
-        const seasonDir = `${this.BASE_HERO_DIR}${season}/`;
-        let detected: string[] = [];
+    public async detectHeroImages(targetSeason = "default", isFallback = false): Promise<void> {
+        const fullPlaylist: string[] = [];
+        this.manifest = await this.loadManifest(); // Ensure manifest is loaded once
 
-        // 1. Try to load from Global Manifest JS
-        if (typeof GALLERY_MANIFEST !== "undefined") {
-            this.manifest = GALLERY_MANIFEST as Record<string, string[]>;
-            if (this.manifest[season] && this.manifest[season].length > 0) {
-                detected = this.manifest[season].map((filename) => `${seasonDir}${filename}`);
-                console.log(
-                    `[Hero] Loaded ${detected.length} images from JS Manifest for ${season}`,
-                );
-            }
-        }
-        // 2. Try to load from JSON manifest
-        else {
-            try {
-                // Only fetch if we haven't already loaded the manifest or if we need to refresh (though usually static)
-                if (!this.manifest) {
-                    const response = await fetch("assets/gallery/gallery.json");
-                    if (response.ok) {
-                        this.manifest = await response.json();
-                    }
-                }
+        for (const season of ImageRules.SEASONS) {
+            const images = await this.getImagesForSeason(season);
 
-                if (this.manifest && this.manifest[season] && this.manifest[season].length > 0) {
-                    detected = this.manifest[season].map(
-                        (filename: string) => `${seasonDir}${filename}`,
-                    );
-                    console.log(
-                        `[Hero] Loaded ${detected.length} images from JSON Manifest for ${season}`,
-                    );
-                }
-            } catch {
-                // Expected fail on file:// without local server
+            // Randomize if enabled
+            if (ImageRules.ENABLE_RANDOM_SHUFFLE) {
+                images.sort(() => Math.random() - 0.5);
             }
+
+            const selected = images.slice(0, ImageRules.MAX_IMAGES_PER_SEASON);
+            fullPlaylist.push(...selected);
+            console.log(`[Hero] Season ${season}: selected ${selected.length} images`);
         }
 
-        // 3. Fallback to probing
-        if (detected.length === 0) {
-            console.log(`[Hero] Probing images in: ${seasonDir}`);
-            let i = 1;
-            const maxProbe = 20;
-
-            while (i <= maxProbe) {
-                let found = false;
-                const exts = [".png", ".webp", ".jpg"];
-                for (const ext of exts) {
-                    const src = `${seasonDir}${i}${ext}`;
-                    try {
-                        const exists = await this.checkImageExists(src);
-                        if (exists) {
-                            detected.push(src);
-                            found = true;
-                            i++;
-                            break;
-                        }
-                    } catch {
-                        // Ignore
-                    }
-                }
-                if (!found) break;
+        // Fallback: If absolutely no images found across all seasons, try legacy default
+        if (fullPlaylist.length === 0) {
+            if (targetSeason !== "default") {
+                console.log(`[Hero] No images found in seasonal flow, falling back to default.`);
+                await this.detectHeroImages("default", true);
+            } else {
+                // Last resort
+                this.heroList = [`${this.BASE_HERO_DIR}default/1.png`];
+                this.heroIdx = 0;
             }
-        }
-
-        // Fallback to default gallery
-        if (detected.length === 0 && season !== "default") {
-            console.log(`[Hero] No images in ${season}, falling back to default.`);
-            await this.detectHeroImages("default", true);
             return;
         }
 
-        this.heroList = detected.length > 0 ? detected : [`${this.BASE_HERO_DIR}default/1.png`];
-        this.heroList.sort(() => Math.random() - 0.5);
-        this.heroIdx = 0;
+        this.heroList = fullPlaylist;
 
-        this.preloadHeroImages();
+        // Set initial index to the start of the requested target season
+        // We look for the first image that contains the season path
+        const startIdx = this.heroList.findIndex((path) => path.includes(`/${targetSeason}/`));
+        this.heroIdx = startIdx !== -1 ? startIdx : 0;
+
+        console.log(`[Hero] Global Playlist Ready: ${this.heroList.length} images. Starting at index ${this.heroIdx} (${targetSeason})`);
+
+        await this.preloadHeroImages();
 
         if (!isFallback) {
             window.dispatchEvent(new CustomEvent("request-hero-change"));
         }
     }
 
+    private async loadManifest(): Promise<Record<string, string[]> | null> {
+        if (GALLERY_MANIFEST) {
+            return GALLERY_MANIFEST as Record<string, string[]>;
+        }
+        if (this.manifest) return this.manifest;
+
+        try {
+            const response = await fetch("assets/gallery/gallery.json");
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch {
+            // Ignore
+        }
+        return null;
+    }
+
+    private async getImagesForSeason(season: string): Promise<string[]> {
+        const seasonDir = `${this.BASE_HERO_DIR}${season}/`;
+        let detected: string[] = [];
+
+        // 1. Try Manifest
+        if (this.manifest && this.manifest[season] && this.manifest[season].length > 0) {
+            return this.manifest[season].map((f) => `${seasonDir}${f}`);
+        }
+
+        // 2. Probe (Fallback)
+        let i = 1;
+        while (i <= ImageRules.MAX_PROBE_COUNT) {
+            let found = false;
+            for (const ext of ImageRules.SUPPORTED_EXTENSIONS) {
+                const src = `${seasonDir}${i}${ext}`;
+                try {
+                    if (await this.checkImageExists(src)) {
+                        detected.push(src);
+                        found = true;
+                        i++;
+                        break;
+                    }
+                } catch { }
+            }
+            if (!found) break; // Gap found or end
+        }
+        return detected;
+    }
+
     public getSeason(date: Date): string {
-        const m = date.getMonth();
-        if (m >= 1 && m <= 3) return "spring";
-        if (m >= 4 && m <= 6) return "summer";
-        if (m >= 7 && m <= 9) return "autumn";
-        return "winter";
+        return ImageRules.getSeason(date);
     }
 
     public init(): void {
@@ -174,15 +182,11 @@ export class HeroImageManager {
                 this.specialHeroList = [];
                 this.specialHeroIdx = 0;
 
-                const exts = [".png", ".webp", ".jpg"];
-
-                // If we have a manifest, use it to check for existence effectively synchronously
-                // avoiding 404 network errors
                 if (this.manifest && this.manifest[targetSeason]) {
                     const seasonFiles = this.manifest[targetSeason];
 
                     // Check base: e.g. "DragonBoat.png"
-                    for (const ext of exts) {
+                    for (const ext of ImageRules.SUPPORTED_EXTENSIONS) {
                         const filename = `${specialName}${ext}`;
                         if (seasonFiles.includes(filename)) {
                             this.specialHeroList.push(`${this.BASE_HERO_DIR}${targetSeason}/${filename}`);
@@ -191,11 +195,9 @@ export class HeroImageManager {
                     }
 
                     // Check variants: e.g. "DragonBoat1.png"
-                    // Only assume variants if base OR at least one variant exists? 
-                    // The logic below mimics the original: check 1..5
-                    for (let i = 1; i <= 5; i++) {
+                    for (let i = 1; i <= ImageRules.MAX_VARIANT_COUNT; i++) {
                         let variantFound = false;
-                        for (const ext of exts) {
+                        for (const ext of ImageRules.SUPPORTED_EXTENSIONS) {
                             const filename = `${specialName}${i}${ext}`;
                             if (seasonFiles.includes(filename)) {
                                 this.specialHeroList.push(`${this.BASE_HERO_DIR}${targetSeason}/${filename}`);
@@ -207,10 +209,10 @@ export class HeroImageManager {
                     }
 
                 } else {
-                    // Fallback to probing if no manifest (original behavior)
+                    // Fallback to probing
                     let baseFound = false;
 
-                    for (const ext of exts) {
+                    for (const ext of ImageRules.SUPPORTED_EXTENSIONS) {
                         const src = `${this.BASE_HERO_DIR}${targetSeason}/${specialName}${ext}`;
                         const exists = await this.checkImageExists(src);
                         if (exists) {
@@ -221,9 +223,9 @@ export class HeroImageManager {
                     }
 
                     if (baseFound) {
-                        for (let i = 1; i <= 5; i++) {
+                        for (let i = 1; i <= ImageRules.MAX_VARIANT_COUNT; i++) {
                             let variantFound = false;
-                            for (const ext of exts) {
+                            for (const ext of ImageRules.SUPPORTED_EXTENSIONS) {
                                 const src = `${this.BASE_HERO_DIR}${targetSeason}/${specialName}${i}${ext}`;
                                 const exists = await this.checkImageExists(src);
                                 if (exists) {
@@ -274,12 +276,16 @@ export class HeroImageManager {
         });
     }
 
-    private preloadHeroImages(): void {
-        this.heroList.forEach((src) => {
-            const img = new Image();
-            img.src = src;
-            this.heroCache[src] = img;
-        });
+    private async preloadHeroImages(): Promise<void> {
+        for (const src of this.heroList) {
+            // Optional: Check existence before preloading to avoid 404 console errors
+            // This might add some overhead but keeps the console clean if manifest is stale
+            if (await this.checkImageExists(src)) {
+                const img = new Image();
+                img.src = src;
+                this.heroCache[src] = img;
+            }
+        }
     }
 
     private setHeroBackground(url: string, transition: string): void {
