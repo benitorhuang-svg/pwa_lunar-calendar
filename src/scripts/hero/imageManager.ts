@@ -265,7 +265,10 @@ export class HeroImageManager {
 
         // 1. Try Manifest
         if (this.manifest && this.manifest[season] && this.manifest[season].length > 0) {
-            return this.manifest[season].map((f) => `${seasonDir}${f}`);
+            // Filter out files with Chinese characters (Solar terms) for the slideshow
+            // User requested these to be shown ONLY on date click, not in rotation
+            const slideshowFiles = this.manifest[season].filter(f => !/[\u4e00-\u9fa5]/.test(f));
+            return slideshowFiles.map((f) => `${seasonDir}${f}`);
         }
 
         // 2. Probe (Fallback)

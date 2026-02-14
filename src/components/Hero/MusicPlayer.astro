@@ -36,8 +36,8 @@
 <style is:global>
     .music-control-wrapper {
         position: fixed;
-        top: calc(var(--safe-area-inset-top, 0px) + 20px);
-        right: 180px; /* 往左移以對齊下方的 > 按鈕 (Move left to align with > button) */
+        top: calc(var(--safe-area-inset-top, 0px) + 2.5vh);
+        right: 20px; /* 固定間距，避免電腦版偏離太遠 (Fixed spacing to avoid desktop drift) */
         z-index: 100001; /* Above almost everything but loading overlay */
         display: flex;
         align-items: center;
@@ -78,6 +78,13 @@
         border-color: rgba(240, 208, 96, 0.3);
         box-shadow: 0 0 15px rgba(240, 208, 96, 0.2);
         animation: musicPulse 2s ease-in-out infinite;
+    }
+
+    /* 映畫模式下的音樂按鈕顏色 (Silver theme for Artwork mode) */
+    body.mode-artwork .music-toggle-btn.playing {
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
     }
 
     .music-toggle-btn .mute-line {

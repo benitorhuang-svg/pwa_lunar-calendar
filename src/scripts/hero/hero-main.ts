@@ -12,7 +12,7 @@ const baseDir = APP_BASE_URL;
 const idleManager = new HeroIdleManager();
 const imageManager = new HeroImageManager(baseDir);
 const musicPlayer = new HeroMusicPlayer(baseDir);
-const slideshowManager = new HeroSlideshowManager();
+const slideshowManager = new HeroSlideshowManager(10000);
 const headerManager = new HeroHeaderManager();
 
 // Init Managers (DOM elements)
@@ -22,7 +22,7 @@ headerManager.init();
 idleManager.setupListeners();
 
 // Core Logic & Event Handlers
-const eventHandlers = new HeroEventHandlers(imageManager, slideshowManager, idleManager);
+const eventHandlers = new HeroEventHandlers(imageManager, slideshowManager, idleManager, musicPlayer);
 
 
 

@@ -9,6 +9,7 @@
 
 import type { HeroIdleManager } from "./idleManager";
 import type { HeroImageManager } from "./imageManager";
+import type { HeroMusicPlayer } from "./musicPlayer";
 import type { HeroSlideshowManager } from "./slideshowManager";
 import type {
     ClosePanelsDetail,
@@ -28,6 +29,7 @@ import { HeroUIManager } from "./uiManager";
 export class HeroEventHandlers {
     private idleManager: HeroIdleManager;
     private imageManager: HeroImageManager;
+    private musicPlayer: HeroMusicPlayer;
     private pwaHandler: HeroPWAHandler;
 
     private slideshowManager: HeroSlideshowManager;
@@ -38,10 +40,12 @@ export class HeroEventHandlers {
         imageManager: HeroImageManager,
         slideshowManager: HeroSlideshowManager,
         idleManager: HeroIdleManager,
+        musicPlayer: HeroMusicPlayer,
     ) {
         this.imageManager = imageManager;
         this.slideshowManager = slideshowManager;
         this.idleManager = idleManager;
+        this.musicPlayer = musicPlayer;
 
         this.uiManager = new HeroUIManager();
 
@@ -62,6 +66,9 @@ export class HeroEventHandlers {
     public init(): void {
         this.uiManager.init();
 
+        // 初始化音樂清單 (Initialize music playlist)
+        this.musicPlayer.loadCustomPlaylist();
+
         this.setupGlobalEventListeners();
         this.setupUIInteractions();
 
@@ -71,13 +78,9 @@ export class HeroEventHandlers {
 
     private handleNavigation(direction: number): void {
         this.idleManager.reset();
-        const isCalendarActive = this.uiManager.isCalendarActive;
 
-        if (isCalendarActive) {
-            window.dispatchEvent(
-                new CustomEvent<NavigateMonthDetail>("navigate-month", { detail: direction }),
-            );
-        } else {
+        // 映畫模式下切換圖片 (Switch images in Artwork Mode)
+        if (this.idleManager.isArtwork) {
             this.imageManager.switchHero(direction, false, () =>
                 this.slideshowManager.reset(
                     (o, a) => this.imageManager.switchHero(o, a),
@@ -86,6 +89,11 @@ export class HeroEventHandlers {
                         this.imageManager.heroList.length,
                     ),
                 ),
+            );
+        } else {
+            // 日曆模式下切換月份 (Switch months in Calendar Mode)
+            window.dispatchEvent(
+                new CustomEvent<NavigateMonthDetail>("navigate-month", { detail: direction }),
             );
         }
     }
@@ -230,26 +238,105 @@ export class HeroEventHandlers {
             );
         });
 
-        // 藝廊管理 (Gallery Management)
-        this.uiManager.bindGalleryControls(
-            async (files) => {
+        // 藝廊與媒體管理 (Gallery & Media Management)
+        // 藝廊與媒體管理 (Gallery & Media Management)
+        this.uiManager.bindGalleryControls({
+            onFileSelect: async (files: FileList) => {
                 const { galleryStorage } = await import("./galleryStorage");
-                await galleryStorage.saveImages(files);
-                // 重新載入圖片 (Reload images once saved)
+                const imageFiles = Array.from(files).filter(f => f.type.startsWith("image/"));
+                if (imageFiles.length === 0) return;
+
+                await galleryStorage.saveImages(imageFiles);
                 const season = this.imageManager.getSeason(new Date());
                 await this.imageManager.detectHeroImages(season);
-                console.log("[Hero] Gallery updated with new files");
+                console.log(`[Hero] Gallery updated with ${imageFiles.length} images`);
             },
-            async (mode) => {
+            onModeChange: async (mode) => {
                 await this.imageManager.setGalleryMode(mode);
                 console.log(`[Hero] Gallery mode switched to: ${mode}`);
             },
-            (isContain) => {
+            onFitToggle: (isContain) => {
                 this.uiManager.setBackgroundFit(isContain);
+            },
+            onMusicUrlInput: async (name, url) => {
+                const { galleryStorage } = await import("./galleryStorage");
+                await galleryStorage.saveAudioLink(name, url);
+
+                // Refresh Playlist & UI
+                await this.musicPlayer.loadCustomPlaylist();
+                await this.renderCustomStationsFromStorage();
+
+                // Play the new station
+                this.musicPlayer.playUrl(url);
+                console.log("[Hero] Custom Radio added and playing");
+            },
+            onClear: async () => {
+                const { galleryStorage } = await import("./galleryStorage");
+                await galleryStorage.clearAll();
+
+                const season = this.imageManager.getSeason(new Date());
+                await this.imageManager.detectHeroImages(season);
+
+                await this.musicPlayer.loadCustomPlaylist();
+                await this.renderCustomStationsFromStorage();
+
+                console.log("[Hero] All custom media cleared");
+            },
+            onStationDelete: async (id, name) => {
+                const { galleryStorage } = await import("./galleryStorage");
+                await galleryStorage.deleteAudio(id);
+
+                // Refresh Playlist & UI
+                await this.musicPlayer.loadCustomPlaylist();
+                await this.renderCustomStationsFromStorage();
+                console.log(`[Hero] Custom Radio '${name}' deleted`);
+            },
+            onPlay: (url) => {
+                this.musicPlayer.playUrl(url);
+                console.log("[Hero] Radio selected and playing");
+            }
+        });
+
+        // Background Click
+        this.uiManager.bindBackgroundClick(() => this.idleManager.isArtwork);
+
+        // Initial Render of Custom Stations
+        this.renderCustomStationsFromStorage().catch(console.error);
+    }
+
+    private async renderCustomStationsFromStorage(): Promise<void> {
+        const { galleryStorage } = await import("./galleryStorage");
+        const allAudio = await galleryStorage.getAllAudio();
+        // Filter only links for the radio menu
+        const stationLinks = allAudio
+            .filter(a => a.type === "link" && a.url)
+            .map(a => ({ id: a.id, name: a.name, url: a.url! }));
+
+        this.uiManager.renderCustomStations(
+            stationLinks,
+            (id, name) => {
+                // This callback is actually handled by bindGalleryControls' onStationDelete
+                // Wait, uiManager calls this directly. We need to bridge it.
+                // But bindGalleryControls already sets up the onDelete callback passed to renderCustomStations?
+                // No, bindGalleryControls implementation in uiManager calls specific callbacks.
+                // uiManager.renderCustomStations takes an onDelete callback argument.
+                // We are calling renderCustomStations here, so we must provide the implementation.
+
+                // Re-using the logic:
+                this.deleteCustomStation(id, name);
+            },
+            (name, url) => {
+                // onSelect
+                this.musicPlayer.playUrl(url);
             }
         );
+    }
 
-        // 背景點擊 (沉浸模式) (Background Click - Immersion)
-        this.uiManager.bindBackgroundClick(() => this.idleManager.isArtwork);
+    private async deleteCustomStation(id: string, name: string): Promise<void> {
+        const { galleryStorage } = await import("./galleryStorage");
+        await galleryStorage.deleteAudio(id);
+        await this.musicPlayer.loadCustomPlaylist();
+        await this.renderCustomStationsFromStorage();
+        console.log(`[Hero] Custom Radio '${name}' deleted via list`);
     }
 }

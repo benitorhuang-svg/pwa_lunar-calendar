@@ -1,6 +1,6 @@
 .hero-header {
     position: absolute;
-    top: calc(var(--safe-area-inset-top, 0px) + 20px);
+    top: calc(var(--safe-area-inset-top, 0px) + 2.5vh);
     left: 20px;
     z-index: 2100;
     pointer-events: none;

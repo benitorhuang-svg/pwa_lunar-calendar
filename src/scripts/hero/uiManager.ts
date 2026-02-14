@@ -31,15 +31,20 @@ export class HeroUIManager {
     private btnGalleryMenu: HTMLElement | null = null;
     private gallerySubmenu: HTMLElement | null = null;
     private btnGalleryAdd: HTMLElement | null = null;
+    private btnGalleryAddFolder: HTMLElement | null = null;
+    private btnMusicUrl: HTMLElement | null = null;
+    private btnGalleryClear: HTMLElement | null = null;
     private btnGalleryFitToggle: HTMLElement | null = null;
     private textGalleryFit: HTMLElement | null = null;
     private galleryInput: HTMLInputElement | null = null;
+    private folderInput: HTMLInputElement | null = null;
     private submenuItems: NodeListOf<HTMLElement> | null = null;
     // Containers & Overlays
     private heroBgContainer: HTMLElement | null = null;
     private heroDockWrapper: HTMLElement | null = null;
-    private heroHeader: HTMLElement | null = null;
     private installBtn: HTMLElement | null = null;
+    private galleryControlWrapper: HTMLElement | null = null;
+    private heroHeader: HTMLElement | null = null;
 
     private welcomeOverlay: HTMLElement | null = null;
 
@@ -155,9 +160,15 @@ export class HeroUIManager {
     }
 
     public bindGalleryControls(
-        onFileSelect: (files: FileList) => void,
-        onModeChange: (mode: "default" | "custom" | "hybrid") => void,
-        onFitToggle: (isContain: boolean) => void
+        callbacks: {
+            onFileSelect: (files: FileList) => void,
+            onModeChange: (mode: "default" | "custom" | "hybrid") => void,
+            onFitToggle: (isContain: boolean) => void,
+            onMusicUrlInput: (name: string, url: string) => void,
+            onClear: () => void,
+            onStationDelete?: (id: string, name: string) => void,
+            onPlay?: (url: string) => void
+        }
     ): void {
         // Toggle Submenu
         this.btnGalleryMenu?.addEventListener("click", (e) => {
@@ -165,13 +176,21 @@ export class HeroUIManager {
             this.gallerySubmenu?.classList.toggle("show");
         });
 
+        // Clear Media
+        this.btnGalleryClear?.addEventListener("click", () => {
+            if (confirm("確定要清空所有自選圖片與自定義音樂嗎？")) {
+                callbacks.onClear();
+            }
+            this.gallerySubmenu?.classList.remove("show");
+        });
+
         // Toggle Fit Mode
         this.btnGalleryFitToggle?.addEventListener("click", () => {
             const isContain = !document.body.classList.contains("bg-fit-contain");
-            onFitToggle(isContain);
+            callbacks.onFitToggle(isContain);
 
             if (this.textGalleryFit) {
-                this.textGalleryFit.textContent = isContain ? "填滿畫面" : "完整顯示";
+                this.textGalleryFit.textContent = isContain ? "填滿畫面" : "顯示完整圖片";
             }
             this.gallerySubmenu?.classList.remove("show");
         });
@@ -192,12 +211,78 @@ export class HeroUIManager {
             this.gallerySubmenu?.classList.remove("show");
         });
 
-        // File Input Change
+        this.btnGalleryAddFolder?.addEventListener("click", () => {
+            this.folderInput?.click();
+            this.gallerySubmenu?.classList.remove("show");
+        });
+
+        this.btnMusicUrl?.addEventListener("click", () => {
+            const customUrl = prompt("請輸入您的電台直接網址 (Direct Streaming URL):");
+            if (customUrl) {
+                const customName = prompt("請輸入電台名稱:", "自訂電台");
+                const finalName = customName || "自訂電台";
+                callbacks.onMusicUrlInput(finalName, customUrl);
+
+                // Do NOT rename button anymore. Just clear active states if any.
+                const radioItems = document.querySelectorAll(".radio-item");
+                radioItems.forEach(ri => ri.classList.remove("active"));
+            }
+            this.gallerySubmenu?.classList.remove("show");
+        });
+
+        // Online Radio Delete Buttons (Static ones)
+        const deleteButtons = document.querySelectorAll(".radio-delete-btn");
+        deleteButtons.forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation(); // Prevent closing submenu or selecting radio
+                if (confirm("確定要移除此電台嗎？")) {
+                    const row = btn.closest(".radio-row");
+                    if (row) {
+                        row.remove();
+                    }
+                }
+            });
+        });
+
+        // Online Radio Presets
+        const radioItems = document.querySelectorAll(".radio-item");
+        radioItems.forEach(item => {
+            item.addEventListener("click", () => {
+                // Clear active state from all radio items
+                const allRadioItems = document.querySelectorAll(".radio-item");
+                allRadioItems.forEach(ri => ri.classList.remove("active"));
+
+                // Add active state to clicked item
+                item.classList.add("active");
+
+                // If it's a preset with data-url
+                const url = (item as HTMLElement).dataset.url;
+                if (url) {
+                    const name = (item as HTMLElement).textContent;
+                    if (name) {
+                        // FIX: Use onPlay instead of onMusicUrlInput to prevent re-adding as custom station
+                        if (callbacks.onPlay) {
+                            callbacks.onPlay(url);
+                        } else {
+                            // Fallback if needed, but really shouldn't add it
+                            console.warn("onPlay callback not provided");
+                        }
+                    }
+                    this.gallerySubmenu?.classList.remove("show");
+                }
+            });
+        });
+
+        // ... (File inputs and Mode switching remain same)
+        // File Input Changes
         this.galleryInput?.addEventListener("change", (e) => {
             const files = (e.target as HTMLInputElement).files;
-            if (files && files.length > 0) {
-                onFileSelect(files);
-            }
+            if (files && files.length > 0) callbacks.onFileSelect(files);
+        });
+
+        this.folderInput?.addEventListener("change", (e) => {
+            const files = (e.target as HTMLInputElement).files;
+            if (files && files.length > 0) callbacks.onFileSelect(files);
         });
 
         // Mode Switching
@@ -205,13 +290,77 @@ export class HeroUIManager {
             item.addEventListener("click", () => {
                 const mode = item.dataset.mode as "default" | "custom" | "hybrid";
                 if (mode) {
-                    onModeChange(mode);
+                    callbacks.onModeChange(mode);
                     // Update Active UI
                     this.submenuItems?.forEach(i => i.classList.remove("active"));
                     item.classList.add("active");
                     this.gallerySubmenu?.classList.remove("show");
                 }
             });
+        });
+    }
+
+    /**
+     * Render custom radio stations into the menu
+     */
+    public renderCustomStations(
+        stations: { id: string, name: string, url: string }[],
+        onDelete: (id: string, name: string) => void,
+        onSelect: (name: string, url: string) => void
+    ): void {
+        const musicBtn = document.getElementById("btnMusicUrl");
+        if (!musicBtn) return;
+
+        const container = musicBtn.closest(".radio-row")?.parentElement || musicBtn.parentElement;
+        if (!container) return;
+
+        // Remove existing CUSTOM rows (markers needed)
+        const existingCustoms = container.querySelectorAll(".radio-row.custom-station-row");
+        existingCustoms.forEach(row => row.remove());
+
+        // Insert new available stations before the Add button's row
+        // If btnMusicUrl is inside a .radio-row, we insert before that row
+        const insertBeforeTarget = musicBtn.closest(".radio-row");
+
+        stations.forEach(station => {
+            const row = document.createElement("div");
+            row.className = "radio-row custom-station-row";
+
+            const btn = document.createElement("button");
+            btn.className = "radio-item";
+            btn.dataset.url = station.url;
+            btn.textContent = `▶ ${station.name}`;
+
+            btn.addEventListener("click", () => {
+                // UI Visuals
+                const allRadioItems = document.querySelectorAll(".radio-item");
+                allRadioItems.forEach(ri => ri.classList.remove("active"));
+                btn.classList.add("active");
+
+                onSelect(station.name, station.url);
+                this.gallerySubmenu?.classList.remove("show");
+            });
+
+            const delBtn = document.createElement("button");
+            delBtn.className = "radio-delete-btn";
+            delBtn.textContent = "✕";
+            delBtn.ariaLabel = "刪除此電台";
+
+            delBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                if (confirm(`確定要移除「${station.name}」嗎？`)) {
+                    onDelete(station.id, station.name);
+                }
+            });
+
+            row.appendChild(btn);
+            row.appendChild(delBtn);
+
+            if (insertBeforeTarget) {
+                container.insertBefore(row, insertBeforeTarget);
+            } else {
+                container.appendChild(row);
+            }
         });
     }
 
@@ -247,10 +396,16 @@ export class HeroUIManager {
         this.btnGalleryMenu = document.getElementById("btnGalleryMenu");
         this.gallerySubmenu = document.getElementById("gallerySubmenu");
         this.btnGalleryAdd = document.getElementById("btnGalleryAdd");
+        this.btnGalleryAddFolder = document.getElementById("btnGalleryAddFolder");
+        this.btnMusicUrl = document.getElementById("btnMusicUrl");
+        this.btnGalleryClear = document.getElementById("btnGalleryClear");
         this.btnGalleryFitToggle = document.getElementById("btnGalleryFitToggle");
         this.textGalleryFit = document.getElementById("textGalleryFit");
         this.galleryInput = document.getElementById("galleryInput") as HTMLInputElement;
+        this.folderInput = document.getElementById("folderInput") as HTMLInputElement;
+
         this.submenuItems = document.querySelectorAll(".submenu-item[data-mode]");
+        this.galleryControlWrapper = document.getElementById("galleryControlWrapper");
     }
 
     public showInstallButton(): void {
@@ -268,16 +423,15 @@ export class HeroUIManager {
                 this.heroDockWrapper.style.opacity = "1";
                 this.heroDockWrapper.style.pointerEvents = "auto";
             }
-            this.btnDay?.classList.add("active");
-            this.btnChangeImage?.classList.remove("active");
             if (this.btnYearMonth) {
                 this.btnYearMonth.classList.remove("active");
-                this.btnYearMonth.style.display = "flex";
             }
             if (this.heroHeader) this.heroHeader.style.opacity = "1";
 
-            // 日曆模式隱藏藝廊選單 (Hide gallery menu in calendar mode)
-            if (this.btnGalleryMenu) this.btnGalleryMenu.style.display = "none";
+            // 下方選單：日曆模式 -> 顯示 [映畫 | 年月 | 日曆]
+            // Hide Gallery, show YearMonth in calendar mode
+            this.setGalleryMenuVisibility(false);
+            if (this.btnYearMonth) this.btnYearMonth.style.display = "flex";
         } else {
             this.btnDay?.classList.remove("active");
         }
@@ -288,6 +442,8 @@ export class HeroUIManager {
      * Update UI state for Artwork Mode
      */
     public updateArtworkModeUI(isArtwork: boolean): void {
+        this.updateModeTheme(isArtwork);
+
         if (isArtwork) {
             this.btnChangeImage?.classList.add("active");
             if (this.btnYearMonth) this.btnYearMonth.style.display = "none";
@@ -299,9 +455,10 @@ export class HeroUIManager {
                 this.heroHeader.style.opacity = "0";
                 this.heroHeader.style.pointerEvents = "none";
             }
+            // 映畫模式顯示藝廊選單 (Show gallery menu)
+            this.setGalleryMenuVisibility(true);
         } else {
             this.btnChangeImage?.classList.remove("active");
-            if (this.btnYearMonth) this.btnYearMonth.style.display = "flex";
 
             // 恢復左上角日期 (Restore top-left date)
             if (this.heroHeader) {
@@ -309,9 +466,35 @@ export class HeroUIManager {
                 this.heroHeader.style.pointerEvents = "auto";
             }
 
-            // 非映畫模式隱藏藝廊選單 (Hide gallery menu when not in artwork mode)
-            if (this.btnGalleryMenu) this.btnGalleryMenu.style.display = "none";
+            // 返回模式 -> 顯示年月切換 (Back to Calendar: show Year/Month)
+            this.setGalleryMenuVisibility(false);
+            if (this.btnYearMonth) this.btnYearMonth.style.display = "flex";
         }
+    }
+
+    private updateModeTheme(isArtwork: boolean): void {
+        if (isArtwork) {
+            document.body.classList.add("mode-artwork");
+            this.btnPrevHero?.classList.remove("group-calendar");
+            this.btnPrevHero?.classList.add("group-image");
+            this.btnNextHero?.classList.remove("group-calendar");
+            this.btnNextHero?.classList.add("group-image");
+        } else {
+            document.body.classList.remove("mode-artwork");
+            this.btnPrevHero?.classList.remove("group-image");
+            this.btnPrevHero?.classList.add("group-calendar");
+            this.btnNextHero?.classList.remove("group-image");
+            this.btnNextHero?.classList.add("group-calendar");
+        }
+    }
+
+    /**
+     * 控制藝廊選單及其分隔線的可見性
+     * Control visibility of gallery menu and its dividers
+     */
+    private setGalleryMenuVisibility(visible: boolean): void {
+        const display = visible ? "flex" : "none";
+        if (this.galleryControlWrapper) this.galleryControlWrapper.style.display = display;
     }
 
     /**
