@@ -3,109 +3,134 @@ import CalendarBoard from "../components/Calendar/CalendarBoard.astro";
 import HeroSection from "../components/Hero/HeroSection.astro";
 import FloatingPanels from "../components/Panels/FloatingPanels.astro";
 import Layout from "../layouts/Layout.astro";
+
+const baseUrl = import.meta.env.BASE_URL;
+const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
 ---
 
 <Layout>
     <!-- Loading Overlay (Splash Screen) -->
     <div id="loadingOverlay">
         <div class="loading-content">
-            <div class="loading-text">農民曆</div>
-            <div class="loading-bar-container">
-                <div class="loading-bar" id="loadingBar"></div>
-            </div>
-            <div class="loading-percent" id="loadingPercent">0%</div>
+            <!-- 進度直接嵌入文字中 (Progress embedded in text) -->
+            <div class="loading-text" id="loadingText">農民曆</div>
         </div>
     </div>
 
-    <style>
-        /* Critical CSS for Loading Screen */
+    <style is:global define:vars={{ bgUrl: `url(${bgUrl})` }}>
+        /* --- 1. Premium Loading Overlay Design --- */
         #loadingOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            z-index: 99999;
+            z-index: 100000;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .loading-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .loading-text {
-            font-family: "Zhi Mang Xing", cursive;
-            font-size: 3.5rem;
-            letter-spacing: 0.5rem;
-            color: #d4af37;
-            opacity: 0.8;
-            animation: pulseText 2s infinite ease-in-out;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
-            white-space: nowrap;
-        }
-
-        .loading-bar-container {
-            width: 200px;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 3px;
+            transition:
+                clip-path 1.4s cubic-bezier(0.77, 0, 0.175, 1),
+                opacity 1s ease;
             overflow: hidden;
+            background-color: #000;
         }
 
-        .loading-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #d4af37, #f0d060);
-            border-radius: 3px;
-            transition: width 0.3s ease-out;
+        /* Loading Background Image with Mask */
+        #loadingOverlay::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: var(--bgUrl);
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            opacity: 0.7;
+            filter: brightness(0.8);
+            transform: scale(1.05);
+            transition: transform 3s ease-out;
         }
 
-        .loading-percent {
-            font-family: "Playfair Display", serif;
-            font-size: 1rem;
-            color: rgba(212, 175, 55, 0.7);
-            letter-spacing: 0.1rem;
+        body.app-loaded #loadingOverlay::before {
+            transform: scale(1.15);
         }
 
-        @keyframes pulseText {
-            0%,
-            100% {
-                opacity: 0.6;
-                transform: scale(0.98);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.02);
-            }
-        }
-
-        /* App Reveal State */
+        /* 擴散式開場 */
         body.app-loaded #loadingOverlay {
+            clip-path: circle(0% at 50% 50%);
             opacity: 0;
             pointer-events: none;
         }
 
-        /* Initial Hidden State for UI Elements only (Background stays visible) */
-        .hero-dock-wrapper,
-        .hero-header,
-        .suspension-panel,
-        #calendarSection {
-            opacity: 0;
-            transition: opacity 1s ease-out;
+        .loading-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            text-align: center;
+            transform: translateY(-20vh); /* 文字向上調動 */
         }
 
-        body.app-loaded .hero-dock-wrapper,
-        body.app-loaded .hero-header,
-        body.app-loaded .suspension-panel,
-        body.app-loaded #calendarSection {
+        /* 毛筆字體進化：進度條嵌入文字 (墨染填滿效果 - 徹底修復殘影) */
+        .loading-text {
+            font-family: "Zhi Mang Xing", cursive;
+            font-size: clamp(4.5rem, 18vw, 8.5rem);
+            letter-spacing: 1.8rem;
+            position: relative;
+            white-space: nowrap;
+            line-height: 1.2;
+            padding: 20px;
+
+            /* 使用單層背景漸層 + Clip 技術，保證 100% 重合 */
+            background: linear-gradient(
+                to right,
+                #f0d060 var(--loading-progress, 0%),
+                rgba(255, 255, 255, 0.4) var(--loading-progress, 0%)
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent; /* 文字本身透明，顯示背景漸層 */
+
+            filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.4));
+        }
+
+        /* 移除虛擬元素 ::after，避免對位誤差導致的殘影 */
+        .loading-text::after {
+            display: none !important;
+        }
+
+        /* --- 2. Staggered Entrance Elements --- */
+        .hero-header {
+            transform: translateY(-20px);
+            opacity: 0;
+            transition:
+                transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+                opacity 1.2s ease !important;
+        }
+        body.app-loaded .hero-header {
+            transform: translateY(0);
             opacity: 1;
+        }
+
+        .hero-dock-wrapper {
+            transform: translateY(40px);
+            opacity: 0;
+            transition:
+                transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+                opacity 1.2s ease !important;
+            transition-delay: 0.5s !important;
+        }
+        body.app-loaded .hero-dock-wrapper {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        #panelToday {
+            transition:
+                opacity 1.2s ease,
+                transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+            transition-delay: 0.3s !important;
         }
     </style>
 

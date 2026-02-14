@@ -5,8 +5,7 @@
 
 (function () {
     let isLoaded = false;
-    const loadingBar = document.getElementById("loadingBar") as HTMLElement | null;
-    const loadingPercent = document.getElementById("loadingPercent") as HTMLElement | null;
+    const loadingText = document.getElementById("loadingText") as HTMLElement | null;
 
     type ProgressKey = "audio" | "fonts" | "heroAll" | "heroFirst" | "scripts";
 
@@ -37,14 +36,13 @@
         return total;
     }
 
-    function updateUI(): void {
-        const pct = calcPercent();
-        if (loadingBar) loadingBar.style.width = pct + "%";
-        if (loadingPercent) loadingPercent.textContent = pct + "%";
+    let actualPercent = 0;
+    let visualPercent = 0;
+    const startTime = Date.now();
+    const MIN_LOADING_TIME = 2000; // 至少動畫 2 秒
 
-        if (pct >= 100) {
-            revealApp();
-        }
+    function updateUI(): void {
+        actualPercent = calcPercent();
     }
 
     function markDone(key: ProgressKey): void {
@@ -55,16 +53,41 @@
         }
     }
 
+    // 啟動平滑動畫循環 (Start smooth animation loop)
+    function startAnimationLoop(): void {
+        const frame = () => {
+            const elapsedTime = Date.now() - startTime;
+            const timePercent = (elapsedTime / MIN_LOADING_TIME) * 100;
+
+            // 視覺進度取「實際資源進度」與「時間進度」的最小值
+            // 確保即使資源載入極快，也要花 2 秒才跑完動畫
+            visualPercent = Math.min(actualPercent, timePercent);
+
+            if (loadingText) {
+                loadingText.style.setProperty("--loading-progress", visualPercent.toFixed(1) + "%");
+            }
+
+            if (visualPercent < 100 || actualPercent < 100) {
+                requestAnimationFrame(frame);
+            } else {
+                // 當兩者都達到 100% 時，觸發揭幕
+                revealApp();
+            }
+        };
+        requestAnimationFrame(frame);
+    }
+
     function revealApp(): void {
         if (isLoaded) return;
         isLoaded = true;
 
         document.body.classList.add("app-loaded");
 
+        // 等待 clip-path 動畫執行完畢 (1.4s) 後再完全隱藏 DOM
         setTimeout(() => {
             const overlay = document.getElementById("loadingOverlay");
             if (overlay) overlay.style.display = "none";
-        }, 1000);
+        }, 1500);
     }
 
     // --- 1. 檢查 Scripts (Lunar + GALLERY_MANIFEST) ---
@@ -100,11 +123,12 @@
         const baseDir = window.APP_BASE_URL || "/";
         const galleryDir = (baseDir + "assets/gallery/" + season + "/").replace(/\/+/g, "/");
 
-        let imageList = (GALLERY_MANIFEST[season] || []).map((f) => galleryDir + f);
+        const manifest = GALLERY_MANIFEST as Record<string, string[]>;
+        let imageList = (manifest[season] || []).map((f: string) => galleryDir + f);
         // fallback to default
         if (imageList.length === 0) {
             const defaultDir = (baseDir + "assets/gallery/default/").replace(/\/+/g, "/");
-            imageList = (GALLERY_MANIFEST["default"] || []).map((f) => defaultDir + f);
+            imageList = (manifest["default"] || []).map((f: string) => defaultDir + f);
         }
 
         if (imageList.length === 0) {
@@ -148,11 +172,16 @@
             markDone("audio");
             return;
         }
+        const firstAudio = audioFiles[0];
+        if (!firstAudio) {
+            markDone("audio");
+            return;
+        }
         const audio = new Audio();
         audio.preload = "auto";
         audio.oncanplaythrough = () => markDone("audio");
         audio.onerror = () => markDone("audio"); // 即使失敗也不阻塞
-        audio.src = audioFiles[0];
+        audio.src = firstAudio;
 
         // 音頻 fallback 超時 2 秒
         setTimeout(() => markDone("audio"), 2000);
@@ -185,16 +214,18 @@
         // 音頻
         preloadAudio();
 
+        // 啟動動畫循環
+        startAnimationLoop();
+
         // 安全網：最多等 8 秒強制進入
         setTimeout(() => {
-            let key: keyof typeof progress;
+            let key: ProgressKey;
             for (key in progress) {
                 if (!progress[key]) {
                     console.warn("[Loader] Force-completing: " + key);
-                    progress[key] = true;
+                    markDone(key);
                 }
             }
-            updateUI();
         }, 8000);
     });
 })();
