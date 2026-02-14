@@ -2,6 +2,115 @@
 
 ---
 
-<audio id="bgMusic" loop preload="none">
-    <source src="/assets/audio/ambient.mp3" type="audio/mpeg" />
-</audio>
+<!-- Music Player & Controls -->
+<div class="music-control-wrapper">
+    <button
+        aria-label="播放背景音樂"
+        class="music-toggle-btn"
+        id="btnMusic"
+        title="播放音樂"
+        type="button"
+    >
+        <svg
+            fill="none"
+            height="30"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+            ><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle
+                cx="18"
+                cy="16"
+                r="3"></circle>
+            <!-- 靜音斜線 (Mute slash) -->
+            <line class="mute-line" x1="1" x2="23" y1="23" y2="1"></line>
+        </svg>
+    </button>
+    <audio id="bgMusic" loop preload="none">
+        <source src="/assets/audio/ambient.mp3" type="audio/mpeg" />
+    </audio>
+</div>
+
+<style is:global>
+    .music-control-wrapper {
+        position: fixed;
+        top: calc(var(--safe-area-inset-top, 0px) + 20px);
+        right: 180px; /* 往左移以對齊下方的 > 按鈕 (Move left to align with > button) */
+        z-index: 100001; /* Above almost everything but loading overlay */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+            transform var(--duration-mid) var(--ease-standard),
+            opacity var(--duration-mid) var(--ease-standard);
+    }
+
+    .music-toggle-btn {
+        background: var(
+            --glass-bg-dark
+        ); /* 使用較深的底色確保可見度 (Darker glass bg for visibility) */
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: var(--glass-border-dark);
+        color: #fff; /* 圖標改為全白 (White icon) */
+        width: 40px; /* 縮小尺寸 (Shrink size to 36px) */
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all var(--duration-fast) var(--ease-standard);
+        padding: 0;
+        box-shadow: var(--shadow-md); /* 加入陰影增強層次 (Add shadow for depth) */
+    }
+
+    .music-toggle-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        transform: scale(1.05);
+    }
+
+    .music-toggle-btn.playing {
+        color: #f0d060;
+        border-color: rgba(240, 208, 96, 0.3);
+        box-shadow: 0 0 15px rgba(240, 208, 96, 0.2);
+        animation: musicPulse 2s ease-in-out infinite;
+    }
+
+    .music-toggle-btn .mute-line {
+        transition: opacity var(--duration-fast) ease;
+        opacity: 1;
+    }
+
+    .music-toggle-btn.playing .mute-line {
+        opacity: 0;
+    }
+
+    @keyframes musicPulse {
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 0.9;
+        }
+        50% {
+            transform: scale(
+                0.95
+            ); /* 從 1.08 降至 1.03，極微小的跳動 (Reduced from 1.08 to 1.03) */
+            opacity: 0.95;
+        }
+    }
+
+    /* Keep it visible in immersion mode, but you can hide other elements */
+    body.app-loaded .music-control-wrapper {
+        opacity: 0.9;
+        visibility: visible;
+    }
+
+    body:not(.app-loaded) .music-control-wrapper {
+        opacity: 0;
+        visibility: hidden;
+    }
+</style>

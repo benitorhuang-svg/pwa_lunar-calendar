@@ -21,7 +21,7 @@ export class HeroUIManager {
     // Buttons
     private btnChangeImage: HTMLElement | null = null;
     private btnDay: HTMLElement | null = null;
-    private btnMusic: HTMLElement | null = null;
+
     private btnNextHero: HTMLElement | null = null;
     private btnPrevHero: HTMLElement | null = null;
 
@@ -169,7 +169,7 @@ export class HeroUIManager {
         this.btnChangeImage = document.getElementById("btnChangeImage");
         this.btnPrevHero = document.getElementById("btnPrevHero");
         this.btnNextHero = document.getElementById("btnNextHero");
-        this.btnMusic = document.getElementById("btnMusic");
+
         this.heroBgContainer = document.getElementById("heroBgContainer");
         this.installBtn = document.getElementById("installBtn");
     }
@@ -209,13 +209,23 @@ export class HeroUIManager {
         if (isArtwork) {
             this.btnChangeImage?.classList.add("active");
             if (this.btnYearMonth) this.btnYearMonth.style.display = "none";
-            if (this.btnMusic) this.btnMusic.style.display = "flex";
             this.btnDay?.classList.remove("active");
             this.btnYearMonth?.classList.remove("active");
+
+            // 映畫模式隱藏左上角日期 (Hide top-left date in artwork mode)
+            if (this.heroHeader) {
+                this.heroHeader.style.opacity = "0";
+                this.heroHeader.style.pointerEvents = "none";
+            }
         } else {
             this.btnChangeImage?.classList.remove("active");
             if (this.btnYearMonth) this.btnYearMonth.style.display = "flex";
-            if (this.btnMusic) this.btnMusic.style.display = "none";
+
+            // 恢復左上角日期 (Restore top-left date)
+            if (this.heroHeader) {
+                this.heroHeader.style.opacity = "1";
+                this.heroHeader.style.pointerEvents = "auto";
+            }
         }
     }
 
