@@ -33,6 +33,79 @@ export class HeroEventHandlers {
         this.setupEventListeners();
         this.setupUIHandlers();
         this.setupPWAInstall();
+        this.setupTouchGestures();
+    }
+
+    private handleNavigation(direction: number): void {
+        this.idleManager.reset();
+        const btnDay = document.getElementById("btnDay");
+        const isCalendarActive = btnDay?.classList.contains("active");
+
+        if (isCalendarActive) {
+            window.dispatchEvent(new CustomEvent("navigate-month", { detail: direction }));
+        } else {
+            this.imageManager.switchHero(direction, false, () =>
+                this.slideshowManager.reset(
+                    (o, a) => this.imageManager.switchHero(o, a),
+                    Math.max(
+                        this.imageManager.specialHeroList.length,
+                        this.imageManager.heroList.length,
+                    ),
+                ),
+            );
+        }
+    }
+
+    private setupTouchGestures(): void {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        const minSwipeDistance = 50; // Minimum distance for a swipe
+        const maxVerticalVariance = 50; // Maximum vertical movement allowed
+
+        document.body.addEventListener(
+            "touchstart",
+            (e: TouchEvent) => {
+                const touch = e.changedTouches[0];
+                if (touch) {
+                    touchStartX = touch.clientX;
+                    touchStartY = touch.clientY;
+                }
+            },
+            { passive: true },
+        );
+
+        document.body.addEventListener(
+            "touchend",
+            (e: TouchEvent) => {
+                const touch = e.changedTouches[0];
+                if (!touch) return;
+
+                const touchEndX = touch.clientX;
+                const touchEndY = touch.clientY;
+
+                const diffX = touchEndX - touchStartX;
+                const diffY = touchEndY - touchStartY;
+
+                // Check if it's a horizontal swipe
+                if (
+                    Math.abs(diffX) > minSwipeDistance &&
+                    Math.abs(diffY) < maxVerticalVariance
+                ) {
+                    // Reset idle time on user interaction
+                    this.idleManager.reset();
+
+                    // Swipe Left (Next)
+                    if (diffX < 0) {
+                        this.handleNavigation(1);
+                    }
+                    // Swipe Right (Prev)
+                    else {
+                        this.handleNavigation(-1);
+                    }
+                }
+            },
+            { passive: true },
+        );
     }
 
     private setupEventListeners(): void {
@@ -272,27 +345,8 @@ export class HeroEventHandlers {
         }
 
         // Navigation Handlers
-        const handleDockNavigation = (direction: number) => {
-            this.idleManager.reset();
-            const isCalendarActive = btnDay?.classList.contains("active");
-
-            if (isCalendarActive) {
-                window.dispatchEvent(new CustomEvent("navigate-month", { detail: direction }));
-            } else {
-                this.imageManager.switchHero(direction, false, () =>
-                    this.slideshowManager.reset(
-                        (o, a) => this.imageManager.switchHero(o, a),
-                        Math.max(
-                            this.imageManager.specialHeroList.length,
-                            this.imageManager.heroList.length,
-                        ),
-                    ),
-                );
-            }
-        };
-
-        if (btnPrevHero) btnPrevHero.onclick = () => handleDockNavigation(-1);
-        if (btnNextHero) btnNextHero.onclick = () => handleDockNavigation(1);
+        if (btnPrevHero) btnPrevHero.onclick = () => this.handleNavigation(-1);
+        if (btnNextHero) btnNextHero.onclick = () => this.handleNavigation(1);
 
         if (btnYearMonth) {
             btnYearMonth.onclick = () => {
