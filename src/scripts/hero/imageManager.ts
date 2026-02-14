@@ -3,8 +3,8 @@
  * 負責圖片偵測、切換、預載邏輯 (Responsible for image detection, switching, and preloading logic)
  */
 
-import { ImageRules } from "./imageRules";
 import { GALLERY_MANIFEST } from "../generated/galleryManifest";
+import { ImageRules } from "./imageRules";
 
 export class HeroImageManager {
     public heroList: string[] = [];
@@ -14,7 +14,7 @@ export class HeroImageManager {
     private heroBgContainer: HTMLElement | null = null;
     private heroCache: Record<string, HTMLImageElement> = {};
     private heroIdx = 0;
-    private manifest: Record<string, string[]> | null = null;
+    private manifest: null | Record<string, string[]> = null;
     private requestedSeason: null | string = null;
     private specialHeroIdx = 0;
 
@@ -59,59 +59,15 @@ export class HeroImageManager {
         const startIdx = this.heroList.findIndex((path) => path.includes(`/${targetSeason}/`));
         this.heroIdx = startIdx !== -1 ? startIdx : 0;
 
-        console.log(`[Hero] Global Playlist Ready: ${this.heroList.length} images. Starting at index ${this.heroIdx} (${targetSeason})`);
+        console.log(
+            `[Hero] Global Playlist Ready: ${this.heroList.length} images. Starting at index ${this.heroIdx} (${targetSeason})`,
+        );
 
         await this.preloadHeroImages();
 
         if (!isFallback) {
             window.dispatchEvent(new CustomEvent("request-hero-change"));
         }
-    }
-
-    private async loadManifest(): Promise<Record<string, string[]> | null> {
-        if (GALLERY_MANIFEST) {
-            return GALLERY_MANIFEST as Record<string, string[]>;
-        }
-        if (this.manifest) return this.manifest;
-
-        try {
-            const response = await fetch("assets/gallery/gallery.json");
-            if (response.ok) {
-                return await response.json();
-            }
-        } catch {
-            // Ignore
-        }
-        return null;
-    }
-
-    private async getImagesForSeason(season: string): Promise<string[]> {
-        const seasonDir = `${this.BASE_HERO_DIR}${season}/`;
-        let detected: string[] = [];
-
-        // 1. Try Manifest
-        if (this.manifest && this.manifest[season] && this.manifest[season].length > 0) {
-            return this.manifest[season].map((f) => `${seasonDir}${f}`);
-        }
-
-        // 2. Probe (Fallback)
-        let i = 1;
-        while (i <= ImageRules.MAX_PROBE_COUNT) {
-            let found = false;
-            for (const ext of ImageRules.SUPPORTED_EXTENSIONS) {
-                const src = `${seasonDir}${i}${ext}`;
-                try {
-                    if (await this.checkImageExists(src)) {
-                        detected.push(src);
-                        found = true;
-                        i++;
-                        break;
-                    }
-                } catch { }
-            }
-            if (!found) break; // Gap found or end
-        }
-        return detected;
     }
 
     public getSeason(date: Date): string {
@@ -189,7 +145,9 @@ export class HeroImageManager {
                     for (const ext of ImageRules.SUPPORTED_EXTENSIONS) {
                         const filename = `${specialName}${ext}`;
                         if (seasonFiles.includes(filename)) {
-                            this.specialHeroList.push(`${this.BASE_HERO_DIR}${targetSeason}/${filename}`);
+                            this.specialHeroList.push(
+                                `${this.BASE_HERO_DIR}${targetSeason}/${filename}`,
+                            );
                             break; // Found base
                         }
                     }
@@ -200,14 +158,15 @@ export class HeroImageManager {
                         for (const ext of ImageRules.SUPPORTED_EXTENSIONS) {
                             const filename = `${specialName}${i}${ext}`;
                             if (seasonFiles.includes(filename)) {
-                                this.specialHeroList.push(`${this.BASE_HERO_DIR}${targetSeason}/${filename}`);
+                                this.specialHeroList.push(
+                                    `${this.BASE_HERO_DIR}${targetSeason}/${filename}`,
+                                );
                                 variantFound = true;
                                 break;
                             }
                         }
                         if (!variantFound) break;
                     }
-
                 } else {
                     // Fallback to probing
                     let baseFound = false;
@@ -274,6 +233,54 @@ export class HeroImageManager {
             img.onerror = () => resolve(false);
             img.src = src;
         });
+    }
+
+    private async getImagesForSeason(season: string): Promise<string[]> {
+        const seasonDir = `${this.BASE_HERO_DIR}${season}/`;
+        const detected: string[] = [];
+
+        // 1. Try Manifest
+        if (this.manifest && this.manifest[season] && this.manifest[season].length > 0) {
+            return this.manifest[season].map((f) => `${seasonDir}${f}`);
+        }
+
+        // 2. Probe (Fallback)
+        let i = 1;
+        while (i <= ImageRules.MAX_PROBE_COUNT) {
+            let found = false;
+            for (const ext of ImageRules.SUPPORTED_EXTENSIONS) {
+                const src = `${seasonDir}${i}${ext}`;
+                try {
+                    if (await this.checkImageExists(src)) {
+                        detected.push(src);
+                        found = true;
+                        i++;
+                        break;
+                    }
+                } catch {
+                    // ignore
+                }
+            }
+            if (!found) break; // Gap found or end
+        }
+        return detected;
+    }
+
+    private async loadManifest(): Promise<null | Record<string, string[]>> {
+        if (GALLERY_MANIFEST) {
+            return GALLERY_MANIFEST as Record<string, string[]>;
+        }
+        if (this.manifest) return this.manifest;
+
+        try {
+            const response = await fetch("assets/gallery/gallery.json");
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch {
+            // Ignore
+        }
+        return null;
     }
 
     private async preloadHeroImages(): Promise<void> {

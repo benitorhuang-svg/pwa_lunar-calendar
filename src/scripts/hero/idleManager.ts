@@ -4,8 +4,12 @@
  */
 
 export class HeroIdleManager {
+    public get isArtwork(): boolean {
+        return this.isArtworkMode;
+    }
     private IDLE_TIMEOUT: number;
     private idleTimer: any = null;
+
     private isArtworkMode = false;
 
     constructor(idleTimeout = 6000) {
@@ -60,10 +64,6 @@ export class HeroIdleManager {
 
     public setArtworkMode(value: boolean): void {
         this.isArtworkMode = value;
-    }
-
-    public get isArtwork(): boolean {
-        return this.isArtworkMode;
     }
 
     public setupListeners(): void {

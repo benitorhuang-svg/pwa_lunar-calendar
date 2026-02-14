@@ -3,6 +3,7 @@
  * 負責應用狀態管理 (Responsible for application state management)
  */
 
+import type { Lunar } from "../core/lunar";
 import type { AppState, ThemeName } from "../types";
 
 export class AppStateManager {
@@ -21,6 +22,10 @@ export class AppStateManager {
         this.activePanel = null;
     }
 
+    /**
+     * 應用主題樣式
+     * Apply theme classes to the app container
+     */
     public applyTheme(theme: ThemeName): void {
         const appContainer = document.getElementById("appContainer");
         if (appContainer) {
@@ -37,6 +42,10 @@ export class AppStateManager {
         }
     }
 
+    /**
+     * 獲取當前應用狀態
+     * Get current application state
+     */
     public getState(): AppState {
         return {
             activePanel: this.activePanel,
@@ -47,15 +56,40 @@ export class AppStateManager {
         };
     }
 
-    public getTheme(date: Date, lunar: any): ThemeName {
+    /**
+     * 計算當前主題
+     * Calculate current theme based on date and lunar info
+     */
+    public getTheme(date: Date, lunar: Lunar): ThemeName {
         const festival = lunar.getFestival();
-        const lunarMonth =
-            typeof lunar.getMonth === "function"
-                ? lunar.getMonth()
-                : lunar._lunarMonth || date.getMonth() + 1;
+
+        // Use public API or internal property (if we exposed it, but public API is better)
+        // Since Lunar class doesn't expose raw month index directly in public API (it has getMonthInChinese),
+        // we might rely on date's month or add a getter to Lunar if needed.
+        // Actually Lunar class has `month` property in the constructor logic but it's private `_lunarMonth`.
+        // Let's rely on date.getMonth() + 1 as fallback or assume standard seasons.
+        // Wait, `lunar.month` was accessed in original code as `lunar.getMonth()` or `_lunarMonth`.
+        // The Lunar class I saw earlier has `_lunarMonth` private.
+        // It's better to rely on `date` for Season, and `festival` for specific overrides.
+        // The only case we need lunar month index is for the "Summer/Winter" logic if we want lunar seasons?
+        // Actually the code: `if (lunarMonth === 12 || lunarMonth === 1 ...` implies we need Lunar Month.
+        // I should stick to `lunar.getMonthInChinese()` but that returns string.
+        // Let's assume for now we use Gregorian month for Seasons, and Lunar Festival for naming.
+        // But for "Festive" theme (Spring Festival), we need to know if it's Lunar Month 12 or 1.
+        // Wait, `lunar.getFestival()` returns "春節" for 1-1.
+
+        // Let's try to access private property via casting if we really have to,
+        // OR better: check if `getFestival` returns specific strings.
+        // The original logic `lunarMonth === 12 || lunarMonth === 1` is broad (whole month is festive?).
+        // If so, we need exposed lunar month number.
+        // I will assume `lunar` has `_lunarMonth` and cast to `any` just for this property access
+        // OR standard way: The `Lunar` class doesn't seem to expose numeric month.
+        // I will add a `getLunarMonth(): number` to `Lunar` class later if needed, but for now let's use `(lunar as any)._lunarMonth`.
+
+        const lunarMonth = (lunar as any)._lunarMonth || date.getMonth() + 1;
 
         let theme: ThemeName;
-        const m = date.getMonth() + 1;
+        const m = date.getMonth() + 1; // Gregorian Month for Seasons
 
         if (m >= 2 && m <= 4) {
             theme = "theme-spring";
@@ -67,7 +101,7 @@ export class AppStateManager {
             theme = "theme-winter";
         }
 
-        // Festival Overrides
+        // 節日覆蓋 (Festival Overrides)
         if (lunarMonth === 12 || lunarMonth === 1 || (festival && festival.includes("春節"))) {
             theme = "theme-festive";
         } else if (festival && festival.includes("清明")) {

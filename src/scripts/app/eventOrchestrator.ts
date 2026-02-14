@@ -3,7 +3,20 @@
  * 負責協調應用內各種事件 (Responsible for orchestrating various application events)
  */
 
+import type {
+    ClosePanelsDetail,
+    DateSelectedDetail,
+    NavigateMonthDetail,
+    RenderCalendarDetail,
+    RenderHeroDetail,
+    RenderPanelsDetail,
+    RequestHeroChangeDetail,
+    SlideshowControlDetail,
+    ToggleGridViewDetail,
+    UpdateCalendarTitleDetail,
+} from "../types";
 import type { AppStateManager } from "./stateManager";
+
 import { Lunar } from "../core/lunar";
 
 export class AppEventOrchestrator {
@@ -28,10 +41,11 @@ export class AppEventOrchestrator {
 
         this.state.applyTheme(theme);
 
+        // 渲染面板 (Context Check)
         // Render Panels if active
         if (state.activePanel) {
             window.dispatchEvent(
-                new CustomEvent("render-panels", {
+                new CustomEvent<RenderPanelsDetail>("render-panels", {
                     detail: {
                         type: state.activePanel,
                         ...state,
@@ -41,9 +55,9 @@ export class AppEventOrchestrator {
             );
         }
 
-        // Render Calendar Grid
+        // 渲染日曆網格 (Render Calendar Grid)
         window.dispatchEvent(
-            new CustomEvent("render-calendar", {
+            new CustomEvent<RenderCalendarDetail>("render-calendar", {
                 detail: {
                     month: state.selectedMonth,
                     selectedDay: state.selectedDay,
@@ -54,9 +68,9 @@ export class AppEventOrchestrator {
             }),
         );
 
-        // Update Header Title
+        // 更新標題 (Update Header Title)
         window.dispatchEvent(
-            new CustomEvent("update-calendar-title", {
+            new CustomEvent<UpdateCalendarTitleDetail>("update-calendar-title", {
                 detail: {
                     day: state.selectedDay,
                     lunarText: {
@@ -70,9 +84,9 @@ export class AppEventOrchestrator {
             }),
         );
 
-        // Render Hero
+        // 渲染 Hero 區域 (Render Hero)
         window.dispatchEvent(
-            new CustomEvent("render-hero", {
+            new CustomEvent<RenderHeroDetail>("render-hero", {
                 detail: { changeBg: false, date, lunar },
             }),
         );
@@ -83,6 +97,7 @@ export class AppEventOrchestrator {
     private checkAutoSlideshow(): void {
         const isImmersion = document.body.classList.contains("immersion-mode");
         // 如果已經在沈浸模式，由 IdleManager 控制幻燈片，Orchestrator 不進行干預
+        // If in immersion mode, IdleManager controls slideshow, Orchestrator stays out
         if (isImmersion) return;
 
         const calendarSection = document.getElementById("calendarSection");
@@ -92,17 +107,13 @@ export class AppEventOrchestrator {
 
         if (!activePanel && !isGrid) {
             window.dispatchEvent(
-                new CustomEvent("slideshow-control", {
+                new CustomEvent<SlideshowControlDetail>("slideshow-control", {
                     detail: { action: "start" },
                 }),
             );
         } else {
-            // If immersion mode is active, the slideshow is managed by IdleManager,
-            // so the orchestrator should not stop it.
-            // The initial 'if (isImmersion) return;' already prevents this block from running
-            // if immersion mode is active.
             window.dispatchEvent(
-                new CustomEvent("slideshow-control", {
+                new CustomEvent<SlideshowControlDetail>("slideshow-control", {
                     detail: { action: "stop" },
                 }),
             );
@@ -110,34 +121,39 @@ export class AppEventOrchestrator {
     }
 
     private setupHeroEvents(): void {
-        window.addEventListener("request-hero-change", (e: any) => {
+        // 監聽 Hero 更換請求 (Request Hero Change)
+        window.addEventListener("request-hero-change", ((
+            e: CustomEvent<RequestHeroChangeDetail>,
+        ) => {
             const { changeBg, transitionOverride } = e.detail || {};
             const state = this.state.getState();
             const date = new Date(state.selectedYear, state.selectedMonth, state.selectedDay);
             const lunar = Lunar.fromDate(date);
 
             window.dispatchEvent(
-                new CustomEvent("render-hero", {
+                new CustomEvent<RenderHeroDetail>("render-hero", {
                     detail: { changeBg, date, lunar, transitionOverride },
                 }),
             );
-        });
+        }) as EventListener);
     }
 
     private setupNavigationEvents(): void {
-        window.addEventListener("navigate-month", (e: any) => {
-            const dir = e.detail as number;
+        // 導航月份 (Navigate Month, payload is number)
+        window.addEventListener("navigate-month", ((e: CustomEvent<NavigateMonthDetail>) => {
+            const dir = e.detail;
             this.state.navigateMonth(dir);
             this.updateState();
-        });
+        }) as EventListener);
 
+        // 回到今天 (Go to Today)
         window.addEventListener("go-to-today", () => {
             this.state.goToToday();
             this.updateState();
 
             this.state.setActivePanel("today");
             window.dispatchEvent(
-                new CustomEvent("render-panels", {
+                new CustomEvent<RenderPanelsDetail>("render-panels", {
                     detail: {
                         type: "today",
                         ...this.state.getState(),
@@ -145,7 +161,7 @@ export class AppEventOrchestrator {
                 }),
             );
             window.dispatchEvent(
-                new CustomEvent("toggle-grid-view", {
+                new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
                     detail: { show: false },
                 }),
             );
@@ -153,7 +169,8 @@ export class AppEventOrchestrator {
     }
 
     private setupPanelEvents(): void {
-        window.addEventListener("toggle-panel", (e: any) => {
+        // 切換面板 (Toggle Panel)
+        window.addEventListener("toggle-panel", ((e: CustomEvent<string>) => {
             const type = e.detail as "today" | "yearMonth";
             const isSamePanel = this.state.getState().activePanel === type;
 
@@ -162,19 +179,19 @@ export class AppEventOrchestrator {
 
             if (isSamePanel) {
                 window.dispatchEvent(
-                    new CustomEvent("toggle-grid-view", {
+                    new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
                         detail: { show: true },
                     }),
                 );
             } else {
                 this.state.setActivePanel(type);
                 window.dispatchEvent(
-                    new CustomEvent("toggle-grid-view", {
+                    new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
                         detail: { show: false },
                     }),
                 );
                 window.dispatchEvent(
-                    new CustomEvent("render-panels", {
+                    new CustomEvent<RenderPanelsDetail>("render-panels", {
                         detail: {
                             type,
                             ...this.state.getState(),
@@ -183,22 +200,24 @@ export class AppEventOrchestrator {
                 );
             }
             this.checkAutoSlideshow();
-        });
+        }) as EventListener);
 
-        window.addEventListener("close-panels", (e: any) => {
+        // 關閉面板 (Close Panels)
+        window.addEventListener("close-panels", ((e: CustomEvent<ClosePanelsDetail>) => {
             const { showGrid } = e.detail || {};
             this.state.setActivePanel(null);
             window.dispatchEvent(new CustomEvent("hide-panels"));
             if (showGrid !== undefined) {
                 window.dispatchEvent(
-                    new CustomEvent("toggle-grid-view", {
+                    new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
                         detail: { show: showGrid },
                     }),
                 );
             }
             this.checkAutoSlideshow();
-        });
+        }) as EventListener);
 
+        // 切換網格 (Toggle Grid)
         window.addEventListener("toggle-grid", () => {
             const calendarSection = document.getElementById("calendarSection");
             if (!calendarSection) return;
@@ -209,7 +228,7 @@ export class AppEventOrchestrator {
             window.dispatchEvent(new CustomEvent("hide-panels"));
 
             window.dispatchEvent(
-                new CustomEvent("toggle-grid-view", {
+                new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
                     detail: { show: !isShowing },
                 }),
             );
@@ -218,21 +237,23 @@ export class AppEventOrchestrator {
     }
 
     private setupSelectionEvents(): void {
-        window.addEventListener("year-selected", (e: any) => {
-            this.state.setYear(e.detail as number);
+        // 年份選擇 (Year Selected)
+        window.addEventListener("year-selected", ((e: CustomEvent<number>) => {
+            this.state.setYear(e.detail);
             this.updateState();
             window.dispatchEvent(
-                new CustomEvent("render-panels", {
+                new CustomEvent<RenderPanelsDetail>("render-panels", {
                     detail: {
                         type: "yearMonth",
                         ...this.state.getState(),
                     },
                 }),
             );
-        });
+        }) as EventListener);
 
-        window.addEventListener("month-selected", (e: any) => {
-            this.state.setMonth(e.detail as number);
+        // 月份選擇 (Month Selected)
+        window.addEventListener("month-selected", ((e: CustomEvent<number>) => {
+            this.state.setMonth(e.detail);
 
             const state = this.state.getState();
             // Date Safety
@@ -243,10 +264,13 @@ export class AppEventOrchestrator {
 
             this.updateState();
 
-            window.dispatchEvent(new CustomEvent("close-panels", { detail: { showGrid: true } }));
-        });
+            window.dispatchEvent(
+                new CustomEvent<ClosePanelsDetail>("close-panels", { detail: { showGrid: true } }),
+            );
+        }) as EventListener);
 
-        window.addEventListener("date-selected", (e: any) => {
+        // 日期選擇 (Date Selected)
+        window.addEventListener("date-selected", ((e: CustomEvent<DateSelectedDetail>) => {
             const { day, month, year } = e.detail;
             const currentState = this.state.getState();
 
@@ -266,25 +290,25 @@ export class AppEventOrchestrator {
             );
             const lunar = Lunar.fromDate(date);
             window.dispatchEvent(
-                new CustomEvent("render-hero", {
+                new CustomEvent<RenderHeroDetail>("render-hero", {
                     detail: { changeBg: false, date, lunar },
                 }),
             );
 
             this.state.setActivePanel("today");
             window.dispatchEvent(
-                new CustomEvent("toggle-grid-view", {
+                new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
                     detail: { show: false },
                 }),
             );
             window.dispatchEvent(
-                new CustomEvent("render-panels", {
+                new CustomEvent<RenderPanelsDetail>("render-panels", {
                     detail: {
                         type: "today",
                         ...this.state.getState(),
                     },
                 }),
             );
-        });
+        }) as EventListener);
     }
 }

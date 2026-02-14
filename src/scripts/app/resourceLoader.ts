@@ -2,7 +2,7 @@
  * Resource Loading & Splash Screen Logic
  * 負責首屏加載遮罩邏輯
  */
-import { Lunar } from "../core/lunar";
+
 import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
 (function () {
@@ -129,11 +129,15 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         }
 
         // 載入第一張 (權重最高)
-        const firstImg = new Image();
-        firstImg.onload = firstImg.onerror = () => {
+        const img = new Image();
+        img.onload = img.onerror = () => {
             markDone("heroFirst");
         };
-        firstImg.src = imageList[0];
+        if (imageList[0]) {
+            img.src = imageList[0];
+        } else {
+            markDone("heroFirst");
+        }
 
         // 載入其餘
         if (imageList.length <= 1) {
@@ -149,7 +153,9 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                         markDone("heroAll");
                     }
                 };
-                img.src = imageList[i];
+                if (imageList[i]) {
+                    img.src = imageList[i];
+                }
             }
         }
     }

@@ -1,19 +1,38 @@
 /**
  * Hero Event Handlers
- * 負責 Hero 相關的事件監聽和處理 (Responsible for Hero-related event listening and handling)
+ * 負責 Hero 相關的事件監聽和處理
+ * Responsible for Hero-related event listening and handling
+ *
+ * Update: 重構以委派給子處理器 (PWA, Touch) 和 UI 管理器。
+ * Update: Refactored to delegate to sub-handlers and UIManager.
  */
 
 import type { HeroIdleManager } from "./idleManager";
 import type { HeroImageManager } from "./imageManager";
 import type { HeroSlideshowManager } from "./slideshowManager";
+import type {
+    ClosePanelsDetail,
+    NavigateMonthDetail,
+    RenderHeroDetail,
+    RenderPanelsDetail,
+    SlideshowControlDetail,
+    ToggleGridViewDetail,
+    TogglePanelDetail,
+    WelcomeModeDetail,
+} from "./types";
+
+import { HeroPWAHandler } from "./pwaHandler";
+import { HeroTouchHandler } from "./touchHandler";
+import { HeroUIManager } from "./uiManager";
 
 export class HeroEventHandlers {
-    private heroDockWrapper: HTMLElement | null = null;
-    private heroHeader: HTMLElement | null = null;
     private idleManager: HeroIdleManager;
     private imageManager: HeroImageManager;
+    private pwaHandler: HeroPWAHandler;
+
     private slideshowManager: HeroSlideshowManager;
-    private welcomeOverlay: HTMLElement | null = null;
+    private touchHandler: HeroTouchHandler;
+    private uiManager: HeroUIManager;
 
     constructor(
         imageManager: HeroImageManager,
@@ -23,26 +42,41 @@ export class HeroEventHandlers {
         this.imageManager = imageManager;
         this.slideshowManager = slideshowManager;
         this.idleManager = idleManager;
+
+        this.uiManager = new HeroUIManager();
+
+        // 初始化子處理器 (Initialize Sub-handlers)
+        this.pwaHandler = new HeroPWAHandler(
+            () => this.uiManager.showInstallButton(),
+            () => this.uiManager.hideInstallButton(),
+            (cb) => this.uiManager.bindInstallButton(cb),
+        );
+
+        this.touchHandler = new HeroTouchHandler(
+            () => this.handleNavigation(1), // 向左滑動 -> 下一頁 (Swipe Left -> Next)
+            () => this.handleNavigation(-1), // 向右滑動 -> 上一頁 (Swipe Right -> Prev)
+            () => this.idleManager.reset(),
+        );
     }
 
     public init(): void {
-        this.heroDockWrapper = document.querySelector(".hero-dock-wrapper");
-        this.heroHeader = document.querySelector(".hero-header");
-        this.welcomeOverlay = document.getElementById("welcomeInteractionOverlay");
+        this.uiManager.init();
 
-        this.setupEventListeners();
-        this.setupUIHandlers();
-        this.setupPWAInstall();
-        this.setupTouchGestures();
+        this.setupGlobalEventListeners();
+        this.setupUIInteractions();
+
+        this.pwaHandler.init();
+        this.touchHandler.init();
     }
 
     private handleNavigation(direction: number): void {
         this.idleManager.reset();
-        const btnDay = document.getElementById("btnDay");
-        const isCalendarActive = btnDay?.classList.contains("active");
+        const isCalendarActive = this.uiManager.isCalendarActive;
 
         if (isCalendarActive) {
-            window.dispatchEvent(new CustomEvent("navigate-month", { detail: direction }));
+            window.dispatchEvent(
+                new CustomEvent<NavigateMonthDetail>("navigate-month", { detail: direction }),
+            );
         } else {
             this.imageManager.switchHero(direction, false, () =>
                 this.slideshowManager.reset(
@@ -56,73 +90,30 @@ export class HeroEventHandlers {
         }
     }
 
-    private setupTouchGestures(): void {
-        let touchStartX = 0;
-        let touchStartY = 0;
-        const minSwipeDistance = 50; // Minimum distance for a swipe
-        const maxVerticalVariance = 50; // Maximum vertical movement allowed
-
-        document.body.addEventListener(
-            "touchstart",
-            (e: TouchEvent) => {
-                const touch = e.changedTouches[0];
-                if (touch) {
-                    touchStartX = touch.clientX;
-                    touchStartY = touch.clientY;
-                }
-            },
-            { passive: true },
-        );
-
-        document.body.addEventListener(
-            "touchend",
-            (e: TouchEvent) => {
-                const touch = e.changedTouches[0];
-                if (!touch) return;
-
-                const touchEndX = touch.clientX;
-                const touchEndY = touch.clientY;
-
-                const diffX = touchEndX - touchStartX;
-                const diffY = touchEndY - touchStartY;
-
-                // Check if it's a horizontal swipe
-                if (
-                    Math.abs(diffX) > minSwipeDistance &&
-                    Math.abs(diffY) < maxVerticalVariance
-                ) {
-                    // Reset idle time on user interaction
-                    this.idleManager.reset();
-
-                    // Swipe Left (Next)
-                    if (diffX < 0) {
-                        this.handleNavigation(1);
-                    }
-                    // Swipe Right (Prev)
-                    else {
-                        this.handleNavigation(-1);
-                    }
-                }
-            },
-            { passive: true },
-        );
-    }
-
-    private setupEventListeners(): void {
-        // Render Hero
-        window.addEventListener("render-hero", (e: any) => {
+    private setupGlobalEventListeners(): void {
+        // 渲染 Hero (Render Hero)
+        window.addEventListener("render-hero", ((e: CustomEvent<RenderHeroDetail>) => {
             const { changeBg, date, lunar, transitionOverride } = e.detail;
-            this.imageManager.updateHeroLogic(changeBg, transitionOverride, date, lunar);
-        });
+            this.imageManager.updateHeroLogic(
+                changeBg !== undefined ? changeBg : false,
+                transitionOverride || null,
+                typeof date === "string" ? new Date(date) : date,
+                lunar,
+            );
+        }) as EventListener);
 
-        // Slideshow Control
-        window.addEventListener("slideshow-control", (e: any) => {
-            const { action } = e.detail;
+        // 幻燈片控制 (Slideshow Control)
+        window.addEventListener("slideshow-control", ((e: CustomEvent<SlideshowControlDetail>) => {
+            const { action, isArtwork } = e.detail;
+
             if (action === "start") {
+                this.idleManager.setArtworkMode(isArtwork !== false);
+
                 const minImages = Math.max(
                     this.imageManager.specialHeroList.length,
                     this.imageManager.heroList.length,
                 );
+
                 this.slideshowManager.start(
                     (offset, isAuto) =>
                         this.imageManager.switchHero(offset, isAuto, () =>
@@ -133,14 +124,20 @@ export class HeroEventHandlers {
                         ),
                     minImages,
                 );
-            }
-            if (action === "stop") {
-                this.slideshowManager.stop();
-            }
-        });
 
-        // Welcome Mode
-        window.addEventListener("welcome-mode", (e: any) => {
+                if (isArtwork !== false) {
+                    this.uiManager.updateArtworkModeUI(true);
+                    this.idleManager.reset();
+                }
+            } else if (action === "stop") {
+                this.idleManager.setArtworkMode(false);
+                this.slideshowManager.stop();
+                this.uiManager.updateArtworkModeUI(false);
+            }
+        }) as EventListener);
+
+        // 歡迎模式/沉浸模式 (Welcome/Immersion Mode)
+        window.addEventListener("welcome-mode", ((e: CustomEvent<WelcomeModeDetail>) => {
             const { active } = e.detail;
             if (active) {
                 document.body.classList.add("immersion-mode");
@@ -148,7 +145,7 @@ export class HeroEventHandlers {
 
                 // 進入沉浸模式時強制啟動幻燈片 (Force start slideshow in immersion mode)
                 window.dispatchEvent(
-                    new CustomEvent("slideshow-control", {
+                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
                         detail: { action: "start", isArtwork: false },
                     }),
                 );
@@ -160,241 +157,73 @@ export class HeroEventHandlers {
                 document.body.classList.remove("immersion-mode");
                 document.body.classList.remove("initial-welcome");
 
-                // 退出沉浸模式時暫停幻燈片，交由 Orchestrator 決定是否繼續播放
-                // (Stop slideshow when exiting, let Orchestrator decide if it should continue)
+                // 停止幻燈片播放 (Stop slideshow)
                 window.dispatchEvent(
-                    new CustomEvent("slideshow-control", {
+                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
                         detail: { action: "stop" },
                     }),
                 );
             }
-        });
+        }) as EventListener);
 
-        // Toggle Grid View
-        window.addEventListener("toggle-grid-view", (e: any) => {
-            const { show } = e.detail;
-            const btnYM = document.getElementById("btnYearMonth");
-            const btnDay = document.getElementById("btnDay");
-            const btnChangeImage = document.getElementById("btnChangeImage");
+        // 切換網格視圖 (Toggle Grid View)
+        window.addEventListener("toggle-grid-view", ((e: CustomEvent<ToggleGridViewDetail>) => {
+            this.uiManager.toggleGridView(e.detail.show);
+        }) as EventListener);
 
-            if (show) {
-                if (this.heroDockWrapper) {
-                    this.heroDockWrapper.classList.remove("hidden");
-                    this.heroDockWrapper.style.opacity = "1";
-                    this.heroDockWrapper.style.pointerEvents = "auto";
-                }
-                if (btnDay) btnDay.classList.add("active");
-                if (btnChangeImage) btnChangeImage.classList.remove("active");
-                if (btnYM) {
-                    btnYM.classList.remove("active");
-                    btnYM.style.display = "flex";
-                }
+        // 渲染面板 (Render Panels)
+        window.addEventListener("render-panels", ((e: CustomEvent<RenderPanelsDetail>) => {
+            this.uiManager.updatePanelsForType(e.detail.type);
+        }) as EventListener);
 
-                if (this.heroHeader) this.heroHeader.style.opacity = "1";
-            } else {
-                if (btnDay) btnDay.classList.remove("active");
-            }
-        });
-
-        // Render Panels
-        window.addEventListener("render-panels", (e: any) => {
-            const { type } = e.detail || {};
-            const btnYM = document.getElementById("btnYearMonth");
-            const btnDay = document.getElementById("btnDay");
-            const btnChangeImage = document.getElementById("btnChangeImage");
-
-            if (type === "yearMonth") {
-                if (btnYM) {
-                    btnYM.style.display = "flex";
-                    btnYM.classList.add("active");
-                }
-                if (this.heroHeader) this.heroHeader.style.opacity = "1";
-                if (this.heroDockWrapper) {
-                    this.heroDockWrapper.style.opacity = "1";
-                    this.heroDockWrapper.style.pointerEvents = "auto";
-                }
-            } else if (type === "today") {
-                if (btnYM) {
-                    btnYM.style.display = "none";
-                    btnYM.classList.remove("active");
-                }
-                if (this.heroHeader) this.heroHeader.style.opacity = "0";
-                if (this.heroDockWrapper) {
-                    this.heroDockWrapper.style.opacity = "0";
-                    this.heroDockWrapper.style.pointerEvents = "none";
-                }
-            }
-
-            if (btnDay) btnDay.classList.remove("active");
-            if (btnChangeImage) btnChangeImage.classList.remove("active");
-        });
-
-        // Hide Panels
+        // 隱藏面板 (Hide Panels)
         window.addEventListener("hide-panels", () => {
-            const btnYM = document.getElementById("btnYearMonth");
-            if (btnYM) btnYM.classList.remove("active");
-        });
-
-        // Slideshow Control with Artwork Mode
-        window.addEventListener("slideshow-control", (e: any) => {
-            const { action, isArtwork } = e.detail;
-            const btnYM = document.getElementById("btnYearMonth");
-            const btnDay = document.getElementById("btnDay");
-            const btnChangeImage = document.getElementById("btnChangeImage");
-            const btnMusic = document.getElementById("btnMusic");
-
-            if (action === "start") {
-                this.idleManager.setArtworkMode(isArtwork !== false);
-
-                const minImages = Math.max(
-                    this.imageManager.specialHeroList.length,
-                    this.imageManager.heroList.length,
-                );
-                this.slideshowManager.start(
-                    (offset, isAuto) => this.imageManager.switchHero(offset, isAuto),
-                    minImages,
-                );
-
-                if (isArtwork !== false) {
-                    if (btnChangeImage) btnChangeImage.classList.add("active");
-                    if (btnYM) btnYM.style.display = "none";
-                    if (btnMusic) btnMusic.style.display = "flex";
-                    if (btnDay) btnDay.classList.remove("active");
-                    if (btnYM) btnYM.classList.remove("active");
-                    this.idleManager.reset();
-                }
-            }
-            if (action === "stop") {
-                this.idleManager.setArtworkMode(false);
-                this.slideshowManager.stop();
-                if (btnChangeImage) btnChangeImage.classList.remove("active");
-                if (btnYM) btnYM.style.display = "flex";
-                if (btnMusic) btnMusic.style.display = "none";
-            }
+            this.uiManager.hidePanelActiveStates();
         });
     }
 
-    private setupPWAInstall(): void {
-        let deferredPrompt: any;
-        const installBtn = document.getElementById("installBtn");
+    private setupUIInteractions(): void {
+        // 導航按鈕 (Navigation Buttons)
+        this.uiManager.bindNavigation(
+            () => this.handleNavigation(-1),
+            () => this.handleNavigation(1),
+        );
 
-        window.addEventListener("beforeinstallprompt", (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            if (installBtn) installBtn.style.display = "block";
+        // 切換網格按鈕 (Toggle Grid Button)
+        this.uiManager.bindToggleGrid(() => {
+            this.idleManager.reset();
+            window.dispatchEvent(new CustomEvent("toggle-grid"));
         });
 
-        if (installBtn) {
-            installBtn.addEventListener("click", async () => {
-                if (deferredPrompt) {
-                    await deferredPrompt.prompt();
-                    deferredPrompt = null;
-                    installBtn.style.display = "none";
-                }
-            });
-        }
-    }
+        // 切換年月面板按鈕 (Toggle Year/Month Button)
+        this.uiManager.bindToggleYearMonth(() => {
+            this.idleManager.reset();
+            window.dispatchEvent(
+                new CustomEvent<TogglePanelDetail>("toggle-panel", { detail: "yearMonth" }),
+            );
+        });
 
-    private setupUIHandlers(): void {
-        const btnDay = document.getElementById("btnDay");
-        const btnChangeImage = document.getElementById("btnChangeImage");
-        const btnPrevHero = document.getElementById("btnPrevHero");
-        const btnNextHero = document.getElementById("btnNextHero");
-        const btnYearMonth = document.getElementById("btnYearMonth");
-        const heroBgContainer = document.getElementById("heroBgContainer");
+        // 更換圖片/映畫按鈕 (Change Image / Artwork Button)
+        this.uiManager.bindChangeImage(
+            () => this.idleManager.reset(),
+            () => this.idleManager.isArtwork,
+        );
 
-        // Background Click: Toggle Immersion Mode (Hide Dock) if in Artwork Mode
-        if (heroBgContainer) {
-            heroBgContainer.onclick = (e) => {
-                // Ensure we don't trigger if clicking buttons inside (though they are separate elements usually)
-                if (e.target !== heroBgContainer && !(e.target as HTMLElement).classList.contains("hero-bg-item")) return;
+        // 歡迎畫面遮罩點擊 (Welcome Overlay)
+        this.uiManager.bindWelcomeOverlay(() => {
+            this.idleManager.reset();
 
-                const isImmersion = document.body.classList.contains("immersion-mode");
-                const isArtwork = this.idleManager.isArtwork;
+            window.dispatchEvent(
+                new CustomEvent<WelcomeModeDetail>("welcome-mode", { detail: { active: false } }),
+            );
 
-                if (!isImmersion && isArtwork) {
-                    // Manually enter immersion mode (Hide Dock)
-                    window.dispatchEvent(
-                        new CustomEvent("welcome-mode", { detail: { active: true } }),
-                    );
-                }
-            };
-        }
+            document.body.classList.remove("initial-welcome");
+            window.dispatchEvent(
+                new CustomEvent<ClosePanelsDetail>("close-panels", { detail: { showGrid: true } }),
+            );
+        });
 
-        // Welcome Overlay Click
-        if (this.welcomeOverlay) {
-            this.welcomeOverlay.addEventListener("click", (e) => {
-                e.stopPropagation();
-
-                this.idleManager.reset();
-
-                window.dispatchEvent(
-                    new CustomEvent("welcome-mode", { detail: { active: false } }),
-                );
-
-                // For now, let's stick to the previous logic but keep it TS safe
-                document.body.classList.remove("initial-welcome");
-                window.dispatchEvent(
-                    new CustomEvent("close-panels", { detail: { showGrid: true } }),
-                );
-            });
-        }
-
-        // Change Image Button
-        if (btnChangeImage) {
-            btnChangeImage.onclick = () => {
-                this.idleManager.reset(); // Also reset idle on click
-
-                if (this.idleManager.isArtwork) {
-                    // Toggle Off: Exit Artwork Mode
-                    window.dispatchEvent(
-                        new CustomEvent("slideshow-control", {
-                            detail: { action: "stop" },
-                        }),
-                    );
-                    // Open Panels (Grid) to return to normal state
-                    window.dispatchEvent(
-                        new CustomEvent("close-panels", { detail: { showGrid: true } }),
-                    );
-                } else {
-                    // Toggle On: Enter Artwork Mode
-                    window.dispatchEvent(
-                        new CustomEvent("slideshow-control", {
-                            detail: { action: "start", isArtwork: true },
-                        }),
-                    );
-
-                    window.dispatchEvent(
-                        new CustomEvent("request-hero-change", {
-                            detail: {
-                                changeBg: true,
-                                transitionOverride: "slide-from-right",
-                            },
-                        }),
-                    );
-                    window.dispatchEvent(
-                        new CustomEvent("close-panels", { detail: { showGrid: false } }),
-                    );
-                }
-            };
-        }
-
-        // Navigation Handlers
-        if (btnPrevHero) btnPrevHero.onclick = () => this.handleNavigation(-1);
-        if (btnNextHero) btnNextHero.onclick = () => this.handleNavigation(1);
-
-        if (btnYearMonth) {
-            btnYearMonth.onclick = () => {
-                this.idleManager.reset();
-                window.dispatchEvent(new CustomEvent("toggle-panel", { detail: "yearMonth" }));
-            };
-        }
-
-        if (btnDay) {
-            btnDay.onclick = () => {
-                this.idleManager.reset();
-                window.dispatchEvent(new CustomEvent("toggle-grid"));
-            };
-        }
+        // 背景點擊 (沉浸模式) (Background Click - Immersion)
+        this.uiManager.bindBackgroundClick(() => this.idleManager.isArtwork);
     }
 }

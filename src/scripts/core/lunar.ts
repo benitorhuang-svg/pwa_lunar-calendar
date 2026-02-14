@@ -44,42 +44,19 @@ const MAX_YEAR = 2100;
 // yearDays 快取
 const _yearDaysCache = new Map<number, number>();
 
-function leapMonth(y: number): number {
-    return (LUNAR_INFO[y - 1900] || 0) & 0xf;
-}
-function leapDays(y: number): number {
-    return leapMonth(y) === 0 ? 0 : (LUNAR_INFO[y - 1900] || 0) & 0x10000 ? 30 : 29;
-}
-function monthDays(y: number, m: number): number {
-    return (LUNAR_INFO[y - 1900] || 0) & (0x10000 >> m) ? 30 : 29;
-}
-
-function yearDays(y: number): number {
-    if (_yearDaysCache.has(y)) return _yearDaysCache.get(y)!;
-    let sum = 348;
-    const info = LUNAR_INFO[y - 1900] || 0;
-    for (let i = 0x8000; i > 0x8; i >>= 1) {
-        if (info & i) sum++;
-    }
-    sum += leapDays(y);
-    _yearDaysCache.set(y, sum);
-    return sum;
-}
-
 /* ====================================================
    3. 公曆 → 農曆轉換
    ==================================================== */
 interface LunarDate {
-    year: number;
-    month: number;
     day: number;
     isLeap: boolean;
+    month: number;
+    year: number;
 }
-
 function gregorianToLunar(date: Date): LunarDate {
     let offset = Math.floor((date.getTime() - BASE_DATE.getTime()) / 86400000);
-    let lunarYear = 1900,
-        daysInYear = 0;
+    let daysInYear = 0,
+        lunarYear = 1900;
 
     for (let i = 1900; i < 2101 && offset > 0; i++) {
         daysInYear = yearDays(i);
@@ -92,9 +69,9 @@ function gregorianToLunar(date: Date): LunarDate {
     }
 
     const leap = leapMonth(lunarYear);
-    let isLeap = false,
-        lunarMonth = 1,
-        daysInMonth = 0;
+    let daysInMonth = 0,
+        isLeap = false,
+        lunarMonth = 1;
 
     for (let i = 1; i < 13 && offset > 0; i++) {
         if (leap > 0 && i === leap + 1 && !isLeap) {
@@ -121,7 +98,30 @@ function gregorianToLunar(date: Date): LunarDate {
         --lunarMonth;
     }
 
-    return { year: lunarYear, month: lunarMonth, day: offset + 1, isLeap };
+    return { day: offset + 1, isLeap, month: lunarMonth, year: lunarYear };
+}
+function leapDays(y: number): number {
+    return leapMonth(y) === 0 ? 0 : (LUNAR_INFO[y - 1900] || 0) & 0x10000 ? 30 : 29;
+}
+
+function leapMonth(y: number): number {
+    return (LUNAR_INFO[y - 1900] || 0) & 0xf;
+}
+
+function monthDays(y: number, m: number): number {
+    return (LUNAR_INFO[y - 1900] || 0) & (0x10000 >> m) ? 30 : 29;
+}
+
+function yearDays(y: number): number {
+    if (_yearDaysCache.has(y)) return _yearDaysCache.get(y)!;
+    let sum = 348;
+    const info = LUNAR_INFO[y - 1900] || 0;
+    for (let i = 0x8000; i > 0x8; i >>= 1) {
+        if (info & i) sum++;
+    }
+    sum += leapDays(y);
+    _yearDaysCache.set(y, sum);
+    return sum;
 }
 
 /* ====================================================
@@ -203,11 +203,30 @@ const DAY_NAMES = Object.freeze([
     "三十",
 ]);
 
-/* ====================================================
-   5. 天干地支
-   ==================================================== */
-function yearGanZhi(ly: number): string {
-    return (TIAN_GAN[(ly - 4) % 10] || "") + (DI_ZHI[(ly - 4) % 12] || "");
+interface GanZhi {
+    gan: number;
+    text: string;
+    zhi: number;
+}
+
+function dayGanZhi(date: Date): GanZhi {
+    const d = date.getDate(),
+        m = date.getMonth() + 1,
+        y = date.getFullYear();
+    const a = Math.floor((14 - m) / 12);
+    const jm = m + 12 * a - 3,
+        jy = y + 4800 - a;
+    const jdn =
+        d +
+        Math.floor((153 * jm + 2) / 5) +
+        365 * jy +
+        Math.floor(jy / 4) -
+        Math.floor(jy / 100) +
+        Math.floor(jy / 400) -
+        32045;
+    const ganIdx = (jdn + 9) % 10,
+        zhiIdx = (jdn + 1) % 12;
+    return { gan: ganIdx, text: (TIAN_GAN[ganIdx] || "") + (DI_ZHI[zhiIdx] || ""), zhi: zhiIdx };
 }
 
 /**
@@ -223,30 +242,11 @@ function monthGanZhi(lunarYear: number, lunarMonth: number): string {
     return (TIAN_GAN[ganIdx] || "") + (DI_ZHI[zhiIdx] || "");
 }
 
-interface GanZhi {
-    gan: number;
-    zhi: number;
-    text: string;
-}
-
-function dayGanZhi(date: Date): GanZhi {
-    const y = date.getFullYear(),
-        m = date.getMonth() + 1,
-        d = date.getDate();
-    const a = Math.floor((14 - m) / 12);
-    const jy = y + 4800 - a,
-        jm = m + 12 * a - 3;
-    const jdn =
-        d +
-        Math.floor((153 * jm + 2) / 5) +
-        365 * jy +
-        Math.floor(jy / 4) -
-        Math.floor(jy / 100) +
-        Math.floor(jy / 400) -
-        32045;
-    const ganIdx = (jdn + 9) % 10,
-        zhiIdx = (jdn + 1) % 12;
-    return { gan: ganIdx, zhi: zhiIdx, text: (TIAN_GAN[ganIdx] || "") + (DI_ZHI[zhiIdx] || "") };
+/* ====================================================
+   5. 天干地支
+   ==================================================== */
+function yearGanZhi(ly: number): string {
+    return (TIAN_GAN[(ly - 4) % 10] || "") + (DI_ZHI[(ly - 4) % 12] || "");
 }
 
 /* ====================================================
@@ -280,25 +280,25 @@ const SOLAR_TERMS = Object.freeze([
 ]);
 
 const TERM_C20 = Object.freeze([
-    6.11, 20.84, 4.15, 19.04, 6.11, 20.84, 5.59, 20.88, 6.318, 21.86, 6.5, 22.2, 7.928, 23.65,
-    8.35, 23.95, 8.44, 23.822, 9.098, 24.218, 8.218, 23.08, 7.9, 22.6,
+    6.11, 20.84, 4.15, 19.04, 6.11, 20.84, 5.59, 20.88, 6.318, 21.86, 6.5, 22.2, 7.928, 23.65, 8.35,
+    23.95, 8.44, 23.822, 9.098, 24.218, 8.218, 23.08, 7.9, 22.6,
 ]);
 const TERM_C21 = Object.freeze([
-    5.4055, 20.12, 3.87, 18.73, 5.63, 20.646, 4.81, 20.1, 5.52, 21.04, 5.678, 21.37, 7.108,
-    22.83, 7.5, 23.13, 7.646, 23.042, 8.318, 23.438, 7.438, 22.36, 7.18, 21.94,
+    5.4055, 20.12, 3.87, 18.73, 5.63, 20.646, 4.81, 20.1, 5.52, 21.04, 5.678, 21.37, 7.108, 22.83,
+    7.5, 23.13, 7.646, 23.042, 8.318, 23.438, 7.438, 22.36, 7.18, 21.94,
 ]);
 
-interface TermData {
-    month: number;
-    day: number;
-    name: string;
-    index: number;
-    year?: number;
+interface TermCache {
+    termList: TermData[];
+    termMap: Map<string, string>;
 }
 
-interface TermCache {
-    termMap: Map<string, string>;
-    termList: TermData[];
+interface TermData {
+    day: number;
+    index: number;
+    month: number;
+    name: string;
+    year?: number;
 }
 
 // { year → { termMap: Map<"MM-DD", name>, termList: [{month, day, name}] } }
@@ -313,7 +313,7 @@ function buildTermCache(year: number): TermCache {
     const Y = year % 100;
 
     for (let n = 0; n < 24; n++) {
-        let jd = Math.floor(Y * 0.2422 + C[n]) - Math.floor(Y / 4);
+        let jd = Math.floor(Y * 0.2422 + (C[n] || 0)) - Math.floor(Y / 4);
         if (century === 20) {
             if (n === 0 && year === 1982) jd++;
             if (n === 2 && year === 1911) jd++;
@@ -324,19 +324,21 @@ function buildTermCache(year: number): TermCache {
         }
         const month = Math.floor(n / 2) + 1;
         const key = String(month).padStart(2, "0") + "-" + String(jd).padStart(2, "0");
-        termMap.set(key, SOLAR_TERMS[n]);
-        termList.push({ month, day: jd, name: SOLAR_TERMS[n], index: n });
+        const termName = SOLAR_TERMS[n];
+        if (!termName) continue;
+        termMap.set(key, termName);
+        termList.push({ day: jd, index: n, month, name: termName });
     }
 
-    const cache = { termMap, termList };
+    const cache = { termList, termMap };
     _termCache.set(year, cache);
     return cache;
 }
 
-function getSolarTerm(date: Date): string | null {
-    const y = date.getFullYear(),
+function getSolarTerm(date: Date): null | string {
+    const d = date.getDate(),
         m = date.getMonth() + 1,
-        d = date.getDate();
+        y = date.getFullYear();
     const key = String(m).padStart(2, "0") + "-" + String(d).padStart(2, "0");
     const val = buildTermCache(y).termMap.get(key);
     return val !== undefined ? val : null;
@@ -346,7 +348,7 @@ function getSolarTerm(date: Date): string | null {
  * 取得日期所處的節氣區間
  * @returns {{ current: string, next: string, daysToNext: number }}
  */
-function getSolarTermPeriod(date: Date): { current: string; next: string; daysToNext: number } {
+function getSolarTermPeriod(date: Date): { current: string; daysToNext: number; next: string } {
     const y = date.getFullYear();
     const { termList } = buildTermCache(y);
     const prevList = buildTermCache(y - 1).termList;
@@ -360,7 +362,7 @@ function getSolarTermPeriod(date: Date): { current: string; next: string; daysTo
     ];
 
     let currentTerm = all[0];
-    if (!currentTerm) return { current: "", next: "", daysToNext: 0 };
+    if (!currentTerm) return { current: "", daysToNext: 0, next: "" };
 
     for (let i = 0; i < all.length; i++) {
         const t = all[i];
@@ -370,10 +372,10 @@ function getSolarTermPeriod(date: Date): { current: string; next: string; daysTo
             currentTerm = t;
         } else {
             const daysToNext = Math.ceil((tDate.getTime() - date.getTime()) / 86400000);
-            return { current: currentTerm.name, next: t.name, daysToNext };
+            return { current: currentTerm.name, daysToNext, next: t.name };
         }
     }
-    return { current: currentTerm.name, next: "", daysToNext: 0 };
+    return { current: currentTerm.name, daysToNext: 0, next: "" };
 }
 
 /* ====================================================
@@ -410,11 +412,11 @@ const JIANCHU_LUCK = Object.freeze([
     "凶",
 ]);
 
-function monthZhiIndex(lm: number): number {
-    return (lm + 1) % 12;
-}
 function getJianChuIndex(lm: number, dayZhi: number): number {
     return (dayZhi - monthZhiIndex(lm) + 12) % 12;
+}
+function monthZhiIndex(lm: number): number {
+    return (lm + 1) % 12;
 }
 
 const YI_TABLE: Record<number, string[]> = Object.freeze({
@@ -474,10 +476,19 @@ const SOLAR_FESTIVALS: Record<string, string> = Object.freeze({
     "12-25": "聖誕節",
 });
 
+/* ====================================================
+   9. 西洋星座
+   ==================================================== */
+interface Constellation {
+    en: string;
+    end: readonly [number, number];
+    name: string;
+}
+
 /**
  * 取得農曆節日（含除夕偵測）
  */
-function getLunarFestival(lunarYear: number, lunarMonth: number, lunarDay: number): string | null {
+function getLunarFestival(lunarYear: number, lunarMonth: number, lunarDay: number): null | string {
     const key = lunarMonth + "-" + lunarDay;
     if (LUNAR_FESTIVALS[key]) return LUNAR_FESTIVALS[key];
 
@@ -489,39 +500,30 @@ function getLunarFestival(lunarYear: number, lunarMonth: number, lunarDay: numbe
     return null;
 }
 
-function getSolarFestival(date: Date): string | null {
+function getSolarFestival(date: Date): null | string {
     const key = date.getMonth() + 1 + "-" + date.getDate();
     return SOLAR_FESTIVALS[key] || null;
 }
 
-/* ====================================================
-   9. 西洋星座
-   ==================================================== */
-interface Constellation {
-    name: string;
-    en: string;
-    end: readonly [number, number];
-}
-
 const CONSTELLATIONS: readonly Constellation[] = Object.freeze([
-    { name: "摩羯座", en: "Capricorn", end: [1, 19] },
-    { name: "水瓶座", en: "Aquarius", end: [2, 18] },
-    { name: "雙魚座", en: "Pisces", end: [3, 20] },
-    { name: "白羊座", en: "Aries", end: [4, 19] },
-    { name: "金牛座", en: "Taurus", end: [5, 20] },
-    { name: "雙子座", en: "Gemini", end: [6, 21] },
-    { name: "巨蟹座", en: "Cancer", end: [7, 22] },
-    { name: "獅子座", en: "Leo", end: [8, 22] },
-    { name: "處女座", en: "Virgo", end: [9, 22] },
-    { name: "天秤座", en: "Libra", end: [10, 23] },
-    { name: "天蠍座", en: "Scorpio", end: [11, 22] },
-    { name: "射手座", en: "Sagittarius", end: [12, 21] },
-    { name: "摩羯座", en: "Capricorn", end: [12, 31] },
+    { en: "Capricorn", end: [1, 19], name: "摩羯座" },
+    { en: "Aquarius", end: [2, 18], name: "水瓶座" },
+    { en: "Pisces", end: [3, 20], name: "雙魚座" },
+    { en: "Aries", end: [4, 19], name: "白羊座" },
+    { en: "Taurus", end: [5, 20], name: "金牛座" },
+    { en: "Gemini", end: [6, 21], name: "雙子座" },
+    { en: "Cancer", end: [7, 22], name: "巨蟹座" },
+    { en: "Leo", end: [8, 22], name: "獅子座" },
+    { en: "Virgo", end: [9, 22], name: "處女座" },
+    { en: "Libra", end: [10, 23], name: "天秤座" },
+    { en: "Scorpio", end: [11, 22], name: "天蠍座" },
+    { en: "Sagittarius", end: [12, 21], name: "射手座" },
+    { en: "Capricorn", end: [12, 31], name: "摩羯座" },
 ]);
 
 function getConstellation(date: Date): string {
-    const m = date.getMonth() + 1,
-        d = date.getDate();
+    const d = date.getDate(),
+        m = date.getMonth() + 1;
     for (const c of CONSTELLATIONS) {
         if (m < c.end[0] || (m === c.end[0] && d <= c.end[1])) {
             return c.name;
@@ -536,21 +538,17 @@ function getConstellation(date: Date): string {
 const _instanceCache = new Map<number, Lunar>();
 const CACHE_MAX = 400; // 最多快取 ~10 個月的資料
 
-function getCacheKey(date: Date): number {
-    return date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
-}
-
 /* ====================================================
    11. Lunar 類別 — 公開 API
    ==================================================== */
 export class Lunar {
     private _date: Date;
-    private _lunarYear: number;
-    private _lunarMonth: number;
-    private _lunarDay: number;
-    // @ts-ignore
-    private _isLeap: boolean;
     private _dayGZ: GanZhi | null;
+    // @ts-expect-error - _isLeap is assigned but currently unused in public API
+    private _isLeap: boolean;
+    private _lunarDay: number;
+    private _lunarMonth: number;
+    private _lunarYear: number;
 
     /**
      * @private 請使用 Lunar.fromDate()
@@ -559,9 +557,7 @@ export class Lunar {
         this._date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         const y = this._date.getFullYear();
         if (y < MIN_YEAR || y > MAX_YEAR) {
-            throw new RangeError(
-                `Lunar: 日期超出支援範圍 (${MIN_YEAR}–${MAX_YEAR})，收到 ${y} 年`,
-            );
+            throw new RangeError(`Lunar: 日期超出支援範圍 (${MIN_YEAR}–${MAX_YEAR})，收到 ${y} 年`);
         }
 
         const lunar = gregorianToLunar(this._date);
@@ -591,12 +587,12 @@ export class Lunar {
     }
 
     /**
-     * 農曆月份（繁體）
+     * 西洋星座
      * @returns {string}
-     * @example Lunar.fromDate(new Date(2025, 0, 29)).getMonthInChinese() // '正'
+     * @example Lunar.fromDate(new Date(2026, 1, 12)).getConstellation() // '水瓶座'
      */
-    getMonthInChinese(): string {
-        return MONTH_NAMES[this._lunarMonth - 1];
+    getConstellation(): string {
+        return getConstellation(this._date);
     }
 
     /**
@@ -605,25 +601,7 @@ export class Lunar {
      * @example Lunar.fromDate(new Date(2025, 0, 29)).getDayInChinese() // '初一'
      */
     getDayInChinese(): string {
-        return DAY_NAMES[this._lunarDay - 1];
-    }
-
-    /**
-     * 天干地支年份
-     * @returns {string}
-     * @example Lunar.fromDate(new Date(2024, 1, 10)).getYearInGanZhi() // '甲辰'
-     */
-    getYearInGanZhi(): string {
-        return yearGanZhi(this._lunarYear) || "";
-    }
-
-    /**
-     * 月干支
-     * @returns {string}
-     * @example Lunar.fromDate(new Date(2026, 1, 12)).getMonthInGanZhi() // '己丑'
-     */
-    getMonthInGanZhi(): string {
-        return monthGanZhi(this._lunarYear, this._lunarMonth) || "";
+        return DAY_NAMES[this._lunarDay - 1] || "";
     }
 
     /**
@@ -636,40 +614,11 @@ export class Lunar {
     }
 
     /**
-     * 生肖（繁體）
-     * @returns {string}
-     * @example Lunar.fromDate(new Date(2024, 1, 10)).getYearShengXiao() // '龍'
+     * 忌事陣列（繁體）
+     * @returns {string[]}
      */
-    getYearShengXiao(): string {
-        return SHENG_XIAO[(this._lunarYear - 4) % 12] || "";
-    }
-
-    /**
-     * 節氣名稱（當日無節氣則回傳 null）
-     * @returns {string|null}
-     * @example Lunar.fromDate(new Date(2026, 1, 4)).getJieQi() // '立春'
-     */
-    getJieQi(): string | null {
-        return getSolarTerm(this._date);
-    }
-
-    /**
-     * 節氣區間（目前所處的節氣及距下一個節氣的天數）
-     * @returns {{ current: string, next: string, daysToNext: number }}
-     * @example Lunar.fromDate(new Date(2026, 1, 12)).getSolarTermPeriod()
-     * // { current: '立春', next: '雨水', daysToNext: 7 }
-     */
-    getSolarTermPeriod(): { current: string; next: string; daysToNext: number } {
-        return getSolarTermPeriod(this._date);
-    }
-
-    /**
-     * 建除十二客日主
-     * @returns {string}
-     * @example Lunar.fromDate(new Date(2026, 1, 12)).getJianChu() // '定'
-     */
-    getJianChu(): string {
-        return JIANCHU[getJianChuIndex(this._lunarMonth, this._getDayGZ().zhi)] || "";
+    getDayJi(): string[] {
+        return JI_TABLE[getJianChuIndex(this._lunarMonth, this._getDayGZ().zhi)] || [];
     }
 
     /**
@@ -690,37 +639,84 @@ export class Lunar {
     }
 
     /**
-     * 忌事陣列（繁體）
-     * @returns {string[]}
-     */
-    getDayJi(): string[] {
-        return JI_TABLE[getJianChuIndex(this._lunarMonth, this._getDayGZ().zhi)] || [];
-    }
-
-    /**
      * 農曆節日（含除夕偵測），無節日則回傳 null
      * @returns {string|null}
      * @example Lunar.fromDate(new Date(2025, 0, 29)).getFestival() // '春節'
      */
-    getFestival(): string | null {
+    getFestival(): null | string {
         return getLunarFestival(this._lunarYear, this._lunarMonth, this._lunarDay);
+    }
+
+    /**
+     * 建除十二客日主
+     * @returns {string}
+     * @example Lunar.fromDate(new Date(2026, 1, 12)).getJianChu() // '定'
+     */
+    getJianChu(): string {
+        return JIANCHU[getJianChuIndex(this._lunarMonth, this._getDayGZ().zhi)] || "";
+    }
+
+    /**
+     * 節氣名稱（當日無節氣則回傳 null）
+     * @returns {string|null}
+     * @example Lunar.fromDate(new Date(2026, 1, 4)).getJieQi() // '立春'
+     */
+    getJieQi(): null | string {
+        return getSolarTerm(this._date);
+    }
+
+    /**
+     * 農曆月份（繁體）
+     * @returns {string}
+     * @example Lunar.fromDate(new Date(2025, 0, 29)).getMonthInChinese() // '正'
+     */
+    getMonthInChinese(): string {
+        return MONTH_NAMES[this._lunarMonth - 1] || "";
+    }
+
+    /**
+     * 月干支
+     * @returns {string}
+     * @example Lunar.fromDate(new Date(2026, 1, 12)).getMonthInGanZhi() // '己丑'
+     */
+    getMonthInGanZhi(): string {
+        return monthGanZhi(this._lunarYear, this._lunarMonth) || "";
     }
 
     /**
      * 公曆節日，無則回傳 null
      * @returns {string|null}
      */
-    getSolarFestival(): string | null {
+    getSolarFestival(): null | string {
         return getSolarFestival(this._date);
     }
 
     /**
-     * 西洋星座
-     * @returns {string}
-     * @example Lunar.fromDate(new Date(2026, 1, 12)).getConstellation() // '水瓶座'
+     * 節氣區間（目前所處的節氣及距下一個節氣的天數）
+     * @returns {{ current: string, next: string, daysToNext: number }}
+     * @example Lunar.fromDate(new Date(2026, 1, 12)).getSolarTermPeriod()
+     * // { current: '立春', next: '雨水', daysToNext: 7 }
      */
-    getConstellation(): string {
-        return getConstellation(this._date);
+    getSolarTermPeriod(): { current: string; daysToNext: number; next: string } {
+        return getSolarTermPeriod(this._date);
+    }
+
+    /**
+     * 天干地支年份
+     * @returns {string}
+     * @example Lunar.fromDate(new Date(2024, 1, 10)).getYearInGanZhi() // '甲辰'
+     */
+    getYearInGanZhi(): string {
+        return yearGanZhi(this._lunarYear) || "";
+    }
+
+    /**
+     * 生肖（繁體）
+     * @returns {string}
+     * @example Lunar.fromDate(new Date(2024, 1, 10)).getYearShengXiao() // '龍'
+     */
+    getYearShengXiao(): string {
+        return SHENG_XIAO[(this._lunarYear - 4) % 12] || "";
     }
 
     /** @private */
@@ -728,4 +724,8 @@ export class Lunar {
         if (!this._dayGZ) this._dayGZ = dayGanZhi(this._date);
         return this._dayGZ;
     }
+}
+
+function getCacheKey(date: Date): number {
+    return date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
 }

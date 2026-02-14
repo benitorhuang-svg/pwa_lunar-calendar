@@ -1,3 +1,9 @@
+/* 
+   Calendar Cell Styles
+   日曆單元格樣式定義
+   Core styling for individual day cells, including states (today, selected) and typography.
+*/
+
 /* Day Cell & Internal Elements */
 .day-cell {
     display: flex;
@@ -47,6 +53,8 @@
     /* 往右下微移，形成對角排版節奏 */
 }
 
+/* Weekend Color (Sun & Sat) */
+/* 週末顏色 (週日與週六) */
 .day-cell:nth-child(7n),
 .day-cell:nth-child(7n + 1) {
     color: #b05a5a;

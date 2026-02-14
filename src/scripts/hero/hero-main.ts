@@ -14,7 +14,6 @@ const musicPlayer = new HeroMusicPlayer(baseDir);
 const slideshowManager = new HeroSlideshowManager();
 const headerManager = new HeroHeaderManager();
 
-
 // Init Managers (DOM elements)
 imageManager.init();
 musicPlayer.init();

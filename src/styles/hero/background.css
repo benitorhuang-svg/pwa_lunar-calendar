@@ -10,7 +10,7 @@
     /* CSS fallback：頁面載入前即顯示背景圖，避免黑屏 */
     /* 此為靜態 fallback，JS 載入後會覆蓋；季節圖更新時需同步修改 */
     /* [dev] 本地端路徑含 base path；[deploy] GitHub Pages 同樣適用 */
-    background-image: url("/pwa_lunar-calendar/assets/gallery/winter/1.webp");
+    background-image: url("../../../../public/assets/gallery/winter/1.webp");
     background-size: cover;
     background-position: center;
     /* 動畫改在容器上：確保換圖時縮放動作不中斷、不跳動 */

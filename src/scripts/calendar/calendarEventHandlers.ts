@@ -4,13 +4,20 @@
  */
 
 import type { CalendarRenderer } from "./calendarRenderer";
+import type {
+    DateSelectedDetail,
+    NavigateMonthDetail,
+    RenderCalendarDetail,
+    ToggleGridViewDetail,
+    UpdateCalendarTitleDetail,
+} from "./types";
 
 export class CalendarEventHandlers {
     private calendarSection: HTMLElement | null = null;
     private grid: HTMLElement | null = null;
     private longPressFired = false;
     private renderer: CalendarRenderer;
-    private SWIPE_THRESHOLD_PX = 50;
+    private readonly SWIPE_THRESHOLD_PX = 50;
 
     constructor(renderer: CalendarRenderer) {
         this.renderer = renderer;
@@ -23,16 +30,18 @@ export class CalendarEventHandlers {
         this.setupClickHandler();
         this.setupSwipeHandler();
         this.setupTodayButton();
-        this.setupEventListeners();
+        this.setupGlobalListeners();
     }
 
     private setupClickHandler(): void {
         if (!this.grid) return;
         this.grid.addEventListener("click", (e) => {
             const target = e.target as HTMLElement;
+            // 尋找最近的日期單元格 (Find closest day cell)
             const cell = target.closest(".day-cell") as HTMLElement | null;
             if (!cell) return;
 
+            // 如果長按事件已觸發，則忽略點擊 (Ignore click if long press fired)
             if (this.longPressFired) {
                 this.longPressFired = false;
                 return;
@@ -44,7 +53,7 @@ export class CalendarEventHandlers {
             const year = parseInt(cell.dataset.year || "0");
             const month = parseInt(cell.dataset.month || "0");
 
-            // Visual Feedback
+            // 視覺回饋 (Visual Feedback)
             if (this.grid) {
                 this.grid
                     .querySelectorAll(".day-cell")
@@ -53,36 +62,44 @@ export class CalendarEventHandlers {
             cell.classList.add("selected");
 
             console.log(`[Calendar] Date Selected: ${year}-${month + 1}-${day}`);
+
+            // 發送日期選擇事件 (Dispatch date selected event)
             window.dispatchEvent(
-                new CustomEvent("date-selected", { detail: { day, month, year } }),
+                new CustomEvent<DateSelectedDetail>("date-selected", {
+                    detail: { day, month, year },
+                }),
             );
         });
     }
 
-    private setupEventListeners(): void {
-        // Render Calendar
-        window.addEventListener("render-calendar", (e: any) => {
+    private setupGlobalListeners(): void {
+        // 渲染日曆 (Render Calendar)
+        window.addEventListener("render-calendar", ((e: CustomEvent<RenderCalendarDetail>) => {
             const { month, selectedDay, today, year } = e.detail;
             this.renderer.renderCalendar(year, month, today, selectedDay);
-        });
+        }) as EventListener);
 
-        // Update Calendar Title
-        window.addEventListener("update-calendar-title", (e: any) => {
+        // 更新日曆標題 (Update Calendar Title)
+        window.addEventListener("update-calendar-title", ((
+            e: CustomEvent<UpdateCalendarTitleDetail>,
+        ) => {
             const { lunarText } = e.detail;
             this.renderer.updateTitle(lunarText);
-        });
+        }) as EventListener);
 
-        // Toggle Grid View
-        window.addEventListener("toggle-grid-view", (e: any) => {
+        // 切換網格視圖 (Toggle Grid View)
+        window.addEventListener("toggle-grid-view", ((e: CustomEvent<ToggleGridViewDetail>) => {
             if (!this.calendarSection) return;
             const { show } = e.detail;
+
             if (show) {
                 this.calendarSection.classList.remove("hidden");
-                void this.calendarSection.offsetWidth; // Force reflow
+                void this.calendarSection.offsetWidth; // 強制重繪 (Force reflow)
                 this.calendarSection.classList.add("show-grid");
             } else {
                 this.calendarSection.classList.remove("show-grid");
 
+                // 動畫結束後隱藏 (Hide after transition ends)
                 const onTransitionEnd = () => {
                     if (
                         this.calendarSection &&
@@ -94,10 +111,10 @@ export class CalendarEventHandlers {
                 };
                 this.calendarSection.addEventListener("transitionend", onTransitionEnd);
 
-                // Backup timeout
+                // 備用超時 (Backup timeout in case transitionend fails)
                 setTimeout(onTransitionEnd, 550);
             }
-        });
+        }) as EventListener);
     }
 
     private setupSwipeHandler(): void {
@@ -106,18 +123,24 @@ export class CalendarEventHandlers {
 
         this.calendarSection.addEventListener(
             "touchstart",
-            (e) => (touchStartX = e.changedTouches[0].screenX),
+            (e) => {
+                const touch = e.changedTouches[0];
+                if (touch) touchStartX = touch.screenX;
+            },
             { passive: true },
         );
 
         this.calendarSection.addEventListener(
             "touchend",
             (e) => {
-                const diff = e.changedTouches[0].screenX - touchStartX;
+                const touch = e.changedTouches[0];
+                if (!touch) return;
+                const diff = touch.screenX - touchStartX;
                 if (Math.abs(diff) > this.SWIPE_THRESHOLD_PX) {
+                    // 發送導航月份事件 (Dispatch navigate month event)
                     window.dispatchEvent(
-                        new CustomEvent("navigate-month", {
-                            detail: diff > 0 ? -1 : 1,
+                        new CustomEvent<NavigateMonthDetail>("navigate-month", {
+                            detail: diff > 0 ? -1 : 1, // 向右滑上一月，向左滑下一月 (Right: Prev, Left: Next)
                         }),
                     );
                 }
@@ -129,7 +152,9 @@ export class CalendarEventHandlers {
     private setupTodayButton(): void {
         const btnTodayQuick = document.getElementById("btnTodayQuick");
         if (btnTodayQuick) {
-            btnTodayQuick.onclick = () => window.dispatchEvent(new CustomEvent("go-to-today"));
+            btnTodayQuick.addEventListener("click", () => {
+                window.dispatchEvent(new CustomEvent("go-to-today"));
+            });
         }
     }
 }

@@ -56,7 +56,12 @@
 - **`musicPlayer.ts`**：**音樂邏輯**。管理背景音樂播放清單與播放狀態。
 - **`slideshowManager.ts`**：**輪播邏輯**。單純的計時器控制。
 - **`idleManager.ts`**：**閒置邏輯**。偵測用戶無操作後自動進入「沉浸模式」(隱藏 UI) 或「歡迎模式」。
-- **`eventHandlers.ts`**：Hero 區域的事件監聽與 UI 互動綁定。
+- **`eventHandlers.ts`**：**事件控制器**。Hero 區域的核心控制器，負責協調 UI、觸控、PWA 與其他管理器之間的互動。
+- **`uiManager.ts`**：**UI 管理**。負責 Hero 區域所有 DOM 元素的選取、狀態切換與事件綁定 (View 層)。
+- **`touchHandler.ts`**：**觸控邏輯**。封裝滑動手勢 (Swipe) 的偵測演算法。
+- **`pwaHandler.ts`**：**PWA 邏輯**。管理 PWA 安裝提示事件與安裝按鈕互動。
+- **`headerManager.ts`**：**標題邏輯**。管理左上角日期的顯示與更新。
+- **`types.ts`**：**型別定義**。定義 Hero 區域內使用的所有 TypeScript 介面與事件型別。
 
 #### `src/scripts/calendar/` (日曆層)
 

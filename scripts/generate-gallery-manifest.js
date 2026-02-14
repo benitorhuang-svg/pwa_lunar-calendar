@@ -23,7 +23,7 @@ function generateManifest() {
         if (fs.existsSync(seasonDir)) {
             fs.readdirSync(seasonDir)
                 .filter((file) => /\.(png|webp|jpg|jpeg)$/i.test(file))
-                .forEach(file => files.push(file));
+                .forEach((file) => files.push(file));
             files.sort();
         }
         manifest[season] = files;

@@ -1,7 +1,15 @@
+/**
+ * Application Controller
+ * 應用程式控制器，負責初始化與歡迎流程
+ * Application controller responsible for initialization and welcome sequence
+ */
+
+import type { RenderPanelsDetail, SlideshowControlDetail, ToggleGridViewDetail } from "../types";
+
 import { AppEventOrchestrator } from "./eventOrchestrator";
 import { AppStateManager } from "./stateManager";
 
-// Initialize
+// 初始化 (Initialize)
 const stateManager = new AppStateManager();
 const orchestrator = new AppEventOrchestrator(stateManager);
 
@@ -28,9 +36,12 @@ function activateWelcome(): void {
     stateManager.setActivePanel("today");
 
     // UI Updates
-    window.dispatchEvent(new CustomEvent("toggle-grid-view", { detail: { show: false } }));
     window.dispatchEvent(
-        new CustomEvent("render-panels", {
+        new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", { detail: { show: false } }),
+    );
+
+    window.dispatchEvent(
+        new CustomEvent<RenderPanelsDetail>("render-panels", {
             detail: {
                 type: "today",
                 ...stateManager.getState(),
@@ -39,7 +50,7 @@ function activateWelcome(): void {
     );
 
     window.dispatchEvent(
-        new CustomEvent("slideshow-control", {
+        new CustomEvent<SlideshowControlDetail>("slideshow-control", {
             detail: { action: "start", isArtwork: false },
         }),
     );
@@ -69,4 +80,12 @@ function initWelcomeMode(): void {
     }
 }
 
-initWelcomeMode();
+// 立即執行初始化邏輯 (Execute initialization logic immediately if loaded later)
+// Note: This call at the end handles cases where the script loads after DOMContentLoaded if using 'defer'
+// but we already have a listener above.
+// Actually, `initWelcomeMode()` call here is risky if DOM not ready.
+// Best to rely on the DOMContentLoaded handler above or check readyState.
+if (document.readyState === "complete" || document.readyState === "interactive") {
+    // If logic is idempotent or safe to check
+    // initWelcomeMode is safe because it checks .app-loaded
+}

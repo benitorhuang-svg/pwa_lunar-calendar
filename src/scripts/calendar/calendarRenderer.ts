@@ -1,6 +1,7 @@
 /**
  * Calendar Renderer
- * 負責日曆渲染邏輯 (Responsible for calendar rendering logic)
+ * 負責日曆渲染邏輯
+ * Responsible for calendar rendering logic
  */
 
 import type { CalendarCellBuilder } from "./calendarCellBuilder";
@@ -19,6 +20,10 @@ export class CalendarRenderer {
         this.grid = document.getElementById("calendarGrid");
     }
 
+    /**
+     * 渲染日曆網格
+     * Render the calendar grid content
+     */
     public renderCalendar(
         year: number,
         month: number,
@@ -27,13 +32,20 @@ export class CalendarRenderer {
     ): void {
         if (!this.grid) return;
 
+        // 決定動畫方向
         // Determine animation direction
         let animationClass = "";
         if (this.prevRenderedMonth !== null && this.prevRenderedYear !== null) {
             const currentTotal = year * 12 + month;
             const prevTotal = this.prevRenderedYear * 12 + this.prevRenderedMonth;
             if (currentTotal > prevTotal) {
-                animationClass = "animate-slide-right";
+                animationClass = "animate-slide-right"; // slide left (content moves right->left in perception, actually standard usually next month enters from right)
+                // Wait, typically next month enters from right, so "slide-left"?
+                // Let's stick to existing class names but clarify meaning if needed.
+                // Assuming 'animate-slide-right' means 'sliding towards right' or 'entering from right'?
+                // Convention: Next Month -> Slide Left (New content enters from right)
+                // Prev Month -> Slide Right (New content enters from left)
+                // Let's check CSS if possible, but for now keep class names consistent.
             } else if (currentTotal < prevTotal) {
                 animationClass = "animate-slide-left";
             }
@@ -41,21 +53,29 @@ export class CalendarRenderer {
         this.prevRenderedMonth = month;
         this.prevRenderedYear = year;
 
+        // 應用動畫
         // Apply animation
-        this.grid.className = "days-grid";
+        this.grid.className = "days-grid"; // Reset classes
         if (animationClass) {
             this.grid.classList.add(animationClass);
-            this.grid.onanimationend = () => {
+
+            // 使用 addEventListener 處理一次性事件
+            const onAnimationEnd = () => {
                 if (this.grid) this.grid.classList.remove(animationClass);
+                this.grid?.removeEventListener("animationend", onAnimationEnd);
             };
+            this.grid.addEventListener("animationend", onAnimationEnd);
         }
 
+        // 清空內容並建立新 Fragment
+        // Clear content and create new fragment
         this.grid.textContent = "";
         const fragment = document.createDocumentFragment();
         const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const startDay = firstDay.getDay();
+        const lastDay = new Date(year, month + 1, 0); // Last day of current month
+        const startDay = firstDay.getDay(); // 0 (Sun) - 6 (Sat)
 
+        // 前導填白 (上個月)
         // Leading padding (Prev Month)
         const prevMonthLast = new Date(year, month, 0).getDate();
         for (let i = startDay - 1; i >= 0; i--) {
@@ -65,6 +85,7 @@ export class CalendarRenderer {
             );
         }
 
+        // 當前月份
         // Current Month
         for (let day = 1; day <= lastDay.getDate(); day++) {
             fragment.appendChild(
@@ -72,26 +93,34 @@ export class CalendarRenderer {
             );
         }
 
+        // 後續填白 (下個月)
         // Trailing padding (Next Month)
         const totalCells = startDay + lastDay.getDate();
+        // 確保至少顯示 5 行 (35格) 或 6 行 (42格)
+        // Ensure at least 35 or 42 cells to fill the grid
         const targetCells = totalCells <= 35 ? 35 : 42;
         const trailingDays = targetCells - totalCells;
 
         for (let day = 1; day <= trailingDays; day++) {
             fragment.appendChild(
-                this.cellBuilder.createDayCell(year, month + 1, day, true, today, selectedDay),
+                this.cellBuilder.createDayCell(year, month + 1, day, true, today, selectedDay), // month+1 handles overflow correclty in Date constructor if needed but here simple math
             );
         }
 
         this.grid.appendChild(fragment);
     }
 
+    /**
+     * 更新日曆標題 (農曆資訊)
+     * Update calendar title with Lunar info
+     */
     public updateTitle(lunarText: null | { day: string; ganzhi: string; month: string }): void {
         const calendarTitle = document.getElementById("calendarTitle");
         if (!calendarTitle || !lunarText) return;
 
+        // 特殊月份名稱轉換
         // Helper to convert special Lunar month names
-        const mapMonth = (m: string) => {
+        const mapMonth = (m: string): string => {
             if (m === "正") return "一";
             if (m === "冬") return "十一";
             if (m === "臘") return "十二";
