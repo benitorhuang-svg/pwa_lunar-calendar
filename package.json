@@ -3,8 +3,10 @@
     "version": "1.0.0",
     "type": "module",
     "scripts": {
+        "predev": "node scripts/generate-gallery-manifest.js",
         "dev": "astro dev",
         "start": "astro dev",
+        "prebuild": "node scripts/generate-gallery-manifest.js",
         "build": "astro build",
         "preview": "astro preview",
         "astro": "astro",

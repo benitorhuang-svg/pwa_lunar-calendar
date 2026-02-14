@@ -1,31 +1,32 @@
-const GALLERY_MANIFEST = {
-  "autumn": [
-    "1.webp",
-    "2.webp",
-    "3.webp"
-  ],
-  "default": [
-    "1.webp",
-    "3.webp",
-    "4.webp",
-    "5.webp",
-    "6.webp",
-    "7.webp",
-    "8.webp",
-    "9.webp"
-  ],
-  "spring": [
-    "立春.webp"
-  ],
-  "summer": [
-    "1.webp"
-  ],
-  "winter": [
-    "1.webp",
-    "2.webp"
-  ]
+/**
+ * Generated Gallery Manifest
+ * Do not edit manually.
+ */
+window.GALLERY_MANIFEST = {
+    "default": [
+        "1.webp",
+        "3.webp",
+        "4.webp",
+        "5.webp",
+        "6.webp",
+        "7.webp",
+        "8.webp",
+        "9.webp"
+    ],
+    "spring": [
+        "立春.webp"
+    ],
+    "summer": [
+        "1.webp"
+    ],
+    "autumn": [
+        "1.webp",
+        "2.webp",
+        "3.webp"
+    ],
+    "winter": [
+        "1.webp",
+        "2.webp",
+        "lunar_icon_calendar_corrected_li_v1_1770957646414.png"
+    ]
 };
-
-if (typeof window !== 'undefined') {
-  window.GALLERY_MANIFEST = GALLERY_MANIFEST;
-}

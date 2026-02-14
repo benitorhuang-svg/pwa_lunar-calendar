@@ -15,6 +15,7 @@ const slideshowManager = new HeroSlideshowManager();
 // Init Managers (DOM elements)
 imageManager.init();
 musicPlayer.init();
+idleManager.setupListeners();
 
 // Core Logic & Event Handlers
 const eventHandlers = new HeroEventHandlers(

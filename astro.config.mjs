@@ -13,7 +13,42 @@ export default defineConfig({
             injectRegister: 'script',
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,mp3}'],
-                maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB limit to support high-quality audio
+                maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // Increased to 15MB
+                runtimeCaching: [
+                    {
+                        urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'google-fonts',
+                            expiration: {
+                                maxEntries: 10,
+                                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                            },
+                        },
+                    },
+                    {
+                        urlPattern: /\.(?:png|jpg|jpeg|svg|webp)$/,
+                        handler: 'StaleWhileRevalidate',
+                        options: {
+                            cacheName: 'gallery-images',
+                            expiration: {
+                                maxEntries: 50,
+                                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                            },
+                        },
+                    },
+                    {
+                        urlPattern: /\.(?:mp3|wav)$/,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'ambient-music',
+                            expiration: {
+                                maxEntries: 10,
+                                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+                            },
+                        },
+                    },
+                ],
             },
             manifest: {
                 name: "農民曆 PWA",

@@ -4,7 +4,7 @@
  */
 
 export class HeroIdleManager {
-    constructor(idleTimeout = 10000) {
+    constructor(idleTimeout = 6000) {
         this.idleTimer = null;
         this.IDLE_TIMEOUT = idleTimeout;
         this.isArtworkMode = false;

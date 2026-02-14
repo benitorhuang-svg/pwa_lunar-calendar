@@ -25,14 +25,23 @@
 
 ## 2. JavaScript / Astro 開發準則
 
-### 核心原則
-*   **Vanilla JS over Frameworks**: 在 `script` 標籤中，優先使用原生 DOM API (`querySelector`, `addEventListener`)，避免引入不必要的輕量級庫。
-*   **Explicit State**: 狀態變更應透過明確的函式調用或事件派發，禁止隱式修改全域變數。
+### 核心原則 (Core Principles)
+*   **Vanilla JS over Frameworks**: 在 `script` 標籤中，優先使用原生 DOM API，避免引入不必要的輕量級框架。
+*   **Modular Architecture (ESM)**: 強制採用 ES Modules。所有邏輯應抽離至 `src/scripts/` 下的獨立模組。
+*   **Class-Based Encapsulation**: 邏輯應封裝在 Class 中 (如 `DataManager`, `Renderer`, `EventHandlers`)，並透過 `constructor` 進行依賴注入。
+*   **Explicit State**: 狀態變更應透過全域 `AppStateManager` 維護，嚴禁隱式修改全域變數。
 
-### 最佳實踐
-*   **事件驅動**: 組件間溝通必須使用 `CustomEvent`，禁止直接跨組件調用函式。
+### 最佳實踐 (Best Practices)
+*   **事件驅動 (Event-Driven)**: 組件間通訊必須使用 `CustomEvent`。
+    - **發送者**: 使用 `window.dispatchEvent(new CustomEvent('name', { detail: ... }))`。
+    - **接收者**: 在 Orchestrator 或 Handler 中使用 `addEventListener`。
+*   **職責分離 (SoC)**: 
+    - **Manager**: 處理資料、計算與狀態。
+    - **Handler**: 處理使用者輸入與事件分配。
+    - **Renderer**: 處理 DOM 操作與動畫。
+    - **Orchestrator**: 負責跨模組的業務流轉。
 *   **非同步處理**: 優先使用 `async/await` 取代 `Promise.then`。
-*   **註解**: 複雜邏輯（如農曆算法、座標計算）必須撰寫註解說明「為什麼這麼做」。
+*   **註解**: 複雜邏輯必須撰寫「中英對照」註解，說明「為什麼這樣做」。
 
 ## 3. Python 開發準則
 
@@ -47,11 +56,11 @@
 ## 4. 工作流 (Workflow)
 
 開發者應遵循以下循環：
-1.  **Coding**: 撰寫程式碼。
-2.  **Self-Review**: 自我審查邏輯與命名。
-3.  **Linting**: 執行 `npm run lint` 與 `ruff check .`。
-4.  **Fixing**: 修正所有 Linter 回報的問題。
-5.  **Commit**: 提交程式碼。
+1.  **Coding**: 撰寫模組化代碼。
+2.  **Linting**: 執行 `npm run lint` 與 `ruff check .`，確保 **Zero Errors**。
+3.  **Documentation**: 更新 `SDD` 或相關架構文件，確保文檔與代碼同步。
+4.  **Verification**: 驗證事件流與狀態變更是否符合預期。
+5.  **Commit**: 提交清晰的 Commit Message。
 
 ---
 *程式碼品質不是發生在測試階段，而是發生在每一次按下存檔的瞬間。*
