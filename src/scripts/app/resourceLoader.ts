@@ -91,6 +91,9 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         setTimeout(() => {
             const overlay = document.getElementById("loadingOverlay");
             if (overlay) overlay.style.display = "none";
+
+            // 通知 App 控制器：載入與動畫已完全結束，可以激活後續流程 (Welcome Mode 等)
+            window.dispatchEvent(new CustomEvent("loader-finished"));
         }, 1500);
     }
 
