@@ -30,7 +30,7 @@ Thumbs.db
 # Temporary / Backups
 *.bak
 unnamed.png
-SDD/
+# SDD/
 ecliptic-ellipse/
 
 # Note: package.json and package-lock.json are usually included in git. 
