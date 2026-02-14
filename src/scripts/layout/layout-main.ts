@@ -1,4 +1,8 @@
-// Ensure form inputs have a name/id for autofill and accessibility checks.
+/**
+ * Layout Main Script
+ * 負責全局布局與主題切換 (Responsible for global layout and theme switching)
+ */
+
 (function () {
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", addNames);
@@ -6,7 +10,7 @@
         addNames();
     }
 
-    function addNames() {
+    function addNames(): void {
         const inputs = Array.from(document.querySelectorAll("input"));
         const missing = inputs.filter((el) => !el.name && !el.id);
         if (missing.length > 0) {
@@ -15,24 +19,15 @@
             );
             missing.forEach((el, i) => {
                 try {
-                    console.groupCollapsed &&
-                        console.groupCollapsed(`[autofix] input #${i}`);
+                    console.groupCollapsed(`[autofix] input #${i}`);
                     console.warn(el);
                     console.warn(
                         "outerHTML:",
-                        el.outerHTML
-                            ? el.outerHTML.slice(0, 500)
-                            : "(no outerHTML)",
+                        el.outerHTML ? el.outerHTML.slice(0, 500) : "(no outerHTML)",
                     );
-                    console.warn(
-                        "baseURI:",
-                        el.baseURI || document.baseURI,
-                    );
-                    console.warn(
-                        "inShadowRoot:",
-                        !!el.getRootNode && el.getRootNode() !== document,
-                    );
-                    console.groupEnd && console.groupEnd();
+                    console.warn("baseURI:", el.baseURI || document.baseURI);
+                    console.warn("inShadowRoot:", el.getRootNode() !== document);
+                    console.groupEnd();
                 } catch (err) {
                     console.warn("[autofix] error logging element", err);
                 }
@@ -71,7 +66,7 @@
         "theme-festive",
     );
 
-    let seasonClass;
+    let seasonClass: string;
 
     // Season Logic (Lunar-Aligned)
     if (month >= 2 && month <= 4) {
@@ -85,13 +80,6 @@
         seasonClass = "theme-winter";
     }
 
-    // Festive Override Check (Simple check for Lunar New Year period - roughly Jan/Feb)
-    // For a more accurate check, we'd need the Lunar library here.
-    // For now, let's keep it strictly seasonal as requested, unless specifically Jan/Feb.
-    // Actually, let's stick to the 4 seasons first.
-
     body.classList.add(seasonClass);
-    console.log(
-        `[Theme] Auto-switched to ${seasonClass} for month ${month}`,
-    );
+    console.log(`[Theme] Auto-switched to ${seasonClass} for month ${month}`);
 })();

@@ -1,8 +1,8 @@
-@import './tokens.css';
-@import './calendar-themes.css';
-@import './hero.css';
-@import './calendar.css';
-@import './panels.css';
+@import "./tokens.css";
+@import "./calendar-themes.css";
+@import "./hero.css";
+@import "./calendar.css";
+@import "./panels.css";
 
 /* Global Overrides or Specific Page Styles not captured elsewhere */
 
@@ -46,6 +46,14 @@ body.initial-welcome .suspension-panel#panelToday {
     margin: 0 !important;
     width: min(90%, 550px) !important;
     animation: welcomeCardFadeIn 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* 歡迎模式下隱藏日曆主體，避免重疊 */
+body.initial-welcome #calendarSection,
+body.initial-welcome .hero-dock-wrapper {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
 }
 
 @keyframes welcomeCardFadeIn {

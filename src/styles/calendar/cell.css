@@ -48,7 +48,7 @@
 }
 
 .day-cell:nth-child(7n),
-.day-cell:nth-child(7n+1) {
+.day-cell:nth-child(7n + 1) {
     color: #b05a5a;
     /* Slightly more muted vermilion */
 }
@@ -57,7 +57,9 @@
 .day-cell.today {
     background: var(--cal-today-bg, linear-gradient(135deg, #ffd700 0%, #ffcc00 100%)) !important;
     color: var(--cal-today-text, #5c3a21) !important;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 0 15px rgba(255, 215, 0, 0.3);
+    box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.1),
+        0 0 15px rgba(255, 215, 0, 0.3);
     transform: scale(1.1);
     z-index: 2;
     font-weight: 500;
@@ -76,7 +78,9 @@
 .day-cell.selected:not(.today) {
     background: var(--cal-border);
     /* 加入實體感背景 */
-    box-shadow: 0 0 0 1px var(--cal-text) inset, 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow:
+        0 0 0 1px var(--cal-text) inset,
+        0 4px 12px rgba(0, 0, 0, 0.1);
     color: var(--cal-text);
     font-weight: 600;
     border-radius: 10px;

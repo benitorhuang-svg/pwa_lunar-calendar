@@ -164,11 +164,11 @@
 }
 
 .tag::after {
-    content: ' / ';
+    content: " / ";
     margin: 0 6px;
     opacity: 0.3;
 }
 
 .tag:last-child::after {
-    content: '';
+    content: "";
 }

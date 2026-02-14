@@ -3,22 +3,33 @@
  * 負責日曆渲染邏輯 (Responsible for calendar rendering logic)
  */
 
+import type { CalendarCellBuilder } from "./calendarCellBuilder";
+
 export class CalendarRenderer {
-    constructor(cellBuilder) {
+    private cellBuilder: CalendarCellBuilder;
+    private grid: HTMLElement | null = null;
+    private prevRenderedMonth: null | number = null;
+    private prevRenderedYear: null | number = null;
+
+    constructor(cellBuilder: CalendarCellBuilder) {
         this.cellBuilder = cellBuilder;
-        this.grid = null;
-        this.prevRenderedMonth = null;
-        this.prevRenderedYear = null;
     }
 
-    init() {
+    public init(): void {
         this.grid = document.getElementById("calendarGrid");
     }
 
-    renderCalendar(year, month, today, selectedDay = null) {
+    public renderCalendar(
+        year: number,
+        month: number,
+        today: Date,
+        selectedDay: null | number = null,
+    ): void {
+        if (!this.grid) return;
+
         // Determine animation direction
         let animationClass = "";
-        if (this.prevRenderedMonth !== null) {
+        if (this.prevRenderedMonth !== null && this.prevRenderedYear !== null) {
             const currentTotal = year * 12 + month;
             const prevTotal = this.prevRenderedYear * 12 + this.prevRenderedMonth;
             if (currentTotal > prevTotal) {
@@ -34,7 +45,9 @@ export class CalendarRenderer {
         this.grid.className = "days-grid";
         if (animationClass) {
             this.grid.classList.add(animationClass);
-            this.grid.onanimationend = () => this.grid.classList.remove(animationClass);
+            this.grid.onanimationend = () => {
+                if (this.grid) this.grid.classList.remove(animationClass);
+            };
         }
 
         this.grid.textContent = "";
@@ -48,14 +61,14 @@ export class CalendarRenderer {
         for (let i = startDay - 1; i >= 0; i--) {
             const day = prevMonthLast - i;
             fragment.appendChild(
-                this.cellBuilder.createDayCell(year, month - 1, day, true, today, selectedDay)
+                this.cellBuilder.createDayCell(year, month - 1, day, true, today, selectedDay),
             );
         }
 
         // Current Month
         for (let day = 1; day <= lastDay.getDate(); day++) {
             fragment.appendChild(
-                this.cellBuilder.createDayCell(year, month, day, false, today, selectedDay)
+                this.cellBuilder.createDayCell(year, month, day, false, today, selectedDay),
             );
         }
 
@@ -66,19 +79,19 @@ export class CalendarRenderer {
 
         for (let day = 1; day <= trailingDays; day++) {
             fragment.appendChild(
-                this.cellBuilder.createDayCell(year, month + 1, day, true, today, selectedDay)
+                this.cellBuilder.createDayCell(year, month + 1, day, true, today, selectedDay),
             );
         }
 
         this.grid.appendChild(fragment);
     }
 
-    updateTitle(lunarText) {
+    public updateTitle(lunarText: null | { day: string; ganzhi: string; month: string }): void {
         const calendarTitle = document.getElementById("calendarTitle");
         if (!calendarTitle || !lunarText) return;
 
         // Helper to convert special Lunar month names
-        const mapMonth = (m) => {
+        const mapMonth = (m: string) => {
             if (m === "正") return "一";
             if (m === "冬") return "十一";
             if (m === "臘") return "十二";

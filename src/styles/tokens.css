@@ -1,14 +1,14 @@
 /* Base Styles: Reset, Variables, Layout Structure */
 :root {
     /* V2 Color Palette */
-    --primary-red: #C41E3A;
+    --primary-red: #c41e3a;
     /* 宮牆紅 */
-    --gold-accent: #D4AF37;
+    --gold-accent: #d4af37;
     /* 金色 */
     --gold-glow: rgba(212, 175, 55, 0.4);
-    --ink-black: #2C2C2C;
+    --ink-black: #2c2c2c;
     /* 墨黑 */
-    --paper-white: #FDFBF7;
+    --paper-white: #fdfbf7;
     /* 紙白 */
     --text-gray: #666666;
     --border-color: rgba(255, 255, 255, 0.2);
@@ -16,19 +16,19 @@
     --panel-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 
     /* Typography */
-    --font-serif: 'Noto Serif TC', serif;
-    --font-serif-num: 'Playfair Display', 'Noto Serif TC', serif;
-    --font-calligraphy: 'Zhi Mang Xing', cursive;
+    --font-serif: "Noto Serif TC", serif;
+    --font-serif-num: "Playfair Display", "Noto Serif TC", serif;
+    --font-calligraphy: "Zhi Mang Xing", cursive;
     /* Premium Numbers & Calligraphy */
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
     /* Textures */
     --bg-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 
     /* Semantic Colors */
-    --color-festive-red: #C41E3A;
+    --color-festive-red: #c41e3a;
     /* Palace Wall Red (Base) */
-    --color-festive-red-dark: #8E141A;
+    --color-festive-red-dark: #8e141a;
     /* Deep Imperial Red */
 
     /* Dimensions - V4 Full Screen */

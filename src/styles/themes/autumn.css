@@ -10,12 +10,9 @@
     --cal-inner-glow: rgba(255, 255, 255, 0.6);
 
     /* Shadows - Golden Hour Depth */
-    --cal-shadow:
-        0 30px 60px rgba(60, 40, 20, 0.12),
-        0 1px 1px rgba(255, 255, 255, 0.8) inset;
+    --cal-shadow: 0 30px 60px rgba(60, 40, 20, 0.12), 0 1px 1px rgba(255, 255, 255, 0.8) inset;
 
-    --cal-shadow-glow:
-        0 0 40px rgba(218, 165, 32, 0.15);
+    --cal-shadow-glow: 0 0 40px rgba(218, 165, 32, 0.15);
 
     /* Borders - Antique Gold */
     --cal-border: rgba(184, 134, 11, 0.15);
@@ -34,7 +31,13 @@
     --panel-item-bg: rgba(139, 69, 19, 0.05);
     /* SaddleBrown tint */
     --panel-border: rgba(184, 134, 11, 0.25);
-    --panel-divider: linear-gradient(90deg, transparent 0%, rgba(184, 134, 11, 0.3) 20%, rgba(184, 134, 11, 0.3) 80%, transparent 100%);
+    --panel-divider: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(184, 134, 11, 0.3) 20%,
+        rgba(184, 134, 11, 0.3) 80%,
+        transparent 100%
+    );
 
     /* Interactive Elements - Harvest */
     --cal-nav-bg: rgba(139, 69, 19, 0.04);
@@ -60,7 +63,9 @@
 /* Global Atmosphere Overrides - Autumn */
 .theme-autumn .suspension-panel {
     border: 1px solid rgba(218, 165, 32, 0.3);
-    box-shadow: 0 20px 50px rgba(101, 67, 33, 0.12), 0 0 25px rgba(255, 235, 205, 0.4) inset;
+    box-shadow:
+        0 20px 50px rgba(101, 67, 33, 0.12),
+        0 0 25px rgba(255, 235, 205, 0.4) inset;
 }
 
 .theme-autumn .nav-box.active {

@@ -4,12 +4,26 @@
  */
 
 export class HeroSlideshowManager {
+    private INTERVAL: number;
+    private slideshowTimer: null | ReturnType<typeof setInterval> = null;
+
     constructor(interval = 10000) {
-        this.slideshowTimer = null;
         this.INTERVAL = interval;
     }
 
-    start(switchCallback, minImages = 2) {
+    public isActive(): boolean {
+        return this.slideshowTimer !== null;
+    }
+
+    public reset(
+        switchCallback: (_offset: number, _isAuto: boolean) => void,
+        minImages: number,
+    ): void {
+        this.stop();
+        this.start(switchCallback, minImages);
+    }
+
+    public start(switchCallback: (_offset: number, _isAuto: boolean) => void, minImages = 2): void {
         if (this.slideshowTimer) return;
         if (minImages < 2) return;
 
@@ -18,19 +32,10 @@ export class HeroSlideshowManager {
         }, this.INTERVAL);
     }
 
-    stop() {
+    public stop(): void {
         if (this.slideshowTimer) {
             clearInterval(this.slideshowTimer);
             this.slideshowTimer = null;
         }
-    }
-
-    reset(switchCallback, minImages) {
-        this.stop();
-        this.start(switchCallback, minImages);
-    }
-
-    isActive() {
-        return this.slideshowTimer !== null;
     }
 }

@@ -1,0 +1,12 @@
+{
+    "extends": "astro/tsconfigs/strictest",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        },
+        "types": ["@vite-pwa/astro/info"],
+        "allowJs": true,
+        "checkJs": true
+    }
+}

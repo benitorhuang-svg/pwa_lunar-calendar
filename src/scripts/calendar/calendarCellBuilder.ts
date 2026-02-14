@@ -4,7 +4,14 @@
  */
 
 export class CalendarCellBuilder {
-    createDayCell(year, month, day, isOtherMonth, today, selectedDay) {
+    public createDayCell(
+        year: number,
+        month: number,
+        day: number,
+        isOtherMonth: boolean,
+        today: Date,
+        selectedDay: null | number,
+    ): HTMLDivElement {
         const date = new Date(year, month, day);
         const lunar = Lunar.fromDate(date);
         const term = lunar.getJieQi();
@@ -15,9 +22,9 @@ export class CalendarCellBuilder {
         cell.className = `day-cell ${isOtherMonth ? "other-month" : ""}`;
         cell.tabIndex = isOtherMonth ? -1 : 0;
         cell.setAttribute("role", "button");
-        cell.dataset.year = year;
-        cell.dataset.month = month;
-        cell.dataset.day = day;
+        cell.dataset.year = year.toString();
+        cell.dataset.month = month.toString();
+        cell.dataset.day = day.toString();
         if (isOtherMonth) cell.dataset.other = "true";
 
         if (date.toDateString() === today.toDateString()) {
@@ -31,7 +38,7 @@ export class CalendarCellBuilder {
 
         const greg = document.createElement("div");
         greg.className = "gregorian-num";
-        greg.textContent = day;
+        greg.textContent = day.toString();
 
         const lunarDiv = document.createElement("div");
         lunarDiv.className = "lunar-text";
@@ -56,7 +63,7 @@ export class CalendarCellBuilder {
 
         cell.setAttribute(
             "aria-label",
-            `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 · ${bottomText}`
+            `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 · ${bottomText}`,
         );
 
         return cell;

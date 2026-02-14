@@ -4,52 +4,31 @@
  */
 
 export class HeroImageManager {
-    constructor(baseDir) {
-        this.baseDir = baseDir;
+    public heroList: string[] = [];
+    public specialHeroList: string[] = [];
+    private BASE_HERO_DIR: string;
+    private currentSpecialName: null | string = null;
+    private heroBgContainer: HTMLElement | null = null;
+    private heroCache: Record<string, HTMLImageElement> = {};
+    private heroIdx = 0;
+    private requestedSeason: null | string = null;
+    private specialHeroIdx = 0;
+
+    constructor(baseDir: string) {
         this.BASE_HERO_DIR = (baseDir + "assets/gallery/").replace(/\/+/g, "/");
-        this.heroList = [];
-        this.heroIdx = 0;
-        this.requestedSeason = null;
-        this.currentSpecialName = null;
-        this.specialHeroList = [];
-        this.specialHeroIdx = 0;
-        this.currentSeason = null;
-        this.heroCache = {};
-        this.heroBgContainer = null;
     }
 
-    init() {
-        this.heroBgContainer = document.getElementById("heroBgContainer");
-    }
-
-    getSeason(date) {
-        const m = date.getMonth();
-        if (m >= 1 && m <= 3) return "spring";
-        if (m >= 4 && m <= 6) return "summer";
-        if (m >= 7 && m <= 9) return "autumn";
-        return "winter";
-    }
-
-    checkImageExists(src) {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(false);
-            img.src = src;
-        });
-    }
-
-    async detectHeroImages(season = "default", isFallback = false) {
+    public async detectHeroImages(season = "default", isFallback = false): Promise<void> {
         const seasonDir = `${this.BASE_HERO_DIR}${season}/`;
-        let detected = [];
+        let detected: string[] = [];
 
         // 1. Try to load from Global Manifest JS
         if (typeof GALLERY_MANIFEST !== "undefined") {
             if (GALLERY_MANIFEST[season] && GALLERY_MANIFEST[season].length > 0) {
-                detected = GALLERY_MANIFEST[season].map(
-                    (filename) => `${seasonDir}${filename}`
+                detected = GALLERY_MANIFEST[season].map((filename) => `${seasonDir}${filename}`);
+                console.log(
+                    `[Hero] Loaded ${detected.length} images from JS Manifest for ${season}`,
                 );
-                console.log(`[Hero] Loaded ${detected.length} images from JS Manifest for ${season}`);
             }
         }
         // 2. Try to load from JSON manifest
@@ -60,9 +39,11 @@ export class HeroImageManager {
                     const manifest = await response.json();
                     if (manifest[season] && manifest[season].length > 0) {
                         detected = manifest[season].map(
-                            (filename) => `${seasonDir}${filename}`
+                            (filename: string) => `${seasonDir}${filename}`,
                         );
-                        console.log(`[Hero] Loaded ${detected.length} images from JSON Manifest for ${season}`);
+                        console.log(
+                            `[Hero] Loaded ${detected.length} images from JSON Manifest for ${season}`,
+                        );
                     }
                 }
             } catch {
@@ -82,12 +63,7 @@ export class HeroImageManager {
                 for (const ext of exts) {
                     const src = `${seasonDir}${i}${ext}`;
                     try {
-                        const exists = await new Promise((resolve) => {
-                            const img = new Image();
-                            img.onload = () => resolve(true);
-                            img.onerror = () => resolve(false);
-                            img.src = src;
-                        });
+                        const exists = await this.checkImageExists(src);
                         if (exists) {
                             detected.push(src);
                             found = true;
@@ -106,14 +82,12 @@ export class HeroImageManager {
         if (detected.length === 0 && season !== "default") {
             console.log(`[Hero] No images in ${season}, falling back to default.`);
             await this.detectHeroImages("default", true);
-            if (!isFallback) null;
             return;
         }
 
         this.heroList = detected.length > 0 ? detected : [`${this.BASE_HERO_DIR}default/1.png`];
         this.heroList.sort(() => Math.random() - 0.5);
         this.heroIdx = 0;
-        this.currentSeason = season;
 
         this.preloadHeroImages();
 
@@ -122,21 +96,25 @@ export class HeroImageManager {
         }
     }
 
-    preloadHeroImages() {
-        this.heroList.forEach((src) => {
-            const img = new Image();
-            img.src = src;
-            this.heroCache[src] = img;
-        });
+    public getSeason(date: Date): string {
+        const m = date.getMonth();
+        if (m >= 1 && m <= 3) return "spring";
+        if (m >= 4 && m <= 6) return "summer";
+        if (m >= 7 && m <= 9) return "autumn";
+        return "winter";
     }
 
-    switchHero(offset, isAuto = false, resetSlideshowCallback) {
+    public init(): void {
+        this.heroBgContainer = document.getElementById("heroBgContainer");
+    }
+
+    public switchHero(offset: number, isAuto = false, resetSlideshowCallback?: () => void): void {
         if (!isAuto && resetSlideshowCallback) {
             resetSlideshowCallback();
         }
 
-        let list;
-        let idx;
+        let list: string[];
+        let idx: number;
         let isSpecial = false;
 
         if (this.specialHeroList && this.specialHeroList.length > 0) {
@@ -159,53 +137,18 @@ export class HeroImageManager {
         }
 
         const transType = isAuto ? "fade" : offset > 0 ? "fade-next" : "fade-prev";
-        this.setHeroBackground(list[newIdx], transType);
+        const targetUrl = list[newIdx] || list[0] || "";
+        this.setHeroBackground(targetUrl, transType);
 
-        window.dispatchEvent(
-            new CustomEvent("close-panels", { detail: { showGrid: false } })
-        );
+        window.dispatchEvent(new CustomEvent("close-panels", { detail: { showGrid: false } }));
     }
 
-    setHeroBackground(url, transition) {
-        const newItem = document.createElement("div");
-        newItem.className = "hero-bg-item";
-        newItem.style.backgroundImage = `url('${url}')`;
-
-        const currentItem = this.heroBgContainer.querySelector(".hero-bg-item:last-child");
-
-        if (transition === "fade-next") {
-            newItem.classList.add("is-next");
-        } else if (transition === "fade-prev") {
-            newItem.classList.add("is-prev");
-        } else {
-            newItem.classList.add("is-new");
-        }
-
-        newItem.style.zIndex = "2";
-        if (currentItem) currentItem.style.zIndex = "1";
-
-        this.heroBgContainer.appendChild(newItem);
-        newItem.offsetHeight; // Reflow
-
-        requestAnimationFrame(() => {
-            newItem.classList.remove("is-new", "is-next", "is-prev");
-
-            if (currentItem) {
-                currentItem.classList.add("blur-out");
-                if (transition === "fade-next") currentItem.style.transform = "scale(0.95)";
-                if (transition === "fade-prev") currentItem.style.transform = "scale(1.05)";
-            }
-
-            setTimeout(() => {
-                if (currentItem && currentItem.parentNode) {
-                    this.heroBgContainer.removeChild(currentItem);
-                }
-                newItem.style.zIndex = "";
-            }, 850);
-        });
-    }
-
-    async updateHeroLogic(changeBg, transitionOverride, date, lunar) {
+    public async updateHeroLogic(
+        changeBg: boolean,
+        transitionOverride: null | string,
+        date: Date,
+        lunar: any,
+    ): Promise<void> {
         const targetSeason = this.getSeason(date);
 
         if (targetSeason !== this.requestedSeason) {
@@ -217,7 +160,7 @@ export class HeroImageManager {
         const festival = lunar.getFestival();
         const term = lunar.getJieQi();
         const specialName = festival || term;
-        let finalUrl = null;
+        let finalUrl: null | string = null;
 
         if (specialName) {
             if (specialName !== this.currentSpecialName) {
@@ -259,7 +202,7 @@ export class HeroImageManager {
                 if (changeBg) {
                     this.specialHeroIdx = (this.specialHeroIdx + 1) % this.specialHeroList.length;
                 }
-                finalUrl = this.specialHeroList[this.specialHeroIdx];
+                finalUrl = this.specialHeroList[this.specialHeroIdx] ?? null;
             }
         } else {
             this.currentSpecialName = null;
@@ -270,7 +213,7 @@ export class HeroImageManager {
             if (changeBg) {
                 this.heroIdx = (this.heroIdx + 1) % this.heroList.length;
             }
-            finalUrl = this.heroList[this.heroIdx];
+            finalUrl = this.heroList[this.heroIdx] ?? null;
         }
 
         if (finalUrl) {
@@ -280,5 +223,65 @@ export class HeroImageManager {
             }
             this.setHeroBackground(finalUrl, transType);
         }
+    }
+
+    private checkImageExists(src: string): Promise<boolean> {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = src;
+        });
+    }
+
+    private preloadHeroImages(): void {
+        this.heroList.forEach((src) => {
+            const img = new Image();
+            img.src = src;
+            this.heroCache[src] = img;
+        });
+    }
+
+    private setHeroBackground(url: string, transition: string): void {
+        if (!this.heroBgContainer) return;
+
+        const newItem = document.createElement("div");
+        newItem.className = "hero-bg-item";
+        newItem.style.backgroundImage = `url('${url}')`;
+
+        const currentItem = this.heroBgContainer.querySelector(
+            ".hero-bg-item:last-child",
+        ) as HTMLElement | null;
+
+        if (transition === "fade-next") {
+            newItem.classList.add("is-next");
+        } else if (transition === "fade-prev") {
+            newItem.classList.add("is-prev");
+        } else {
+            newItem.classList.add("is-new");
+        }
+
+        newItem.style.zIndex = "2";
+        if (currentItem) currentItem.style.zIndex = "1";
+
+        this.heroBgContainer.appendChild(newItem);
+        void newItem.offsetHeight; // Reflow
+
+        requestAnimationFrame(() => {
+            newItem.classList.remove("is-new", "is-next", "is-prev");
+
+            if (currentItem) {
+                currentItem.classList.add("blur-out");
+                if (transition === "fade-next") currentItem.style.transform = "scale(0.95)";
+                if (transition === "fade-prev") currentItem.style.transform = "scale(1.05)";
+            }
+
+            setTimeout(() => {
+                if (currentItem && currentItem.parentNode) {
+                    currentItem.parentNode.removeChild(currentItem);
+                }
+                newItem.style.zIndex = "";
+            }, 850);
+        });
     }
 }

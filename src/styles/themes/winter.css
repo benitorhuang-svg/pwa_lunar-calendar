@@ -11,12 +11,9 @@
     --cal-inner-glow: rgba(255, 255, 255, 0.6);
 
     /* Shadows - Deep Ice Crevasse */
-    --cal-shadow:
-        0 30px 60px rgba(30, 45, 55, 0.12),
-        0 1px 1px rgba(255, 255, 255, 0.8) inset;
+    --cal-shadow: 0 30px 60px rgba(30, 45, 55, 0.12), 0 1px 1px rgba(255, 255, 255, 0.8) inset;
 
-    --cal-shadow-glow:
-        0 0 40px rgba(255, 255, 255, 0.4);
+    --cal-shadow-glow: 0 0 40px rgba(255, 255, 255, 0.4);
 
     /* Borders - Silver Frost */
     --cal-border: rgba(176, 196, 222, 0.15);
@@ -35,7 +32,13 @@
     --panel-item-bg: rgba(119, 136, 153, 0.05);
     /* Cool Grey tint */
     --panel-border: rgba(176, 196, 222, 0.3);
-    --panel-divider: linear-gradient(90deg, transparent 0%, rgba(176, 196, 222, 0.3) 20%, rgba(176, 196, 222, 0.3) 80%, transparent 100%);
+    --panel-divider: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(176, 196, 222, 0.3) 20%,
+        rgba(176, 196, 222, 0.3) 80%,
+        transparent 100%
+    );
 
     /* Interactive Elements - Frozen Lake */
     --cal-nav-bg: rgba(176, 196, 222, 0.05);
@@ -61,7 +64,9 @@
 .theme-winter .suspension-panel {
     border: 1px solid rgba(255, 255, 255, 0.7);
     /* Frosted Border */
-    box-shadow: 0 20px 50px rgba(47, 79, 79, 0.1), 0 0 30px rgba(255, 255, 255, 0.5) inset;
+    box-shadow:
+        0 20px 50px rgba(47, 79, 79, 0.1),
+        0 0 30px rgba(255, 255, 255, 0.5) inset;
 }
 
 .theme-winter .nav-box.active {

@@ -8,48 +8,35 @@ import { pwaInfo } from "virtual:pwa-info";
     <head>
         <meta charset="UTF-8" />
         <meta
-            name="viewport"
             content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+            name="viewport"
         />
-        <meta name="theme-color" content="#C41E3A" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta
-            name="apple-mobile-web-app-status-bar-style"
-            content="black-translucent"
-        />
+        <meta content="#C41E3A" name="theme-color" />
+        <meta content="yes" name="apple-mobile-web-app-capable" />
+        <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style" />
         <title>農民曆 PWA</title>
         {pwaInfo && <Fragment set:html={pwaInfo.webManifest.linkTag} />}
         <link
+            href={`${import.meta.env.BASE_URL}/assets/icons/icon-192.png`.replace(/\/+/g, "/")}
             rel="icon"
-            href={`${import.meta.env.BASE_URL}/assets/icons/icon-192.png`.replace(
-                /\/+/g,
-                "/",
-            )}
         />
         <link
+            href={`${import.meta.env.BASE_URL}/assets/icons/icon-192.png`.replace(/\/+/g, "/")}
             rel="apple-touch-icon"
-            href={`${import.meta.env.BASE_URL}/assets/icons/icon-192.png`.replace(
-                /\/+/g,
-                "/",
-            )}
         />
 
         <!-- Core Logic Libraries (Synchronous Load) -->
         <script
             is:inline
-            src={`${import.meta.env.BASE_URL}/assets/js/lunar-core.js`.replace(
-                /\/+/g,
-                "/",
-            )}></script>
+            src={`${import.meta.env.BASE_URL}/assets/js/lunar-core.js`.replace(/\/+/g, "/")}
+        ></script>
         <script
             is:inline
-            src={`${import.meta.env.BASE_URL}/assets/gallery/manifest.js`.replace(
-                /\/+/g,
-                "/",
-            )}></script>
+            src={`${import.meta.env.BASE_URL}/assets/gallery/manifest.js`.replace(/\/+/g, "/")}
+        ></script>
 
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com" rel="preconnect" />
+        <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
 
         <link
             href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Zhi+Mang+Xing&display=swap"
@@ -70,5 +57,4 @@ import { pwaInfo } from "virtual:pwa-info";
     </body>
 </html>
 
-<script src="../scripts/layout/layout-main.js"></script>
-
+<script src="../scripts/layout/layout-main.ts"></script>

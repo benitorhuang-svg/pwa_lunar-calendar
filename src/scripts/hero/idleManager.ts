@@ -4,17 +4,22 @@
  */
 
 export class HeroIdleManager {
+    private IDLE_TIMEOUT: number;
+    private idleTimer: NodeJS.Timeout | null | number = null;
+    private isArtworkMode = false;
+
     constructor(idleTimeout = 6000) {
-        this.idleTimer = null;
         this.IDLE_TIMEOUT = idleTimeout;
-        this.isArtworkMode = false;
     }
 
-    setArtworkMode(value) {
-        this.isArtworkMode = value;
+    public clear(): void {
+        if (this.idleTimer) {
+            clearTimeout(this.idleTimer);
+            this.idleTimer = null;
+        }
     }
 
-    reset() {
+    public reset(): void {
         if (this.idleTimer) {
             clearTimeout(this.idleTimer);
             this.idleTimer = null;
@@ -30,7 +35,7 @@ export class HeroIdleManager {
                     console.log("[Route A] Idle reached: Hiding Welcome Card");
                     document.body.classList.remove("initial-welcome");
                     window.dispatchEvent(
-                        new CustomEvent("welcome-mode", { detail: { active: true } })
+                        new CustomEvent("welcome-mode", { detail: { active: true } }),
                     );
                 }
             }, this.IDLE_TIMEOUT);
@@ -39,21 +44,16 @@ export class HeroIdleManager {
         else if (this.isArtworkMode && !isImmersion) {
             this.idleTimer = setTimeout(() => {
                 console.log("[Route B] Idle reached: Hiding Artwork UI");
-                window.dispatchEvent(
-                    new CustomEvent("welcome-mode", { detail: { active: true } })
-                );
+                window.dispatchEvent(new CustomEvent("welcome-mode", { detail: { active: true } }));
             }, this.IDLE_TIMEOUT);
         }
     }
 
-    clear() {
-        if (this.idleTimer) {
-            clearTimeout(this.idleTimer);
-            this.idleTimer = null;
-        }
+    public setArtworkMode(value: boolean): void {
+        this.isArtworkMode = value;
     }
 
-    setupListeners() {
+    public setupListeners(): void {
         // 監聽 DOM 變化
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((m) => {
@@ -79,7 +79,7 @@ export class HeroIdleManager {
                 if (document.body.classList.contains("initial-welcome")) return;
                 this.reset();
             },
-            { passive: true }
+            { passive: true },
         );
     }
 }

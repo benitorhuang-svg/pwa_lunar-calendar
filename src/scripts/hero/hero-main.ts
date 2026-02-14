@@ -1,10 +1,10 @@
-import { HeroIdleManager } from "./idleManager.js";
-import { HeroImageManager } from "./imageManager.js";
-import { HeroMusicPlayer } from "./musicPlayer.js";
-import { HeroSlideshowManager } from "./slideshowManager.js";
-import { HeroEventHandlers } from "./eventHandlers.js";
+import { HeroEventHandlers } from "./eventHandlers";
+import { HeroIdleManager } from "./idleManager";
+import { HeroImageManager } from "./imageManager";
+import { HeroMusicPlayer } from "./musicPlayer";
+import { HeroSlideshowManager } from "./slideshowManager";
 
-const baseDir = window.APP_BASE_URL || "/";
+const baseDir = (window as any).APP_BASE_URL || "/";
 
 // Initialize Managers
 const idleManager = new HeroIdleManager();
@@ -18,11 +18,7 @@ musicPlayer.init();
 idleManager.setupListeners();
 
 // Core Logic & Event Handlers
-const eventHandlers = new HeroEventHandlers(
-    imageManager,
-    slideshowManager,
-    idleManager
-);
+const eventHandlers = new HeroEventHandlers(imageManager, slideshowManager, idleManager);
 
 // Start
 eventHandlers.init();

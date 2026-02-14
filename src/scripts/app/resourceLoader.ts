@@ -1,38 +1,43 @@
-// Resource Loading & Splash Screen Logic
-// MODE: dev (local) — tracks actual progress percentage
-// TODO [deploy]: Adjust fallback logic for GitHub Pages deployment
+/**
+ * Resource Loading & Splash Screen Logic
+ * 負責首屏加載遮罩邏輯
+ */
 
 (function () {
     let isLoaded = false;
-    const loadingBar = document.getElementById("loadingBar");
-    const loadingPercent = document.getElementById("loadingPercent");
+    const loadingBar = document.getElementById("loadingBar") as HTMLElement | null;
+    const loadingPercent = document.getElementById("loadingPercent") as HTMLElement | null;
+
+    type ProgressKey = "audio" | "fonts" | "heroAll" | "heroFirst" | "scripts";
 
     // --- Resource Tracker ---
     // Weight Distribution: scripts 20%, fonts 20%, hero images 50%, audio 10%
-    const progress = {
-        scripts: false,   // 20%
-        fonts: false,     // 20%
+    const progress: Record<ProgressKey, boolean> = {
+        audio: false, // 10%
+        fonts: false, // 20%
+        heroAll: false, // 20% (Preload remaining hero images)
         heroFirst: false, // 30% (First hero image)
-        heroAll: false,   // 20% (Preload remaining hero images)
-        audio: false,     // 10%
-    };
-    const weights = {
-        scripts: 20,
-        fonts: 20,
-        heroFirst: 30,
-        heroAll: 20,
-        audio: 10,
+        scripts: false, // 20%
     };
 
-    function calcPercent() {
+    const weights: Record<ProgressKey, number> = {
+        audio: 10,
+        fonts: 20,
+        heroAll: 20,
+        heroFirst: 30,
+        scripts: 20,
+    };
+
+    function calcPercent(): number {
         let total = 0;
-        for (const key in progress) {
+        let key: keyof typeof progress;
+        for (key in progress) {
             if (progress[key]) total += weights[key];
         }
         return total;
     }
 
-    function updateUI() {
+    function updateUI(): void {
         const pct = calcPercent();
         if (loadingBar) loadingBar.style.width = pct + "%";
         if (loadingPercent) loadingPercent.textContent = pct + "%";
@@ -42,7 +47,7 @@
         }
     }
 
-    function markDone(key) {
+    function markDone(key: ProgressKey): void {
         if (!progress[key]) {
             progress[key] = true;
             console.log("[Loader] ✓ " + key + " (" + calcPercent() + "%)");
@@ -50,7 +55,7 @@
         }
     }
 
-    function revealApp() {
+    function revealApp(): void {
         if (isLoaded) return;
         isLoaded = true;
 
@@ -63,7 +68,7 @@
     }
 
     // --- 1. 檢查 Scripts (Lunar + GALLERY_MANIFEST) ---
-    function checkScripts() {
+    function checkScripts(): boolean {
         if (typeof Lunar !== "undefined" && typeof GALLERY_MANIFEST !== "undefined") {
             markDone("scripts");
             return true;
@@ -72,7 +77,7 @@
     }
 
     // --- 2. 檢查 Fonts ---
-    function checkFonts() {
+    function checkFonts(): boolean {
         if (document.fonts && document.fonts.status === "loaded") {
             markDone("fonts");
             return true;
@@ -81,12 +86,12 @@
     }
 
     // --- 3. 預載 Hero 圖片 ---
-    function preloadHeroImages() {
+    function preloadHeroImages(): void {
         if (typeof GALLERY_MANIFEST === "undefined") return;
 
         // 決定當季
         const m = new Date().getMonth() + 1;
-        let season;
+        let season: string;
         if (m >= 2 && m <= 4) season = "spring";
         else if (m >= 5 && m <= 7) season = "summer";
         else if (m >= 8 && m <= 10) season = "autumn";
@@ -95,11 +100,11 @@
         const baseDir = window.APP_BASE_URL || "/";
         const galleryDir = (baseDir + "assets/gallery/" + season + "/").replace(/\/+/g, "/");
 
-        let imageList = (GALLERY_MANIFEST[season] || []).map(f => galleryDir + f);
+        let imageList = (GALLERY_MANIFEST[season] || []).map((f) => galleryDir + f);
         // fallback to default
         if (imageList.length === 0) {
             const defaultDir = (baseDir + "assets/gallery/default/").replace(/\/+/g, "/");
-            imageList = (GALLERY_MANIFEST["default"] || []).map(f => defaultDir + f);
+            imageList = (GALLERY_MANIFEST["default"] || []).map((f) => defaultDir + f);
         }
 
         if (imageList.length === 0) {
@@ -119,7 +124,7 @@
         if (imageList.length <= 1) {
             markDone("heroAll");
         } else {
-            let remaining = imageList.length - 1;
+            const remaining = imageList.length - 1;
             let loaded = 0;
             for (let i = 1; i < imageList.length; i++) {
                 const img = new Image();
@@ -135,11 +140,9 @@
     }
 
     // --- 4. 預載 Audio ---
-    function preloadAudio() {
+    function preloadAudio(): void {
         const baseDir = window.APP_BASE_URL || "/";
-        const audioFiles = [
-            (baseDir + "assets/audio/ambient.mp3").replace(/\/+/g, "/"),
-        ];
+        const audioFiles = [(baseDir + "assets/audio/ambient.mp3").replace(/\/+/g, "/")];
         // 只測試第一個音頻是否可載入
         if (audioFiles.length === 0) {
             markDone("audio");
@@ -147,12 +150,11 @@
         }
         const audio = new Audio();
         audio.preload = "auto";
-        // [dev] 本地端音頻載入通常很快
         audio.oncanplaythrough = () => markDone("audio");
         audio.onerror = () => markDone("audio"); // 即使失敗也不阻塞
         audio.src = audioFiles[0];
 
-        // [dev] 音頻 fallback 超時 2 秒
+        // 音頻 fallback 超時 2 秒
         setTimeout(() => markDone("audio"), 2000);
     }
 
@@ -183,10 +185,10 @@
         // 音頻
         preloadAudio();
 
-        // [dev] 安全網：最多等 8 秒強制進入
-        // TODO [deploy]: GitHub Pages 可能需要更長時間，可調整此值
+        // 安全網：最多等 8 秒強制進入
         setTimeout(() => {
-            for (const key in progress) {
+            let key: keyof typeof progress;
+            for (key in progress) {
                 if (!progress[key]) {
                     console.warn("[Loader] Force-completing: " + key);
                     progress[key] = true;
