@@ -5,7 +5,7 @@
 
 export class HeroIdleManager {
     private IDLE_TIMEOUT: number;
-    private idleTimer: NodeJS.Timeout | null | number = null;
+    private idleTimer: any = null;
     private isArtworkMode = false;
 
     constructor(idleTimeout = 6000) {
@@ -19,7 +19,12 @@ export class HeroIdleManager {
         }
     }
 
+    /**
+     * 重置閒置計時器 (與全局閒置邏輯整合)
+     * 負責在閒置達到時進入沉浸模式，並在交互後喚醒
+     */
     public reset(): void {
+        // 清除現有計時器
         if (this.idleTimer) {
             clearTimeout(this.idleTimer);
             this.idleTimer = null;
@@ -28,25 +33,29 @@ export class HeroIdleManager {
         const isInitialWelcome = document.body.classList.contains("initial-welcome");
         const isImmersion = document.body.classList.contains("immersion-mode");
 
-        // 路線 A：啟動歡迎頁面
-        if (isInitialWelcome) {
-            this.idleTimer = setTimeout(() => {
-                if (document.body.classList.contains("initial-welcome")) {
-                    console.log("[Route A] Idle reached: Hiding Welcome Card");
-                    document.body.classList.remove("initial-welcome");
-                    window.dispatchEvent(
-                        new CustomEvent("welcome-mode", { detail: { active: true } }),
-                    );
-                }
-            }, this.IDLE_TIMEOUT);
+        // 1. 喚醒邏輯：如果當前處於沉浸模式（且非初始歡迎），交互後應退出沉浸
+        if (isImmersion && !isInitialWelcome) {
+            console.log("[Global Idle] Wake up: Exiting Immersion Mode");
+            window.dispatchEvent(new CustomEvent("welcome-mode", { detail: { active: false } }));
         }
-        // 路線 B：映畫模式
-        else if (this.isArtworkMode && !isImmersion) {
-            this.idleTimer = setTimeout(() => {
-                console.log("[Route B] Idle reached: Hiding Artwork UI");
-                window.dispatchEvent(new CustomEvent("welcome-mode", { detail: { active: true } }));
-            }, this.IDLE_TIMEOUT);
-        }
+
+        // 2. 設置沉浸超時邏輯
+        this.idleTimer = setTimeout(() => {
+            const isWelcome = document.body.classList.contains("initial-welcome");
+            const isImmersion = document.body.classList.contains("immersion-mode");
+
+            // 如果已經在「純」沈浸模式（無 UI），則不再重複觸發
+            if (isImmersion && !isWelcome) return;
+
+            console.log("[Global Idle] Idle reached: Triggering Immersion Mode Cleanup");
+
+            if (isWelcome) {
+                document.body.classList.remove("initial-welcome");
+            }
+
+            // 強制確保進入沈浸模式 (Dispatch event to hide ALL UI)
+            window.dispatchEvent(new CustomEvent("welcome-mode", { detail: { active: true } }));
+        }, this.IDLE_TIMEOUT);
     }
 
     public setArtworkMode(value: boolean): void {
@@ -54,7 +63,13 @@ export class HeroIdleManager {
     }
 
     public setupListeners(): void {
-        // 監聽 DOM 變化
+        // 監聽觸碰、點擊、鍵盤 (全域 reset)
+        // 根據使用者要求：只追蹤觸摸/點擊，不追蹤滑鼠移動 (No mousemove tracking)
+        ["mousedown", "touchstart", "keypress"].forEach((evt) => {
+            window.addEventListener(evt, () => this.reset(), { passive: true });
+        });
+
+        // 監聽 DOM 變化 (確保某些狀態切換時能即時啟動計時)
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((m) => {
                 if (
@@ -67,19 +82,7 @@ export class HeroIdleManager {
         });
         observer.observe(document.body, { attributes: true });
 
-        // 監聽觸碰與點擊
-        ["mousedown", "touchstart"].forEach((evt) => {
-            window.addEventListener(evt, () => this.reset(), { passive: true });
-        });
-
-        // 滑鼠移動
-        window.addEventListener(
-            "mousemove",
-            () => {
-                if (document.body.classList.contains("initial-welcome")) return;
-                this.reset();
-            },
-            { passive: true },
-        );
+        // 初始化時啟動一次計時器
+        this.reset();
     }
 }

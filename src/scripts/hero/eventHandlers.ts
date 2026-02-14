@@ -72,12 +72,28 @@ export class HeroEventHandlers {
             if (active) {
                 document.body.classList.add("immersion-mode");
                 this.idleManager.clear();
+
+                // 進入沉浸模式時強制啟動幻燈片 (Force start slideshow in immersion mode)
+                window.dispatchEvent(
+                    new CustomEvent("slideshow-control", {
+                        detail: { action: "start", isArtwork: false },
+                    }),
+                );
+
                 if (document.body.classList.contains("initial-welcome")) {
                     this.idleManager.reset();
                 }
             } else {
                 document.body.classList.remove("immersion-mode");
                 document.body.classList.remove("initial-welcome");
+
+                // 退出沉浸模式時暫停幻燈片，交由 Orchestrator 決定是否繼續播放
+                // (Stop slideshow when exiting, let Orchestrator decide if it should continue)
+                window.dispatchEvent(
+                    new CustomEvent("slideshow-control", {
+                        detail: { action: "stop" },
+                    }),
+                );
             }
         });
 
@@ -178,7 +194,6 @@ export class HeroEventHandlers {
             if (action === "stop") {
                 this.idleManager.setArtworkMode(false);
                 this.slideshowManager.stop();
-                this.idleManager.clear();
                 if (btnChangeImage) btnChangeImage.classList.remove("active");
                 if (btnYM) btnYM.style.display = "flex";
                 if (btnMusic) btnMusic.style.display = "none";
@@ -219,18 +234,11 @@ export class HeroEventHandlers {
             this.welcomeOverlay.addEventListener("click", (e) => {
                 e.stopPropagation();
 
+                this.idleManager.reset();
+
                 window.dispatchEvent(
                     new CustomEvent("welcome-mode", { detail: { active: false } }),
                 );
-
-                // Since isArtworkMode is private, I should ideally expose a getter or handle it via state
-
-                // Let's assume we want to handle the logic which was already there
-                const bodyClass = document.body.classList;
-                if (!bodyClass.contains("immersion-mode")) {
-                    // Simplified check based on actual class
-                    // ...
-                }
 
                 // For now, let's stick to the previous logic but keep it TS safe
                 document.body.classList.remove("initial-welcome");

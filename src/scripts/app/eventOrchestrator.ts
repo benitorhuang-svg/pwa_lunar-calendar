@@ -80,6 +80,10 @@ export class AppEventOrchestrator {
     }
 
     private checkAutoSlideshow(): void {
+        const isImmersion = document.body.classList.contains("immersion-mode");
+        // 如果已經在沈浸模式，由 IdleManager 控制幻燈片，Orchestrator 不進行干預
+        if (isImmersion) return;
+
         const calendarSection = document.getElementById("calendarSection");
         const isGrid = calendarSection ? calendarSection.classList.contains("show-grid") : false;
 
@@ -92,6 +96,10 @@ export class AppEventOrchestrator {
                 }),
             );
         } else {
+            // If immersion mode is active, the slideshow is managed by IdleManager,
+            // so the orchestrator should not stop it.
+            // The initial 'if (isImmersion) return;' already prevents this block from running
+            // if immersion mode is active.
             window.dispatchEvent(
                 new CustomEvent("slideshow-control", {
                     detail: { action: "stop" },
