@@ -1,4 +1,5 @@
 import { HeroEventHandlers } from "./eventHandlers";
+import { HeroHeaderManager } from "./headerManager";
 import { HeroIdleManager } from "./idleManager";
 import { HeroImageManager } from "./imageManager";
 import { HeroMusicPlayer } from "./musicPlayer";
@@ -11,10 +12,13 @@ const idleManager = new HeroIdleManager();
 const imageManager = new HeroImageManager(baseDir);
 const musicPlayer = new HeroMusicPlayer(baseDir);
 const slideshowManager = new HeroSlideshowManager();
+const headerManager = new HeroHeaderManager();
+
 
 // Init Managers (DOM elements)
 imageManager.init();
 musicPlayer.init();
+headerManager.init();
 idleManager.setupListeners();
 
 // Core Logic & Event Handlers

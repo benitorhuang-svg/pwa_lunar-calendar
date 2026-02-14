@@ -11,6 +11,7 @@ export class HeroImageManager {
     private heroBgContainer: HTMLElement | null = null;
     private heroCache: Record<string, HTMLImageElement> = {};
     private heroIdx = 0;
+    private manifest: Record<string, string[]> | null = null;
     private requestedSeason: null | string = null;
     private specialHeroIdx = 0;
 
@@ -24,8 +25,9 @@ export class HeroImageManager {
 
         // 1. Try to load from Global Manifest JS
         if (typeof GALLERY_MANIFEST !== "undefined") {
-            if (GALLERY_MANIFEST[season] && GALLERY_MANIFEST[season].length > 0) {
-                detected = GALLERY_MANIFEST[season].map((filename) => `${seasonDir}${filename}`);
+            this.manifest = GALLERY_MANIFEST as Record<string, string[]>;
+            if (this.manifest[season] && this.manifest[season].length > 0) {
+                detected = this.manifest[season].map((filename) => `${seasonDir}${filename}`);
                 console.log(
                     `[Hero] Loaded ${detected.length} images from JS Manifest for ${season}`,
                 );
@@ -34,17 +36,21 @@ export class HeroImageManager {
         // 2. Try to load from JSON manifest
         else {
             try {
-                const response = await fetch("assets/gallery/gallery.json");
-                if (response.ok) {
-                    const manifest = await response.json();
-                    if (manifest[season] && manifest[season].length > 0) {
-                        detected = manifest[season].map(
-                            (filename: string) => `${seasonDir}${filename}`,
-                        );
-                        console.log(
-                            `[Hero] Loaded ${detected.length} images from JSON Manifest for ${season}`,
-                        );
+                // Only fetch if we haven't already loaded the manifest or if we need to refresh (though usually static)
+                if (!this.manifest) {
+                    const response = await fetch("assets/gallery/gallery.json");
+                    if (response.ok) {
+                        this.manifest = await response.json();
                     }
+                }
+
+                if (this.manifest && this.manifest[season] && this.manifest[season].length > 0) {
+                    detected = this.manifest[season].map(
+                        (filename: string) => `${seasonDir}${filename}`,
+                    );
+                    console.log(
+                        `[Hero] Loaded ${detected.length} images from JSON Manifest for ${season}`,
+                    );
                 }
             } catch {
                 // Expected fail on file:// without local server
@@ -169,31 +175,65 @@ export class HeroImageManager {
                 this.specialHeroIdx = 0;
 
                 const exts = [".png", ".webp", ".jpg"];
-                let baseFound = false;
 
-                for (const ext of exts) {
-                    const src = `${this.BASE_HERO_DIR}${targetSeason}/${specialName}${ext}`;
-                    const exists = await this.checkImageExists(src);
-                    if (exists) {
-                        this.specialHeroList.push(src);
-                        baseFound = true;
-                        break;
+                // If we have a manifest, use it to check for existence effectively synchronously
+                // avoiding 404 network errors
+                if (this.manifest && this.manifest[targetSeason]) {
+                    const seasonFiles = this.manifest[targetSeason];
+
+                    // Check base: e.g. "DragonBoat.png"
+                    for (const ext of exts) {
+                        const filename = `${specialName}${ext}`;
+                        if (seasonFiles.includes(filename)) {
+                            this.specialHeroList.push(`${this.BASE_HERO_DIR}${targetSeason}/${filename}`);
+                            break; // Found base
+                        }
                     }
-                }
 
-                if (baseFound) {
+                    // Check variants: e.g. "DragonBoat1.png"
+                    // Only assume variants if base OR at least one variant exists? 
+                    // The logic below mimics the original: check 1..5
                     for (let i = 1; i <= 5; i++) {
                         let variantFound = false;
                         for (const ext of exts) {
-                            const src = `${this.BASE_HERO_DIR}${targetSeason}/${specialName}${i}${ext}`;
-                            const exists = await this.checkImageExists(src);
-                            if (exists) {
-                                this.specialHeroList.push(src);
+                            const filename = `${specialName}${i}${ext}`;
+                            if (seasonFiles.includes(filename)) {
+                                this.specialHeroList.push(`${this.BASE_HERO_DIR}${targetSeason}/${filename}`);
                                 variantFound = true;
                                 break;
                             }
                         }
                         if (!variantFound) break;
+                    }
+
+                } else {
+                    // Fallback to probing if no manifest (original behavior)
+                    let baseFound = false;
+
+                    for (const ext of exts) {
+                        const src = `${this.BASE_HERO_DIR}${targetSeason}/${specialName}${ext}`;
+                        const exists = await this.checkImageExists(src);
+                        if (exists) {
+                            this.specialHeroList.push(src);
+                            baseFound = true;
+                            break;
+                        }
+                    }
+
+                    if (baseFound) {
+                        for (let i = 1; i <= 5; i++) {
+                            let variantFound = false;
+                            for (const ext of exts) {
+                                const src = `${this.BASE_HERO_DIR}${targetSeason}/${specialName}${i}${ext}`;
+                                const exists = await this.checkImageExists(src);
+                                if (exists) {
+                                    this.specialHeroList.push(src);
+                                    variantFound = true;
+                                    break;
+                                }
+                            }
+                            if (!variantFound) break;
+                        }
                     }
                 }
             }

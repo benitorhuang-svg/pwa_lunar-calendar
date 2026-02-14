@@ -12,12 +12,13 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
     <!-- Loading Overlay (Splash Screen) -->
     <div id="loadingOverlay">
         <div class="loading-content">
+            <!-- 進度直接嵌入文字中 (Progress embedded in text) -->
             <div class="loading-text" id="loadingText">農民曆</div>
         </div>
     </div>
 
     <style is:global define:vars={{ bgUrl: `url(${bgUrl})` }}>
-        /* --- 1. Premium Loading Overlay --- */
+        /* --- 1. Premium Loading Overlay Design --- */
         #loadingOverlay {
             position: fixed;
             top: 0;
@@ -29,12 +30,13 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             align-items: center;
             justify-content: center;
             transition:
-                clip-path 1.6s cubic-bezier(0.7, 0, 0.3, 1),
-                opacity 1.2s ease-in-out;
+                clip-path 1.4s cubic-bezier(0.77, 0, 0.175, 1),
+                opacity 1s ease;
             overflow: hidden;
-            background-color: #1a1a1a;
+            background-color: #000;
         }
 
+        /* Loading Background Image with Mask */
         #loadingOverlay::before {
             content: "";
             position: absolute;
@@ -46,13 +48,14 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             opacity: 0.7;
             filter: brightness(0.8);
             transform: scale(1.05);
-            transition: transform 6s cubic-bezier(0.1, 0, 0.2, 1);
+            transition: transform 3s ease-out;
         }
 
         body.app-loaded #loadingOverlay::before {
-            transform: scale(1.12);
+            transform: scale(1.15);
         }
 
+        /* 擴散式開場 */
         body.app-loaded #loadingOverlay {
             clip-path: circle(0% at 50% 50%);
             opacity: 0;
@@ -66,17 +69,10 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             align-items: center;
             z-index: 10;
             text-align: center;
-            transform: translateY(-20vh);
-            transition:
-                opacity 0.8s ease,
-                transform 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+            transform: translateY(-20vh); /* 文字向上調動 */
         }
 
-        body.app-loaded .loading-content {
-            opacity: 0;
-            transform: translateY(-25vh) scale(0.95);
-        }
-
+        /* 毛筆字體進化：進度條嵌入文字 (墨染填滿效果 - 徹底修復殘影) */
         .loading-text {
             font-family: "Zhi Mang Xing", cursive;
             font-size: clamp(4.5rem, 18vw, 8.5rem);
@@ -85,6 +81,8 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             white-space: nowrap;
             line-height: 1.2;
             padding: 20px;
+
+            /* 使用單層背景漸層 + Clip 技術，保證 100% 重合 */
             background: linear-gradient(
                 to right,
                 #f0d060 var(--loading-progress, 0%),
@@ -92,61 +90,52 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             );
             -webkit-background-clip: text;
             background-clip: text;
-            color: transparent;
+            color: transparent; /* 文字本身透明，顯示背景漸層 */
+
             filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.4));
         }
 
-        /* --- 2. 修正轉場：確保置中元素不移位 (Fixing Staggered Transitions) --- */
+        /* 移除虛擬元素 ::after，避免對位誤差導致的殘影 */
+        .loading-text::after {
+            display: none !important;
+        }
 
-        /* 頁首標題：絕對定位元素需保持 left 50% 與 translateX(-50%) */
-        /* --- 2. 修正轉場：使用更安全的屬性避免覆蓋 Transform (Safe Staggered Transitions) --- */
-
-        /* 頁首標題：使用 top 微調而不覆蓋 transform */
+        /* --- 2. Staggered Entrance Elements --- */
         .hero-header {
-            opacity: 0 !important;
-            margin-top: -30px !important; /* 改用 margin 產生位移 */
+            transform: translateY(-20px);
+            opacity: 0;
             transition:
-                margin-top 1.5s cubic-bezier(0.2, 0.8, 0.2, 1),
-                opacity 1.5s ease-out !important;
-            transition-delay: 0.2s !important;
+                transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+                opacity 1.2s ease !important;
         }
         body.app-loaded .hero-header {
-            opacity: 1 !important;
-            margin-top: 0 !important;
+            transform: translateY(0);
+            opacity: 1;
         }
 
-        /* 底部工具欄 */
         .hero-dock-wrapper {
-            opacity: 0 !important;
-            margin-bottom: -50px !important; /* 改用 margin 產生位移 */
+            transform: translateX(-50%) translateY(40px);
+            opacity: 0;
             transition:
-                margin-bottom 1.6s cubic-bezier(0.1, 0.8, 0.2, 1),
-                opacity 1.6s ease-out !important;
-            transition-delay: 0.8s !important;
+                transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+                opacity 0.8s ease !important;
+            transition-delay: 0.2s !important;
         }
         body.app-loaded .hero-dock-wrapper {
-            opacity: 1 !important;
-            margin-bottom: 0 !important;
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
 
-        /* 今日卡片：這部分還是需要 Transform，但我們確認其原始樣式就是 translate(-50%, -50%) */
         #panelToday {
-            opacity: 0 !important;
-            transform: translate(-50%, -48%) scale(0.98) !important;
             transition:
-                opacity 1.5s ease,
-                transform 1.8s cubic-bezier(0.2, 1, 0.2, 1) !important;
-            transition-delay: 0.5s !important;
-            visibility: visible !important;
-        }
-
-        body.app-loaded #panelToday {
-            opacity: 1 !important;
-            transform: translate(-50%, -50%) scale(1) !important;
+                opacity 1.2s ease,
+                transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+            transition-delay: 0.3s !important;
         }
     </style>
 
     <div class="app-container" id="appContainer">
+        <!-- Components -->
         <HeroSection />
         <FloatingPanels />
         <CalendarBoard />
