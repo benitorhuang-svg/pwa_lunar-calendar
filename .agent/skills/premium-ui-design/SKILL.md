@@ -51,13 +51,28 @@ description: Guidelines and technical specifications for creating high-end, "Dig
     - **動態槽位佈局 (Dynamic Slotting)**：
         - 採用中心化、可替換的功能槽位。將次要功能（如藝廊選單、年月切換）置於中央圖標化區域，節省橫向空間，同時保持視覺平衡。
 
-## 2. 色彩體系 (Color Systems)
+## 2. 聽覺氛圍 (Auditory Atmosphere)
+
+*   **原則**：聲音是沈浸體驗的隱形支柱。音樂不應突兀，而應像空氣一樣自然流動。
+*   **要點**：
+    *   **漸入漸出 (Crossfade)**：播放、暫停或切換曲目時，必須實作 1~2 秒的音量淡入淡出 (`gainNode` 或 `volume` 漸變)，避免生硬的 Hard Cut。
+    *   **視覺回饋 (Visual Pulse)**：當音樂播放時，介面上應有微小的動態波紋或跳動圖示，提供直觀的「運作中」訊號。
+    *   **安全傳輸 (Secure Stream)**：所有外部音訊資源強制使用 HTTPS，確保與主站的安全性一致，避免混合內容警告。
+
+## 3. 個人化與恆久性 (Personalization & Persistence)
+
+*   **原則**：賦予使用者控制權 (Agency)，並記住他們的偏好。
+*   **要點**：
+    *   **本地私有 (Local First)**：優先使用 IndexedDB 或 LocalStorage 儲存使用者的自訂設定（如自訂電台、背景圖片），保障隱私且離線可用。
+    *   **無縫延續**：使用者重新開啟網頁時，應自動恢復上次的播放清單或背景模式，不需重新設定。
+
+## 4. 色彩體系 (Color Systems)
 
 - **避免死色**：不要使用純紅、純黃。使用具歷史層次感的色彩（如「宮牆紅」、「香檳金」）。
 - **語義變數**：在 `base.css` 定義語義化變數，如 `--color-festive-red`, `--color-accent-gold`。
 - **微光 (Glow)**：使用 `box-shadow: 0 0 20px rgba(gold, 0.2)` 營造光暈感。
 
-## 3. 技術開發檢查表 (Technical Checklist)
+## 5. 技術開發檢查表 (Technical Checklist)
 
 - [ ] **響應式單位**：是否使用 `dvh` / `dvw` 確保手機端高度完美適配？
 - [ ] **視圖穩定性**：切換元件時，底層容器位置是否固定？
