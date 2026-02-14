@@ -1,6 +1,6 @@
 /**
  * Calendar Event Handlers
- * 負責日曆相關的事件處理
+ * 負責日曆相關的事件處理 (Responsible for calendar-related event handling)
  */
 
 export class CalendarEventHandlers {

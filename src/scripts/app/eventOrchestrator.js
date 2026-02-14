@@ -1,6 +1,6 @@
 /**
  * Application Event Orchestrator
- * 負責協調應用內各種事件
+ * 負責協調應用內各種事件 (Responsible for orchestrating various application events)
  */
 
 export class AppEventOrchestrator {

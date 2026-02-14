@@ -54,7 +54,6 @@
 }
 
 /* Cell States */
-/* Cell States */
 .day-cell.today {
     background: var(--cal-today-bg, linear-gradient(135deg, #ffd700 0%, #ffcc00 100%)) !important;
     color: var(--cal-today-text, #5c3a21) !important;

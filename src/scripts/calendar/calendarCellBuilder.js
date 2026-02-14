@@ -1,6 +1,6 @@
 /**
  * Calendar Cell Builder
- * 負責建構日曆單元格
+ * 負責建構日曆單元格 (Responsible for constructing calendar grid cells)
  */
 
 export class CalendarCellBuilder {

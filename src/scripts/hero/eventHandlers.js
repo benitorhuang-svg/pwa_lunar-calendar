@@ -1,6 +1,6 @@
 /**
  * Hero Event Handlers
- * 負責 Hero 相關的事件監聽和處理
+ * 負責 Hero 相關的事件監聽和處理 (Responsible for Hero-related event listening and handling)
  */
 
 export class HeroEventHandlers {
@@ -39,7 +39,7 @@ export class HeroEventHandlers {
                     this.imageManager.heroList.length
                 );
                 this.slideshowManager.start(
-                    (offset, isAuto) => this.imageManager.switchHero(offset, isAuto, () => 
+                    (offset, isAuto) => this.imageManager.switchHero(offset, isAuto, () =>
                         this.slideshowManager.reset(
                             (o, a) => this.imageManager.switchHero(o, a),
                             minImages

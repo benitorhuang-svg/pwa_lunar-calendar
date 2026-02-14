@@ -1,6 +1,6 @@
 /**
  * Hero Music Player
- * 負責音樂播放器邏輯
+ * 負責音樂播放器邏輯 (Responsible for music player logic)
  */
 
 export class HeroMusicPlayer {

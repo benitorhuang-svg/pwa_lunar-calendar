@@ -1,6 +1,6 @@
 /**
  * Calendar Renderer
- * 負責日曆渲染邏輯
+ * 負責日曆渲染邏輯 (Responsible for calendar rendering logic)
  */
 
 export class CalendarRenderer {

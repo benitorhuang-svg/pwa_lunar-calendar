@@ -1,6 +1,6 @@
 /**
  * Application State Manager
- * 負責應用狀態管理
+ * 負責應用狀態管理 (Responsible for application state management)
  */
 
 export class AppStateManager {

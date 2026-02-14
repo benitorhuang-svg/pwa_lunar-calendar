@@ -1,6 +1,6 @@
 /**
  * Hero Image Manager
- * 負責圖片偵測、切換、預載邏輯
+ * 負責圖片偵測、切換、預載邏輯 (Responsible for image detection, switching, and preloading logic)
  */
 
 export class HeroImageManager {

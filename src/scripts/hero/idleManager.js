@@ -1,6 +1,6 @@
 /**
  * Hero Idle Manager
- * 負責閒置計時器邏輯
+ * 負責閒置計時器邏輯 (Responsible for idle timer logic)
  */
 
 export class HeroIdleManager {

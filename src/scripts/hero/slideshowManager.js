@@ -1,6 +1,6 @@
 /**
  * Hero Slideshow Manager
- * 負責幻燈片播放邏輯
+ * 負責幻燈片播放邏輯 (Responsible for slideshow playback logic)
  */
 
 export class HeroSlideshowManager {

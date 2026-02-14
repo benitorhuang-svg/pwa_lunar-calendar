@@ -1,6 +1,6 @@
 /**
  * Panel Event Handlers
- * 負責面板相關的事件處理
+ * 負責面板相關的事件處理 (Responsible for panel-related event handling)
  */
 
 export class PanelEventHandlers {
@@ -88,9 +88,12 @@ export class PanelEventHandlers {
         this.panelBackOverlay.onclick = handleClosePanel;
         this.panelToday.onclick = handleClosePanel;
 
+        /* 
+        // Handled by HeroEventHandlers to support Artwork Mode logic
         if (this.welcomeInteractionOverlay) {
             this.welcomeInteractionOverlay.onclick = handleClosePanel;
         }
+        */
 
         // Global Click Listener
         document.addEventListener("click", (e) => {
