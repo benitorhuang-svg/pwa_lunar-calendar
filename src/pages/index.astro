@@ -99,35 +99,37 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
         /* --- 2. 修正轉場：確保置中元素不移位 (Fixing Staggered Transitions) --- */
 
         /* 頁首標題：絕對定位元素需保持 left 50% 與 translateX(-50%) */
+        /* --- 2. 修正轉場：使用更安全的屬性避免覆蓋 Transform (Safe Staggered Transitions) --- */
+
+        /* 頁首標題：使用 top 微調而不覆蓋 transform */
         .hero-header {
             opacity: 0 !important;
-            /* 修正：合併原本的水平置中與動畫的垂直位移 */
-            transform: translateX(-50%) translateY(-30px) !important;
+            margin-top: -30px !important; /* 改用 margin 產生位移 */
             transition:
-                transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+                margin-top 1.5s cubic-bezier(0.2, 0.8, 0.2, 1),
                 opacity 1.5s ease-out !important;
             transition-delay: 0.2s !important;
         }
         body.app-loaded .hero-header {
             opacity: 1 !important;
-            transform: translateX(-50%) translateY(0) !important;
+            margin-top: 0 !important;
         }
 
-        /* 底部工具欄：同樣需要保持 translateX(-50%) */
+        /* 底部工具欄 */
         .hero-dock-wrapper {
             opacity: 0 !important;
-            transform: translateX(-50%) translateY(50px) !important;
+            margin-bottom: -50px !important; /* 改用 margin 產生位移 */
             transition:
-                transform 1.6s cubic-bezier(0.1, 0.8, 0.2, 1),
+                margin-bottom 1.6s cubic-bezier(0.1, 0.8, 0.2, 1),
                 opacity 1.6s ease-out !important;
             transition-delay: 0.8s !important;
         }
         body.app-loaded .hero-dock-wrapper {
             opacity: 1 !important;
-            transform: translateX(-50%) translateY(0) !important;
+            margin-bottom: 0 !important;
         }
 
-        /* 今日卡片：中心輕緩浮現 */
+        /* 今日卡片：這部分還是需要 Transform，但我們確認其原始樣式就是 translate(-50%, -50%) */
         #panelToday {
             opacity: 0 !important;
             transform: translate(-50%, -48%) scale(0.98) !important;
