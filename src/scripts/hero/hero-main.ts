@@ -1,3 +1,4 @@
+import { APP_BASE_URL } from "../core/appConfig";
 import { HeroEventHandlers } from "./eventHandlers";
 import { HeroHeaderManager } from "./headerManager";
 import { HeroIdleManager } from "./idleManager";
@@ -5,7 +6,7 @@ import { HeroImageManager } from "./imageManager";
 import { HeroMusicPlayer } from "./musicPlayer";
 import { HeroSlideshowManager } from "./slideshowManager";
 
-const baseDir = (window as any).APP_BASE_URL || "/";
+const baseDir = APP_BASE_URL;
 
 // Initialize Managers
 const idleManager = new HeroIdleManager();

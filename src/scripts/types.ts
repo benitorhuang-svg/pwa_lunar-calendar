@@ -46,7 +46,7 @@ export interface RenderHeroDetail {
     changeBg: boolean;
     date: Date | string;
     lunar: any; // Using explicit Lunar type in specific files if possible, or any here to avoid circular dep
-    transitionOverride?: string;
+    transitionOverride?: string | undefined;
 }
 
 // 渲染面板事件 (Render Panels) - Base structure, specific panels might extend

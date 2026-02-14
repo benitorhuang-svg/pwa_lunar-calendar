@@ -13,16 +13,17 @@
 
 應用程式的狀態由 `AppStateManager` 統一維護，這是唯一的「狀態真理來源 (Single Source of Truth)」。
 
+- **數據類型**: 定義於 `src/scripts/types.ts` 中的 `AppState` 介面。
 - **時間狀態**：`selectedYear`, `selectedMonth`, `selectedDay`, `today` (系統當日)
 - **UI 狀態**：`activePanel` (當前開啟的面板: 'yearMonth' | 'today' | null)
 
 ### 事件驅動流程 (Event-Driven Architecture)
 
-系統採用「發布/訂閱」模式，透過 `window.dispatchEvent` 發送指令，`AppEventOrchestrator` 負責協調。
+系統採用「發布/訂閱」模式，透過 `window.dispatchEvent` 發送強類別指令 (`CustomEvent<PayloadType>`)，`AppEventOrchestrator` 負責協調。
 
 1.  **用戶觸發 (User Action)**：
-    - 點擊日曆 -> 發送 `date-selected`
-    - 切換月份 -> 發送 `navigate-month`
+    - 點擊日曆 -> 發送 `date-selected` (Payload: `DateSelectedDetail`)
+    - 切換月份 -> 發送 `navigate-month` (Payload: `NavigateMonthDetail`)
     - 控制面板 -> 發送 `toggle-panel`
 
 2.  **邏輯處理 (Logic Processing)**：
@@ -42,6 +43,14 @@
 
 負責所有的業務邏輯、狀態計算與 API 互動。
 
+#### `src/scripts/` (全域共用)
+
+- **`types.ts`**：**全域型別真理來源**。定義 `AppState`, `ThemeName` 以及所有跨模組事件 (`*Detail`) 的介面。所有模組應優先引用此檔案。
+
+#### `src/scripts/core/` (核心配置)
+
+- **`appConfig.ts`**：**應用配置**。負責處理全域環境變數 (如 `APP_BASE_URL`) 的導出，替代原有的 `window` 全域變數。
+
 #### `src/scripts/app/` (應用層)
 
 - **`appController.ts`**：**程式入口點**。負責初始化狀態管理器與事件協調器，並處理 Splash Screen 後的啟動流程。
@@ -56,12 +65,12 @@
 - **`musicPlayer.ts`**：**音樂邏輯**。管理背景音樂播放清單與播放狀態。
 - **`slideshowManager.ts`**：**輪播邏輯**。單純的計時器控制。
 - **`idleManager.ts`**：**閒置邏輯**。偵測用戶無操作後自動進入「沉浸模式」(隱藏 UI) 或「歡迎模式」。
-- **`eventHandlers.ts`**：**事件控制器**。Hero 區域的核心控制器，負責協調 UI、觸控、PWA 與其他管理器之間的互動。
-- **`uiManager.ts`**：**UI 管理**。負責 Hero 區域所有 DOM 元素的選取、狀態切換與事件綁定 (View 層)。
+- **`eventHandlers.ts`**：**事件控制器**。Hero 區域的核心控制器，協調 UI、觸控 (`TouchHandler`) 與 PWA (`PWAHandler`) 互動。
+- **`uiManager.ts`**：**UI 管理**。負責 Hero 區域所有 DOM 元素的選取、緩存、狀態切換與事件綁定 (View 層)。
 - **`touchHandler.ts`**：**觸控邏輯**。封裝滑動手勢 (Swipe) 的偵測演算法。
 - **`pwaHandler.ts`**：**PWA 邏輯**。管理 PWA 安裝提示事件與安裝按鈕互動。
 - **`headerManager.ts`**：**標題邏輯**。管理左上角日期的顯示與更新。
-- **`types.ts`**：**型別定義**。定義 Hero 區域內使用的所有 TypeScript 介面與事件型別。
+- **`types.ts`**：**模組型別**。匯入全域型別並定義 Hero 特有的擴充型別。
 
 #### `src/scripts/calendar/` (日曆層)
 
@@ -69,6 +78,7 @@
 - **`calendarRenderer.ts`**：**DOM 渲染**。負責清空並重繪日曆網格 (`.days-grid`)。
 - **`calendarCellBuilder.ts`**：**單元格建構**。負責建立單個日期的 HTML (包含農曆、節氣顏色邏輯)。
 - **`calendarEventHandlers.ts`**：**互動邏輯**。處理日曆點擊、滑動切換月份 (`Touch Swipe`) 的事件。
+- **`types.ts`**：**模組型別**。匯入全域型別。
 
 #### `src/scripts/panels/` (面板層)
 
@@ -80,47 +90,23 @@
 
 - **`layout-main.ts`**：全域通用腳本。包含自動為 Input 添加 name (輔助填表)、依月份自動切換季節主題 class。
 
----
-
 ### 📂 `src/components/` - Astro 組件層
 
 負責 HTML 結構的定義 (Structure)。
 
-#### `src/components/Hero/`
-
-- **`HeroSection.astro`**：Hero 區域的主容器。
-- **`HeroBackground.astro`**：背景圖片容器 (`#heroBgContainer`)。
-- **`HeroHeader.astro`**：左上角日期顯示區 (`Year`, `Month`, `Day`)。
-- **`HeroDock.astro`**：底部導航 Dock (音樂、切換圖片、面板開關)。
-- **`WelcomeOverlay.astro`**：歡迎模式/點擊遮罩層。
-- **`MusicPlayer.astro`**：(已整合至 scripts，此檔可能為結構佔位)。
-
-#### `src/components/Calendar/`
-
-- **`CalendarBoard.astro`**：日曆區域的主容器。
-- **`CalendarHeader.astro`**：日曆上方的標題與星期列 (`Sun`, `Mon`...)。
-- **`CalendarGridContainer.astro`**：日曆網格容器 (`#calendarGrid`)。
-
-#### `src/components/Panels/`
-
-- **`FloatingPanels.astro`**：包含「年/月選擇面板」與「今日詳情面板」的 HTML 容器。
+- **Hero/**: 背景、標題、Dock、歡迎遮罩層。
+- **Calendar/**: 日曆標題、網格容器。
+- **Panels/**: 浮動面板容器。
 
 ---
 
 ### 📂 `src/styles/` - 樣式層 (CSS)
 
 負責視覺表現 (Presentation)，採用 CSS Variables 實現主題切換。
-
-- **`global.css`**：全域重置、字體定義。
-- **`tokens.css`**：**設計系統核心**。定義所有 CSS 變數 (顏色、字級、間距)。
-- **`themes/`**：包含 `spring.css`, `summer.css`, `autumn.css`, `winter.css` 等季節主題變數定義。
-- **`hero/`**：Hero 區域的特定樣式 (`background.css`, `dock.css`, `header.css`)。
-- **`calendar/`**：日曆區域的特定樣式 (`layout.css`, `cell.css`, `navigation.css`)。
-- **`panels/`**：面板區域的特定樣式 (`selector.css`, `detail.css`)。
-
----
+包含 `tokens.css` (設計系統), `themes/*.css` (季節變數), 以及各模組的獨立 CSS。
+`hero/background.css` 包含首屏 Fallback 機制。
 
 ### 📂 `src/pages/` & `src/layouts/` - 頁面入口
 
-- **`src/layouts/Layout.astro`**：HTML 骨架 (`<head>`, `<body>`)。負責引入全域 CSS 與 PWA Manifest。
-- **`src/pages/index.astro`**：首頁。組合各個 Astro 組件，並包含 Loading Screen (Splash Screen) 的 HTML 結構。
+- **`Layout.astro`**：HTML 骨架。
+- **`index.astro`**：首頁組合與資源載入器。

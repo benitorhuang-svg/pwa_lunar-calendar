@@ -11,12 +11,22 @@
     align-items: center;
     justify-content: center;
     padding: 0;
+    background: none;
+    border: none;
+    outline: none;
     cursor: pointer;
     position: relative;
     border-radius: 12px;
     height: 100%;
     /* 確保填滿 grid 格子 */
-    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition:
+        transform 0.1s var(--ease-entrance),
+        background-color 0.1s ease,
+        box-shadow 0.1s ease,
+        opacity 0.1s ease;
+    will-change: transform, background-color;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .day-cell:active {
@@ -39,6 +49,8 @@
     letter-spacing: -0.02em;
     transform: translate(-3px, -2px);
     /* 往左上微移 */
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
 }
 
 .lunar-text {
@@ -51,6 +63,8 @@
     letter-spacing: 0.05em;
     transform: translate(4px, 1px);
     /* 往右下微移，形成對角排版節奏 */
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
 }
 
 /* Weekend Color (Sun & Sat) */

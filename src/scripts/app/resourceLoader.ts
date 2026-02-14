@@ -3,8 +3,10 @@
  * 負責首屏加載遮罩邏輯
  */
 
+import { APP_BASE_URL } from "../core/appConfig";
 import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
+// IIFE not strictly needed for module scoping but keeping structure similar for minimal diff
 (function () {
     let isLoaded = false;
     const loadingText = document.getElementById("loadingText") as HTMLElement | null;
@@ -111,7 +113,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         else if (m >= 8 && m <= 10) season = "autumn";
         else season = "winter";
 
-        const baseDir = (window as any).APP_BASE_URL || "/";
+        const baseDir = APP_BASE_URL || "/";
         const galleryDir = (baseDir + "assets/gallery/" + season + "/").replace(/\/+/g, "/");
 
         const manifest = GALLERY_MANIFEST as Record<string, string[]>;
@@ -134,7 +136,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             markDone("heroFirst");
         };
         if (imageList[0]) {
-            img.src = imageList[0];
+            img.src = imageList[0]!;
         } else {
             markDone("heroFirst");
         }
@@ -162,7 +164,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
     // --- 4. 預載 Audio ---
     function preloadAudio(): void {
-        const baseDir = (window as any).APP_BASE_URL || "/";
+        const baseDir = APP_BASE_URL || "/";
         const audioFiles = [(baseDir + "assets/audio/ambient.mp3").replace(/\/+/g, "/")];
         // 只測試第一個音頻是否可載入
         if (audioFiles.length === 0) {

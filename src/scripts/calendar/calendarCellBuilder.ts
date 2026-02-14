@@ -18,7 +18,7 @@ export class CalendarCellBuilder {
         isOtherMonth: boolean,
         today: Date, // 系統當日 (System Today)
         selectedDay: null | number, // 當前月份被選中的日期 (Selected day in current month)
-    ): HTMLDivElement {
+    ): HTMLButtonElement {
         // 注意：這裡 month 是 0-indexed，Date 建構函數自動處理月份溢位 (e.g. month-1 where month=0 becomes previous year)
         // Note: JS Date constructor handles month overflow/underflow automatically
         const date = new Date(year, month, day);
@@ -28,12 +28,12 @@ export class CalendarCellBuilder {
         const term = lunar.getJieQi();
         const festival = lunar.getFestival() || lunar.getSolarFestival();
 
-        const cell = document.createElement("div");
+        const cell = document.createElement("button");
+        cell.type = "button";
 
         // 設定 Class (Set Classes)
         cell.className = `day-cell ${isOtherMonth ? "other-month" : ""}`;
         cell.tabIndex = isOtherMonth ? -1 : 0; // 非當月日期不可聚焦 (Disable focus for other month)
-        cell.setAttribute("role", "button");
 
         // 設定資料屬性，供點擊事件使用
         // Set data attributes for click handling

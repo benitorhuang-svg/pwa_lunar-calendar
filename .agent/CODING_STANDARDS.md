@@ -7,9 +7,9 @@
 **"Definition of Done" (完成的定義)**：
 任何功能開發或 Bug 修復，在標記為「完成」之前，**必須**通過以下的自動化檢查。
 
-### A. 前端程式碼 (JavaScript / Astro)
+### A. 前端程式碼 (JavaScript / Astro / TypeScript)
 
-- **檢測工具**: [ESLint](https://eslint.org/)
+- **檢測工具**: [ESLint](https://eslint.org/) (with TypeScript support)
 - **執行指令**:
     ```bash
     npm run lint
@@ -25,26 +25,28 @@
     ```
 - **通過標準**: 所有 Linter 錯誤必須修正。
 
-## 2. JavaScript / Astro 開發準則
+## 2. JavaScript / TypeScript 開發準則
 
 ### 核心原則 (Core Principles)
 
-- **Vanilla JS over Frameworks**: 在 `script` 標籤中，優先使用原生 DOM API，避免引入不必要的輕量級框架。
-- **Modular Architecture (ESM)**: 強制採用 ES Modules。所有邏輯應抽離至 `src/scripts/` 下的獨立模組。
+- **Vanilla TS over Frameworks**: 在 `script` 標籤中，優先使用原生 DOM API，避免引入不必要的輕量級框架。
+- **Modular TypeScript (ESM)**: 強制採用 ES Modules。所有邏輯應抽離至 `src/scripts/` 下的獨立模組 (.ts)。
 - **Class-Based Encapsulation**: 邏輯應封裝在 Class 中 (如 `DataManager`, `Renderer`, `EventHandlers`)，並透過 `constructor` 進行依賴注入。
 - **Explicit State**: 狀態變更應透過全域 `AppStateManager` 維護，嚴禁隱式修改全域變數。
+- **Strong Typing**: 善用 TypeScript 的 Interface 與 Type Alias，特別是對於 `CustomEvent` 的 Payload，必須在 `types.ts` 中明確定義。
 
 ### 最佳實踐 (Best Practices)
 
-- **事件驅動 (Event-Driven)**: 組件間通訊必須使用 `CustomEvent`。
-    - **發送者**: 使用 `window.dispatchEvent(new CustomEvent('name', { detail: ... }))`。
-    - **接收者**: 在 Orchestrator 或 Handler 中使用 `addEventListener`。
+- **事件驅動 (Event-Driven)**: 組件間通訊必須使用 `CustomEvent` 並指定泛型 `<DetailType>`。
+    - **發送者**: `window.dispatchEvent(new CustomEvent<DetailType>('name', { detail: ... }))`。
+    - **接收者**: `window.addEventListener('name', ((e: CustomEvent<DetailType>) => { ... }) as EventListener)`。
 - **職責分離 (SoC)**:
     - **Manager**: 處理資料、計算與狀態。
     - **Handler**: 處理使用者輸入與事件分配。
     - **Renderer**: 處理 DOM 操作與動畫。
     - **Orchestrator**: 負責跨模組的業務流轉。
 - **非同步處理**: 優先使用 `async/await` 取代 `Promise.then`。
+- **資源路徑**: 在 CSS 中引用 `public/` 資源時，若需作為 Fallback 或建置資源，應使用相對路徑 (`../../public/...`) 以確保 Vite 正確解析。
 - **註解**: 複雜邏輯必須撰寫「中英對照」註解，說明「為什麼這樣做」。
 
 ## 3. Python 開發準則

@@ -30,10 +30,10 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             align-items: center;
             justify-content: center;
             transition:
-                clip-path 1.4s cubic-bezier(0.77, 0, 0.175, 1),
-                opacity 1s ease;
+                clip-path var(--duration-splash-clip) var(--ease-splash),
+                opacity var(--duration-splash-fade) var(--ease-standard);
             overflow: hidden;
-            background-color: #000;
+            background-color: var(--color-pwa-bg);
         }
 
         /* Loading Background Image with Mask */
@@ -105,8 +105,8 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             transform: translateY(-20px);
             opacity: 0;
             transition:
-                transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1),
-                opacity 1.2s ease !important;
+                transform var(--duration-hero-entrance) var(--ease-entrance),
+                opacity var(--duration-hero-entrance) var(--ease-standard) !important;
         }
         body.app-loaded .hero-header {
             transform: translateY(0);
@@ -117,8 +117,8 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             transform: translateX(-50%) translateY(40px);
             opacity: 0;
             transition:
-                transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
-                opacity 0.8s ease !important;
+                transform var(--duration-panel-transition) var(--ease-entrance),
+                opacity var(--duration-panel-transition) var(--ease-standard) !important;
             transition-delay: 0.2s !important;
         }
         body.app-loaded .hero-dock-wrapper {
@@ -128,8 +128,8 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
 
         #panelToday {
             transition:
-                opacity 1.2s ease,
-                transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+                opacity var(--duration-hero-entrance) var(--ease-standard),
+                transform var(--duration-hero-entrance) var(--ease-entrance) !important;
             transition-delay: 0.3s !important;
         }
     </style>

@@ -7,7 +7,7 @@ export default defineConfig({
         AstroPWA({
             injectRegister: "script",
             manifest: {
-                background_color: "#0F0F1A",
+                background_color: "#0F0F1A", // Matches --color-pwa-bg
                 description: "傳統智慧・現代應用 - 數位農民曆",
                 display: "standalone",
                 icons: [
@@ -29,7 +29,7 @@ export default defineConfig({
                 scope: "/pwa_lunar-calendar/",
                 short_name: "農民曆",
                 start_url: "/pwa_lunar-calendar/",
-                theme_color: "#1A1A2E",
+                theme_color: "#1A1A2E", // Matches --color-pwa-theme
             },
             registerType: "autoUpdate",
             workbox: {

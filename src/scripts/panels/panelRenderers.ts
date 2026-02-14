@@ -128,7 +128,9 @@ export class PanelRenderers {
 
         for (let i = 0; i < 12; i++) {
             const isTodayMonth = selectedYear === today.getFullYear() && i === today.getMonth();
-            const item = document.createElement("div");
+            const item = document.createElement("button");
+            item.type = "button";
+            item.ariaLabel = `${selectedYear}年${i + 1}月`;
             item.className = `panel-item ${i === selectedMonth ? "selected" : ""} ${isTodayMonth ? "today" : ""}`;
             item.innerHTML = `<span class="month-num">${i + 1}</span><span class="month-label">月</span>`;
             item.onclick = (e) => {
@@ -155,7 +157,9 @@ export class PanelRenderers {
 
         for (let i = 0; i < 12; i++) {
             const y = startYear + i;
-            const item = document.createElement("div");
+            const item = document.createElement("button");
+            item.type = "button";
+            item.ariaLabel = `${y}年`;
             item.className = `panel-item ${y === selectedYear ? "selected" : ""} ${y === today.getFullYear() ? "today" : ""}`;
             item.textContent = y.toString();
             item.onclick = (e) => {

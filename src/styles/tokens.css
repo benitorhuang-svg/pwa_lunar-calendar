@@ -26,6 +26,8 @@
     --bg-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 
     /* Semantic Colors */
+    --color-pwa-theme: #1a1a2e;
+    --color-pwa-bg: #0f0f1a;
     --color-festive-red: #c41e3a;
     /* Palace Wall Red (Base) */
     --color-festive-red-dark: #8e141a;
@@ -34,6 +36,19 @@
     /* Dimensions - V4 Full Screen */
     --hero-height: 100vh;
     --grid-height: 85vh;
+
+    /* Animations & Transitions - Standardized Timings */
+    --duration-splash-clip: 1.4s;
+    --duration-splash-fade: 1s;
+    --duration-hero-entrance: 1.2s;
+    --duration-panel-transition: 0.8s;
+    --duration-base: 0.3s;
+
+    /* Easing Functions - Premium Feel */
+    --ease-splash: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-entrance: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-standard: ease;
 }
 
 /* Reset & Base */
