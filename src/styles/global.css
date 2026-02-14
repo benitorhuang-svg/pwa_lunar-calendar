@@ -12,7 +12,8 @@ body::after {
     background-image: var(--bg-noise);
     opacity: 0.035;
     pointer-events: none;
-    z-index: 10000;
+    z-index: 500;
+    /* Behind UI, above background */
     animation: noiseAnim 0.3s steps(10) infinite;
 }
 
@@ -128,5 +129,6 @@ body.initial-welcome .hero-dock-wrapper {
 
 body.immersion-mode #welcomeInteractionOverlay {
     display: block !important;
-    z-index: 9999;
+    z-index: 11000;
+    /* Highest priority for interaction */
 }
