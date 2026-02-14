@@ -1,76 +1,50 @@
-/* Hero Header - Magazine Editorial Style */
 .hero-header {
     position: absolute;
-    top: env(safe-area-inset-top, 16px);
-    left: 24px;
+    top: var(--safe-top);
+    left: 20px;
     z-index: 2100;
     pointer-events: none;
-    transition: opacity 0.4s ease;
-}
-
-.hero-info-strip {
-    pointer-events: auto;
-    /* 允許點擊日期條 */
+    transition: opacity var(--duration-base) var(--ease-out-expo);
 }
 
 .hero-info-strip {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 0 24px;
-    background: var(--hero-bg-overlay, rgba(255, 255, 255, 0.25));
-    /* 增加背景不透明度 */
-    backdrop-filter: blur(25px) saturate(130%);
-    -webkit-backdrop-filter: blur(25px) saturate(130%);
-    border: 0.5px solid var(--cal-border);
-    border-radius: 50px;
-    color: var(--hero-text-color, #ffffff);
-    /* Ensure text is white or theme-based */
+    gap: 6px;
+    padding: 6px 20px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: var(--radius-full);
+    color: var(--text-main);
     font-family: var(--font-serif-num);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    /* 增強文字陰影 */
+    box-shadow: var(--shadow-lg);
+    pointer-events: auto;
 }
 
 #infoYear {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 500;
-    /* 略微加粗 */
-    opacity: 1;
-    /* 恢復完全透明 */
-    letter-spacing: 0.12em;
-    margin-right: 16px;
-    position: relative;
-    /* 移除 italic 以提高清晰度 */
-}
-
-/* Vertical Separator after Year */
-#infoYear::after {
-    content: "";
-    /* 移除符號 / 或其它間隔線 */
-    position: absolute;
-    right: -8px;
-    top: 50%;
+    letter-spacing: var(--ls-wide);
+    color: var(--text-muted);
+    margin-right: 8px;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    padding-right: 8px;
 }
 
 #infoMonth,
 #infoDay {
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     font-weight: 700;
-    letter-spacing: 0.05em;
-}
-
-/* Dot between Month and Day */
-#infoMonth::after {
-    content: "";
-    /* 移除符號 . */
-    margin: 0 8px;
-    /* 增加間距補償 */
-    font-weight: 400;
+    letter-spacing: var(--ls-tight);
+    color: var(--ink-black);
 }
 
 .info-dot {
-    display: none;
+    opacity: 0.3;
+    font-size: 1.2rem;
+    margin: 0 2px;
 }
 
 .label {

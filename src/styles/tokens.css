@@ -1,54 +1,86 @@
 /* Base Styles: Reset, Variables, Layout Structure */
 :root {
-    /* V2 Color Palette */
+    /* --- Core Palette (Refined) --- */
     --primary-red: #c41e3a;
     /* 宮牆紅 */
+    --primary-red-rgb: 196, 30, 58;
     --gold-accent: #d4af37;
     /* 金色 */
+    --gold-accent-rgb: 212, 175, 55;
     --gold-glow: rgba(212, 175, 55, 0.4);
-    --ink-black: #2c2c2c;
-    /* 墨黑 */
-    --paper-white: #fdfbf7;
-    /* 紙白 */
-    --text-gray: #666666;
-    --border-color: rgba(255, 255, 255, 0.2);
-    --glass-background: rgba(255, 255, 255, 0.72);
-    --panel-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 
-    /* Typography */
+    --ink-black: #1a1a1a;
+    --paper-white: #fdfbf7;
+    --text-main: #2c2c2c;
+    --text-muted: #666666;
+    --text-on-dark: #e0e0e0;
+
+    /* --- Material & Depth (Clean Glass) --- */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-bg-dark: rgba(20, 20, 30, 0.7);
+    --glass-blur: blur(25px) saturate(180%);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.3);
+    --glass-border-dark: 1px solid rgba(255, 255, 255, 0.1);
+
+    /* --- Depth (SaaS Shadow Tier) --- */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+    --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1);
+
+    /* --- Typography --- */
     --font-serif: "Noto Serif TC", serif;
     --font-serif-num: "Playfair Display", "Noto Serif TC", serif;
     --font-calligraphy: "Zhi Mang Xing", cursive;
-    /* Premium Numbers & Calligraphy */
     --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
-    /* Textures */
-    --bg-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    --ls-tight: -0.02em;
+    --ls-normal: 0;
+    --ls-wide: 0.1em;
+    --ls-premium: 0.22em;
 
-    /* Semantic Colors */
-    --color-pwa-theme: #1a1a2e;
+    /* --- Motion (Native-like Physics) --- */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-premium: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    --duration-fast: 200ms;
+    --duration-base: 400ms;
+    --duration-slow: 750ms;
+
+    /* --- Layout & Safe Areas --- */
+    --safe-top: env(safe-area-inset-top, 20px);
+    --safe-bottom: env(safe-area-inset-bottom, 24px);
+    --app-max-width: 500px;
+
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 36px;
+    --radius-full: 9999px;
+
+    /* --- PWA Semantic (Restored) --- */
     --color-pwa-bg: #0f0f1a;
-    --color-festive-red: #c41e3a;
-    /* Palace Wall Red (Base) */
-    --color-festive-red-dark: #8e141a;
-    /* Deep Imperial Red */
+    --color-pwa-theme: #1a1a2e;
+    --duration-splash-clip: 1.8s;
+    /* Slowed down for Zen */
+    --duration-splash-fade: 1.2s;
+    --duration-hero-entrance: 1.5s;
+    --ease-splash: cubic-bezier(0.16, 1, 0.3, 1);
+    /* Apple-style Quint ease for smoother start/end */
+    --ease-zen: cubic-bezier(0.22, 1, 0.36, 1);
+}
 
-    /* Dimensions - V4 Full Screen */
-    --hero-height: 100vh;
-    --grid-height: 85vh;
+/* Hide app content until fully loaded to prevent background pollution */
+body:not(.app-loaded) .app-container {
+    opacity: 0;
+    visibility: hidden;
+}
 
-    /* Animations & Transitions - Standardized Timings */
-    --duration-splash-clip: 1.4s;
-    --duration-splash-fade: 1s;
-    --duration-hero-entrance: 1.2s;
-    --duration-panel-transition: 0.8s;
-    --duration-base: 0.3s;
-
-    /* Easing Functions - Premium Feel */
-    --ease-splash: cubic-bezier(0.77, 0, 0.175, 1);
-    --ease-entrance: cubic-bezier(0.2, 0.8, 0.2, 1);
-    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --ease-standard: ease;
+body.app-loaded .app-container {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity var(--duration-hero-entrance) ease-out;
 }
 
 /* Reset & Base */
@@ -76,13 +108,13 @@ body {
 /* App Container - Mobile Panel Constraint */
 .app-container {
     width: 100%;
-    max-width: 500px;
+    max-width: var(--app-max-width);
     margin: 0 auto;
     height: 100dvh;
     position: relative;
     overflow: hidden;
     background-color: var(--paper-white);
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-xl);
 }
 
 /* Reduced motion preference */

@@ -26,16 +26,16 @@
         background-position: center;
         background-repeat: no-repeat;
         transition:
-            opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-            transform 1.5s cubic-bezier(0.4, 0, 0.2, 1),
-            filter 1.2s ease;
+            opacity var(--duration-hero-entrance) var(--ease-zen),
+            transform var(--duration-hero-entrance) var(--ease-zen),
+            filter var(--duration-hero-entrance) ease;
     }
 
     /* Transition states */
     .is-new {
         opacity: 0;
-        transform: scale(1.1);
-        filter: blur(10px);
+        transform: scale(1); /* Unified scale to prevent heartbeat */
+        filter: blur(5px);
     }
     .is-next {
         opacity: 0;

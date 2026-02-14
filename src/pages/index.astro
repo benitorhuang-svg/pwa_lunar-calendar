@@ -32,11 +32,10 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             transition:
                 clip-path var(--duration-splash-clip) var(--ease-splash),
                 opacity var(--duration-splash-fade) var(--ease-standard);
+            /* background-color is handled in global.css to prevent pollution */
             overflow: hidden;
-            background-color: var(--color-pwa-bg);
         }
 
-        /* Loading Background Image with Mask */
         #loadingOverlay::before {
             content: "";
             position: absolute;
@@ -47,19 +46,37 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             background-size: cover;
             opacity: 0.7;
             filter: brightness(0.8);
-            transform: scale(1.05);
-            transition: transform 3s ease-out;
+            transform: scale(1.1); /* Start slightly zoomed in */
+            transition: transform var(--duration-splash-clip) var(--ease-splash);
         }
 
         body.app-loaded #loadingOverlay::before {
-            transform: scale(1.15);
+            transform: scale(1); /* Zoom out to natural size on reveal */
         }
 
-        /* 擴散式開場 */
+        /* body.app-loaded #loadingOverlay::before {
+            transform: scale(1.15);
+        } */
+
+        /* 幻燈片切換式開場 (Slide-switch style) */
         body.app-loaded #loadingOverlay {
-            clip-path: circle(0% at 50% 50%);
-            opacity: 0;
+            transform: translateX(-100%);
+            opacity: 1;
             pointer-events: none;
+            transition: transform var(--duration-splash-clip) var(--ease-zen);
+        }
+
+        /* Prevent background from repositioning abruptly */
+        #appContainer {
+            transition: opacity var(--duration-hero-entrance) var(--ease-out-expo);
+        }
+
+        body:not(.app-loaded) #appContainer {
+            opacity: 0;
+        }
+
+        body.app-loaded #appContainer {
+            opacity: 1;
         }
 
         .loading-content {
@@ -93,6 +110,28 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             color: transparent; /* 文字本身透明，顯示背景漸層 */
 
             filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.4));
+            animation: loadingTextBreath 4s ease-in-out infinite;
+            transition:
+                transform var(--duration-slow) var(--ease-out-expo),
+                opacity var(--duration-slow) var(--ease-standard);
+        }
+
+        @keyframes loadingTextBreath {
+            0%,
+            100% {
+                filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.4));
+                transform: translateY(-20vh) scale(1);
+            }
+            50% {
+                filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.6));
+                transform: translateY(-20vh) scale(1.02);
+            }
+        }
+
+        body.app-loaded .loading-text {
+            animation: none !important;
+            transform: translateX(-50px); /* Slide out with overlay */
+            opacity: 0;
         }
 
         /* 移除虛擬元素 ::after，避免對位誤差導致的殘影 */
@@ -105,7 +144,7 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             transform: translateY(-20px);
             opacity: 0;
             transition:
-                transform var(--duration-hero-entrance) var(--ease-entrance),
+                transform var(--duration-hero-entrance) var(--ease-zen),
                 opacity var(--duration-hero-entrance) var(--ease-standard) !important;
         }
         body.app-loaded .hero-header {
@@ -117,7 +156,7 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
             transform: translateX(-50%) translateY(40px);
             opacity: 0;
             transition:
-                transform var(--duration-panel-transition) var(--ease-entrance),
+                transform var(--duration-panel-transition) var(--ease-zen),
                 opacity var(--duration-panel-transition) var(--ease-standard) !important;
             transition-delay: 0.2s !important;
         }

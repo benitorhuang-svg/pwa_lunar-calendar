@@ -72,58 +72,81 @@ body::after {
     display: none !important;
 }
 
-/* Immersion Mode (Auto-slideshow feel) */
-body.immersion-mode .hero-header,
-body.immersion-mode .hero-dock-wrapper,
-body.immersion-mode #calendarSection,
-body.immersion-mode .suspension-panel {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    transition: opacity 0.8s ease;
-}
-
-/* Ensure the welcome "today" panel is hidden while the loading overlay is active.
-   This prevents the loading overlay and welcome card from appearing visually stacked.
-   The loading overlay adds `body.app-loaded` when loading completes; until then
-   keep the welcome panel hidden. */
-body:not(.app-loaded) .suspension-panel#panelToday {
+/* --- Core Loading Protection --- */
+body:not(.app-loaded) #appContainer,
+body:not(.app-loaded) .app-container,
+body:not(.app-loaded) .hero-header,
+body:not(.app-loaded) .hero-dock-wrapper,
+body:not(.app-loaded) #calendarSection,
+body:not(.app-loaded) .suspension-panel,
+body:not(.app-loaded) #welcomeInteractionOverlay {
     display: none !important;
     opacity: 0 !important;
+    visibility: hidden !important;
     pointer-events: none !important;
 }
 
-/* 歡迎畫面特定顯示今日宜忌 */
-body.initial-welcome .suspension-panel#panelToday {
-    display: flex !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    z-index: 10000 !important;
-    /* 置中顯示 */
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    margin: 0 !important;
-    width: min(90%, 550px) !important;
-    animation: welcomeCardFadeIn 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+/* Ensure the loading overlay itself is solid and opaque */
+#loadingOverlay {
+    background-color: #0f0f1a !important;
+    /* Absolute dark fallback */
+    background-color: var(--color-pwa-bg, #0f0f1a) !important;
 }
 
-/* 歡迎模式下隱藏日曆主體，避免重疊 */
+/* --- UI State Management (Based on SDD/UI_FLOW_LOGIC.md) --- */
+
+/* 1. Immersion Mode: Cleanest state, background only */
+/* Note: We exclude panelToday when in initial-welcome mode */
+body.immersion-mode:not(.initial-welcome) .hero-header,
+body.immersion-mode:not(.initial-welcome) .hero-dock-wrapper,
+body.immersion-mode:not(.initial-welcome) #calendarSection,
+body.immersion-mode:not(.initial-welcome) .suspension-panel,
+body.immersion-mode:not(.initial-welcome) #panelToday {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+    transition:
+        opacity var(--duration-slow) var(--ease-out-expo),
+        visibility var(--duration-slow);
+}
+
+/* Specific exclusion for initial-welcome to override immersion-mode hiding */
+body.immersion-mode.initial-welcome #panelToday {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+/* 2. Welcome Mode: Focus on Today card, hide other HUD components */
 body.initial-welcome #calendarSection,
-body.initial-welcome .hero-dock-wrapper {
+body.initial-welcome .hero-dock-wrapper,
+body.initial-welcome .hero-header {
     opacity: 0 !important;
     pointer-events: none !important;
     visibility: hidden !important;
 }
 
-@keyframes welcomeCardFadeIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -45%) scale(0.95);
-    }
+body.initial-welcome .suspension-panel#panelToday {
+    display: flex !important;
+    opacity: 0;
+    pointer-events: auto !important;
+    z-index: 10000 !important;
+    /* Center position */
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(0%, -50%);
+    /* Start to the right */
+    margin: 0 !important;
+    width: min(90%, 550px) !important;
+    filter: none;
+    animation: welcomeCardSlideEntrance var(--duration-hero-entrance) var(--ease-zen) forwards;
+    animation-delay: 0.5s;
+}
 
+@keyframes welcomeCardSlideEntrance {
     to {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
+        transform: translate(-50%, -50%);
     }
 }
 
@@ -131,4 +154,10 @@ body.immersion-mode #welcomeInteractionOverlay {
     display: block !important;
     z-index: 11000;
     /* Highest priority for interaction */
+}
+
+body.initial-welcome #welcomeInteractionOverlay {
+    display: block !important;
+    z-index: 9999;
+    /* Base welcome overlay */
 }
