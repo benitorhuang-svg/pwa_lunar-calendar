@@ -540,7 +540,30 @@ body:not(.mode-artwork) .group-image {
     animation: toastEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    pointer-events: auto;
+    /* Enable interaction for action buttons */
+}
+
+.toast-action {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--cal-text, #fff);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.toast-action:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.toast-action:active {
+    transform: scale(0.95);
 }
 
 .toast.toast-error {

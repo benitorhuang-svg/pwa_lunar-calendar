@@ -223,6 +223,38 @@ select.panel-font-select option,
     gap: 12px;
 }
 
+.share-card-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    color: rgba(212, 175, 55, 0.7);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    margin-bottom: 8px;
+    backdrop-filter: blur(5px);
+}
+
+.share-card-btn:hover {
+    background: rgba(212, 175, 55, 0.1);
+    color: #d4af37;
+    transform: scale(1.1) rotate(-5deg);
+    border-color: rgba(212, 175, 55, 0.4);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+}
+
+.share-card-btn:active {
+    transform: scale(0.9);
+}
+
+.share-card-btn svg {
+    stroke-width: 1.5px;
+}
+
 .detail-info-row {
     display: flex;
     align-items: center;

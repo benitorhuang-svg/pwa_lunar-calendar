@@ -146,6 +146,21 @@ export class HeroImageManager {
         const targetUrl = list[newIdx] || list[0] || "";
         this.setHeroBackground(targetUrl, transType);
 
+        // Haptic feedback for tactile switch (only manual)
+        if (!isAuto && "vibrate" in navigator) {
+            navigator.vibrate(10);
+        }
+
+        // --- Predictive Preloading ---
+        // Preload the "next" image after this switch
+        const predictIdx = (newIdx + (offset > 0 ? 1 : -1) + list.length) % list.length;
+        const predictUrl = list[predictIdx];
+        if (predictUrl && !this.heroCache[predictUrl]) {
+            const img = new Image();
+            img.src = predictUrl;
+            this.heroCache[predictUrl] = img;
+        }
+
         window.dispatchEvent(new CustomEvent("close-panels", { detail: { showGrid: false } }));
     }
 

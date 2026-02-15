@@ -269,6 +269,8 @@ export class HeroUIManager {
         this.heroBgContainer = document.getElementById("heroBgContainer");
         this.zenGestureHint = document.getElementById("zenGestureHint");
         this.toastContainer = document.getElementById("toastContainer");
+
+        this.bindGlobalActions();
     }
 
     // Gallery Delegate
@@ -327,22 +329,93 @@ export class HeroUIManager {
 
 
 
-    public showToast(message: string, type: "info" | "error" = "info"): void {
+    public showToast(
+        message: string,
+        type: "info" | "error" = "info",
+        action?: { label: string; callback: () => void }
+    ): void {
         if (!this.toastContainer) return;
 
         const toast = document.createElement("div");
         toast.className = `toast ${type === "error" ? "toast-error" : ""}`;
-        toast.innerHTML = `<span class="toast-icon">${type === "error" ? "⚠️" : "✨"}</span> ${message}`;
+
+        const content = document.createElement("span");
+        content.innerHTML = `<span class="toast-icon">${type === "error" ? "⚠️" : "✨"}</span> ${message}`;
+        toast.appendChild(content);
+
+        if (action) {
+            const btn = document.createElement("button");
+            btn.className = "toast-action";
+            btn.textContent = action.label;
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                action.callback();
+                toast.classList.add("hiding");
+                setTimeout(() => toast.remove(), 400);
+                this.hapticFeedback("light");
+            };
+            toast.appendChild(btn);
+        }
 
         this.toastContainer.appendChild(toast);
 
-        // Auto remove
         setTimeout(() => {
-            toast.classList.add("hiding");
-            toast.addEventListener("animationend", () => {
-                toast.remove();
+            if (toast.parentElement) {
+                toast.classList.add("hiding");
+                toast.addEventListener("animationend", () => {
+                    toast.remove();
+                });
+            }
+        }, action ? 6000 : 3000);
+    }
+
+    private bindGlobalActions(): void {
+        // Since the Share Button is inside a dynamically rendered panel, 
+        // we listen for the render event to bind it.
+        window.addEventListener("today-panel-rendered", () => {
+            const btn = document.getElementById("btnShareCard");
+            btn?.addEventListener("click", () => {
+                this.shareAppContent();
+                this.hapticFeedback("medium");
             });
-        }, 3000);
+        });
+
+        // Add haptic to dock items
+        const dockItems = document.querySelectorAll(".hero-dock-item");
+        dockItems.forEach(item => {
+            item.addEventListener("click", () => this.hapticFeedback("light"));
+        });
+    }
+
+    public hapticFeedback(style: "light" | "medium" | "heavy" = "light"): void {
+        if (!("vibrate" in navigator)) return;
+
+        const patterns = {
+            light: [10],
+            medium: [20],
+            heavy: [40, 30, 40]
+        };
+
+        navigator.vibrate(patterns[style]);
+    }
+
+    private async shareAppContent(): Promise<void> {
+        if (!navigator.share) {
+            this.showToast("您的瀏覽器不支援原生分享", "info");
+            return;
+        }
+
+        try {
+            const title = "Lunar Calendar | 數位精品曆";
+            const text = "在這個安靜的時刻，與您分享這份歲月靜好。";
+            const url = window.location.href;
+
+            await navigator.share({ title, text, url });
+        } catch (err) {
+            if ((err as Error).name !== "AbortError") {
+                console.error("Share failed:", err);
+            }
+        }
     }
 
     private showZenGestureHint(): void {

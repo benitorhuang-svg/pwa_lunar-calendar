@@ -7,6 +7,8 @@ import { HeroMusicPlayer } from "./musicPlayer";
 import { NoteManager } from "./noteManager";
 import { HeroSlideshowManager } from "./slideshowManager";
 
+import { ParallaxManager } from "./parallaxManager";
+
 const baseDir = APP_BASE_URL;
 
 // Initialize Managers
@@ -15,6 +17,7 @@ const imageManager = new HeroImageManager(baseDir);
 const musicPlayer = new HeroMusicPlayer(baseDir);
 const slideshowManager = new HeroSlideshowManager(10000);
 const headerManager = new HeroHeaderManager();
+const parallaxManager = new ParallaxManager();
 
 const noteManager = new NoteManager(idleManager);
 
@@ -24,6 +27,7 @@ musicPlayer.init();
 headerManager.init();
 idleManager.setupListeners();
 noteManager.init();
+parallaxManager.init();
 
 // Core Logic & Event Handlers
 const eventHandlers = new HeroEventHandlers(

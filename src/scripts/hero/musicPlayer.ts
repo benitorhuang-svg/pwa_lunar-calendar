@@ -11,6 +11,7 @@ export class HeroMusicPlayer {
     private trackIdx: number;
     private wasPlayingBeforeHidden: boolean = false;
     private zenPlaylist: string[];
+    private fadeTimer: any = null;
 
     constructor(baseDir: string) {
         this.zenPlaylist = [
@@ -28,7 +29,6 @@ export class HeroMusicPlayer {
 
         if (!this.btnMusic || !this.bgMusic) return;
 
-        // 音樂守護：當加載失敗或播放結束，自動接下一首
         this.bgMusic.onerror = () => {
             console.error(`[ZenMusic] Source failed: ${this.bgMusic?.src}`);
             this.playNext();
@@ -47,18 +47,14 @@ export class HeroMusicPlayer {
             }
         };
 
-        // 安全防護：當瀏覽器切換到背景或手機跳出 app 時，自動暫停播放
-        // Security: Auto-pause playback when tab is hidden or user leaves the app
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === "hidden") {
                 if (this.bgMusic && !this.bgMusic.paused) {
                     this.wasPlayingBeforeHidden = true;
-                    this.bgMusic.pause();
-                    if (this.btnMusic) this.btnMusic.classList.remove("playing");
+                    this.pause();
                     console.log("[ZenMusic] Auto-paused due to visibility hidden");
                 }
             } else if (document.visibilityState === "visible") {
-                // 如果之前是被自動暫停的，切換回來時恢復播放
                 if (this.wasPlayingBeforeHidden && this.bgMusic) {
                     this.wasPlayingBeforeHidden = false;
                     this.play();
@@ -66,7 +62,6 @@ export class HeroMusicPlayer {
             }
         });
 
-        // Load custom music on init
         this.loadCustomPlaylist();
     }
 
@@ -74,7 +69,6 @@ export class HeroMusicPlayer {
         const { galleryStorage } = await import("./galleryStorage");
         const customRows = await galleryStorage.getAllAudio();
 
-        // Clean up old object URLs if any (optional but good practice)
         this.customPlaylist = customRows
             .map((row) => {
                 if (row.type === "link" && row.url) return row.url;
@@ -84,80 +78,92 @@ export class HeroMusicPlayer {
             .filter((url) => url !== "");
 
         this.combinedPlaylist = [...this.zenPlaylist, ...this.customPlaylist];
-        console.log(`[ZenMusic] Playlist updated. Total tracks: ${this.combinedPlaylist.length}`);
 
-        // Restore last selection if available
         const lastUrl = localStorage.getItem("zen_music_last_url");
         if (lastUrl) {
             const idx = this.combinedPlaylist.indexOf(lastUrl);
-
-            // Check if it's in playlist OR it's an external link (Radio)
-            // Note: Blob URLs will change, so they won't match lastUrl. 
-            // We might need a better way for blobs, but for now support persistent URLs.
             if (idx !== -1) {
                 this.trackIdx = idx;
                 if (this.bgMusic) this.bgMusic.src = lastUrl;
-                console.log(`[ZenMusic] Restored via Playlist: ${idx}`);
             } else if (lastUrl.startsWith("http")) {
-                // External Radio URL
                 if (this.bgMusic) this.bgMusic.src = lastUrl;
-                console.log(`[ZenMusic] Restored External URL: ${lastUrl}`);
             }
-
-            // Update UI
-            window.dispatchEvent(
-                new CustomEvent("music-restored", { detail: { url: lastUrl } }),
-            );
+            window.dispatchEvent(new CustomEvent("music-restored", { detail: { url: lastUrl } }));
         } else {
-            // Default
             if (this.combinedPlaylist.length > 0 && this.bgMusic) {
                 this.bgMusic.src = this.combinedPlaylist[0] || "";
             }
         }
-
         return this.customPlaylist.length;
     }
 
-    /**
-     * 暫停音樂 (Pause Music)
-     */
     public pause(): void {
         if (!this.bgMusic) return;
-        this.bgMusic.pause();
-        if (this.btnMusic) this.btnMusic.classList.remove("playing");
+        this.fade("out", () => {
+            this.bgMusic?.pause();
+            if (this.btnMusic) this.btnMusic.classList.remove("playing");
+        });
     }
 
-    /**
-     * 播放音樂 (Play Music)
-     */
     public play(): void {
         if (!this.bgMusic) return;
 
-        // 初始化第一首
         if (!this.bgMusic.src || this.bgMusic.src === "" || this.bgMusic.ended) {
             const url = this.combinedPlaylist[this.trackIdx] || "";
             this.bgMusic.src = url;
             this.saveLastSelection(url);
         }
 
-        if (this.btnMusic) this.btnMusic.classList.add("loading"); // Indicate loading start
+        if (this.btnMusic) this.btnMusic.classList.add("loading");
 
-        this.bgMusic
-            .play()
+        this.bgMusic.play()
             .then(() => {
-                console.log(
-                    "[ZenMusic] Flowing:",
-                    this.combinedPlaylist[this.trackIdx] || "unknown",
-                );
                 if (this.btnMusic) {
                     this.btnMusic.classList.remove("loading");
                     this.btnMusic.classList.add("playing");
                 }
+                this.fade("in");
             })
             .catch((e) => {
-                console.log("[ZenMusic] Playback blocked or failed:", e.message);
+                console.log("[ZenMusic] Playback blocked:", e.message);
                 if (this.btnMusic) this.btnMusic.classList.remove("loading");
             });
+    }
+
+    private fade(type: "in" | "out", callback?: () => void): void {
+        if (!this.bgMusic) return;
+        if (this.fadeTimer) clearInterval(this.fadeTimer);
+
+        const audio = this.bgMusic;
+        const duration = 1000;
+        const steps = 20;
+        const interval = duration / steps;
+        const stepAmount = 1 / steps;
+
+        if (type === "in") {
+            audio.volume = 0;
+            this.fadeTimer = setInterval(() => {
+                const next = audio.volume + stepAmount;
+                if (next >= 1) {
+                    audio.volume = 1;
+                    clearInterval(this.fadeTimer);
+                    if (callback) callback();
+                } else {
+                    audio.volume = next;
+                }
+            }, interval);
+        } else {
+            this.fadeTimer = setInterval(() => {
+                const next = audio.volume - stepAmount;
+                if (next <= 0) {
+                    audio.volume = 0;
+                    clearInterval(this.fadeTimer);
+                    if (callback) callback();
+                } else {
+                    audio.volume = next;
+                }
+            }, interval);
+        }
     }
 
     public playIndex(idx: number): void {
@@ -171,11 +177,8 @@ export class HeroMusicPlayer {
 
     public playUrl(url: string): void {
         if (!this.bgMusic || !url) return;
-        // Try to find index if it exists in playlist (optional, for Next/Prev consistency)
         const idx = this.combinedPlaylist.indexOf(url);
-        if (idx !== -1) {
-            this.trackIdx = idx;
-        }
+        if (idx !== -1) this.trackIdx = idx;
         this.bgMusic.src = url;
         this.saveLastSelection(url);
         this.play();
