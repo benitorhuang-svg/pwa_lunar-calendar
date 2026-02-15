@@ -98,14 +98,11 @@ export class HeroUIManager {
             const isArtwork = document.body.classList.contains("mode-artwork");
 
             if (isArtwork) {
+                // Enter Zen Mode (Immersion with no UI)
+                // Stay in immersion mode but disable Artwork UI
                 window.dispatchEvent(
                     new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                        detail: { action: "stop" },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent<ClosePanelsDetail>("close-panels", {
-                        detail: { showGrid: true },
+                        detail: { action: "start", isArtwork: false },
                     }),
                 );
             } else {

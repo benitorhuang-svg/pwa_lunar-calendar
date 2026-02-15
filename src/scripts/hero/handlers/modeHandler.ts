@@ -11,7 +11,7 @@ export class ModeHandler {
         private imageManager: HeroImageManager, // Needed for reset logic? Or just slideshowManager handles it.
         private slideshowManager: HeroSlideshowManager,
         private uiManager: HeroUIManager,
-    ) {}
+    ) { }
 
     public init(): void {
         this.setupEventListeners();
@@ -44,6 +44,11 @@ export class ModeHandler {
     }
 
     private setupEventListeners(): void {
+        // Artwork Idle Slide (New)
+        window.addEventListener("artwork-idle-slide", () => {
+            this.imageManager.switchHero(1, true);
+        });
+
         // 幻燈片控制 (Slideshow Control)
         window.addEventListener("slideshow-control", ((e: CustomEvent<SlideshowControlDetail>) => {
             const { action, isArtwork } = e.detail;
@@ -56,23 +61,26 @@ export class ModeHandler {
                     this.imageManager.heroList.length,
                 );
 
-                this.slideshowManager.start(
-                    (offset, isAuto) =>
-                        this.imageManager.switchHero(offset, isAuto, () =>
-                            this.slideshowManager.reset(
-                                (o, a) => this.imageManager.switchHero(o, a),
-                                minImages,
-                            ),
-                        ),
-                    minImages,
-                );
-
                 if (isArtwork !== false) {
                     this.uiManager.updateArtworkModeUI(true);
                     this.idleManager.reset();
+                    // In Artwork Mode, we rely on IdleManager (artwork-idle-slide)
+                    this.slideshowManager.stop();
                 } else {
                     this.uiManager.updateArtworkModeUI(false);
+                    this.slideshowManager.start(
+                        (offset, isAuto) =>
+                            this.imageManager.switchHero(offset, isAuto, () =>
+                                this.slideshowManager.reset(
+                                    (o, a) => this.imageManager.switchHero(o, a),
+                                    minImages,
+                                ),
+                            ),
+                        minImages,
+                    );
                 }
+
+
             } else if (action === "stop") {
                 this.idleManager.setArtworkMode(false);
                 this.slideshowManager.stop();
