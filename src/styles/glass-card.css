@@ -48,7 +48,7 @@
 }
 
 /* Ensure content is above noise */
-.glass-card-template>* {
+.glass-card-template > * {
     position: relative;
     z-index: 1;
 }

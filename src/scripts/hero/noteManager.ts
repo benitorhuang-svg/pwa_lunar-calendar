@@ -11,6 +11,13 @@ export class NoteManager {
         this.setupEventListeners();
     }
 
+    private closeOverlay(): void {
+        const overlay = document.getElementById("notePadOverlay");
+        if (overlay) overlay.classList.remove("active");
+        document.body.classList.remove("note-mode-active");
+        window.dispatchEvent(new CustomEvent("toggle-panel", { detail: "today" }));
+    }
+
     private getNoteKey(date: Date): string {
         const y = date.getFullYear();
         const m = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -72,13 +79,6 @@ export class NoteManager {
                 this.closeOverlay();
             };
         }
-    }
-
-    private closeOverlay(): void {
-        const overlay = document.getElementById("notePadOverlay");
-        if (overlay) overlay.classList.remove("active");
-        document.body.classList.remove("note-mode-active");
-        window.dispatchEvent(new CustomEvent("toggle-panel", { detail: "today" }));
     }
 
     private setupEventListeners(): void {
