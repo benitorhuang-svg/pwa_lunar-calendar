@@ -162,7 +162,7 @@ select.panel-font-select option,
     text-orientation: mixed;
     font-family: var(--font-calligraphy);
     font-size: 1.15rem;
-    letter-spacing: 0.4em;
+    letter-spacing: 0.6em;
     /* Posh spacing */
     color: var(--cal-lunar-text);
     opacity: 0.7;
@@ -172,10 +172,13 @@ select.panel-font-select option,
 
 .panel-main-content {
     flex: 1;
-    padding: 30px 35px;
-    /* More breathing room */
+    flex: 1;
+    padding: 50px 55px 50px 35px;
+    /* Reduced top padding to move Title UP */
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
+    /* Center content vertically if space permits */
 }
 
 /* Detail Elements inside Main Content */
@@ -183,7 +186,8 @@ select.panel-font-select option,
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 25px;
+    margin-bottom: 15px;
+    /* Reduced margin (from 15px) */
 }
 
 .date-display {
@@ -246,10 +250,13 @@ select.panel-font-select option,
     color: var(--cal-header-text);
     font-size: 1.05rem;
     letter-spacing: 0.12em;
-    margin-bottom: 30px;
+    letter-spacing: 0.12em;
+    margin-bottom: 0;
+    /* Let margin-top: auto on next element handle spacing */
     align-self: flex-start;
     font-family: var(--font-calligraphy);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    margin-top: 0;
 }
 
 /* Yiji Section (Suitable/Unsuitable Activities) */
@@ -257,8 +264,12 @@ select.panel-font-select option,
     display: flex;
     flex-direction: column;
     gap: 20px;
+    /* Condensed gap */
     padding-top: 25px;
+    /* Restored/Increased padding for separation from line */
     border-top: 0.5px solid rgba(212, 175, 55, 0.15);
+    margin-top: auto;
+    /* Push to bottom */
     /* Match theme accents */
     width: 100%;
     position: relative;

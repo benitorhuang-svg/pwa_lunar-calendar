@@ -50,20 +50,22 @@ export class PanelRenderers {
         <div class="panel-main-content">
             <div class="detail-top-section">
                 <div class="date-display">
-                    <div class="detail-header">${date.getMonth() + 1}/${date.getDate()}</div>
-                    <div class="detail-sub-main">${date.getFullYear()} · ${ganzhi}年</div>
+                    <!-- Line 1: Western Date (Month/Day Year) -->
+                    <div class="detail-header">
+                        ${date.getMonth() + 1}/${date.getDate()}
+                        <span style="font-size: 0.5em; opacity: 0.6; margin-left: 8px; font-weight: 300; vertical-align: middle;">${date.getFullYear()}</span>
+                    </div>
+                    <!-- Line 2: Chinese Date (Year Month Day) -->
+                    <div class="detail-sub-main" style="margin-top: 15px;">${ganzhi}年 · ${monthGZ}月 ${dayGZ}日</div>
                 </div>
-                <div class="traditional-seal">${zodiac.charAt(0)}</div>
+                
+                <!-- Right Side Cluster: Zodiac & Solar Term -->
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 12px;">
+                    <div class="traditional-seal">${zodiac.charAt(0)}</div>
+                    <div class="solar-term" style="font-size: 1.1rem; text-align: right;">${termPeriod.current}</div>
+                </div>
             </div>
             
-            <div class="detail-info-row">
-                <div class="lunar-gz-tags">
-                    <span>${monthGZ}月</span>
-                    <span>${dayGZ}日</span>
-                </div>
-                <div class="solar-term">${termPeriod.current}</div>
-            </div>
-
             <div class="detail-lucky-pill">
                 ${jianchu}日 · ${luck}
             </div>
