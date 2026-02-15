@@ -352,8 +352,9 @@ export class HeroImageManager {
 
             if (currentItem) {
                 currentItem.classList.add("blur-out");
-                if (transition === "fade-next") currentItem.style.transform = "scale(0.95)";
-                if (transition === "fade-prev") currentItem.style.transform = "scale(1.05)";
+                // Add directional leaving classes for CSS transitions
+                if (transition === "fade-next") currentItem.classList.add("is-leaving-next");
+                if (transition === "fade-prev") currentItem.classList.add("is-leaving-prev");
             }
 
             setTimeout(() => {
@@ -361,7 +362,7 @@ export class HeroImageManager {
                     currentItem.parentNode.removeChild(currentItem);
                 }
                 newItem.style.zIndex = "";
-            }, 850);
+            }, 1800); // Increased timeout to match longer slide transition
         });
     }
 }

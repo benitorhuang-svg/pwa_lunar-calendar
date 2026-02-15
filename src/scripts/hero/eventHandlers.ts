@@ -154,7 +154,7 @@ export class HeroEventHandlers {
                 // 進入沉浸模式時強制啟動幻燈片 (Force start slideshow in immersion mode)
                 window.dispatchEvent(
                     new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                        detail: { action: "start", isArtwork: false },
+                        detail: { action: "start", isArtwork: this.idleManager.isArtwork },
                     }),
                 );
 
@@ -172,12 +172,23 @@ export class HeroEventHandlers {
                     }),
                 );
 
-                // 喚醒時回到日曆網格封面 (Return to calendar grid on wake up)
-                window.dispatchEvent(
-                    new CustomEvent<ClosePanelsDetail>("close-panels", {
-                        detail: { showGrid: true },
-                    }),
-                );
+                // 喚醒時的還原行為 (Wakeup restoration)
+                if (this.idleManager.isArtwork) {
+                    // 正處於映畫模式：還原藝廊選單，不顯示日曆網格
+                    this.uiManager.updateArtworkModeUI(true);
+                    window.dispatchEvent(
+                        new CustomEvent<ClosePanelsDetail>("close-panels", {
+                            detail: { showGrid: false },
+                        }),
+                    );
+                } else {
+                    // 正處於日曆模式：回到日曆網格封面
+                    window.dispatchEvent(
+                        new CustomEvent<ClosePanelsDetail>("close-panels", {
+                            detail: { showGrid: true },
+                        }),
+                    );
+                }
             }
         }) as EventListener);
 
@@ -237,6 +248,9 @@ export class HeroEventHandlers {
                 new CustomEvent<ClosePanelsDetail>("close-panels", { detail: { showGrid: true } }),
             );
         });
+
+        // 沉浸模式手動切換 (Immersion Mode Toggle)
+        this.uiManager.bindImmersionMode(() => this.idleManager.reset());
 
         // 藝廊與媒體管理 (Gallery & Media Management)
         // 藝廊與媒體管理 (Gallery & Media Management)

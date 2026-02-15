@@ -4,7 +4,7 @@
  * Responsible for managing the date display in the Hero header area
  */
 
-import type { RenderHeroDetail, RenderPanelsDetail } from "./types";
+
 
 export class HeroHeaderManager {
     // UI Elements
@@ -50,22 +50,13 @@ export class HeroHeaderManager {
     }
 
     private setupEventListeners(): void {
-        // 監聽 Hero 渲染事件，該事件包含當前日期上下文
-        // Listen for hero render events which contain the current date context
-        window.addEventListener("render-hero", ((e: CustomEvent<RenderHeroDetail>) => {
-            const { date } = e.detail;
-            if (date) {
-                this.updateDate(typeof date === "string" ? new Date(date) : date);
-            }
-        }) as EventListener);
+        // 為了將左上角日期鎖定為「今日」，我們不再監聽 render-hero 或 render-panels 事件來更新日期
+        // To lock the top-left date to "Today", we no longer listen to render-hero or render-panels events to update the date.
 
-        // 監聽面板渲染事件，這可能反映日期變更
-        // Listen for panel render events which might reflect date changes
-        window.addEventListener("render-panels", ((e: CustomEvent<RenderPanelsDetail>) => {
-            const { date } = e.detail;
-            if (date) {
-                this.updateDate(typeof date === "string" ? new Date(date) : date);
-            }
-        }) as EventListener);
+        // 如果需要每分鐘更新一次（跨日更新），可以在此處添加 setInterval
+        // If minute-by-minute updates (for date rollover) are needed, a setInterval could be added here.
+        setInterval(() => {
+            this.updateDate(new Date());
+        }, 60000); // Check every minute
     }
 }

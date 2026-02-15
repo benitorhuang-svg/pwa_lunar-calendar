@@ -7,51 +7,61 @@
 ```mermaid
 stateDiagram-v2
     [*] --> Loading: 進入頁面
-    Loading --> WelcomeMode: loader-finished (加載且動畫完成)
+    Loading --> WelcomeMode: loader-finished
     
     state WelcomeMode {
-        [*] --> TodayInfoCard: 顯示今日宜忌 (居中)
-        TodayInfoCard --> [*]: 點擊卡片/背景
+        [*] --> TodayCard: 顯示今日宜忌
+        TodayCard --> CalendarGrid: 點擊卡片/背景
+        TodayCard --> ZenMode: 閒置 15s (自動)
     }
-    
-    WelcomeMode --> CalendarGrid: 點擊卡片/進入主介面
-    WelcomeMode --> ImmersionMode: 閒置 6 秒 (隱藏 UI 卡片)
     
     state CalendarGrid {
-        [*] --> MonthView: 顯示日曆網格
+        [*] --> MonthView
         MonthView --> DateDetail: 點擊日期
-        DateDetail --> MonthView: 關閉詳細資訊
-        
-        MonthView --> YearMonthSelector: 點擊年月按鈕
-        YearMonthSelector --> MonthView: 選擇年月/跳轉
-    }
-    
-    CalendarGrid --> ImmersionMode: 閒置 6 秒 (無觸碰) / 點擊「映畫」
-    ImmersionMode --> CalendarGrid: 觸碰螢幕 / 點擊 (恢復介面)
-    
-    state ImmersionMode {
-        [*] --> Slideshow: 自動幻燈片播放
-        Slideshow --> Slideshow: 手動切換圖片
+        MonthView --> NotePad: 點擊「隨筆」
+        MonthView --> ArtworkMode: 點擊「映畫」
     }
 
-    state GallerySubmenu {
-        [*] --> MenuOpen: 點擊音樂/藝廊按鈕
-        
-        state MenuOpen {
-            [*] --> Idle: 等待操作
-            Idle --> PlayStream: 點擊既有電台 (Radio Preset)
-            Idle --> InputUrl: 點擊「自訂網址」輸入框
-            Idle --> DeleteStation: 點擊刪除按鈕 (X)
-            
-            InputUrl --> SaveAndPlay: 輸入完成 (Enter/Blur)
-            SaveAndPlay --> Idle: 儲存至 IndexedDB 並播放
-            
-            DeleteStation --> ConfirmDelete: 彈出確認
-            ConfirmDelete --> Idle:確認刪除/取消
-        }
-        
-        MenuOpen --> [*]: 點擊外部/關閉
+    state ArtworkMode {
+        [*] --> GalleryUI: 顯示換圖與選單
+        GalleryUI --> CalendarGrid: 點擊「日曆」按鈕
     }
+
+    state ZenMode {
+        [*] --> Slideshow: UI 全部隱藏 (純淨背景)
+        Slideshow --> Slideshow: 左右滑動切換
+        
+        Slideshow --> ReturnPrevious: 手動「日曆鍵」/ 觸碰螢幕
+    }
+
+    ReturnPrevious --> CalendarGrid: 如果從日曆進入
+    ReturnPrevious --> ArtworkMode: 如果從映畫進入
+    
+    CalendarGrid --> ZenMode: 點擊「對焦框」/ 閒置 15s
+    ArtworkMode --> ZenMode: 點擊「對焦框」/ 閒置 15s
+
+    state UtilityLayout {
+        Note 右上角組合: 音樂(右) > 沉浸(中) > 隨筆(左)
+    }
+```
+
+## 2. 核心交互邏輯細節 (Interaction Rules)
+
+### 2.1 沉浸模式 (Zen / Immersion) 進入與退出
+*   **進入**：
+    *   **手動**：點擊右上角「對焦框」按鈕。
+    *   **自動**：全域閒置超時 (15秒) 自動觸發。
+*   **退出 (喚醒)**：
+    *   **手動**：點擊右上角「日曆圖示」(原對焦框切換) 或 背景。
+    *   **行為**：應恢復進入 ZenMode 前的最後狀態（日曆網格 或 映畫控制項）。
+
+### 2.2 狀態提示 (Visual Hints)
+*   **沉浸按鈕 (右上中)**：
+    *   未沉浸：圖示為「對焦框」，背景透明。
+    *   沉浸中：圖示為「日曆表」，背景高亮 (金/白)。
+*   **下方導航 (Dock)**：
+    *   沉浸時淡出。
+    *   喚醒後依據模式顯示金框 (日曆) 或 白框 (映畫)。
 ```
 
 ## 2. 事件驅動架構 (Event-Driven Architecture)

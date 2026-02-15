@@ -50,6 +50,7 @@
 #### `src/scripts/core/` (核心配置)
 
 - **`appConfig.ts`**：**應用配置**。負責處理全域環境變數 (如 `APP_BASE_URL`) 的導出，替代原有的 `window` 全域變數。
+- **`lunar.ts`**：**農曆核心引擎**。自建的農曆算法庫 (1900-2100)，提供公農曆轉換、節氣 (精確到分)、干支、宜忌、建除十二神、星座與節日判斷，不依賴外部龐大的一日一檔 JSON。
 
 #### `src/scripts/app/` (應用層)
 
@@ -62,9 +63,12 @@
 
 - **`hero-main.ts`**：Hero 區域的入口腳本。
 - **`imageManager.ts`**：**圖片邏輯**。負責根據季節/節氣偵測圖片路徑、管理圖片緩存與切換動畫。
+- **`imageRules.ts`**：**圖片規則**。定義季節判定邏輯、支援的副檔名以及隨機播放/順序播放的配置常數。
+- **`galleryStorage.ts`**：**圖庫存儲**。封裝 IndexedDB，負責儲存與讀取使用者上傳的自訂背景圖片與音效。
 - **`musicPlayer.ts`**：**音樂邏輯**。管理背景音樂播放清單與播放狀態。
 - **`slideshowManager.ts`**：**輪播邏輯**。單純的計時器控制。
 - **`idleManager.ts`**：**閒置邏輯**。偵測用戶無操作後自動進入「沉浸模式」(隱藏 UI) 或「歡迎模式」。
+- **`noteManager.ts`**：**筆記功能**。管理「隨筆」面板的開關、LocalStorage 存取、字體切換與 `.txt` 匯出功能。
 - **`eventHandlers.ts`**：**事件控制器**。Hero 區域的核心控制器，協調 UI、觸控 (`TouchHandler`) 與 PWA (`PWAHandler`) 互動。
 - **`uiManager.ts`**：**UI 管理**。負責 Hero 區域所有 DOM 元素的選取、緩存、狀態切換與事件綁定 (View 層)。
 - **`touchHandler.ts`**：**觸控邏輯**。封裝滑動手勢 (Swipe) 的偵測演算法。
@@ -90,13 +94,17 @@
 
 - **`layout-main.ts`**：全域通用腳本。包含自動為 Input 添加 name (輔助填表)、依月份自動切換季節主題 class。
 
+#### `src/scripts/generated/` (自動生成層)
+
+- **`galleryManifest.ts`**：**圖庫清單**。由腳本自動生成，列出 `public/images/` 下所有可用的預設背景圖片，供 `ImageManager` 隨機選取使用。
+
 ### 📂 `src/components/` - Astro 組件層
 
 負責 HTML 結構的定義 (Structure)。
 
-- **Hero/**: 背景、標題、Dock、歡迎遮罩層。
-- **Calendar/**: 日曆標題、網格容器。
-- **Panels/**: 浮動面板容器。
+- **Hero/**: 背景 (`HeroBackground.astro`)、標題 (`HeroHeader.astro`)、Dock (`HeroDock.astro`)、藝廊子選單 (`HeroGallerySubmenu.astro`)、音樂播放器 (`MusicPlayer.astro`)、隨筆記錄 (`NotePad.astro`)、歡迎遮罩層 (`WelcomeOverlay.astro`)。
+- **Calendar/**: 日曆板塊 (`CalendarBoard.astro`)、標題 (`CalendarHeader.astro`)、網格容器 (`CalendarGridContainer.astro`)。
+- **Panels/**: 浮動面板容器 (`FloatingPanels.astro`)。
 
 ---
 
@@ -104,7 +112,13 @@
 
 負責視覺表現 (Presentation)，採用 CSS Variables 實現主題切換。
 包含 `tokens.css` (設計系統), `themes/*.css` (季節變數), 以及各模組的獨立 CSS。
-`hero/background.css` 包含首屏 Fallback 機制。
+- **`splash.css`**: **開場動畫與進度條**。獨立管理 Splash Screen、文字墨染動畫與首屏元素出場。
+- **`hero/`**:
+    - **`background.css`**: 包含背景縮放動畫與首屏 Fallback 機制。
+    - **`dock.css`**: 集中管理浮動 Dock 與藝廊選單的視覺樣式。
+    - **`music-player.css`**: 音樂撥放器切換鈕與跳動動畫。
+    - **`notepad.css`**: 隨筆面板、字體切換與編輯器介面。
+    - **`welcome-overlay.css`**: 歡迎模式下的全域透明互動層。
 
 ### 📂 `src/pages/` & `src/layouts/` - 頁面入口
 

@@ -1,9 +1,10 @@
 ---
-
+import "../../styles/hero/music-player.css";
 ---
 
-<!-- Music Player & Controls -->
+<!-- Music Player & Utility Controls -->
 <div class="music-control-wrapper">
+    <!-- 1. Music Toggle (Rightmost in display) -->
     <button
         aria-label="播放背景音樂"
         class="music-toggle-btn"
@@ -13,7 +14,7 @@
     >
         <svg
             fill="none"
-            height="30"
+            height="18"
             stroke="currentColor"
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -24,100 +25,76 @@
                 cx="18"
                 cy="16"
                 r="3"></circle>
-            <!-- 靜音斜線 (Mute slash) -->
             <line class="mute-line" x1="1" x2="23" y1="23" y2="1"></line>
         </svg>
     </button>
+
+    <!-- 2. Immersion Mode Toggle (Middle in display) -->
+    <button
+        aria-label="切換沉浸模式"
+        class="immersion-toggle-btn"
+        id="btnImmersion"
+        title="沉浸模式"
+        type="button"
+    >
+        <!-- Icon 1: Focus/Frame-style (Show when in Calendar view) -->
+        <svg
+            class="icon-immersion"
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+        >
+            <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+            <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+            <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+            <circle cx="12" cy="12" r="1.5"></circle>
+        </svg>
+
+        <!-- Icon 2: Calendar-style (Show when in Immersion view) -->
+        <svg
+            class="icon-calendar"
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+        >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+    </button>
+
+    <!-- 3. Pen Toggle (Leftmost in display) -->
+    <button aria-label="隨筆記錄" class="pen-toggle-btn" id="btnPen" title="隨筆記錄" type="button">
+        <svg
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+            ><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line
+                x1="16"
+                y1="8"
+                x2="2"
+                y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg
+        >
+    </button>
+
     <audio id="bgMusic" loop preload="none">
         <source src={import.meta.env.BASE_URL + "assets/audio/ambient.mp3"} type="audio/mpeg" />
     </audio>
 </div>
-
-<style is:global>
-    .music-control-wrapper {
-        position: fixed;
-        top: calc(var(--safe-area-inset-top, 0px) + 2.5vh);
-        right: 20px; /* 固定間距，避免電腦版偏離太遠 (Fixed spacing to avoid desktop drift) */
-        z-index: 100001; /* Above almost everything but loading overlay */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition:
-            transform var(--duration-mid) var(--ease-standard),
-            opacity var(--duration-mid) var(--ease-standard);
-    }
-
-    .music-toggle-btn {
-        background: var(
-            --glass-bg-dark
-        ); /* 使用較深的底色確保可見度 (Darker glass bg for visibility) */
-        backdrop-filter: var(--glass-blur);
-        -webkit-backdrop-filter: var(--glass-blur);
-        border: var(--glass-border-dark);
-        color: #fff; /* 圖標改為全白 (White icon) */
-        width: 40px; /* 縮小尺寸 (Shrink size to 36px) */
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all var(--duration-fast) var(--ease-standard);
-        padding: 0;
-        box-shadow: var(--shadow-md); /* 加入陰影增強層次 (Add shadow for depth) */
-    }
-
-    .music-toggle-btn:hover {
-        background: rgba(255, 255, 255, 0.15);
-        color: #fff;
-        transform: scale(1.05);
-    }
-
-    .music-toggle-btn.playing {
-        color: #f0d060;
-        border-color: rgba(240, 208, 96, 0.3);
-        box-shadow: 0 0 15px rgba(240, 208, 96, 0.2);
-        animation: musicPulse 2s ease-in-out infinite;
-    }
-
-    /* 映畫模式下的音樂按鈕顏色 (Silver theme for Artwork mode) */
-    body.mode-artwork .music-toggle-btn.playing {
-        color: #fff;
-        border-color: rgba(255, 255, 255, 0.3);
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-    }
-
-    .music-toggle-btn .mute-line {
-        transition: opacity var(--duration-fast) ease;
-        opacity: 1;
-    }
-
-    .music-toggle-btn.playing .mute-line {
-        opacity: 0;
-    }
-
-    @keyframes musicPulse {
-        0%,
-        100% {
-            transform: scale(1);
-            opacity: 0.9;
-        }
-        50% {
-            transform: scale(
-                0.95
-            ); /* 從 1.08 降至 1.03，極微小的跳動 (Reduced from 1.08 to 1.03) */
-            opacity: 0.95;
-        }
-    }
-
-    /* Keep it visible in immersion mode, but you can hide other elements */
-    body.app-loaded .music-control-wrapper {
-        opacity: 0.9;
-        visibility: visible;
-    }
-
-    body:not(.app-loaded) .music-control-wrapper {
-        opacity: 0;
-        visibility: hidden;
-    }
-</style>

@@ -20,6 +20,7 @@ export class HeroUIManager {
     }
     // Buttons
     private btnChangeImage: HTMLElement | null = null;
+    private btnImmersion: HTMLElement | null = null;
     private btnDay: HTMLElement | null = null;
 
     private btnNextHero: HTMLElement | null = null;
@@ -53,9 +54,11 @@ export class HeroUIManager {
      * Bind background click event (Handle immersion mode)
      */
     public bindBackgroundClick(isArtworkMode: () => boolean): void {
-        this.heroBgContainer?.addEventListener("click", (e) => {
+        this.heroBgContainer?.addEventListener("mousedown", (e) => {
+            // 阻止冒泡到 window，避免觸發 IdleManager 的喚醒邏輯造成閃退
+            e.stopPropagation();
+
             // 忽略點擊背景內的其他互動元素
-            // Ignore clicks on interactive elements within background
             if (
                 e.target !== this.heroBgContainer &&
                 !(e.target as HTMLElement).classList.contains("hero-bg-item")
@@ -126,9 +129,26 @@ export class HeroUIManager {
         });
     }
 
-    // --- PWA Helper ---
     public bindInstallButton(callback: () => void): void {
         this.installBtn?.addEventListener("click", callback);
+    }
+
+    /**
+     * 綁定沉浸模式按鈕 (Explicit toggle for Immersion Mode)
+     */
+    public bindImmersionMode(resetIdle: () => void): void {
+        this.btnImmersion?.addEventListener("mousedown", (e) => {
+            e.stopPropagation(); // 阻止事件冒泡，避免觸發全域 IdleManager 的喚醒邏輯
+            e.preventDefault();  // 阻止預設行為
+
+            resetIdle();
+            const isImmersion = document.body.classList.contains("immersion-mode");
+            window.dispatchEvent(
+                new CustomEvent<WelcomeModeDetail>("welcome-mode", {
+                    detail: { active: !isImmersion },
+                }),
+            );
+        });
     }
 
     public bindNavigation(onPrev: () => void, onNext: () => void): void {
@@ -386,6 +406,7 @@ export class HeroUIManager {
         this.btnDay = document.getElementById("btnDay");
         this.btnYearMonth = document.getElementById("btnYearMonth");
         this.btnChangeImage = document.getElementById("btnChangeImage");
+        this.btnImmersion = document.getElementById("btnImmersion");
         this.btnPrevHero = document.getElementById("btnPrevHero");
         this.btnNextHero = document.getElementById("btnNextHero");
 

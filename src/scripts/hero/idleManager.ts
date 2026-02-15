@@ -12,7 +12,9 @@ export class HeroIdleManager {
 
     private isArtworkMode = false;
 
-    constructor(idleTimeout = 6000) {
+    public isNoteMode = false;
+
+    constructor(idleTimeout = 15000) {
         this.IDLE_TIMEOUT = idleTimeout;
     }
 
@@ -23,11 +25,16 @@ export class HeroIdleManager {
         }
     }
 
+    private lastToggleTime = 0;
+
     /**
      * 重置閒置計時器 (與全局閒置邏輯整合)
      * 負責在閒置達到時進入沉浸模式，並在交互後喚醒
      */
     public reset(): void {
+        // 時隔保護：若剛剛才切換過模式（200ms內），忽略此次喚醒，防止點擊進入時瞬間閃退
+        if (Date.now() - this.lastToggleTime < 200) return;
+
         // 清除現有計時器
         if (this.idleTimer) {
             clearTimeout(this.idleTimer);
@@ -38,8 +45,10 @@ export class HeroIdleManager {
         const isImmersion = document.body.classList.contains("immersion-mode");
 
         // 1. 喚醒邏輯：如果當前處於沉浸模式（且非初始歡迎），交互後應退出沉浸
-        if (isImmersion && !isInitialWelcome) {
+        // 注意：如果在筆記模式下，我們不視為「需要退出沉浸」，因為筆記模式本身就不會進入沉浸
+        if (isImmersion && !isInitialWelcome && !this.isNoteMode) {
             console.log("[Global Idle] Wake up: Exiting Immersion Mode");
+            this.lastToggleTime = Date.now();
             window.dispatchEvent(new CustomEvent("welcome-mode", { detail: { active: false } }));
         }
 
@@ -51,6 +60,9 @@ export class HeroIdleManager {
             // 如果已經在「純」沈浸模式（無 UI），則不再重複觸發
             if (isImmersion && !isWelcome) return;
 
+            // 如果正在筆記模式，不進入沉浸模式
+            if (this.isNoteMode) return;
+
             console.log("[Global Idle] Idle reached: Triggering Immersion Mode Cleanup");
 
             if (isWelcome) {
@@ -58,6 +70,7 @@ export class HeroIdleManager {
             }
 
             // 強制確保進入沈浸模式 (Dispatch event to hide ALL UI)
+            this.lastToggleTime = Date.now();
             window.dispatchEvent(new CustomEvent("welcome-mode", { detail: { active: true } }));
         }, this.IDLE_TIMEOUT);
     }

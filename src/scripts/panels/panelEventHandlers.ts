@@ -38,7 +38,16 @@ export class PanelEventHandlers {
         };
 
         if (this.panelBackOverlay) this.panelBackOverlay.onclick = handleClosePanel;
-        if (this.panelToday) this.panelToday.onclick = handleClosePanel;
+        if (this.panelToday) {
+            this.panelToday.onclick = (e) => {
+                // 如果點擊的是筆記區域 (包含標題或輸入框)，不要關閉面板
+                // If clicking inside the note section (including title or input), do not close the panel
+                if ((e.target as HTMLElement).closest(".panel-note-section")) {
+                    return;
+                }
+                handleClosePanel();
+            };
+        }
 
         // Global Click Listener
         document.addEventListener("click", (e: MouseEvent) => {
@@ -53,6 +62,9 @@ export class PanelEventHandlers {
                 const target = e.target as HTMLElement;
 
                 if (isYearMonthVisible && target.closest("#panelYearMonth")) return;
+                // 防止全域點擊事件干擾面板內部的點擊處理 (Defer to panel's own handler)
+                if (isTodayVisible && target.closest("#panelToday")) return;
+
                 if (target.closest(".nav-box") || target.closest(".dock-item")) return;
 
                 handleClosePanel();

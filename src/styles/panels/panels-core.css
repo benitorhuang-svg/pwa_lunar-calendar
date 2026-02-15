@@ -1,5 +1,7 @@
 /* Panel Core Architecture & Transitions */
 .suspension-panel {
+    display: none;
+    z-index: 1001;
     position: absolute;
     top: 100px;
     left: 20px;
@@ -35,6 +37,7 @@
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     display: none;
+    z-index: 1000;
     cursor: pointer;
     animation: fadeIn 0.4s ease;
 }

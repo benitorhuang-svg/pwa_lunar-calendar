@@ -1,0 +1,156 @@
+/* Music & Utility Controls - Horizontal Layout */
+.music-control-wrapper {
+    position: fixed;
+    top: calc(var(--safe-area-inset-top, 0px) + 3vh);
+    right: 20px;
+    z-index: 100001;
+    display: flex;
+    flex-direction: row-reverse;
+    /* Right to Left: Music, Pen, Immersion */
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.music-toggle-btn,
+.pen-toggle-btn,
+.immersion-toggle-btn {
+    background: rgba(15, 15, 20, 0.7);
+    /* Match dock base depth */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.85);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    padding: 0;
+    box-shadow:
+        0 8px 16px rgba(0, 0, 0, 0.2),
+        inset 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.music-toggle-btn:hover,
+.pen-toggle-btn:hover,
+.immersion-toggle-btn:hover {
+    background: rgba(15, 15, 20, 0.9);
+    color: #fff;
+    transform: translateY(-2px) scale(1.08);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Immersion Toggle Icon Switching */
+.immersion-toggle-btn .icon-calendar {
+    display: none;
+}
+
+.immersion-toggle-btn .icon-immersion {
+    display: block;
+}
+
+body.mode-immersion .immersion-toggle-btn .icon-calendar {
+    display: block;
+}
+
+body.mode-immersion .immersion-toggle-btn .icon-immersion {
+    display: none;
+}
+
+/* Active State for Immersion Mode - Strong Visual Feedback */
+body.mode-immersion .immersion-toggle-btn {
+    color: #2d2a26;
+    /* Dark text for contrast */
+    background: linear-gradient(135deg, #d4af37, #f0d060);
+    /* Vibrant Gold */
+    border-color: #d4af37;
+    box-shadow:
+        0 0 25px rgba(212, 175, 55, 0.4),
+        0 0 10px rgba(212, 175, 55, 0.2);
+    transform: scale(1.1);
+}
+
+body.mode-artwork.mode-immersion .immersion-toggle-btn {
+    color: #000;
+    background: rgba(255, 255, 255, 0.95);
+    /* Bright White in Artwork */
+    border-color: #fff;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+}
+
+/* Calendar Mode (Not Artwork) Styling for Music playing */
+body:not(.mode-artwork) .music-toggle-btn.playing {
+    color: var(--gold-accent, #d4af37);
+    border-color: rgba(212, 175, 55, 0.4);
+    box-shadow:
+        0 0 20px rgba(212, 175, 55, 0.15),
+        inset 0 0 12px rgba(212, 175, 55, 0.1);
+    animation: musicPulseCalendar 2.5s ease-in-out infinite;
+}
+
+/* Artwork Mode Styling for Music playing */
+body.mode-artwork .music-toggle-btn.playing {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow:
+        0 0 20px rgba(255, 255, 255, 0.2),
+        inset 0 0 12px rgba(255, 255, 255, 0.1);
+    animation: musicPulseArtwork 2s ease-in-out infinite;
+}
+
+@keyframes musicPulseCalendar {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+    }
+
+    50% {
+        transform: scale(0.94);
+        box-shadow: 0 0 35px rgba(212, 175, 55, 0.35);
+    }
+}
+
+@keyframes musicPulseArtwork {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    50% {
+        transform: scale(0.94);
+        box-shadow: 0 0 35px rgba(255, 255, 255, 0.4);
+    }
+}
+
+.music-toggle-btn .mute-line {
+    transition: opacity 0.3s ease;
+}
+
+.music-toggle-btn.playing .mute-line {
+    opacity: 0;
+}
+
+/* Entrance Animation Sync */
+body.app-loaded .music-control-wrapper {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    transition:
+        opacity 0.8s ease-out 0.4s,
+        transform 0.8s var(--ease-zen) 0.4s;
+}
+
+body:not(.app-loaded) .music-control-wrapper {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(30px);
+}
