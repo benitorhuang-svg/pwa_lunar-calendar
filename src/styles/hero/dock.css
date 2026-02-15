@@ -22,8 +22,8 @@
     background: rgba(15, 15, 20, 0.75);
     backdrop-filter: blur(25px) saturate(180%);
     -webkit-backdrop-filter: blur(25px) saturate(180%);
-    padding: 10px 18px;
-    border-radius: 24px;
+    padding: clamp(8px, 1.5vh, 10px) clamp(14px, 3vw, 18px);
+    border-radius: clamp(20px, 4vw, 24px);
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow:
         0 10px 40px rgba(0, 0, 0, 0.4),
@@ -35,12 +35,12 @@
     background: transparent;
     border: none;
     color: rgba(255, 255, 255, 0.65);
-    width: 44px;
-    height: 44px;
+    width: clamp(36px, 10vw, 44px);
+    height: clamp(36px, 10vw, 44px);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 16px;
+    border-radius: clamp(12px, 3vw, 16px);
     cursor: pointer;
     transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
     position: relative;
@@ -49,7 +49,7 @@
 
 .dock-item span {
     display: none;
-    font-size: 0.82rem;
+    font-size: clamp(0.75rem, 2vw, 0.82rem);
     font-weight: 500;
     font-family: var(--font-serif);
     margin-left: 6px;
@@ -216,12 +216,13 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     -webkit-backdrop-filter: blur(40px) saturate(140%);
 
     border: 1px solid rgba(255, 255, 255, 0.28);
-    border-radius: 36px;
+    border-radius: clamp(24px, 5vw, 36px);
 
     display: flex;
     flex-direction: column;
-    min-width: min(420px, 78vw);
-    /* Responsive width constraint */
+    min-width: min(420px, 85vw);
+    /* Responsive width constraint using min() mostly covers needs, clamp for fallback */
+    width: clamp(300px, 78vw, 420px);
     padding: 0;
     overflow: hidden;
     opacity: 0;
@@ -257,9 +258,9 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     border: none;
     color: rgba(255, 255, 255, 0.9);
     /* High contrast text */
-    padding: 10px 16px;
-    border-radius: 12px;
-    font-size: 0.88rem;
+    padding: clamp(8px, 1.5vh, 10px) clamp(12px, 2vw, 16px);
+    border-radius: clamp(8px, 2vw, 12px);
+    font-size: clamp(0.8rem, 2.5vw, 0.88rem);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -314,7 +315,7 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.7rem;
+    font-size: clamp(0.65rem, 2vw, 0.7rem);
     color: rgba(255, 255, 255, 0.7);
     /* Brighter header */
     padding-left: 4px;
@@ -335,7 +336,7 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     /* Clearer text */
     padding: 8px 12px;
     border-radius: 8px;
-    font-size: 0.8rem;
+    font-size: clamp(0.75rem, 2.5vw, 0.8rem);
     text-align: left;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -440,8 +441,9 @@ body:not(.mode-artwork) .group-image {
 /* Mobile Responsive Adjustments for Gallery Menu */
 @media (max-width: 500px) {
     .gallery-submenu {
-        width: 78vw;
-        /* Further reduced to 78vw */
+        /* Width is now handled by clamp in main rule, just ensure positioning */
+        width: 85vw;
+        /* Safe mobile width */
         left: 50%;
         bottom: 80px;
         /* Raise slightly to clear dock */

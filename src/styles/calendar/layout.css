@@ -3,7 +3,8 @@
 .calendar-section {
     /* Specific Logic */
     justify-content: flex-start;
-    padding: 25px 16px 25px 16px;
+    justify-content: flex-start;
+    padding: clamp(15px, 3vh, 25px) clamp(10px, 3vw, 16px);
 
     z-index: 1500;
 
@@ -39,7 +40,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 25px;
+    margin-bottom: clamp(15px, 3vh, 25px);
     /* Increased for more top breathing room */
     position: relative;
     pointer-events: auto;
@@ -57,7 +58,7 @@
 
 .title-main {
     font-family: var(--font-calligraphy);
-    font-size: 1.6rem;
+    font-size: clamp(1.4rem, 4.5vw, 1.6rem);
     color: var(--cal-header-text);
     letter-spacing: 0.15em;
     display: flex;
@@ -67,7 +68,7 @@
 
 .title-sub {
     font-family: var(--font-serif-num);
-    font-size: 0.95rem;
+    font-size: clamp(0.75rem, 2.5vw, 0.95rem);
     color: var(--cal-text);
     opacity: 0.35;
     font-weight: 300;
@@ -83,9 +84,10 @@
     bottom: -6px;
     left: 50%;
     transform: translateX(-50%);
-    width: 180px;
+    transform: translateX(-50%);
+    width: clamp(140px, 40vw, 180px);
     /* Wider for dual info */
-    height: 15px;
+    height: clamp(12px, 2vh, 15px);
     background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.08) 0%, transparent 80%);
     z-index: -1;
 }
@@ -93,6 +95,7 @@
 .lunar-sep {
     font-family: var(--font-serif-num);
     font-size: 1.2rem;
+    /* Keep relative to parent font size */
     opacity: 0.3;
 }
 
@@ -144,7 +147,7 @@
     flex: 1;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    grid-auto-rows: minmax(32px, 1fr);
+    grid-auto-rows: minmax(clamp(28px, 6vh, 48px), 1fr);
     padding-top: 2px;
     height: auto;
 }

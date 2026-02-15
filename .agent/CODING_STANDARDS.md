@@ -73,6 +73,48 @@
 - **載入方式**：在 Astro Frontmatter 中使用 `import "../../styles/...";` 進行載入，而非使用 `<link>` 標籤，以利於 Astro 進行資源優化。
 - **作用域隔離**：除非是全域樣式，否則應善用 Astro 的內建作用域或明確的 CSS Class 命名規範。
 
+### 相對單位與響應式設計 (Relative Units & Responsive Design)
+
+為確保在不同裝置（從手機到大螢幕桌面）上維持一致的視覺比例與體驗，CSS 樣式必須優先使用 **以視窗為基準的相對單位 (Viewport-based Relative Units)**，嚴禁濫用固定像素 (px)。
+
+- **佈局與間距 (Layout & Spacing)**：
+    - **原則**：容器寬度、內距 (Padding)、外距 (Margin) 與間隙 (Gap) 應隨螢幕尺寸動態縮放。
+    - **推薦單位**：使用 `vw`, `vh`, `%`, 或 `clamp()`。
+    - **禁止**：在大區塊佈局中使用固定的 `px`（例如 `width: 1200px` 或 `padding: 50px`），這會導致小螢幕破版或比例失衡。
+    - **範例**：
+        ```css
+        /* ❌ Bad: 固定內距，手機上會太擁擠 */
+        padding: 50px;
+
+        /* ✅ Good: 使用 clamp() 動態調整，最小值 20px，最大值 50px */
+        padding: clamp(20px, 5vw, 50px);
+        ```
+
+- **字體大小 (Typography)**：
+    - **原則**：文字大小應具備流動性 (Fluid Typography)，避免在手機上過大或在桌面上過小。
+    - **推薦單位**：
+        - `rem`：用於一般內文，確保遵循使用者的瀏覽器設定。
+        - `clamp(min, preferred, max)`：用於標題或重要文字，實現精確的流動縮放。
+    - **範例**：
+        ```css
+        /* ❌ Bad: 固定像素，無法縮放 */
+        font-size: 24px;
+
+        /* ✅ Good: 隨視窗寬度縮放，且有上下限 */
+        font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+        ```
+
+- **元件尺寸 (Component Sizing)**：
+    - **原則**：按鈕、圖示或卡片的大小應相對於視窗或父容器。
+    - **推薦單位**：`em` (相對於字體大小), `%`, `aspect-ratio`。
+    - **圖示範例**：
+        ```css
+        /* ✅ Good: 圖示隨字體縮放 */
+        width: 1.5em; 
+        height: 1.5em;
+        ```
+
+
 ## 4. Python 開發準則
 
 ### 核心原則

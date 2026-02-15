@@ -40,7 +40,7 @@
 }
 
 .gregorian-num {
-    font-size: 1.35rem;
+    font-size: clamp(1.1rem, 4vw, 1.35rem);
     /* 稍微放大增加層次 */
     font-weight: 300;
     line-height: 1;
@@ -54,7 +54,7 @@
 }
 
 .lunar-text {
-    font-size: 0.65rem;
+    font-size: clamp(0.55rem, 1.8vw, 0.65rem);
     color: var(--cal-lunar-text);
     margin-top: -3px;
     /* 緊貼數字 */
@@ -87,8 +87,8 @@
     font-weight: 500;
     border-radius: 50%;
     /* Perfect circle for today often looks more special */
-    width: 44px;
-    height: 44px;
+    width: clamp(36px, 10vw, 44px);
+    height: clamp(36px, 10vw, 44px);
     margin: auto;
 }
 

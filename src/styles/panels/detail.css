@@ -173,7 +173,8 @@ select.panel-font-select option,
 .panel-main-content {
     flex: 1;
     flex: 1;
-    padding: 50px 55px 50px 35px;
+    /* Responsive Padding: Scales with Viewport */
+    padding: clamp(25px, 4vh, 50px) clamp(20px, 4vw, 55px) clamp(25px, 4vh, 50px) clamp(20px, 3vw, 35px);
     /* Reduced top padding to move Title UP */
     display: flex;
     flex-direction: column;
@@ -196,14 +197,14 @@ select.panel-font-select option,
 }
 
 .detail-header {
-    font-size: 2.5rem;
-    /* Larger for focus */
+    font-size: clamp(2.0rem, 6vw, 2.8rem);
+    /* Larger for focus, scales with width */
     font-weight: 700;
     letter-spacing: -0.02em;
     color: var(--cal-text);
     font-family: var(--font-serif-num);
     line-height: 0.9;
-    margin-bottom: 8px;
+    margin-bottom: clamp(4px, 1vh, 8px);
 }
 
 .detail-sub-main {
@@ -253,9 +254,9 @@ select.panel-font-select option,
 
 /* Year Label Style */
 .year-label {
-    font-size: 0.5em;
+    font-size: 0.45em;
     opacity: 0.6;
-    margin-left: 8px;
+    margin-left: 0.3em;
     font-weight: 300;
     vertical-align: middle;
 }
@@ -289,7 +290,7 @@ select.panel-font-select option,
 
 .detail-festival-tag {
     font-family: var(--font-calligraphy);
-    font-size: 1.25rem;
+    font-size: clamp(1rem, 3vw, 1.25rem);
     /* Slightly larger than pill text */
     color: #ff6b6b;
     /* Festival Red */
@@ -305,11 +306,10 @@ select.panel-font-select option,
 .detail-yiji-section {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: clamp(12px, 2vh, 20px);
     /* Condensed gap */
-    padding-top: 25px;
+    padding-top: clamp(15px, 3vh, 25px);
     /* Restored/Increased padding for separation from line */
-    padding-top: 25px;
 
     /* Premium Gradient Separator Line */
     border-top: none;
@@ -330,14 +330,14 @@ select.panel-font-select option,
 
 /* Red Seal Positioning */
 .traditional-seal {
-    width: 52px;
-    height: 52px;
+    width: clamp(42px, 10vw, 54px);
+    height: clamp(42px, 10vw, 54px);
     background: #c62828;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-calligraphy);
-    font-size: 1.8rem;
+    font-size: clamp(1.4rem, 3.5vw, 1.8rem);
     color: #fff;
     border-radius: 8px;
     box-shadow:
@@ -394,7 +394,7 @@ select.panel-font-select option,
     white-space: nowrap;
 }
 
-/* Responsive Adjustments for Smaller Screens */
+/* Responsive Adjustments for Smaller Screens (Minimal overrides needed now due to clamp) */
 @media (max-width: 480px) {
     .panel-main-content {
         padding: 25px 20px 30px 20px;
