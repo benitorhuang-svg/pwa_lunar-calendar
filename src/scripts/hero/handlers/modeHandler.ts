@@ -11,7 +11,7 @@ export class ModeHandler {
         private imageManager: HeroImageManager, // Needed for reset logic? Or just slideshowManager handles it.
         private slideshowManager: HeroSlideshowManager,
         private uiManager: HeroUIManager,
-    ) { }
+    ) {}
 
     public init(): void {
         this.setupEventListeners();
@@ -79,8 +79,6 @@ export class ModeHandler {
                         minImages,
                     );
                 }
-
-
             } else if (action === "stop") {
                 this.idleManager.setArtworkMode(false);
                 this.slideshowManager.stop();

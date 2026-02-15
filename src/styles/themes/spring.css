@@ -33,11 +33,13 @@
     --panel-item-bg: linear-gradient(to right, rgba(0, 50, 20, 0.03), rgba(0, 50, 20, 0.06));
     --panel-border: rgba(189, 154, 122, 0.2);
     /* Subtle Gold border */
-    --panel-divider: linear-gradient(90deg,
-            transparent 0%,
-            rgba(189, 154, 122, 0.3) 20%,
-            rgba(189, 154, 122, 0.3) 80%,
-            transparent 100%);
+    --panel-divider: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(189, 154, 122, 0.3) 20%,
+        rgba(189, 154, 122, 0.3) 80%,
+        transparent 100%
+    );
 
     /* Interactive Elements - Blossoms */
     --cal-nav-bg: rgba(34, 139, 34, 0.08);

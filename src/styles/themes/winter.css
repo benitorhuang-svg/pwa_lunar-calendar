@@ -34,11 +34,13 @@
     --panel-item-bg: rgba(119, 136, 153, 0.05);
     /* Cool Grey tint */
     --panel-border: rgba(176, 196, 222, 0.3);
-    --panel-divider: linear-gradient(90deg,
-            transparent 0%,
-            rgba(176, 196, 222, 0.3) 20%,
-            rgba(176, 196, 222, 0.3) 80%,
-            transparent 100%);
+    --panel-divider: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(176, 196, 222, 0.3) 20%,
+        rgba(176, 196, 222, 0.3) 80%,
+        transparent 100%
+    );
 
     /* Interactive Elements - Frozen Lake */
     --cal-nav-bg: rgba(70, 130, 180, 0.08);

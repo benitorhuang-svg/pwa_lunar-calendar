@@ -18,22 +18,14 @@ export class ParallaxManager {
         this.container.style.transition = "transform 0.1s cubic-bezier(0.2, 0.8, 0.2, 1)";
         this.container.style.transform = "scale(1.08)";
 
-        if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+        if (typeof (DeviceOrientationEvent as any).requestPermission === "function") {
             // iOS 13+ requires permission
-            this.container.addEventListener("click", () => this.requestPermission(), { once: true });
+            this.container.addEventListener("click", () => this.requestPermission(), {
+                once: true,
+            });
         } else {
             window.addEventListener("deviceorientation", (e) => this.handleMotion(e));
         }
-    }
-
-    private requestPermission(): void {
-        (DeviceOrientationEvent as any).requestPermission()
-            .then((state: string) => {
-                if (state === 'granted') {
-                    window.addEventListener("deviceorientation", (e) => this.handleMotion(e));
-                }
-            })
-            .catch(console.error);
     }
 
     private handleMotion(e: DeviceOrientationEvent): void {
@@ -50,5 +42,16 @@ export class ParallaxManager {
         if (this.container) {
             this.container.style.transform = `scale(1.08) translate(${moveX}px, ${moveY}px)`;
         }
+    }
+
+    private requestPermission(): void {
+        (DeviceOrientationEvent as any)
+            .requestPermission()
+            .then((state: string) => {
+                if (state === "granted") {
+                    window.addEventListener("deviceorientation", (e) => this.handleMotion(e));
+                }
+            })
+            .catch(console.error);
     }
 }

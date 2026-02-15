@@ -12,11 +12,11 @@ export class HeroGalleryManager {
     private btnMusicUrl: HTMLElement | null = null;
     private folderInput: HTMLInputElement | null = null;
     private galleryControlWrapper: HTMLElement | null = null;
+    private galleryEmptyNotice: HTMLElement | null = null;
     private galleryInput: HTMLInputElement | null = null;
     private gallerySubmenu: HTMLElement | null = null;
     private submenuItems: NodeListOf<HTMLElement> | null = null;
     private textGalleryFit: HTMLElement | null = null;
-    private galleryEmptyNotice: HTMLElement | null = null;
 
     public bindControls(callbacks: {
         onClear: () => void;
@@ -144,7 +144,7 @@ export class HeroGalleryManager {
                     item.classList.add("active");
 
                     // Hide notice if switching away from custom or if custom has images (logic handled by image manager response, but safe to hide first)
-                    // Actually, if we switch to custom and it's empty, the event will fire again. 
+                    // Actually, if we switch to custom and it's empty, the event will fire again.
                     // If we switch to default/hybrid, we should hide it.
                     if (mode !== "custom" && this.galleryEmptyNotice) {
                         this.galleryEmptyNotice.style.display = "none";
@@ -166,7 +166,7 @@ export class HeroGalleryManager {
                 // Ensure custom button is active visually
                 const customBtn = document.querySelector('.submenu-item[data-mode="custom"]');
                 if (customBtn) {
-                    this.submenuItems?.forEach(i => i.classList.remove("active"));
+                    this.submenuItems?.forEach((i) => i.classList.remove("active"));
                     customBtn.classList.add("active");
                 }
             }
@@ -181,7 +181,7 @@ export class HeroGalleryManager {
             allRadioItems.forEach((ri) => ri.classList.remove("active"));
 
             const match = Array.from(allRadioItems).find(
-                (item) => (item as HTMLElement).dataset.url === url
+                (item) => (item as HTMLElement).dataset.url === url,
             );
             if (match) {
                 match.classList.add("active");

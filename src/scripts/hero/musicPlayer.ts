@@ -8,10 +8,10 @@ export class HeroMusicPlayer {
     private btnMusic: HTMLElement | null = null;
     private combinedPlaylist: string[] = [];
     private customPlaylist: string[] = [];
+    private fadeTimer: any = null;
     private trackIdx: number;
     private wasPlayingBeforeHidden: boolean = false;
     private zenPlaylist: string[];
-    private fadeTimer: any = null;
 
     constructor(baseDir: string) {
         this.zenPlaylist = [
@@ -116,7 +116,8 @@ export class HeroMusicPlayer {
 
         if (this.btnMusic) this.btnMusic.classList.add("loading");
 
-        this.bgMusic.play()
+        this.bgMusic
+            .play()
             .then(() => {
                 if (this.btnMusic) {
                     this.btnMusic.classList.remove("loading");
@@ -128,6 +129,24 @@ export class HeroMusicPlayer {
                 console.log("[ZenMusic] Playback blocked:", e.message);
                 if (this.btnMusic) this.btnMusic.classList.remove("loading");
             });
+    }
+
+    public playIndex(idx: number): void {
+        if (!this.bgMusic || idx < 0 || idx >= this.combinedPlaylist.length) return;
+        this.trackIdx = idx;
+        const url = this.combinedPlaylist[this.trackIdx] || "";
+        this.bgMusic.src = url;
+        this.saveLastSelection(url);
+        this.play();
+    }
+
+    public playUrl(url: string): void {
+        if (!this.bgMusic || !url) return;
+        const idx = this.combinedPlaylist.indexOf(url);
+        if (idx !== -1) this.trackIdx = idx;
+        this.bgMusic.src = url;
+        this.saveLastSelection(url);
+        this.play();
     }
 
     private fade(type: "in" | "out", callback?: () => void): void {
@@ -164,24 +183,6 @@ export class HeroMusicPlayer {
                 }
             }, interval);
         }
-    }
-
-    public playIndex(idx: number): void {
-        if (!this.bgMusic || idx < 0 || idx >= this.combinedPlaylist.length) return;
-        this.trackIdx = idx;
-        const url = this.combinedPlaylist[this.trackIdx] || "";
-        this.bgMusic.src = url;
-        this.saveLastSelection(url);
-        this.play();
-    }
-
-    public playUrl(url: string): void {
-        if (!this.bgMusic || !url) return;
-        const idx = this.combinedPlaylist.indexOf(url);
-        if (idx !== -1) this.trackIdx = idx;
-        this.bgMusic.src = url;
-        this.saveLastSelection(url);
-        this.play();
     }
 
     private playNext(): void {

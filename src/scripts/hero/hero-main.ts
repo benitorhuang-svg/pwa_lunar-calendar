@@ -5,9 +5,8 @@ import { HeroIdleManager } from "./idleManager";
 import { HeroImageManager } from "./imageManager";
 import { HeroMusicPlayer } from "./musicPlayer";
 import { NoteManager } from "./noteManager";
-import { HeroSlideshowManager } from "./slideshowManager";
-
 import { ParallaxManager } from "./parallaxManager";
+import { HeroSlideshowManager } from "./slideshowManager";
 
 const baseDir = APP_BASE_URL;
 

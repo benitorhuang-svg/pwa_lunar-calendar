@@ -8,6 +8,10 @@ export class HeroIdleManager {
     public get isArtwork(): boolean {
         return this.isArtworkMode;
     }
+    private readonly ARTWORK_IDLE_TIMEOUT = 5000;
+
+    private artworkTimer: any = null;
+
     private IDLE_TIMEOUT: number;
 
     private idleTimer: any = null;
@@ -72,31 +76,12 @@ export class HeroIdleManager {
             window.dispatchEvent(new CustomEvent("welcome-mode", { detail: { active: true } }));
         }, this.IDLE_TIMEOUT);
     }
-
     public setArtworkMode(value: boolean): void {
         this.isArtworkMode = value;
         if (value) {
             this.restartArtworkTimer();
         } else {
             this.clearArtworkTimer();
-        }
-    }
-
-    private artworkTimer: any = null;
-    private readonly ARTWORK_IDLE_TIMEOUT = 5000;
-
-    private restartArtworkTimer(): void {
-        this.clearArtworkTimer();
-        this.artworkTimer = setTimeout(() => {
-            window.dispatchEvent(new CustomEvent("artwork-idle-slide"));
-            this.restartArtworkTimer();
-        }, this.ARTWORK_IDLE_TIMEOUT);
-    }
-
-    private clearArtworkTimer(): void {
-        if (this.artworkTimer) {
-            clearTimeout(this.artworkTimer);
-            this.artworkTimer = null;
         }
     }
 
@@ -122,5 +107,20 @@ export class HeroIdleManager {
 
         // 初始化時啟動一次計時器
         this.reset();
+    }
+
+    private clearArtworkTimer(): void {
+        if (this.artworkTimer) {
+            clearTimeout(this.artworkTimer);
+            this.artworkTimer = null;
+        }
+    }
+
+    private restartArtworkTimer(): void {
+        this.clearArtworkTimer();
+        this.artworkTimer = setTimeout(() => {
+            window.dispatchEvent(new CustomEvent("artwork-idle-slide"));
+            this.restartArtworkTimer();
+        }, this.ARTWORK_IDLE_TIMEOUT);
     }
 }

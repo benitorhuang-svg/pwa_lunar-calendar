@@ -17,7 +17,7 @@ export class NavigationHandler {
         private imageManager: HeroImageManager,
         private slideshowManager: HeroSlideshowManager,
         private uiManager: HeroUIManager,
-    ) { }
+    ) {}
 
     public handleNavigation(direction: number): void {
         this.idleManager.reset();

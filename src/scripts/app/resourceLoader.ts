@@ -20,7 +20,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         fonts: false,
         heroAll: false,
         heroFirst: false,
-        scripts: true,
+        scripts: false,
         update: false, // New check for SW update
     };
 
@@ -54,7 +54,8 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     function markDone(key: ProgressKey): void {
         if (!progress[key]) {
             progress[key] = true;
-            console.log("[Loader] ✓ " + key + " (" + calcPercent() + "%)");
+            const currentTotal = calcPercent();
+            console.log(`[Loader] ✓ ${key} | Total Progress: ${currentTotal}%`);
             updateUI();
         }
     }
@@ -119,7 +120,6 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                 // No update found
                 markDone("update");
             }
-
         } catch (e) {
             console.warn("[Loader] SW check failed:", e);
             markDone("update");
@@ -235,9 +235,15 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     function preloadAudio(): void {
         const baseDir = APP_BASE_URL || "/";
         const audioFiles = [(baseDir + "assets/audio/ambient.mp3").replace(/\/+/g, "/")];
-        if (audioFiles.length === 0) { markDone("audio"); return; }
+        if (audioFiles.length === 0) {
+            markDone("audio");
+            return;
+        }
         const firstAudio = audioFiles[0];
-        if (!firstAudio) { markDone("audio"); return; }
+        if (!firstAudio) {
+            markDone("audio");
+            return;
+        }
         const audio = new Audio();
         audio.preload = "auto";
         audio.oncanplaythrough = () => markDone("audio");
@@ -247,19 +253,21 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     }
 
     // --- Main ---
-    markDone("scripts");
+    window.addEventListener("app-logic-ready", () => markDone("scripts"));
 
-    // Start Update Check Early
-    await checkSWUpdate();
+    startAnimationLoop(); // Start visual loop early
+
+    // Start all parallel tasks
+    preloadHeroImages();
+    preloadAudio();
 
     if (!checkFonts()) {
         document.fonts.ready.then(() => markDone("fonts"));
         setTimeout(() => markDone("fonts"), 3000);
     }
 
-    preloadHeroImages();
-    preloadAudio();
-    startAnimationLoop();
+    // SW Update Check - Await after starting others to prevent blocking initial downloads
+    await checkSWUpdate();
 
     // Safety timeout
     setTimeout(() => {

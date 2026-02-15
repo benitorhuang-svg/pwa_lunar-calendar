@@ -114,6 +114,7 @@ stateDiagram
 ## 6. 最近 UX 更新與細節優化 (Recent UX Refinements)
 
 ### 6.1 自選圖片空狀態 (Custom Gallery Empty State)
+
 - **觸發條件**: 使用者切換至「自選圖片 (Custom)」模式，但尚未匯入任何圖片。
 - **行為**:
     - **背景**: 強制顯示特定 Fallback 圖片 (`assets/gallery/default/1.png`)，通常為模糊磨砂背景。
@@ -121,6 +122,7 @@ stateDiagram
     - **引導**: 自動開啟圖片管理選單，方便使用者立即匯入。
 
 ### 6.2 音樂狀態恢復 (Music State Restoration)
+
 - **機制**: 利用 `localStorage` (`zen_music_last_url`) 記憶上次播放的來源。
 - **流程**:
     1.  應用程式啟動 (`MusicPlayer.init`)。
@@ -129,28 +131,34 @@ stateDiagram
     4.  發送 `music-restored` 事件，同步更新 UI 選項 (Highlight Active Station)。
 
 ### 6.3 年月選擇器排版 (Selector Layout)
+
 - **年份**: 改為 **10** 年顯示 (5 欄 x 2 列)，聚焦於當前年份前後範圍。
 - **月份**: 改為 **12** 個月顯示 (4 欄 x 3 列)，符合視覺平衡。
 
 ### 6.4 沉浸模式滑動 (Zen Mode Swipe)
+
 - **問題**: 舊版在 UI 隱藏 (Zen Mode) 時無法滑動切換圖片。
 - **修正**: 導航邏輯 (`NavigationHandler`) 現在接受 `immersion-mode` 作為有效狀態。
 - **結果**: 無論 UI 是否顯示，全螢幕狀態下皆可左右滑動切換背景。
 
 ### 6.5 手機版 Header Toggle 優化
+
 - **修正**: 同時監聽 `click` 與 `touchstart`。
 - **機制**: `touchstart` 觸發後立即執行並呼叫 `preventDefault()`，阻止後續的 Ghost Click，確保操作靈敏且穩定。
 
 ### 6.6 平滑主題轉換 (Smooth Theme Transition)
+
 - **視覺效果**: 針對背景色、文字色、邊框色等關鍵視覺屬性，加入 **0.6s** 的緩動過渡 (`cubic-bezier(0.22, 1, 0.36, 1)`)。
 - **目的**: 消除主題或季節切換時的生硬閃爍感，營造如呼吸般的自然流動體驗。
 
 ### 6.7 沉浸模式手勢引導 (Zen Mode Gesture Hint)
+
 - **觸發**: 使用者**首次**進入沉浸模式 (Zen Mode) 時。
 - **UI**: 顯示半透明的手指滑動動畫與文字提示「左右滑動切換背景」。
 - **邏輯**: 顯示 4.5 秒後自動淡出，並寫入 `localStorage` (`hasShownZenHint`) 以免再次打擾。
 
 ### 6.8 Toast 通知系統 (Toast Notification System)
+
 - **改進**: 取代原本的 `Window.confirm` 對話框 (用於刪除單一電台/圖片時)。
 - **行為**:
     1.  刪除操作立即執行，不阻斷使用者流程。

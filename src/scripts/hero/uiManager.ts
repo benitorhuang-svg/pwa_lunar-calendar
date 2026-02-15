@@ -24,10 +24,10 @@ export class HeroUIManager {
     private galleryManager: HeroGalleryManager;
     private heroBgContainer: HTMLElement | null = null;
     private layoutManager: HeroLayoutManager;
-    private toastContainer: HTMLElement | null = null;
-    private zenGestureHint: HTMLElement | null = null;
-
     private modeUIManager: HeroModeUIManager;
+    private toastContainer: HTMLElement | null = null;
+
+    private zenGestureHint: HTMLElement | null = null;
 
     constructor() {
         this.layoutManager = new HeroLayoutManager();
@@ -248,12 +248,24 @@ export class HeroUIManager {
         });
     }
 
+    public hapticFeedback(style: "heavy" | "light" | "medium" = "light"): void {
+        if (!("vibrate" in navigator)) return;
+
+        const patterns = {
+            heavy: [40, 30, 40],
+            light: [10],
+            medium: [20],
+        };
+
+        navigator.vibrate(patterns[style]);
+    }
+
+    // --- 代理子管理器方法 (Delegate Methods) ---
+
     // Layout
     public hideInstallButton(): void {
         this.layoutManager.hideInstallButton();
     }
-
-    // --- 代理子管理器方法 (Delegate Methods) ---
 
     public hidePanelActiveStates(): void {
         this.layoutManager.removeActiveState(this.layoutManager.yearMonthBtn);
@@ -301,38 +313,10 @@ export class HeroUIManager {
         this.layoutManager.showInstallButton();
     }
 
-    public toggleGridView(show: boolean): void {
-        this.layoutManager.toggleGridView(show);
-        if (show) {
-            this.galleryManager.setVisibility(false);
-        }
-    }
-
-    // Mode
-    public updateArtworkModeUI(isArtwork: boolean): void {
-        // Pass layoutManager to allow mode manager to control layout visibility
-        this.modeUIManager.updateArtworkModeUI(isArtwork, this.layoutManager);
-    }
-
-    public updateImmersionUI(active: boolean): void {
-        this.modeUIManager.updateImmersionUI(active);
-    }
-
-    public updateModeTheme(isArtwork: boolean): void {
-        this.modeUIManager.updateModeTheme(isArtwork);
-    }
-
-    public updatePanelsForType(type?: "today" | "yearMonth"): void {
-        this.layoutManager.updatePanelsForType(type);
-        this.modeUIManager.changeImageBtn?.classList.remove("active");
-    }
-
-
-
     public showToast(
         message: string,
-        type: "info" | "error" = "info",
-        action?: { label: string; callback: () => void }
+        type: "error" | "info" = "info",
+        action?: { callback: () => void; label: string },
     ): void {
         if (!this.toastContainer) return;
 
@@ -359,18 +343,47 @@ export class HeroUIManager {
 
         this.toastContainer.appendChild(toast);
 
-        setTimeout(() => {
-            if (toast.parentElement) {
-                toast.classList.add("hiding");
-                toast.addEventListener("animationend", () => {
-                    toast.remove();
-                });
-            }
-        }, action ? 6000 : 3000);
+        setTimeout(
+            () => {
+                if (toast.parentElement) {
+                    toast.classList.add("hiding");
+                    toast.addEventListener("animationend", () => {
+                        toast.remove();
+                    });
+                }
+            },
+            action ? 6000 : 3000,
+        );
+    }
+
+    public toggleGridView(show: boolean): void {
+        this.layoutManager.toggleGridView(show);
+        if (show) {
+            this.galleryManager.setVisibility(false);
+        }
+    }
+
+    // Mode
+    public updateArtworkModeUI(isArtwork: boolean): void {
+        // Pass layoutManager to allow mode manager to control layout visibility
+        this.modeUIManager.updateArtworkModeUI(isArtwork, this.layoutManager);
+    }
+
+    public updateImmersionUI(active: boolean): void {
+        this.modeUIManager.updateImmersionUI(active);
+    }
+
+    public updateModeTheme(isArtwork: boolean): void {
+        this.modeUIManager.updateModeTheme(isArtwork);
+    }
+
+    public updatePanelsForType(type?: "today" | "yearMonth"): void {
+        this.layoutManager.updatePanelsForType(type);
+        this.modeUIManager.changeImageBtn?.classList.remove("active");
     }
 
     private bindGlobalActions(): void {
-        // Since the Share Button is inside a dynamically rendered panel, 
+        // Since the Share Button is inside a dynamically rendered panel,
         // we listen for the render event to bind it.
         window.addEventListener("today-panel-rendered", () => {
             const btn = document.getElementById("btnShareCard");
@@ -382,21 +395,9 @@ export class HeroUIManager {
 
         // Add haptic to dock items
         const dockItems = document.querySelectorAll(".hero-dock-item");
-        dockItems.forEach(item => {
+        dockItems.forEach((item) => {
             item.addEventListener("click", () => this.hapticFeedback("light"));
         });
-    }
-
-    public hapticFeedback(style: "light" | "medium" | "heavy" = "light"): void {
-        if (!("vibrate" in navigator)) return;
-
-        const patterns = {
-            light: [10],
-            medium: [20],
-            heavy: [40, 30, 40]
-        };
-
-        navigator.vibrate(patterns[style]);
     }
 
     private async shareAppContent(): Promise<void> {
@@ -410,7 +411,7 @@ export class HeroUIManager {
             const text = "在這個安靜的時刻，與您分享這份歲月靜好。";
             const url = window.location.href;
 
-            await navigator.share({ title, text, url });
+            await navigator.share({ text, title, url });
         } catch (err) {
             if ((err as Error).name !== "AbortError") {
                 console.error("Share failed:", err);

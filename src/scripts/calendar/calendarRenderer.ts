@@ -4,8 +4,8 @@
  * Responsible for calendar rendering logic
  */
 
-import type { CalendarCellBuilder } from "./calendarCellBuilder";
 import type { UpdateCalendarTitleDetail } from "../types";
+import type { CalendarCellBuilder } from "./calendarCellBuilder";
 
 export class CalendarRenderer {
     private cellBuilder: CalendarCellBuilder;
@@ -119,7 +119,7 @@ export class CalendarRenderer {
         const calendarTitle = document.getElementById("calendarTitle");
         if (!calendarTitle || !detail) return;
 
-        const { lunarText, year, month } = detail;
+        const { lunarText, month, year } = detail;
 
         // 特殊月份名稱轉換
         // Helper to convert special Lunar month names

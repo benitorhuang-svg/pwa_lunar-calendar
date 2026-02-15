@@ -8,7 +8,7 @@ export class MediaHandler {
         private imageManager: HeroImageManager,
         private musicPlayer: HeroMusicPlayer,
         private uiManager: HeroUIManager,
-    ) { }
+    ) {}
 
     public init(): void {
         this.bindGalleryControls();

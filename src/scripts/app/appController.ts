@@ -17,6 +17,9 @@ const orchestrator = new AppEventOrchestrator(stateManager);
 window.addEventListener("DOMContentLoaded", () => {
     orchestrator.init();
 
+    // Signal to resource loader that core logic is ready
+    window.dispatchEvent(new CustomEvent("app-logic-ready"));
+
     // Give a small breathing room for other module scripts to finish initialization
     setTimeout(() => {
         orchestrator.updateState();

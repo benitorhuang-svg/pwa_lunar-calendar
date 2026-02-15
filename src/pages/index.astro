@@ -4,9 +4,25 @@ import HeroSection from "../components/Hero/HeroSection.astro";
 import FloatingPanels from "../components/Panels/FloatingPanels.astro";
 import Layout from "../layouts/Layout.astro";
 import "../styles/splash.css";
+import { GALLERY_MANIFEST } from "../scripts/generated/galleryManifest";
 
 const baseUrl = import.meta.env.BASE_URL;
-const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
+const manifest = GALLERY_MANIFEST as Record<string, string[]>;
+
+// Determine current season for the loader background
+const now = new Date();
+const month = now.getMonth(); // 0-indexed
+let season = "winter";
+if (month >= 1 && month <= 3) season = "spring";
+else if (month >= 4 && month <= 6) season = "summer";
+else if (month >= 7 && month <= 9) season = "autumn";
+
+// Find first matching image for background
+const images = manifest[season] || manifest["default"] || [];
+const firstImage = images.length > 0 ? images[0] : "1.webp";
+const finalSeason = manifest[season] && manifest[season]?.length ? season : "default";
+
+const bgUrl = `${baseUrl}/assets/gallery/${finalSeason}/${firstImage}`.replace(/\/+/g, "/");
 ---
 
 <Layout>

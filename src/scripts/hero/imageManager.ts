@@ -31,11 +31,27 @@ export class HeroImageManager {
         // 1. 取得季節圖片 (Get seasonal images)
         for (const season of ImageRules.SEASONS) {
             const images = await this.getImagesForSeason(season);
-            if (ImageRules.ENABLE_RANDOM_SHUFFLE) {
-                images.sort(() => Math.random() - 0.5);
+
+            // If it's the target season, ensure the first image is always the same (e.g. 1.webp)
+            // so the resourceLoader can reliably preload it.
+            if (season === targetSeason && images.length > 0) {
+                // Keep the first image (usually 1.webp or numerically first) at the start
+                const first = images[0];
+                const rest = images.slice(1);
+                if (ImageRules.ENABLE_RANDOM_SHUFFLE) {
+                    rest.sort(() => Math.random() - 0.5);
+                }
+                seasonalPlaylist.push(
+                    first!,
+                    ...rest.slice(0, ImageRules.MAX_IMAGES_PER_SEASON - 1),
+                );
+            } else {
+                if (ImageRules.ENABLE_RANDOM_SHUFFLE) {
+                    images.sort(() => Math.random() - 0.5);
+                }
+                const selected = images.slice(0, ImageRules.MAX_IMAGES_PER_SEASON);
+                seasonalPlaylist.push(...selected);
             }
-            const selected = images.slice(0, ImageRules.MAX_IMAGES_PER_SEASON);
-            seasonalPlaylist.push(...selected);
         }
 
         // 2. 取得自訂圖片 (Get custom images)
@@ -54,7 +70,9 @@ export class HeroImageManager {
             if (this.customHeroList.length > 0) {
                 fullPlaylist = this.customHeroList;
             } else {
-                console.warn("[Hero] Custom mode selected but no images found. Showing placeholder.");
+                console.warn(
+                    "[Hero] Custom mode selected but no images found. Showing placeholder.",
+                );
                 // Fallback: Show a specific placeholder (e.g., default/1.png) to indicate "No Images"
                 // Instead of silently falling back to seasonal playlist.
                 fullPlaylist = [`${this.BASE_HERO_DIR}default/1.png`];
@@ -338,15 +356,21 @@ export class HeroImageManager {
     }
 
     private async preloadHeroImages(): Promise<void> {
-        for (const src of this.heroList) {
-            // Optional: Check existence before preloading to avoid 404 console errors
-            // This might add some overhead but keeps the console clean if manifest is stale
-            if (await this.checkImageExists(src)) {
-                const img = new Image();
-                img.src = src;
-                this.heroCache[src] = img;
+        // Parallel preloading with a limit or just all at once for modern browsers
+        const preloadPromises = this.heroList.map(async (src) => {
+            try {
+                const exists = await this.checkImageExists(src);
+                if (exists) {
+                    const img = new Image();
+                    img.src = src;
+                    this.heroCache[src] = img;
+                }
+            } catch (e) {
+                console.warn(`[Hero] Failed to preload: ${src}`, e);
             }
-        }
+        });
+
+        await Promise.all(preloadPromises);
     }
 
     private setHeroBackground(url: string, transition: string): void {
