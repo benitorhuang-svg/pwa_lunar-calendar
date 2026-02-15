@@ -1,8 +1,9 @@
 /* Music & Utility Controls - Horizontal Layout */
 .music-control-wrapper {
-    position: fixed;
+    position: absolute;
     top: calc(var(--safe-area-inset-top, 0px) + 3vh);
     right: 20px;
+    /* Absolute relative to .app-container */
     z-index: 100001;
     display: flex;
     flex-direction: row-reverse;
@@ -104,6 +105,7 @@ body.mode-artwork .music-toggle-btn.playing {
 }
 
 @keyframes musicPulseCalendar {
+
     0%,
     100% {
         transform: scale(1);
@@ -117,6 +119,7 @@ body.mode-artwork .music-toggle-btn.playing {
 }
 
 @keyframes musicPulseArtwork {
+
     0%,
     100% {
         transform: scale(1);

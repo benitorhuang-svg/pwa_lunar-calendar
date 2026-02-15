@@ -78,6 +78,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             // A. Check if already waiting (Update ready)
             if (registration.waiting) {
                 console.log("[Loader] Update waiting, boosting...");
+                document.body.classList.add("is-updating");
                 if (loadingText) loadingText.textContent = "更新中...";
                 registration.waiting.postMessage({ type: "SKIP_WAITING" });
                 navigator.serviceWorker.addEventListener("controllerchange", () => {
@@ -93,6 +94,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             if (registration.installing) {
                 const installingWorker = registration.installing;
                 console.log("[Loader] New version installing...");
+                document.body.classList.add("is-updating");
                 if (loadingText) loadingText.textContent = "下載更新中...";
 
                 installingWorker.addEventListener("statechange", () => {
@@ -106,6 +108,9 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                             // First install
                             markDone("update");
                         }
+                    } else if (installingWorker.state === "redundant") {
+                        console.warn("[Loader] SW installation failed/redundant.");
+                        markDone("update");
                     }
                 });
 
@@ -251,9 +256,17 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     await checkSWUpdate();
 
     // Safety timeout
+    // Safety timeout
     setTimeout(() => {
         let key: ProgressKey;
         for (key in progress) {
+            // Block force-completion ONLY if we are in a confirmed update state
+            // This ensures we don't accidentally let the user in while an update is installing
+            if (key === "update" && (document.body.classList.contains("is-updating"))) {
+                console.log("[Loader] Critical update in progress. Blocking access until reload.");
+                continue;
+            }
+
             if (!progress[key]) {
                 console.warn("[Loader] Force-completing: " + key);
                 markDone(key);

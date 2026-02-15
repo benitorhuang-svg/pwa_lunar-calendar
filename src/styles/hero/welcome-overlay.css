@@ -1,7 +1,7 @@
 /* Welcome Interaction Overlay: Top-most layer to catch all clicks during Welcome Mode */
 #welcomeInteractionOverlay {
     display: none;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;

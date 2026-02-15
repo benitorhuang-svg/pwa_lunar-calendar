@@ -8,9 +8,32 @@
 /* Film Grain Overlay Removed */
 /* body::after { ... } */
 
-/* Global Overrides or Specific Page Styles not captured elsewhere */
+/* Mobile Portrait Layout Enforcement */
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* Prevent body scroll, handle inside app-container */
+    background-color: #0f0f1a;
+    /* Dark backdrop for desktop */
+}
 
-/* Note: 404 Pages or other dynamic pages might need specific styles */
+/* The "Phone Screen" Container */
+.app-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: var(--app-max-width, 500px);
+    margin: 0 auto;
+    /* Center on desktop */
+    overflow: hidden;
+    /* Clip content to "phone" boundaries */
+    background-color: #000;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    /* Shadow for depth on desktop */
+}
 
 /* Example utility if needed globally */
 .hidden {
@@ -83,6 +106,7 @@ body.immersion-mode:not(.initial-welcome) #panelToday {
     top: 50% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
+    position: absolute !important;
 }
 
 /* 2. Welcome Mode: Focus on Today card, hide other HUD components */
@@ -113,7 +137,7 @@ body.initial-welcome .suspension-panel#panelToday {
     visibility: visible !important;
     pointer-events: auto !important;
     z-index: 10000 !important;
-    position: fixed !important;
+    position: absolute !important;
     top: 50% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;

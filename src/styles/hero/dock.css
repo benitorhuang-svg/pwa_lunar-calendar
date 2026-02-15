@@ -1,7 +1,7 @@
 /* Hero Dock Styles */
 
 .hero-dock-wrapper {
-    position: fixed;
+    position: absolute;
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
@@ -474,7 +474,7 @@ body:not(.mode-artwork) .group-image {
 
 /* Toast Notifications */
 .toast-container {
-    position: fixed;
+    position: absolute;
     bottom: 90px;
     left: 50%;
     transform: translateX(-50%);

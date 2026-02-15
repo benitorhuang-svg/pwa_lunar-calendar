@@ -9,11 +9,19 @@
     z-index: 1500;
 
     /* Animation State */
+    /* Animation State */
     transform: translateY(40px);
     opacity: 0;
     visibility: hidden;
     transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
     pointer-events: none;
+    position: absolute;
+    /* Changed from fixed/relative to absolute */
+    top: 60px;
+    /* Adjust top padding */
+    left: 0;
+    right: 0;
+    width: 100%;
 }
 
 /* Digital Noise Overlay Removed */
