@@ -9,7 +9,7 @@ export class PanelRenderers {
     private panelToday: HTMLElement | null = null;
     private panelYearMonth: HTMLElement | null = null;
 
-    constructor() { }
+    constructor() {}
 
     public init(): void {
         this.panelYearMonth = document.getElementById("panelYearMonth");
@@ -39,71 +39,32 @@ export class PanelRenderers {
         const festival = lunar.getFestival() || lunar.getSolarFestival();
 
         console.log("[Floater] Rendering today panel for:", date.toDateString());
-        console.log("[Floater] Lunar Data:", { ganzhi, monthText, dayText, zodiac, luck, jianchu, festival });
+        console.log("[Floater] Lunar Data:", {
+            dayText,
+            festival,
+            ganzhi,
+            jianchu,
+            luck,
+            monthText,
+            zodiac,
+        });
 
         if (!ganzhi || !monthText || !dayText) {
             console.warn("[Floater] Critical lunar data missing, showing basic date info.");
         }
 
         this.panelToday.innerHTML = `
-    <div class="panel-detail-body">
-        <div class="panel-side-accent">
-            <div class="vertical-text">${ganzhi}年 · ${monthText}月${dayText}</div>
-        </div>
-        <div class="panel-main-content">
-            <div class="detail-top-section">
-                <div class="date-display">
-                    <!-- Line 1: Western Date (Month/Day Year) -->
-                    <div class="detail-header">
-                        ${date.getMonth() + 1}/${date.getDate()}
-                        <span class="year-label">${date.getFullYear()}</span>
+            <div class="panel-detail-body">
+                ${this.renderSideAccent(ganzhi, monthText, dayText)}
+                <div class="panel-main-content">
+                    <div class="detail-top-section">
+                        ${this.renderDateDisplay(date, ganzhi, monthGZ, dayGZ)}
+                        ${this.renderRightCluster(zodiac, termPeriod)}
                     </div>
-                    <!-- Line 2: Chinese Date (Year Month Day) -->
-                    <div class="detail-sub-main">${ganzhi}年 · ${monthGZ}月 ${dayGZ}日</div>
+                    ${this.renderMidRow(jianchu, luck, festival)}
+                    ${this.renderYijiSection(yi, ji)}
                 </div>
-                
-                <!-- Right Side Cluster: Zodiac & Solar Term -->
-                <div class="detail-right-cluster">
-                    <div class="traditional-seal">${(zodiac && zodiac.length > 0) ? zodiac.charAt(0) : "曆"}</div>
-                    <div class="solar-term">${termPeriod?.current || "平吉"}</div>
-                </div>
-            </div>
-            
-            <div class="detail-mid-row">
-                <div class="detail-lucky-pill">
-                    ${jianchu}日 · ${luck}
-                </div>
-                ${festival ? `<div class="detail-festival-tag">${festival}</div>` : ""}
-            </div>
-            
-            <div class="detail-yiji-section">
-                <div class="yiji-item">
-                    <span class="yiji-label yiji-label--good">宜</span>
-                    <div class="tag-container">
-                        ${yi.length > 0
-                ? yi
-                    .slice(0, 5)
-                    .map((t: string) => `<span class="tag">${t}</span>`)
-                    .join("")
-                : '<span class="tag">諸事平吉</span>'
-            }
-                    </div>
-                </div>
-                <div class="yiji-item">
-                    <span class="yiji-label yiji-label--bad">忌</span>
-                    <div class="tag-container">
-                        ${ji.length > 0
-                ? ji
-                    .slice(0, 5)
-                    .map((t: string) => `<span class="tag">${t}</span>`)
-                    .join("")
-                : '<span class="tag">諸事不忌</span>'
-            }
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>`;
+            </div>`;
 
         // Notify NoteManager to re-bind events
         setTimeout(() => {
@@ -197,5 +158,73 @@ export class PanelRenderers {
 
         yearSection.appendChild(yearGrid);
         return yearSection;
+    }
+
+    // --- Sub-Renderers for Today Panel (Complex UI Decomposition) ---
+
+    private renderDateDisplay(date: Date, ganzhi: string, monthGZ: string, dayGZ: string): string {
+        return `
+            <div class="date-display">
+                <div class="detail-header">
+                    ${date.getMonth() + 1}/${date.getDate()}
+                    <span class="year-label">${date.getFullYear()}</span>
+                </div>
+                <div class="detail-sub-main">${ganzhi}年 · ${monthGZ}月 ${dayGZ}日</div>
+            </div>`;
+    }
+
+    private renderMidRow(jianchu: string, luck: string, festival: null | string): string {
+        return `
+            <div class="detail-mid-row">
+                <div class="detail-lucky-pill">${jianchu}日 · ${luck}</div>
+                ${festival ? `<div class="detail-festival-tag">${festival}</div>` : ""}
+            </div>`;
+    }
+
+    private renderRightCluster(zodiac: string, termPeriod: any): string {
+        const sealChar = zodiac && zodiac.length > 0 ? zodiac.charAt(0) : "曆";
+        const termName = termPeriod?.current || "平吉";
+        return `
+            <div class="detail-right-cluster">
+                <div class="traditional-seal">${sealChar}</div>
+                <div class="solar-term">${termName}</div>
+            </div>`;
+    }
+
+    private renderSideAccent(ganzhi: string, monthText: string, dayText: string): string {
+        return `
+            <div class="panel-side-accent">
+                <div class="vertical-text">${ganzhi}年 · ${monthText}月${dayText}</div>
+            </div>`;
+    }
+
+    private renderYijiSection(yi: string[], ji: string[]): string {
+        const yiTags =
+            yi.length > 0
+                ? yi
+                      .slice(0, 5)
+                      .map((t) => `<span class="tag">${t}</span>`)
+                      .join("")
+                : '<span class="tag">諸事平吉</span>';
+
+        const jiTags =
+            ji.length > 0
+                ? ji
+                      .slice(0, 5)
+                      .map((t) => `<span class="tag">${t}</span>`)
+                      .join("")
+                : '<span class="tag">諸事不忌</span>';
+
+        return `
+            <div class="detail-yiji-section">
+                <div class="yiji-item">
+                    <span class="yiji-label yiji-label--good">宜</span>
+                    <div class="tag-container">${yiTags}</div>
+                </div>
+                <div class="yiji-item">
+                    <span class="yiji-label yiji-label--bad">忌</span>
+                    <div class="tag-container">${jiTags}</div>
+                </div>
+            </div>`;
     }
 }

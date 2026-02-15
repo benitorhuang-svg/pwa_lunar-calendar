@@ -45,7 +45,7 @@ export class PanelUIHandler {
         });
 
         // 打開筆記本 (Open NotePad)
-        window.addEventListener("open-notepad", ((e: CustomEvent) => {
+        window.addEventListener("open-notepad", ((_e: CustomEvent) => {
             const overlay = document.getElementById("notePadOverlay");
             if (overlay) {
                 overlay.classList.add("active");

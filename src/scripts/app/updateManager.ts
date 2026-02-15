@@ -40,7 +40,7 @@ export class UpdateManager {
         // 主動檢查更新
         try {
             await registration.update();
-        } catch (e) {
+        } catch (_e) {
             // Ignore offline errors
         }
     }

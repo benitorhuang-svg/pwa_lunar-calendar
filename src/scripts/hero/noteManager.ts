@@ -1,9 +1,5 @@
-/**
- * Note Manager
- * 負責處理隨筆記錄功能 (Responsible for note-taking features)
- * Refactored to use the unified Daily Card (panelToday).
- */
-
+import { getRandomQuote } from "../../data/calendarQuotes";
+import { Lunar } from "../core/lunar";
 import { HeroIdleManager } from "./idleManager";
 
 export class NoteManager {
@@ -58,6 +54,8 @@ export class NoteManager {
 
         const overlayEditor = document.getElementById("noteEditor") as HTMLTextAreaElement;
         const datePicker = document.getElementById("noteDatePicker") as HTMLInputElement;
+
+        this.updateQuoteForDate(date);
 
         if (overlayEditor) {
             overlayEditor.value = content || "";
@@ -219,5 +217,54 @@ export class NoteManager {
                 this.loadNoteForOverlay(today.getFullYear(), today.getMonth(), today.getDate());
             }
         }) as EventListener);
+    }
+
+    private updateQuoteForDate(date: Date): void {
+        const quoteEl = document.getElementById("noteQuoteText");
+        if (!quoteEl) return;
+
+        const lunar = Lunar.fromDate(date);
+        const solarTerm = lunar.getSolarTermPeriod()?.current;
+        const festival = lunar.getFestival() || lunar.getSolarFestival();
+
+        let key: string;
+        const month = date.getMonth() + 1;
+
+        // Season Logic
+        let season: string;
+        if (month >= 3 && month <= 5) season = "spring";
+        else if (month >= 6 && month <= 8) season = "summer";
+        else if (month >= 9 && month <= 11) season = "autumn";
+        else season = "winter";
+
+        // Priority: Festival > Solar Term > Season > Generic
+        if (
+            festival &&
+            (festival.includes("春節") ||
+                festival.includes("元宵") ||
+                festival.includes("中秋") ||
+                festival.includes("端午"))
+        ) {
+            key = festival.includes("春節")
+                ? "春節"
+                : festival.includes("元宵")
+                  ? "元宵節"
+                  : festival.includes("中秋")
+                    ? "中秋節"
+                    : "端午節";
+        } else if (solarTerm) {
+            key = solarTerm;
+        } else {
+            key = season;
+        }
+
+        const quote = getRandomQuote(key);
+        quoteEl.innerHTML = quote;
+
+        // Add a subtle re-fade animation
+        quoteEl.style.animation = "none";
+        // Trigger reflow
+        void quoteEl.offsetWidth;
+        quoteEl.style.animation = "fadeInSlideUp 1s ease forwards";
     }
 }

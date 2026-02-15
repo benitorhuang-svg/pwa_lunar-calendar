@@ -39,26 +39,33 @@ import "../../styles/hero/notepad.css";
                             <path d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
-                </div>
-            </div>
+                    <!-- Automated Content: Quote of the Day -->
+                    <div class="note-quote-pane" id="noteQuotePane">
+                        <div class="quote-text" id="noteQuoteText">載入中...</div>
+                        <div class="quote-decoration"></div>
+                    </div>
 
-            <!-- Editor: The Sacred Space -->
-            <div class="note-editor-canvas">
-                <textarea
-                    class="note-textarea-zen font-serif"
-                    id="noteEditor"
-                    placeholder="在此刻，記下內心的溫度..."
-                    spellcheck="false"></textarea>
-            </div>
+                    <!-- Editor: The Sacred Space -->
+                    <div class="note-editor-canvas">
+                        <textarea
+                            class="note-textarea-zen font-serif"
+                            id="noteEditor"
+                            placeholder="在此刻，記下內心的溫度..."
+                            spellcheck="false"></textarea>
+                    </div>
 
-            <!-- Footer: Actions -->
-            <div class="note-footer-zen">
-                <div class="note-status-indicator" id="noteStatus">拾起筆尖，紀錄當下</div>
-                <div class="note-actions-group">
-                    <button class="note-action-pill secondary" id="btnNoteExport">
-                        匯出隨筆
-                    </button>
-                    <button class="note-action-pill primary" id="btnNoteSave"> 留存記憶 </button>
+                    <!-- Footer: Actions -->
+                    <div class="note-footer-zen">
+                        <div class="note-status-indicator" id="noteStatus">拾起筆尖，紀錄當下</div>
+                        <div class="note-actions-group">
+                            <button class="note-action-pill secondary" id="btnNoteExport">
+                                匯出隨筆
+                            </button>
+                            <button class="note-action-pill primary" id="btnNoteSave">
+                                留存記憶
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

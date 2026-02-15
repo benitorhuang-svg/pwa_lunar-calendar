@@ -1,0 +1,17 @@
+﻿
+> lunar-calendar-astro@1.0.0 lint
+> eslint .
+
+
+C:\Users\benit\Desktop\lunar-calendar\src\scripts\app\updateManager.ts
+  43:18  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\Users\benit\Desktop\lunar-calendar\src\scripts\hero\handlers\panelUIHandler.ts
+  48:51  warning  'e' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\Users\benit\Desktop\lunar-calendar\src\scripts\hero\noteManager.ts
+  230:13  error  This assigned value is not used in subsequent statements  no-useless-assignment
+  234:13  error  This assigned value is not used in subsequent statements  no-useless-assignment
+
+??4 problems (2 errors, 2 warnings)
+

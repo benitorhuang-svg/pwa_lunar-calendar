@@ -30,13 +30,13 @@ export class HeroImageManager {
 
         // 1. 取得季節圖片 (Get seasonal images) - Parallel fetch
         const seasonPromises = ImageRules.SEASONS.map(async (s) => ({
-            name: s,
             images: await this.getImagesForSeason(s),
+            name: s,
         }));
 
         const seasonsResults = await Promise.all(seasonPromises);
 
-        for (const { name: s, images } of seasonsResults) {
+        for (const { images, name: s } of seasonsResults) {
             // Priority: Target Season
             if (s === targetSeason && images.length > 0) {
                 const first = images[0];

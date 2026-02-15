@@ -156,11 +156,53 @@ body.note-mode-active #welcomeInteractionOverlay {
     transform: rotate(90deg);
 }
 
+/* 
+ * Automated Content: Quote of the Day 
+ */
+.note-quote-pane {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem 0;
+    border-left: 2px solid rgba(255, 255, 255, 0.4);
+    padding-left: 1.5rem;
+    position: relative;
+    animation: fadeInSlideUp 1s ease forwards;
+}
+
+.quote-text {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.95);
+    font-style: italic;
+    letter-spacing: 0.02em;
+}
+
+.quote-decoration {
+    position: absolute;
+    bottom: -10px;
+    right: 0;
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2));
+}
+
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Pure Editor Canvas (No lines) */
 .note-editor-canvas {
     flex: 1;
     position: relative;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .note-textarea-zen {
