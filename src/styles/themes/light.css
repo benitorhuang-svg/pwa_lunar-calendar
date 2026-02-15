@@ -5,9 +5,10 @@
 */
 
 .theme-light {
-    /* Background & Texture - Xuan Paper */
+    /* Background & Texture - Xuan Paper (Restored Original) */
     --cal-bg: rgba(253, 251, 247, 0.85);
     /* Off-white, paper-like */
+
     --cal-inner-glow: rgba(255, 255, 255, 0.9);
 
     /* Shadows - Soft Daylight */

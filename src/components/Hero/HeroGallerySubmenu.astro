@@ -35,7 +35,7 @@ const { defaultAudio } = Astro.props;
                     stroke-width="2"
                     viewBox="0 0 24 24"
                     width="14"
-                    ><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle
+                    ><rect height="18" rx="2" ry="2" width="18" x="3" y="3"></rect><circle
                         cx="8.5"
                         cy="8.5"
                         r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg
@@ -144,7 +144,7 @@ const { defaultAudio } = Astro.props;
                             data-url="https://stream.klassikradio.de/relax/mp3-128/stream.mp3"
                             >Klassik Radio Relax (Relax)</button
                         >
-                        <button class="radio-delete-btn" aria-label="刪除此電台">✕</button>
+                        <button aria-label="刪除此電台" class="radio-delete-btn">✕</button>
                     </div>
                     <div class="radio-row">
                         <button
@@ -152,7 +152,7 @@ const { defaultAudio } = Astro.props;
                             data-url="https://ice1.somafm.com/thistle-128-mp3"
                             >SomaFM (Thistle)</button
                         >
-                        <button class="radio-delete-btn" aria-label="刪除此電台">✕</button>
+                        <button aria-label="刪除此電台" class="radio-delete-btn">✕</button>
                     </div>
                     <div class="radio-row">
                         <button
@@ -160,7 +160,7 @@ const { defaultAudio } = Astro.props;
                             data-url="https://vprclassical.streamguys1.com/vprclassical128.mp3"
                             >streamguys (vprclassical)</button
                         >
-                        <button class="radio-delete-btn" aria-label="刪除此電台">✕</button>
+                        <button aria-label="刪除此電台" class="radio-delete-btn">✕</button>
                     </div>
                     <div class="radio-row">
                         <button
@@ -168,7 +168,7 @@ const { defaultAudio } = Astro.props;
                             data-url="https://edge22.streams.arabella.at/arabella-relax/stream/mp3"
                             >Arabella Relax (streams)</button
                         >
-                        <button class="radio-delete-btn" aria-label="刪除此電台">✕</button>
+                        <button aria-label="刪除此電台" class="radio-delete-btn">✕</button>
                     </div>
                     <div class="radio-row">
                         <button class="radio-item" id="btnMusicUrl">自訂電台網址...</button>
@@ -191,13 +191,13 @@ const { defaultAudio } = Astro.props;
                 width="14"
                 ><path d="M3 6h18"></path><path
                     d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                ></path><line x1="10" y1="11" x2="10" y2="17"></line><line
+                ></path><line x1="10" x2="10" y1="11" y2="17"></line><line
                     x1="14"
-                    y1="11"
                     x2="14"
+                    y1="11"
                     y2="17"></line></svg
             >
-            <span>清空自定媒體</span>
+            <span>清除匯入圖片</span>
         </button>
     </div>
 
@@ -206,7 +206,7 @@ const { defaultAudio } = Astro.props;
     <input
         accept="image/*"
         id="folderInput"
-        {...{ webkitdirectory: "", directory: "" }}
+        {...{ directory: "", webkitdirectory: "" }}
         multiple
         style="display: none;"
         type="file"

@@ -208,12 +208,16 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     bottom: 60px;
     left: 50%;
     transform: translateX(-50%) translateY(10px);
-    background: rgba(15, 15, 20, 0.9);
-    backdrop-filter: blur(25px) saturate(150%);
-    -webkit-backdrop-filter: blur(25px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
+
+    /* High Opacity Dark Glass for Max Readability */
+    background: rgba(15, 15, 20, 0.85);
+    /* Matches Dock Opacity */
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 36px;
+
     display: flex;
     flex-direction: column;
     min-width: 420px;
@@ -222,11 +226,23 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     opacity: 0;
     visibility: hidden;
     transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+
     box-shadow:
-        0 15px 45px rgba(0, 0, 0, 0.6),
-        0 0 20px rgba(255, 255, 255, 0.05);
+        0 40px 100px rgba(0, 0, 0, 0.18),
+        inset 0 0 60px rgba(255, 255, 255, 0.1);
+
     pointer-events: auto;
     z-index: 2200;
+}
+
+.gallery-submenu::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.05;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 .gallery-submenu.show {
@@ -238,7 +254,8 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
 .submenu-item {
     background: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.65);
+    color: rgba(255, 255, 255, 0.9);
+    /* High contrast text */
     padding: 10px 16px;
     border-radius: 12px;
     font-size: 0.88rem;
@@ -251,6 +268,8 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     text-align: left;
     font-family: var(--font-serif);
     letter-spacing: 0.05em;
+    /* Enhance readability against light backgrounds */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 .submenu-item:hover {
@@ -269,10 +288,7 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
 
 .submenu-divider {
     height: 1px;
-    background: linear-gradient(to right,
-            transparent,
-            rgba(255, 255, 255, 0.08),
-            transparent);
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08), transparent);
     margin: 6px 12px;
 }
 
@@ -298,9 +314,11 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     align-items: center;
     gap: 8px;
     font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.7);
+    /* Brighter header */
     padding-left: 4px;
     letter-spacing: 0.05em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .radio-presets {
@@ -312,7 +330,8 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
 .radio-item {
     background: rgba(255, 255, 255, 0.03);
     border: none;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.85);
+    /* Clearer text */
     padding: 8px 12px;
     border-radius: 8px;
     font-size: 0.8rem;
@@ -324,6 +343,7 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     text-overflow: ellipsis;
     font-family: var(--font-serif);
     flex: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .radio-row {
@@ -392,10 +412,7 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
 
 .vertical-column-divider {
     width: 1px;
-    background: linear-gradient(to bottom,
-            transparent,
-            rgba(255, 255, 255, 0.06),
-            transparent);
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.06), transparent);
 }
 
 .column-divider {

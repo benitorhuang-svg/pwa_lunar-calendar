@@ -8,6 +8,8 @@
     z-index: 1;
     overflow: hidden;
     background-color: #000;
+    pointer-events: auto;
+    /* Ensure background remains clickable for immersion toggle */
 }
 
 .hero-bg-item {

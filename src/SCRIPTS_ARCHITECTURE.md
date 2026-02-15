@@ -112,6 +112,7 @@
 
 負責視覺表現 (Presentation)，採用 CSS Variables 實現主題切換。
 包含 `tokens.css` (設計系統), `themes/*.css` (季節變數), 以及各模組的獨立 CSS。
+
 - **`splash.css`**: **開場動畫與進度條**。獨立管理 Splash Screen、文字墨染動畫與首屏元素出場。
 - **`hero/`**:
     - **`background.css`**: 包含背景縮放動畫與首屏 Fallback 機制。

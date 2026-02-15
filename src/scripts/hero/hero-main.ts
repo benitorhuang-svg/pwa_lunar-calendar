@@ -26,9 +26,12 @@ idleManager.setupListeners();
 noteManager.init();
 
 // Core Logic & Event Handlers
-const eventHandlers = new HeroEventHandlers(imageManager, slideshowManager, idleManager, musicPlayer);
-
-
+const eventHandlers = new HeroEventHandlers(
+    imageManager,
+    slideshowManager,
+    idleManager,
+    musicPlayer,
+);
 
 // Start
 eventHandlers.init();

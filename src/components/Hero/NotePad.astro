@@ -2,47 +2,65 @@
 import "../../styles/hero/notepad.css";
 ---
 
-<!-- Note Pad Overlay -->
+<!-- Note Pad Overlay: Plant Paper / Glassine Design -->
 <div class="note-pad-overlay" id="notePadOverlay">
-    <div class="note-container">
-        <!-- Header: Controls -->
-        <div class="note-header">
-            <div class="note-controls-left">
-                <button class="note-btn close-btn" id="btnNoteClose" title="關閉">
-                    <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg
-                    >
-                </button>
-                <div class="font-selector">
-                    <select id="noteFontSelect">
-                        <option value="font-serif">襯線體 (Serif)</option>
-                        <option value="font-sans">黑體 (Sans)</option>
-                        <option value="font-calligraphy">書法體 (Calligraphy)</option>
-                        <option value="font-hand">手寫體 (Handwriting)</option>
-                    </select>
+    <div class="note-container glass-morphic">
+        <div class="glass-reflection"></div>
+
+        <div class="note-content-area">
+            <!-- Header: Date & Font Selection -->
+            <div class="note-header-zen">
+                <div class="note-date-display">
+                    <input
+                        class="note-date-picker-zen"
+                        id="noteDatePicker"
+                        type="date"
+                        aria-label="選擇日期"
+                    />
+                    <span class="date-sep">/</span>
+                    <div class="font-selector-zen">
+                        <select id="noteFontSelect" aria-label="切換字體">
+                            <option value="font-serif">雅致襯線 (Serif)</option>
+                            <option value="font-sans">極簡黑體 (Sans)</option>
+                            <option value="font-calligraphy">行雲流水 (Calligraphy)</option>
+                            <option value="font-hand">手感筆觸 (Hand)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="header-tools-right">
+                    <button class="note-close-trigger" id="btnNoteClose" title="關閉隨筆">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                        >
+                            <path d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
-            <div class="note-controls-right">
-                <input type="date" id="noteDatePicker" class="note-date-picker" />
-                <button class="note-btn action-btn" id="btnNoteSave">儲存 (Save)</button>
-                <button class="note-btn action-btn secondary" id="btnNoteExport"
-                    >匯出 (Export)</button
-                >
+            <!-- Editor: The Sacred Space -->
+            <div class="note-editor-canvas">
+                <textarea
+                    class="note-textarea-zen font-serif"
+                    id="noteEditor"
+                    placeholder="在此刻，記下內心的溫度..."
+                    spellcheck="false"></textarea>
             </div>
-        </div>
 
-        <!-- Editor Area -->
-        <div class="note-editor-wrapper">
-            <textarea
-                id="noteEditor"
-                class="note-textarea font-serif"
-                placeholder="在此寫下您的隨筆..."></textarea>
+            <!-- Footer: Actions -->
+            <div class="note-footer-zen">
+                <div class="note-status-indicator" id="noteStatus">拾起筆尖，紀錄當下</div>
+                <div class="note-actions-group">
+                    <button class="note-action-pill secondary" id="btnNoteExport">
+                        匯出隨筆
+                    </button>
+                    <button class="note-action-pill primary" id="btnNoteSave"> 留存記憶 </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

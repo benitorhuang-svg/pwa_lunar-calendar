@@ -103,6 +103,25 @@ body.mode-artwork .music-toggle-btn.playing {
     animation: musicPulseArtwork 2s ease-in-out infinite;
 }
 
+/* Loading State */
+.music-toggle-btn.loading {
+    animation: musicLoading 1s linear infinite !important;
+    /* Force override pulse */
+    opacity: 0.8;
+    pointer-events: none;
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+@keyframes musicLoading {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 @keyframes musicPulseCalendar {
 
     0%,

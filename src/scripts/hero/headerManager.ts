@@ -4,8 +4,6 @@
  * Responsible for managing the date display in the Hero header area
  */
 
-
-
 export class HeroHeaderManager {
     // UI Elements
     private dayEl: HTMLElement | null = null;

@@ -1,4 +1,14 @@
 /* Panel Core Architecture & Transitions */
+.suspension-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.06;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
 .suspension-panel {
     display: none;
     z-index: 1001;
@@ -9,11 +19,20 @@
 
     /* Theme-Aware Background & Texture */
     background: var(--cal-bg);
-    border-radius: 40px;
+
+    /* Frosted Blur Structure (Unified) */
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+
+    border-radius: 48px;
     padding: 0;
 
     z-index: 2000;
-    box-shadow: var(--cal-shadow);
+
+    box-shadow:
+        0 40px 120px rgba(0, 0, 0, 0.18),
+        inset 0 0 100px rgba(255, 255, 255, 0.1);
+
     border: 1px solid var(--cal-border);
 
     /* Hardware accelerated animation (No Filter/Blur) */

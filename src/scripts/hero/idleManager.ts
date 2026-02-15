@@ -4,15 +4,17 @@
  */
 
 export class HeroIdleManager {
+    public isNoteMode = false;
     public get isArtwork(): boolean {
         return this.isArtworkMode;
     }
     private IDLE_TIMEOUT: number;
+
     private idleTimer: any = null;
 
     private isArtworkMode = false;
 
-    public isNoteMode = false;
+    private lastToggleTime = 0;
 
     constructor(idleTimeout = 15000) {
         this.IDLE_TIMEOUT = idleTimeout;
@@ -24,8 +26,6 @@ export class HeroIdleManager {
             this.idleTimer = null;
         }
     }
-
-    private lastToggleTime = 0;
 
     /**
      * 重置閒置計時器 (與全局閒置邏輯整合)

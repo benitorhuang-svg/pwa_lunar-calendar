@@ -6,11 +6,11 @@
 export class HeroMusicPlayer {
     private bgMusic: HTMLAudioElement | null = null;
     private btnMusic: HTMLElement | null = null;
+    private combinedPlaylist: string[] = [];
+    private customPlaylist: string[] = [];
     private trackIdx: number;
     private wasPlayingBeforeHidden: boolean = false;
     private zenPlaylist: string[];
-    private customPlaylist: string[] = [];
-    private combinedPlaylist: string[] = [];
 
     constructor(baseDir: string) {
         this.zenPlaylist = [
@@ -20,22 +20,6 @@ export class HeroMusicPlayer {
         ];
         this.combinedPlaylist = [...this.zenPlaylist];
         this.trackIdx = Math.floor(Math.random() * this.combinedPlaylist.length);
-    }
-
-    public async loadCustomPlaylist(): Promise<number> {
-        const { galleryStorage } = await import("./galleryStorage");
-        const customRows = await galleryStorage.getAllAudio();
-
-        // Clean up old object URLs if any (optional but good practice)
-        this.customPlaylist = customRows.map(row => {
-            if (row.type === "link" && row.url) return row.url;
-            if (row.type === "file" && row.blob) return URL.createObjectURL(row.blob);
-            return "";
-        }).filter(url => url !== "");
-
-        this.combinedPlaylist = [...this.zenPlaylist, ...this.customPlaylist];
-        console.log(`[ZenMusic] Playlist updated. Total tracks: ${this.combinedPlaylist.length}`);
-        return this.customPlaylist.length;
     }
 
     public init(): void {
@@ -86,6 +70,64 @@ export class HeroMusicPlayer {
         this.loadCustomPlaylist();
     }
 
+    public async loadCustomPlaylist(): Promise<number> {
+        const { galleryStorage } = await import("./galleryStorage");
+        const customRows = await galleryStorage.getAllAudio();
+
+        // Clean up old object URLs if any (optional but good practice)
+        this.customPlaylist = customRows
+            .map((row) => {
+                if (row.type === "link" && row.url) return row.url;
+                if (row.type === "file" && row.blob) return URL.createObjectURL(row.blob);
+                return "";
+            })
+            .filter((url) => url !== "");
+
+        this.combinedPlaylist = [...this.zenPlaylist, ...this.customPlaylist];
+        console.log(`[ZenMusic] Playlist updated. Total tracks: ${this.combinedPlaylist.length}`);
+        return this.customPlaylist.length;
+    }
+
+    /**
+     * 暫停音樂 (Pause Music)
+     */
+    public pause(): void {
+        if (!this.bgMusic) return;
+        this.bgMusic.pause();
+        if (this.btnMusic) this.btnMusic.classList.remove("playing");
+    }
+
+    /**
+     * 播放音樂 (Play Music)
+     */
+    public play(): void {
+        if (!this.bgMusic) return;
+
+        // 初始化第一首
+        if (!this.bgMusic.src || this.bgMusic.src === "" || this.bgMusic.ended) {
+            this.bgMusic.src = this.combinedPlaylist[this.trackIdx] || "";
+        }
+
+        if (this.btnMusic) this.btnMusic.classList.add("loading"); // Indicate loading start
+
+        this.bgMusic
+            .play()
+            .then(() => {
+                console.log(
+                    "[ZenMusic] Flowing:",
+                    this.combinedPlaylist[this.trackIdx] || "unknown",
+                );
+                if (this.btnMusic) {
+                    this.btnMusic.classList.remove("loading");
+                    this.btnMusic.classList.add("playing");
+                }
+            })
+            .catch((e) => {
+                console.log("[ZenMusic] Playback blocked or failed:", e.message);
+                if (this.btnMusic) this.btnMusic.classList.remove("loading");
+            });
+    }
+
     public playIndex(idx: number): void {
         if (!this.bgMusic || idx < 0 || idx >= this.combinedPlaylist.length) return;
         this.trackIdx = idx;
@@ -102,37 +144,6 @@ export class HeroMusicPlayer {
         }
         this.bgMusic.src = url;
         this.play();
-    }
-
-    /**
-     * 播放音樂 (Play Music)
-     */
-    public play(): void {
-        if (!this.bgMusic) return;
-
-        // 初始化第一首
-        if (!this.bgMusic.src || this.bgMusic.src === "" || this.bgMusic.ended) {
-            this.bgMusic.src = this.combinedPlaylist[this.trackIdx] || "";
-        }
-
-        this.bgMusic
-            .play()
-            .then(() => {
-                console.log("[ZenMusic] Flowing:", this.combinedPlaylist[this.trackIdx] || "unknown");
-                if (this.btnMusic) this.btnMusic.classList.add("playing");
-            })
-            .catch((e) => {
-                console.log("[ZenMusic] Playback blocked or failed:", e.message);
-            });
-    }
-
-    /**
-     * 暫停音樂 (Pause Music)
-     */
-    public pause(): void {
-        if (!this.bgMusic) return;
-        this.bgMusic.pause();
-        if (this.btnMusic) this.btnMusic.classList.remove("playing");
     }
 
     private playNext(): void {

@@ -11,14 +11,14 @@ export class HeroImageManager {
     public specialHeroList: string[] = [];
     private BASE_HERO_DIR: string;
     private currentSpecialName: null | string = null;
+    private customHeroList: string[] = [];
+    private galleryMode: "custom" | "default" | "hybrid" = "default";
     private heroBgContainer: HTMLElement | null = null;
     private heroCache: Record<string, HTMLImageElement> = {};
     private heroIdx = 0;
     private manifest: null | Record<string, string[]> = null;
     private requestedSeason: null | string = null;
     private specialHeroIdx = 0;
-    private galleryMode: "default" | "custom" | "hybrid" = "default";
-    private customHeroList: string[] = [];
 
     constructor(baseDir: string) {
         this.BASE_HERO_DIR = (baseDir + "assets/gallery/").replace(/\/+/g, "/");
@@ -41,7 +41,7 @@ export class HeroImageManager {
         // 2. 取得自訂圖片 (Get custom images)
         const { galleryStorage } = await import("./galleryStorage");
         const customImages = await galleryStorage.getAllImages();
-        this.customHeroList = customImages.map(img => URL.createObjectURL(img.blob));
+        this.customHeroList = customImages.map((img) => URL.createObjectURL(img.blob));
 
         // 3. 根據模式合成清單 (Compose list based on mode)
         let fullPlaylist: string[] = [];
@@ -87,19 +87,19 @@ export class HeroImageManager {
         }
     }
 
-    public async setGalleryMode(mode: "default" | "custom" | "hybrid"): Promise<void> {
-        if (this.galleryMode === mode) return;
-        this.galleryMode = mode;
-        const season = this.getSeason(new Date());
-        await this.detectHeroImages(season);
-    }
-
     public getSeason(date: Date): string {
         return ImageRules.getSeason(date);
     }
 
     public init(): void {
         this.heroBgContainer = document.getElementById("heroBgContainer");
+    }
+
+    public async setGalleryMode(mode: "custom" | "default" | "hybrid"): Promise<void> {
+        if (this.galleryMode === mode) return;
+        this.galleryMode = mode;
+        const season = this.getSeason(new Date());
+        await this.detectHeroImages(season);
     }
 
     public switchHero(offset: number, isAuto = false, resetSlideshowCallback?: () => void): void {
@@ -267,7 +267,7 @@ export class HeroImageManager {
         if (this.manifest && this.manifest[season] && this.manifest[season].length > 0) {
             // Filter out files with Chinese characters (Solar terms) for the slideshow
             // User requested these to be shown ONLY on date click, not in rotation
-            const slideshowFiles = this.manifest[season].filter(f => !/[\u4e00-\u9fa5]/.test(f));
+            const slideshowFiles = this.manifest[season].filter((f) => !/[\u4e00-\u9fa5]/.test(f));
             return slideshowFiles.map((f) => `${seasonDir}${f}`);
         }
 

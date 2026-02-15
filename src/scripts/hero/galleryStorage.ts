@@ -3,29 +3,86 @@
  * 負責使用 IndexedDB 儲存使用者自訂圖片 (Handles storing custom images using IndexedDB)
  */
 
-export interface CustomImage {
+export interface CustomAudio {
+    blob?: Blob;
     id: string;
-    blob: Blob;
     name: string;
     timestamp: number;
+    type: "file" | "link";
+    url?: string;
 }
 
-export interface CustomAudio {
+export interface CustomImage {
+    blob: Blob;
     id: string;
-    blob?: Blob;
-    url?: string;
     name: string;
-    type: "file" | "link";
     timestamp: number;
 }
 
 export class GalleryStorage {
-    private dbName = "LunarCalendarGallery";
-    private storeName = "customImages";
     private audioStoreName = "customAudio";
     private db: IDBDatabase | null = null;
+    private dbName = "LunarCalendarGallery";
+    private storeName = "customImages";
 
-    constructor() { }
+    constructor() {}
+
+    public async clearAll(): Promise<void> {
+        if (!this.db) await this.init();
+        const tx = this.db!.transaction([this.storeName, this.audioStoreName], "readwrite");
+        tx.objectStore(this.storeName).clear();
+        tx.objectStore(this.audioStoreName).clear();
+        return new Promise((resolve) => {
+            tx.oncomplete = () => resolve();
+        });
+    }
+
+    public async deleteAudio(id: string): Promise<void> {
+        if (!this.db) await this.init();
+        return new Promise((resolve, reject) => {
+            const tx = this.db!.transaction(this.audioStoreName, "readwrite");
+            const store = tx.objectStore(this.audioStoreName);
+            const request = store.delete(id);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject("Failed to delete audio");
+        });
+    }
+
+    public async deleteImage(id: string): Promise<void> {
+        if (!this.db) await this.init();
+
+        return new Promise((resolve, reject) => {
+            const tx = this.db!.transaction(this.storeName, "readwrite");
+            const store = tx.objectStore(this.storeName);
+            const request = store.delete(id);
+
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject("Failed to delete image");
+        });
+    }
+
+    public async getAllAudio(): Promise<CustomAudio[]> {
+        if (!this.db) await this.init();
+        return new Promise((resolve) => {
+            const tx = this.db!.transaction(this.audioStoreName, "readonly");
+            const store = tx.objectStore(this.audioStoreName);
+            const request = store.getAll();
+            request.onsuccess = () => resolve(request.result);
+        });
+    }
+
+    public async getAllImages(): Promise<CustomImage[]> {
+        if (!this.db) await this.init();
+
+        return new Promise((resolve, reject) => {
+            const tx = this.db!.transaction(this.storeName, "readonly");
+            const store = tx.objectStore(this.storeName);
+            const request = store.getAll();
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject("Failed to fetch images");
+        });
+    }
 
     public async init(): Promise<void> {
         return new Promise((resolve, reject) => {
@@ -49,56 +106,7 @@ export class GalleryStorage {
         });
     }
 
-    public async saveImages(files: FileList | File[]): Promise<void> {
-        if (!this.db) await this.init();
-
-        const tx = this.db!.transaction(this.storeName, "readwrite");
-        const store = tx.objectStore(this.storeName);
-
-        for (const file of Array.from(files)) {
-            const id = `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            const imageData: CustomImage = {
-                id,
-                blob: file,
-                name: file.name,
-                timestamp: Date.now()
-            };
-            store.add(imageData);
-        }
-
-        return new Promise((resolve, reject) => {
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => reject("Failed to save images");
-        });
-    }
-
-    public async getAllImages(): Promise<CustomImage[]> {
-        if (!this.db) await this.init();
-
-        return new Promise((resolve, reject) => {
-            const tx = this.db!.transaction(this.storeName, "readonly");
-            const store = tx.objectStore(this.storeName);
-            const request = store.getAll();
-
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject("Failed to fetch images");
-        });
-    }
-
-    public async deleteImage(id: string): Promise<void> {
-        if (!this.db) await this.init();
-
-        return new Promise((resolve, reject) => {
-            const tx = this.db!.transaction(this.storeName, "readwrite");
-            const store = tx.objectStore(this.storeName);
-            const request = store.delete(id);
-
-            request.onsuccess = () => resolve();
-            request.onerror = () => reject("Failed to delete image");
-        });
-    }
-
-    public async saveAudioFiles(files: FileList | File[]): Promise<void> {
+    public async saveAudioFiles(files: File[] | FileList): Promise<void> {
         if (!this.db) await this.init();
         const tx = this.db!.transaction(this.audioStoreName, "readwrite");
         const store = tx.objectStore(this.audioStoreName);
@@ -106,11 +114,11 @@ export class GalleryStorage {
         for (const file of Array.from(files)) {
             const id = `audio_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
             const audioData: CustomAudio = {
-                id,
                 blob: file,
+                id,
                 name: file.name,
+                timestamp: Date.now(),
                 type: "file",
-                timestamp: Date.now()
             };
             store.add(audioData);
         }
@@ -127,10 +135,10 @@ export class GalleryStorage {
         const id = `link_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const audioData: CustomAudio = {
             id,
-            url,
             name,
+            timestamp: Date.now(),
             type: "link",
-            timestamp: Date.now()
+            url,
         };
         store.add(audioData);
         return new Promise((resolve) => {
@@ -138,34 +146,26 @@ export class GalleryStorage {
         });
     }
 
-    public async getAllAudio(): Promise<CustomAudio[]> {
+    public async saveImages(files: File[] | FileList): Promise<void> {
         if (!this.db) await this.init();
-        return new Promise((resolve) => {
-            const tx = this.db!.transaction(this.audioStoreName, "readonly");
-            const store = tx.objectStore(this.audioStoreName);
-            const request = store.getAll();
-            request.onsuccess = () => resolve(request.result);
-        });
-    }
 
-    public async deleteAudio(id: string): Promise<void> {
-        if (!this.db) await this.init();
+        const tx = this.db!.transaction(this.storeName, "readwrite");
+        const store = tx.objectStore(this.storeName);
+
+        for (const file of Array.from(files)) {
+            const id = `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            const imageData: CustomImage = {
+                blob: file,
+                id,
+                name: file.name,
+                timestamp: Date.now(),
+            };
+            store.add(imageData);
+        }
+
         return new Promise((resolve, reject) => {
-            const tx = this.db!.transaction(this.audioStoreName, "readwrite");
-            const store = tx.objectStore(this.audioStoreName);
-            const request = store.delete(id);
-            request.onsuccess = () => resolve();
-            request.onerror = () => reject("Failed to delete audio");
-        });
-    }
-
-    public async clearAll(): Promise<void> {
-        if (!this.db) await this.init();
-        const tx = this.db!.transaction([this.storeName, this.audioStoreName], "readwrite");
-        tx.objectStore(this.storeName).clear();
-        tx.objectStore(this.audioStoreName).clear();
-        return new Promise((resolve) => {
             tx.oncomplete = () => resolve();
+            tx.onerror = () => reject("Failed to save images");
         });
     }
 }

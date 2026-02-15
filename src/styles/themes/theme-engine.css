@@ -14,8 +14,8 @@
     --spacing-title: 0.15em;
 
     /* --- Material Depth (Glassmorphism & Shadows) --- */
-    --glass-blur: blur(20px);
-    --glass-saturation: saturate(120%);
+    --glass-blur: blur(40px);
+    --glass-saturation: saturate(140%);
     --glass-border: 1px solid rgba(255, 255, 255, 0.15);
 
     --shadow-ambient: 0 0 40px rgba(0, 0, 0, 0.05);
@@ -25,6 +25,7 @@
 
 /* Breathing Animation - The Soul of the Calendar */
 @keyframes breathe-glow {
+
     0%,
     100% {
         box-shadow: var(--cal-shadow);

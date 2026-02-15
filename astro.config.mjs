@@ -36,7 +36,6 @@ export default defineConfig({
                 clientsClaim: true,
                 globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,mp3}"],
                 maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // Increased to 15MB
-                skipWaiting: true,
                 runtimeCaching: [
                     {
                         handler: "CacheFirst",
@@ -72,6 +71,7 @@ export default defineConfig({
                         urlPattern: /\.(?:mp3|wav)$/,
                     },
                 ],
+                skipWaiting: true,
             },
         }),
     ],

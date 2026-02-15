@@ -5,23 +5,22 @@
 */
 
 .theme-festive {
-    /* Background & Texture - Red Lacquer Glass */
+    /* Background & Texture - Red Lacquer Glass (Restored Original) */
     --cal-bg: rgba(139, 0, 0, 0.92);
-    /* Dark Red, very opaque for richness */
+    /* Deep, rich opaque red */
+
     --cal-inner-glow: rgba(255, 215, 0, 0.15);
-    /* Gold Dust */
 
     /* Shadows - Lantern Glow */
     --cal-shadow:
         0 25px 60px rgba(50, 0, 0, 0.6),
-        /* Black Red Deep Shadow */ 0 1px 2px rgba(255, 215, 0, 0.4);
-    /* Gold Rim */
+        0 1px 2px rgba(255, 215, 0, 0.4);
 
     --cal-shadow-glow: 0 30px 80px rgba(100, 0, 0, 0.5), 0 0 60px rgba(255, 215, 0, 0.3);
-    /* Radiant Gold Aura */
 
-    /* Borders - Gilded Edge */
-    --cal-border: rgba(255, 215, 0, 0.3);
+    /* Borders - Gilded Glass Edge */
+    --cal-border: rgba(255, 215, 0, 0.35);
+    /* Golden Glass Frame */
     --cal-border-glow: rgba(255, 215, 0, 0.6);
 
     /* Typography - Ivory on Red */

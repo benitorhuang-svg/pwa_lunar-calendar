@@ -1,138 +1,105 @@
 # UI Flow & Logic Architecture (UI 流程與邏輯架構)
 
-本文件使用 Mermaid 圖表描述專案的 UI 狀態流轉與事件驅動邏輯。
+此文件描述 "Lunar Calendar" 專案的核心 UI 狀態流轉、互動邏輯與設計哲學。
 
-## 1. 核心狀態流轉圖 (Core State Lifecycle)
+## 1. 核心設計哲學 (Core Design Philosophy)
+
+本專案採用 **"雙重沉浸 (Dual Immersion)"** 架構，將使用者體驗分為兩個主要的專注維度：
+
+1.  **創造專注 (Creation Focus / Note Mode)**:
+    - **目的**: 捕捉當下靈感與心境。
+    - **視覺**: 靜態背景 + 頂部工具列 + 魔砂白隨筆框。
+    - **狀態**: `body.note-mode-active`
+    - **互動**: 允許切換音樂、手動切換背景，但暫停自動輪播以減少干擾。
+
+2.  **觀賞專注 (Viewing Focus / Zen Mode)**:
+    - **目的**: 純粹的視覺享受與放鬆。
+    - **視覺**: 全螢幕動態輪播背景。
+    - **狀態**: `body.immersion-mode`
+    - **互動**: 無 UI 干擾，點擊任意處喚醒或切換回主介面。
+
+這兩種模式共享同一個底層邏輯：**隱藏繁雜資訊 (No Noise)**，僅保留與當下意圖相關的元素。
+
+---
+
+## 2. 狀態流轉圖 (State Lifecycle)
 
 ```mermaid
 stateDiagram-v2
     [*] --> Loading: 進入頁面
-    Loading --> WelcomeMode: loader-finished
-    
-    state WelcomeMode {
-        [*] --> TodayCard: 顯示今日宜忌
-        TodayCard --> CalendarGrid: 點擊卡片/背景
-        TodayCard --> ZenMode: 閒置 15s (自動)
-    }
-    
-    state CalendarGrid {
-        [*] --> MonthView
-        MonthView --> DateDetail: 點擊日期
-        MonthView --> NotePad: 點擊「隨筆」
-        MonthView --> ArtworkMode: 點擊「映畫」
+    Loading --> DefaultMode: 載入完成 (loader-finished)
+
+    state DefaultMode {
+        [*] --> CalendarView: 預設視圖
+        CalendarView --> YearMonthSelector: 點擊年/月
+        CalendarView --> GalleryMenu: 點擊映畫選單
     }
 
-    state ArtworkMode {
-        [*] --> GalleryUI: 顯示換圖與選單
-        GalleryUI --> CalendarGrid: 點擊「日曆」按鈕
+    state NoteMode {
+        [*] --> DraftArea: 顯示隨筆框
+        DraftArea --> DraftArea: 點擊背景 (切換 Zen Mode)
+        DraftArea --> DraftArea: 點擊工具 (音樂/全螢幕)
     }
 
     state ZenMode {
-        [*] --> Slideshow: UI 全部隱藏 (純淨背景)
-        Slideshow --> Slideshow: 左右滑動切換
-        
-        Slideshow --> ReturnPrevious: 手動「日曆鍵」/ 觸碰螢幕
+        [*] --> Slideshow: 自動輪播中
+        Slideshow --> Slideshow: 點擊背景 (退出 Zen Mode)
     }
 
-    ReturnPrevious --> CalendarGrid: 如果從日曆進入
-    ReturnPrevious --> ArtworkMode: 如果從映畫進入
+    %% 狀態轉換
+    DefaultMode --> NoteMode: 點擊「鋼筆」圖示
+    DefaultMode --> ZenMode: 點擊「全螢幕」圖示 / 閒置超時 / 點擊背景
     
-    CalendarGrid --> ZenMode: 點擊「對焦框」/ 閒置 15s
-    ArtworkMode --> ZenMode: 點擊「對焦框」/ 閒置 15s
+    NoteMode --> DefaultMode: 點擊「關閉 (X)」按鈕
+    NoteMode --> ZenMode: 點擊「全螢幕」圖示 (切換背景輪播狀態，保持隨筆開啟)
 
-    state UtilityLayout {
-        Note 右上角組合: 音樂(右) > 沉浸(中) > 隨筆(左)
-    }
+    ZenMode --> DefaultMode: 點擊背景 / 任意互動
+    ZenMode --> NoteMode: 點擊「鋼筆」圖示 (若工具列可見)
 ```
 
-## 2. 核心交互邏輯細節 (Interaction Rules)
+## 3. 詳細互動邏輯 (Interaction Logic)
 
-### 2.1 沉浸模式 (Zen / Immersion) 進入與退出
-*   **進入**：
-    *   **手動**：點擊右上角「對焦框」按鈕。
-    *   **自動**：全域閒置超時 (15秒) 自動觸發。
-*   **退出 (喚醒)**：
-    *   **手動**：點擊右上角「日曆圖示」(原對焦框切換) 或 背景。
-    *   **行為**：應恢復進入 ZenMode 前的最後狀態（日曆網格 或 映畫控制項）。
+### 3.1 隨筆模式 (Note Mode)
+*   **觸發**: 點擊右上角 `btnPen`。
+*   **UI 行為**:
+    *   **隱藏**: `HeroDock` (底部導航), `HeroHeader` (日期資訊), `WelcomeOverlay` (歡迎紅包)。
+    *   **顯示**: `NotePad` (隨筆框), `TopRightTools` (鋼筆, 全螢幕, 音樂), `HeroBackground`。
+    *   **背景**: 預設為靜態，點擊背景或全螢幕按鈕可切換為 "Zen Mode (輪播)" 但不關閉隨筆框。
+*   **CSS Class**: `body.note-mode-active`
 
-### 2.2 狀態提示 (Visual Hints)
-*   **沉浸按鈕 (右上中)**：
-    *   未沉浸：圖示為「對焦框」，背景透明。
-    *   沉浸中：圖示為「日曆表」，背景高亮 (金/白)。
-*   **下方導航 (Dock)**：
-    *   沉浸時淡出。
-    *   喚醒後依據模式顯示金框 (日曆) 或 白框 (映畫)。
-```
+### 3.2 沉浸模式 (Zen Mode / Immersion)
+*   **觸發**: 
+    *   手動: 點擊 `btnImmersion` (全螢幕圖示) 或 Default Mode 下的背景。
+    *   自動: 閒置 15 秒。
+*   **UI 行為**:
+    *   **隱藏**: 所有 UI 面板 (含 Dock, Header)。
+    *   **顯示**: 純背景輪播 (Slideshow)。
+*   **CSS Class**: `body.immersion-mode`
 
-## 2. 事件驅動架構 (Event-Driven Architecture)
+### 3.3 預設主模式 (Default Mode)
+*   **觸發**: 應用程式啟動、退出上述模式。
+*   **UI 行為**: 完整顯示所有導航與資訊面板。
 
-應用程式採用解耦的事件驅動模型，由 `EventOrchestrator` 擔任指揮官。
+---
 
-```mermaid
-graph TD
-    subgraph "User Actions (Input)"
-        UA1[點擊日期]
-        UA2[導航按鈕/滑動]
-        UA3[閒置逾時]
-        UA4[點擊面板背景]
-    end
+## 4. 事件驅動架構 (Event Orchestration)
 
-    subgraph "Event Dispatcher (AppEventOrchestrator)"
-        EO[Orchestrator]
-    end
+系統使用 `CustomExample` 進行模組間通訊，避免強耦合。
 
-    subgraph "Managers (Logic & State)"
-        SM[AppStateManager]
-        IM[HeroImageManager]
-        SSM[SlideshowManager]
-    end
+| 事件名稱 (Event) | 來源 (Source) | 處理者 (Handler) | 描述 (Description) |
+| :--- | :--- | :--- | :--- |
+| `render-panels` | Logic | UIManager | 切換今日/年月面板顯示狀態。 |
+| `close-panels` | Logic | UIManager | 強制關閉所有浮動面板 (如隨筆、選單)。 |
+| `welcome-mode` | Interaction | IdleManager/UI | 切換沉浸模式 (`active: true/false`)。 |
+| `slideshow-control`| Interaction | SlideshowManager | 控制背景播放 (`start`/`stop`)。 |
+| `navigate-month` | Interaction | ImageManager | 切換月份導致的背景變更。 |
 
-    subgraph "Renderers (UI Updates)"
-        CR[CalendarRenderer]
-        PR[PanelRenderers]
-        HR[HeroRenderer]
-    end
+## 5. UI 層級規範 (Z-Index Hierarchy)
 
-    UA1 --> EO
-    UA2 --> EO
-    UA3 --> EO
-    UA4 --> EO
+為了確保正確的覆蓋與互動，各層級定義如下：
 
-    EO --> SM
-    SM -- "State Change" --> EO
-    
-    EO -- "render-calendar" --> CR
-    EO -- "render-panels" --> PR
-    EO -- "render-hero" --> HR
-    EO -- "slideshow-control" --> SSM
-```
-
-## 3. 初始化流程 (Initialization Sequence)
-
-```mermaid
-sequenceDiagram
-    participant B as Browser
-    participant L as ResourceLoader
-    participant AC as AppController
-    participant EO as EventOrchestrator
-    participant PH as PanelHandlers
-
-    B->>L: 頁面加載
-    L->>L: 預載圖片、字體、音頻
-    L-->>B: 添加 .app-loaded Class (啟動揭幕動畫)
-    L-->>B: 發送 loader-finished 事件 (動畫結束)
-    
-    B->>AC: DOMContentLoaded
-    AC->>EO: init()
-    B->>AC: 監聽到 loader-finished
-    AC->>AC: activateWelcome()
-    
-    AC->>EO: updateState() (發送 render 事件)
-    EO->>PH: render-panels (today)
-    
-    Note over AC, PH: 進入「歡迎模式」: 顯示今日宜忌，隱藏日曆網格
-```
-
-## 4. 文件維護說明
-- **Mermaid 工具**: 建議使用 VS Code 的 Mermaid Preview 擴充功能查看。
-- **邏輯變更**: 若修改 `src/scripts/app/` 下的控制項，請同步更新此圖表。
+1.  **HeroBackground**: `z-index: 1` (底層)
+2.  **HeroHeader / Dock**: `z-index: 2000+` (主導航)
+3.  **NotePad Overlay**: `z-index: 100000` (隨筆遮罩，需低於工具列)
+4.  **Top Right Tools**: `z-index: 100001` (確保隨筆模式下可點擊)
+5.  **WelcomeOverlay**: `z-index: 100005` (最高層遮罩)
