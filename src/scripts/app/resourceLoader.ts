@@ -6,29 +6,31 @@
 import { APP_BASE_URL } from "../core/appConfig";
 import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
-// IIFE not strictly needed for module scoping but keeping structure similar for minimal diff
-(function () {
+// IIFE to run loader logic
+(async function () {
     let isLoaded = false;
     const loadingText = document.getElementById("loadingText") as HTMLElement | null;
 
-    type ProgressKey = "audio" | "fonts" | "heroAll" | "heroFirst" | "scripts";
+    type ProgressKey = "audio" | "fonts" | "heroAll" | "heroFirst" | "scripts" | "update";
 
     // --- Resource Tracker ---
-    // Weight Distribution: scripts 20%, fonts 20%, hero images 50%, audio 10%
+    // Weight Distribution: scripts 15%, fonts 15%, hero images 40%, audio 10%, SW update 20%
     const progress: Record<ProgressKey, boolean> = {
-        audio: false, // 10%
-        fonts: false, // 20%
-        heroAll: false, // 20% (Preload remaining hero images)
-        heroFirst: false, // 30% (First hero image)
-        scripts: true, // 20% (Always true since we bundle imports)
+        audio: false,
+        fonts: false,
+        heroAll: false,
+        heroFirst: false,
+        scripts: true,
+        update: false, // New check for SW update
     };
 
     const weights: Record<ProgressKey, number> = {
         audio: 10,
-        fonts: 20,
-        heroAll: 20,
-        heroFirst: 30,
-        scripts: 20,
+        fonts: 15,
+        heroAll: 15, // Reduced hero weight slightly for update check
+        heroFirst: 25,
+        scripts: 15,
+        update: 20, // Significant weight for update check
     };
 
     function calcPercent(): number {
@@ -57,24 +59,80 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         }
     }
 
+    // --- Service Worker Update Logic ---
+    async function checkSWUpdate(): Promise<void> {
+        if (!("serviceWorker" in navigator)) {
+            markDone("update");
+            return;
+        }
+
+        try {
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (!registration) {
+                markDone("update");
+                return;
+            }
+
+            // If a worker is waiting, it means update is ready
+            if (registration.waiting) {
+                console.log("[Loader] Update found (waiting), reloading...");
+                if (loadingText) loadingText.textContent = "更新中...";
+                // Send skipWaiting to the waiting worker
+                registration.waiting.postMessage({ type: "SKIP_WAITING" });
+
+                // Reload on controller change
+                navigator.serviceWorker.addEventListener("controllerchange", () => {
+                    window.location.reload();
+                });
+                return; // Logic stops here, page will reload
+            }
+
+            // Listen for new worker installing
+            registration.addEventListener("updatefound", () => {
+                const newWorker = registration.installing;
+                if (newWorker) {
+                    console.log("[Loader] New version found, installing...");
+                    newWorker.addEventListener("statechange", () => {
+                        if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                            console.log("[Loader] Update installed, reloading...");
+                            if (loadingText) loadingText.textContent = "更新中...";
+                            newWorker.postMessage({ type: "SKIP_WAITING" });
+                        }
+                    });
+                }
+            });
+
+            // Also reload if controller changes externally
+            navigator.serviceWorker.addEventListener("controllerchange", () => {
+                window.location.reload();
+            });
+
+            // Check for update actively
+            await registration.update();
+            markDone("update"); // If no immediate waiting worker found, proceed
+
+        } catch (e) {
+            console.warn("[Loader] SW check failed:", e);
+            markDone("update");
+        }
+    }
+
     // 啟動平滑動畫循環 (Start smooth animation loop)
     function startAnimationLoop(): void {
         const frame = () => {
             const elapsedTime = Date.now() - startTime;
             const timePercent = (elapsedTime / MIN_LOADING_TIME) * 100;
-
-            // 視覺進度取「實際資源進度」與「時間進度」的最小值
-            // 確保即使資源載入極快，也要花 2 秒才跑完動畫
             visualPercent = Math.min(actualPercent, timePercent);
 
             if (loadingText) {
+                // If text is overridden by update logic, don't update progress bar text content itself if embedded
+                // But here we use CSS var for bar width, text content is static usually
                 loadingText.style.setProperty("--loading-progress", visualPercent.toFixed(1) + "%");
             }
 
             if (visualPercent < 100 || actualPercent < 100) {
                 requestAnimationFrame(frame);
             } else {
-                // 當兩者都達到 100% 時，觸發揭幕
                 revealApp();
             }
         };
@@ -84,20 +142,15 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     function revealApp(): void {
         if (isLoaded) return;
         isLoaded = true;
-
         document.body.classList.add("app-loaded");
-
-        // 等待 clip-path 動畫執行完畢 (1.4s) 後再完全隱藏 DOM
         setTimeout(() => {
             const overlay = document.getElementById("loadingOverlay");
             if (overlay) overlay.style.display = "none";
-
-            // 通知 App 控制器：載入與動畫已完全結束，可以激活後續流程 (Welcome Mode 等)
             window.dispatchEvent(new CustomEvent("loader-finished"));
         }, 1500);
     }
 
-    // --- 2. 檢查 Fonts ---
+    // --- Resources ---
     function checkFonts(): boolean {
         if (document.fonts && document.fonts.status === "loaded") {
             markDone("fonts");
@@ -106,9 +159,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         return false;
     }
 
-    // --- 3. 預載 Hero 圖片 ---
     function preloadHeroImages(): void {
-        // 決定當季
         const m = new Date().getMonth() + 1;
         let season: string;
         if (m >= 2 && m <= 4) season = "spring";
@@ -121,7 +172,6 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
         const manifest = GALLERY_MANIFEST as Record<string, string[]>;
         let imageList = (manifest[season] || []).map((f: string) => galleryDir + f);
-        // fallback to default
         if (imageList.length === 0) {
             const defaultDir = (baseDir + "assets/gallery/default/").replace(/\/+/g, "/");
             imageList = (manifest["default"] || []).map((f: string) => defaultDir + f);
@@ -133,18 +183,11 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             return;
         }
 
-        // 載入第一張 (權重最高)
         const img = new Image();
-        img.onload = img.onerror = () => {
-            markDone("heroFirst");
-        };
-        if (imageList[0]) {
-            img.src = imageList[0]!;
-        } else {
-            markDone("heroFirst");
-        }
+        img.onload = img.onerror = () => { markDone("heroFirst"); };
+        if (imageList[0]) img.src = imageList[0]!;
+        else markDone("heroFirst");
 
-        // 載入其餘
         if (imageList.length <= 1) {
             markDone("heroAll");
         } else {
@@ -154,49 +197,35 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                 const img = new Image();
                 img.onload = img.onerror = () => {
                     loaded++;
-                    if (loaded >= remaining) {
-                        markDone("heroAll");
-                    }
+                    if (loaded >= remaining) markDone("heroAll");
                 };
-                if (imageList[i]) {
-                    img.src = imageList[i];
-                }
+                if (imageList[i]) img.src = imageList[i] as string;
             }
         }
     }
 
-    // --- 4. 預載 Audio ---
     function preloadAudio(): void {
         const baseDir = APP_BASE_URL || "/";
         const audioFiles = [(baseDir + "assets/audio/ambient.mp3").replace(/\/+/g, "/")];
-        // 只測試第一個音頻是否可載入
-        if (audioFiles.length === 0) {
-            markDone("audio");
-            return;
-        }
+        if (audioFiles.length === 0) { markDone("audio"); return; }
         const firstAudio = audioFiles[0];
-        if (!firstAudio) {
-            markDone("audio");
-            return;
-        }
+        if (!firstAudio) { markDone("audio"); return; }
         const audio = new Audio();
         audio.preload = "auto";
         audio.oncanplaythrough = () => markDone("audio");
-        audio.onerror = () => markDone("audio"); // 即使失敗也不阻塞
+        audio.onerror = () => markDone("audio");
         audio.src = firstAudio;
-
-        // 音頻 fallback 超時 2 秒
         setTimeout(() => markDone("audio"), 2000);
     }
 
-    // --- 主邏輯 ---
-    // Make sure we mark scripts as done immediately since we imported them
+    // --- Main ---
     markDone("scripts");
 
-    // Start checking other resources
+    // Start Update Check Early
+    await checkSWUpdate();
+
     if (!checkFonts()) {
         document.fonts.ready.then(() => markDone("fonts"));
-        // fallback
         setTimeout(() => markDone("fonts"), 3000);
     }
 
@@ -204,7 +233,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     preloadAudio();
     startAnimationLoop();
 
-    // 安全網：最多等 8 秒強制進入
+    // Safety timeout
     setTimeout(() => {
         let key: ProgressKey;
         for (key in progress) {

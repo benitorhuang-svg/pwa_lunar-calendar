@@ -173,9 +173,8 @@ select.panel-font-select option,
 .panel-main-content {
     flex: 1;
     flex: 1;
-    /* Responsive Padding: Scales with Viewport */
-    padding: clamp(25px, 4vh, 50px) clamp(20px, 4vw, 55px) clamp(25px, 4vh, 50px) clamp(20px, 3vw, 35px);
-    /* Reduced top padding to move Title UP */
+    /* Fixed padding for consistent card feel */
+    padding: 30px 45px 35px 30px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -197,14 +196,13 @@ select.panel-font-select option,
 }
 
 .detail-header {
-    font-size: clamp(2.0rem, 6vw, 2.8rem);
-    /* Larger for focus, scales with width */
+    font-size: 3.2rem;
     font-weight: 700;
     letter-spacing: -0.02em;
     color: var(--cal-text);
     font-family: var(--font-serif-num);
     line-height: 0.9;
-    margin-bottom: clamp(4px, 1vh, 8px);
+    margin-bottom: 8px;
 }
 
 .detail-sub-main {
@@ -253,10 +251,11 @@ select.panel-font-select option,
 }
 
 /* Year Label Style */
+/* Year Label Style */
 .year-label {
     font-size: 0.45em;
     opacity: 0.6;
-    margin-left: 0.3em;
+    margin-left: 12px;
     font-weight: 300;
     vertical-align: middle;
 }
@@ -265,10 +264,11 @@ select.panel-font-select option,
 .detail-mid-row {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
     /* Spacing between pill and festival */
     margin-bottom: 0;
-    margin-top: 0;
+    margin-top: 15px;
+    /* Added spacing */
 }
 
 .detail-lucky-pill {
@@ -321,25 +321,26 @@ select.panel-font-select option,
     background-position: top center;
     background-repeat: no-repeat;
 
-    margin-top: auto;
-    /* Push to bottom */
+    margin-top: 30px;
+    /* Fixed spacing instead of auto */
     /* Match theme accents */
     width: 100%;
     position: relative;
 }
 
 /* Red Seal Positioning */
+/* Red Seal Positioning */
 .traditional-seal {
-    width: clamp(42px, 10vw, 54px);
-    height: clamp(42px, 10vw, 54px);
+    width: 64px;
+    height: 64px;
     background: #c62828;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-calligraphy);
-    font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+    font-size: 2.2rem;
     color: #fff;
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow:
         0 6px 15px rgba(198, 40, 40, 0.3),
         inset 0 0 10px rgba(0, 0, 0, 0.1);
@@ -397,72 +398,72 @@ select.panel-font-select option,
 /* Responsive Adjustments for Smaller Screens (Minimal overrides needed now due to clamp) */
 @media (max-width: 480px) {
     .panel-main-content {
-        padding: 25px 20px 30px 20px;
-        /* Tighter padding on mobile */
+        padding: 25px 22px 30px 22px;
+        /* Balanced mobile padding */
     }
 
     .detail-top-section {
         flex-direction: row;
-        /* Force row layout */
         align-items: flex-start;
         margin-bottom: 20px;
     }
 
     .detail-header {
-        font-size: 2.2rem;
-        /* Slightly smaller date on mobile but keep it prominent */
+        font-size: 2.6rem;
+        /* Larger date on mobile as per requirement */
     }
 
     .year-label {
         font-size: 0.4em;
-        /* Scale down year */
-        margin-left: 6px;
+        margin-left: 8px;
     }
 
     .detail-sub-main {
-        font-size: 1rem;
-        margin-top: 8px;
-        /* Tighter spacing */
+        font-size: 1.1rem;
+        margin-top: 10px;
     }
 
     /* Scale down the red seal */
     .traditional-seal {
-        width: 42px;
-        height: 42px;
-        font-size: 1.4rem;
+        width: 52px;
+        height: 52px;
+        font-size: 1.8rem;
         margin-top: 0;
+        border-radius: 8px;
     }
 
     .solar-term {
-        font-size: 0.95rem;
+        font-size: 1rem;
     }
 
     /* Adjust mid row spacing */
     .detail-mid-row {
-        gap: 10px;
+        gap: 12px;
+        margin-top: 12px;
     }
 
     .detail-lucky-pill {
-        padding: 6px 16px;
-        font-size: 0.9rem;
+        padding: 6px 18px;
+        font-size: 0.95rem;
     }
 
     .detail-festival-tag {
-        font-size: 1rem;
+        font-size: 1.1rem;
     }
 
     /* Yiji section adjustments */
     .detail-yiji-section {
         padding-top: 20px;
         gap: 15px;
+        margin-top: 25px;
     }
 
     .yiji-label {
-        font-size: 1rem;
-        min-width: 20px;
+        font-size: 1.1rem;
+        min-width: 22px;
     }
 
     .tag {
-        font-size: 0.85rem;
+        font-size: 0.95rem;
     }
 }
