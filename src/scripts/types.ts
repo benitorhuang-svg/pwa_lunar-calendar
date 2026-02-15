@@ -83,6 +83,8 @@ export interface ToggleGridViewDetail {
     show: boolean;
 }
 
+export type TogglePanelDetail = string | { force?: "close" | "open"; type: "today" | "yearMonth" };
+
 // 更新日曆標題事件 (Update Calendar Title)
 export interface UpdateCalendarTitleDetail {
     day: number;
@@ -95,9 +97,7 @@ export interface UpdateCalendarTitleDetail {
     year: number;
 }
 
-export type TogglePanelDetail = string | { type: "today" | "yearMonth"; force?: "open" | "close" };
-
 export interface WelcomeModeDetail {
     active: boolean;
-    targetMode?: "calendar" | "artwork";
+    targetMode?: "artwork" | "calendar";
 }

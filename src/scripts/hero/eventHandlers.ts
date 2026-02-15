@@ -12,30 +12,29 @@ import type { HeroImageManager } from "./imageManager";
 import type { HeroMusicPlayer } from "./musicPlayer";
 import type { HeroSlideshowManager } from "./slideshowManager";
 
+import { MediaHandler } from "./handlers/mediaHandler";
+import { ModeHandler } from "./handlers/modeHandler";
+// New Handlers
+import { NavigationHandler } from "./handlers/navigationHandler";
+import { PanelUIHandler } from "./handlers/panelUIHandler";
 import { HeroPWAHandler } from "./pwaHandler";
 import { HeroTouchHandler } from "./touchHandler";
 import { HeroUIManager } from "./uiManager";
 
-// New Handlers
-import { NavigationHandler } from "./handlers/navigationHandler";
-import { ModeHandler } from "./handlers/modeHandler";
-import { MediaHandler } from "./handlers/mediaHandler";
-import { PanelUIHandler } from "./handlers/panelUIHandler";
-
 export class HeroEventHandlers {
     private idleManager: HeroIdleManager;
     private imageManager: HeroImageManager;
+    private mediaHandler: MediaHandler;
+    private modeHandler: ModeHandler;
     private musicPlayer: HeroMusicPlayer;
+    // Components
+    private navigationHandler: NavigationHandler;
+    private panelUIHandler: PanelUIHandler;
+
     private pwaHandler: HeroPWAHandler;
     private slideshowManager: HeroSlideshowManager;
     private touchHandler: HeroTouchHandler;
     private uiManager: HeroUIManager;
-
-    // Components
-    private navigationHandler: NavigationHandler;
-    private modeHandler: ModeHandler;
-    private mediaHandler: MediaHandler;
-    private panelUIHandler: PanelUIHandler;
 
     constructor(
         imageManager: HeroImageManager,
@@ -68,26 +67,19 @@ export class HeroEventHandlers {
             this.idleManager,
             this.imageManager,
             this.slideshowManager,
-            this.uiManager
+            this.uiManager,
         );
 
         this.modeHandler = new ModeHandler(
             this.idleManager,
             this.imageManager,
             this.slideshowManager,
-            this.uiManager
-        );
-
-        this.mediaHandler = new MediaHandler(
-            this.imageManager,
-            this.musicPlayer,
-            this.uiManager
-        );
-
-        this.panelUIHandler = new PanelUIHandler(
             this.uiManager,
-            this.idleManager
         );
+
+        this.mediaHandler = new MediaHandler(this.imageManager, this.musicPlayer, this.uiManager);
+
+        this.panelUIHandler = new PanelUIHandler(this.uiManager, this.idleManager);
     }
 
     public init(): void {

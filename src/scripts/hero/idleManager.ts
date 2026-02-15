@@ -41,8 +41,6 @@ export class HeroIdleManager {
             this.idleTimer = null;
         }
 
-
-
         // 1. 喚醒邏輯：已移除自動退出沉浸的邏輯，避免在映畫模式下互動(如切換圖片)導致跳出
         // 狀態切換應由 UI 事件(按鈕、背景點擊)明確觸發
         // The auto-exit logic is removed to prevent exiting immersion mode during interaction in Artwork Mode.

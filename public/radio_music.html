@@ -1,208 +1,333 @@
 <!doctype html>
 <html lang="zh-TW">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Radio Music - SoundCloud Test</title>
-  <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;max-width:900px;margin:24px auto;padding:0 16px;color:#111}
-    label{display:inline-block;margin-top:8px}
-    input[type=text]{width:72%}
-    button{margin-left:8px}
-    #controls{margin-top:12px}
-    #pos{margin-left:8px;color:#666}
-  </style>
-</head>
-<body>
-  <h1>Radio Music — SoundCloud 測試頁面</h1>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Radio Music - SoundCloud Test</title>
+        <style>
+            body {
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    Segoe UI,
+                    Roboto,
+                    Helvetica,
+                    Arial;
+                max-width: 900px;
+                margin: 24px auto;
+                padding: 0 16px;
+                color: #111;
+            }
+            label {
+                display: inline-block;
+                margin-top: 8px;
+            }
+            input[type="text"] {
+                width: 72%;
+            }
+            button {
+                margin-left: 8px;
+            }
+            #controls {
+                margin-top: 12px;
+            }
+            #pos {
+                margin-left: 8px;
+                color: #666;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Radio Music — SoundCloud 測試頁面</h1>
 
-  <p>把 SoundCloud 的曲目或專輯頁面網址貼到下面，按 <strong>Load</strong> 載入播放器，再用 Play / Pause 控制。</p>
+        <p>
+            把 SoundCloud 的曲目或專輯頁面網址貼到下面，按 <strong>Load</strong> 載入播放器，再用
+            Play / Pause 控制。
+        </p>
 
-  <div>
-    <label for="track-url">Track / Playlist URL</label><br>
-    <input id="track-url" type="text" placeholder="貼上 SoundCloud 曲目或專輯 URL" value="https://soundcloud.com/soothingrelaxation" />
-    <button id="load-btn">Load</button>
-    <button id="toggle-player-btn">Hide Player</button>
-  </div>
+        <div>
+            <label for="track-url">Track / Playlist URL</label><br />
+            <input
+                id="track-url"
+                type="text"
+                placeholder="貼上 SoundCloud 曲目或專輯 URL"
+                value="https://soundcloud.com/soothingrelaxation"
+            />
+            <button id="load-btn">Load</button>
+            <button id="toggle-player-btn">Hide Player</button>
+        </div>
 
-  <div id="player-wrap" style="margin-top:12px">
-    <iframe id="sc-player" width="100%" height="166" scrolling="no" frameborder="no"
-      src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/soothingrelaxation&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false">
-    </iframe>
-  </div>
+        <div id="player-wrap" style="margin-top: 12px">
+            <iframe
+                id="sc-player"
+                width="100%"
+                height="166"
+                scrolling="no"
+                frameborder="no"
+                src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/soothingrelaxation&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false"
+            >
+            </iframe>
+        </div>
 
-  <!-- Gallery Radio Presets (moved from project) -->
-  <div id="radio-presets" style="margin-top:18px;">
-    <h3>線上療癒音樂 (Radio) — 範例清單</h3>
-    <div class="radio-presets-list">
-      <div class="radio-row"><button class="radio-item" data-url="https://stream.klassikradio.de/relax/mp3-128/stream.mp3">Klassik Radio Relax (Relax)</button><button class="radio-delete-btn" aria-label="刪除">✕</button></div>
-      <div class="radio-row"><button class="radio-item" data-url="https://ice1.somafm.com/thistle-128-mp3">SomaFM (Thistle)</button><button class="radio-delete-btn" aria-label="刪除">✕</button></div>
-      <div class="radio-row"><button class="radio-item" data-url="https://vprclassical.streamguys1.com/vprclassical128.mp3">streamguys (vprclassical)</button><button class="radio-delete-btn" aria-label="刪除">✕</button></div>
-      <div class="radio-row"><button class="radio-item" data-url="https://edge22.streams.arabella.at/arabella-relax/stream/mp3">Arabella Relax (streams)</button><button class="radio-delete-btn" aria-label="刪除">✕</button></div>
-      <div class="radio-row"><button class="radio-item" data-url="https://soundcloud.com/soothingrelaxation/sets/peder-b-helland-wonder-album">Peder B. Helland - Wonder (SoundCloud set)</button><button class="radio-delete-btn" aria-label="刪除">✕</button></div>
-      <div class="radio-row"><button class="radio-item" id="btnAddCustom">自訂電台網址...</button></div>
-    </div>
-  </div>
+        <!-- Gallery Radio Presets (moved from project) -->
+        <div id="radio-presets" style="margin-top: 18px">
+            <h3>線上療癒音樂 (Radio) — 範例清單</h3>
+            <div class="radio-presets-list">
+                <div class="radio-row">
+                    <button
+                        class="radio-item"
+                        data-url="https://stream.klassikradio.de/relax/mp3-128/stream.mp3"
+                    >
+                        Klassik Radio Relax (Relax)</button
+                    ><button class="radio-delete-btn" aria-label="刪除">✕</button>
+                </div>
+                <div class="radio-row">
+                    <button class="radio-item" data-url="https://ice1.somafm.com/thistle-128-mp3">
+                        SomaFM (Thistle)</button
+                    ><button class="radio-delete-btn" aria-label="刪除">✕</button>
+                </div>
+                <div class="radio-row">
+                    <button
+                        class="radio-item"
+                        data-url="https://vprclassical.streamguys1.com/vprclassical128.mp3"
+                    >
+                        streamguys (vprclassical)</button
+                    ><button class="radio-delete-btn" aria-label="刪除">✕</button>
+                </div>
+                <div class="radio-row">
+                    <button
+                        class="radio-item"
+                        data-url="https://edge22.streams.arabella.at/arabella-relax/stream/mp3"
+                    >
+                        Arabella Relax (streams)</button
+                    ><button class="radio-delete-btn" aria-label="刪除">✕</button>
+                </div>
+                <div class="radio-row">
+                    <button
+                        class="radio-item"
+                        data-url="https://soundcloud.com/soothingrelaxation/sets/peder-b-helland-wonder-album"
+                    >
+                        Peder B. Helland - Wonder (SoundCloud set)</button
+                    ><button class="radio-delete-btn" aria-label="刪除">✕</button>
+                </div>
+                <div class="radio-row">
+                    <button class="radio-item" id="btnAddCustom">自訂電台網址...</button>
+                </div>
+            </div>
+        </div>
 
-  <div id="controls">
-    <button id="play-btn">Play</button>
-    <button id="pause-btn">Pause</button>
-    <button id="prev-btn">Prev</button>
-    <button id="next-btn">Next</button>
-    <span id="pos">position: --</span>
-  </div>
+        <div id="controls">
+            <button id="play-btn">Play</button>
+            <button id="pause-btn">Pause</button>
+            <button id="prev-btn">Prev</button>
+            <button id="next-btn">Next</button>
+            <span id="pos">position: --</span>
+        </div>
 
-  <!-- Floating top-right music toggle (like project UI) -->
-  <button id="btnMusic" title="播放音樂" style="position:fixed;right:16px;top:16px;z-index:9999;padding:10px;border-radius:999px;background:#111;color:#fff;border:none;box-shadow:0 6px 18px rgba(0,0,0,0.35);">♪</button>
+        <!-- Floating top-right music toggle (like project UI) -->
+        <button
+            id="btnMusic"
+            title="播放音樂"
+            style="
+                position: fixed;
+                right: 16px;
+                top: 16px;
+                z-index: 9999;
+                padding: 10px;
+                border-radius: 999px;
+                background: #111;
+                color: #fff;
+                border: none;
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+            "
+        >
+            ♪
+        </button>
 
-  <!-- Audio element to play direct mp3/stream URLs -->
-  <audio id="bgAudio" preload="none"></audio>
+        <!-- Audio element to play direct mp3/stream URLs -->
+        <audio id="bgAudio" preload="none"></audio>
 
-  <script src="https://w.soundcloud.com/player/api.js"></script>
-  <script>
-    let widget = null;
-    const iframe = document.getElementById('sc-player');
-    const loadBtn = document.getElementById('load-btn');
-    const playBtn = document.getElementById('play-btn');
-    const pauseBtn = document.getElementById('pause-btn');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const posSpan = document.getElementById('pos');
-    const togglePlayerBtn = document.getElementById('toggle-player-btn');
-    const playerWrap = document.getElementById('player-wrap');
-    const btnMusic = document.getElementById('btnMusic');
-    const bgAudio = document.getElementById('bgAudio');
-    const presetsRoot = document.getElementById('radio-presets');
+        <script src="https://w.soundcloud.com/player/api.js"></script>
+        <script>
+            let widget = null;
+            const iframe = document.getElementById("sc-player");
+            const loadBtn = document.getElementById("load-btn");
+            const playBtn = document.getElementById("play-btn");
+            const pauseBtn = document.getElementById("pause-btn");
+            const prevBtn = document.getElementById("prev-btn");
+            const nextBtn = document.getElementById("next-btn");
+            const posSpan = document.getElementById("pos");
+            const togglePlayerBtn = document.getElementById("toggle-player-btn");
+            const playerWrap = document.getElementById("player-wrap");
+            const btnMusic = document.getElementById("btnMusic");
+            const bgAudio = document.getElementById("bgAudio");
+            const presetsRoot = document.getElementById("radio-presets");
 
-    function initWidget() {
-      widget = SC.Widget(iframe);
-      widget.bind(SC.Widget.Events.READY, () => {
-        // update position occasionally
-        setInterval(() => {
-          widget.getPosition(pos => {
-            if (typeof pos === 'number') posSpan.textContent = 'position: ' + Math.floor(pos/1000) + 's';
-          });
-        }, 1000);
-      });
-    }
+            function initWidget() {
+                widget = SC.Widget(iframe);
+                widget.bind(SC.Widget.Events.READY, () => {
+                    // update position occasionally
+                    setInterval(() => {
+                        widget.getPosition((pos) => {
+                            if (typeof pos === "number")
+                                posSpan.textContent = "position: " + Math.floor(pos / 1000) + "s";
+                        });
+                    }, 1000);
+                });
+            }
 
-    // Toggle player visibility
-    togglePlayerBtn.addEventListener('click', ()=>{
-      if (!playerWrap) return;
-      if (playerWrap.style.display === 'none'){
-        playerWrap.style.display = '';
-        togglePlayerBtn.textContent = 'Hide Player';
-      } else {
-        playerWrap.style.display = 'none';
-        togglePlayerBtn.textContent = 'Show Player';
-      }
-    });
+            // Toggle player visibility
+            togglePlayerBtn.addEventListener("click", () => {
+                if (!playerWrap) return;
+                if (playerWrap.style.display === "none") {
+                    playerWrap.style.display = "";
+                    togglePlayerBtn.textContent = "Hide Player";
+                } else {
+                    playerWrap.style.display = "none";
+                    togglePlayerBtn.textContent = "Show Player";
+                }
+            });
 
-    // Keep track of what is currently playing: 'soundcloud' | 'stream' | null
-    let currentType = null;
-    let currentUrl = null;
+            // Keep track of what is currently playing: 'soundcloud' | 'stream' | null
+            let currentType = null;
+            let currentUrl = null;
 
-    function playUrl(url){
-      if (!url) return;
-      currentUrl = url;
-      if (url.includes('soundcloud.com')){
-        // use widget iframe
-        iframe.src = 'https://w.soundcloud.com/player/?url=' + encodeURIComponent(url) + '&auto_play=true';
-        // re-init widget after small delay
-        setTimeout(()=>{ initWidget(); if (widget) widget.play(); }, 600);
-        currentType = 'soundcloud';
-        btnMusic.textContent = '⏸';
-      } else {
-        // play as direct audio stream
-        try{
-          if (widget && typeof widget.pause === 'function' && currentType === 'soundcloud') widget.pause();
-        }catch(e){}
-        bgAudio.src = url;
-        bgAudio.play().catch(e=>console.warn('stream play failed',e));
-        currentType = 'stream';
-        btnMusic.textContent = '⏸';
-      }
-    }
+            function playUrl(url) {
+                if (!url) return;
+                currentUrl = url;
+                if (url.includes("soundcloud.com")) {
+                    // use widget iframe
+                    iframe.src =
+                        "https://w.soundcloud.com/player/?url=" +
+                        encodeURIComponent(url) +
+                        "&auto_play=true";
+                    // re-init widget after small delay
+                    setTimeout(() => {
+                        initWidget();
+                        if (widget) widget.play();
+                    }, 600);
+                    currentType = "soundcloud";
+                    btnMusic.textContent = "⏸";
+                } else {
+                    // play as direct audio stream
+                    try {
+                        if (
+                            widget &&
+                            typeof widget.pause === "function" &&
+                            currentType === "soundcloud"
+                        )
+                            widget.pause();
+                    } catch (e) {}
+                    bgAudio.src = url;
+                    bgAudio.play().catch((e) => console.warn("stream play failed", e));
+                    currentType = "stream";
+                    btnMusic.textContent = "⏸";
+                }
+            }
 
-    // Render list interactive behavior (add/delete custom)
-    function setupPresets(){
-      presetsRoot.addEventListener('click', (ev)=>{
-        const btn = ev.target.closest && ev.target.closest('.radio-item');
-        if (btn){
-          const url = btn.getAttribute('data-url') || prompt('請貼上電台或 SoundCloud 連結', 'https://');
-          if (url) playUrl(url.trim());
-        }
-        const del = ev.target.closest && ev.target.closest('.radio-delete-btn');
-        if (del){
-          const row = del.parentElement;
-          if (row) row.remove();
-        }
-      });
-      document.getElementById('btnAddCustom').addEventListener('click', ()=>{
-        const url = prompt('新增自訂電台網址 (SoundCloud 或 mp3 stream URL)');
-        if (!url) return;
-        const row = document.createElement('div');
-        row.className = 'radio-row';
-        const b = document.createElement('button');
-        b.className = 'radio-item';
-        b.setAttribute('data-url', url);
-        b.textContent = url.length>40?url.slice(0,40)+'...':url;
-        const del = document.createElement('button');
-        del.className = 'radio-delete-btn';
-        del.setAttribute('aria-label','刪除');
-        del.textContent = '✕';
-        row.appendChild(b); row.appendChild(del);
-        presetsRoot.querySelector('.radio-presets-list').appendChild(row);
-      });
-    }
+            // Render list interactive behavior (add/delete custom)
+            function setupPresets() {
+                presetsRoot.addEventListener("click", (ev) => {
+                    const btn = ev.target.closest && ev.target.closest(".radio-item");
+                    if (btn) {
+                        const url =
+                            btn.getAttribute("data-url") ||
+                            prompt("請貼上電台或 SoundCloud 連結", "https://");
+                        if (url) playUrl(url.trim());
+                    }
+                    const del = ev.target.closest && ev.target.closest(".radio-delete-btn");
+                    if (del) {
+                        const row = del.parentElement;
+                        if (row) row.remove();
+                    }
+                });
+                document.getElementById("btnAddCustom").addEventListener("click", () => {
+                    const url = prompt("新增自訂電台網址 (SoundCloud 或 mp3 stream URL)");
+                    if (!url) return;
+                    const row = document.createElement("div");
+                    row.className = "radio-row";
+                    const b = document.createElement("button");
+                    b.className = "radio-item";
+                    b.setAttribute("data-url", url);
+                    b.textContent = url.length > 40 ? url.slice(0, 40) + "..." : url;
+                    const del = document.createElement("button");
+                    del.className = "radio-delete-btn";
+                    del.setAttribute("aria-label", "刪除");
+                    del.textContent = "✕";
+                    row.appendChild(b);
+                    row.appendChild(del);
+                    presetsRoot.querySelector(".radio-presets-list").appendChild(row);
+                });
+            }
 
-    setupPresets();
+            setupPresets();
 
-    // initialize on load
-    initWidget();
+            // initialize on load
+            initWidget();
 
-    loadBtn.addEventListener('click', () => {
-      const url = document.getElementById('track-url').value.trim();
-      if (!url) return alert('請貼上 SoundCloud 的曲目或專輯網址');
-      // set iframe src to player with encoded url
-      iframe.src = 'https://w.soundcloud.com/player/?url=' + encodeURIComponent(url) + '&color=%23ff5500&auto_play=false';
-      // small delay to let iframe reload
-      setTimeout(() => {
-        initWidget();
-      }, 600);
-    });
+            loadBtn.addEventListener("click", () => {
+                const url = document.getElementById("track-url").value.trim();
+                if (!url) return alert("請貼上 SoundCloud 的曲目或專輯網址");
+                // set iframe src to player with encoded url
+                iframe.src =
+                    "https://w.soundcloud.com/player/?url=" +
+                    encodeURIComponent(url) +
+                    "&color=%23ff5500&auto_play=false";
+                // small delay to let iframe reload
+                setTimeout(() => {
+                    initWidget();
+                }, 600);
+            });
 
-    playBtn.addEventListener('click', () => {
-      if (currentType === 'stream') bgAudio.play();
-      else if (widget) widget.play();
-    });
-    pauseBtn.addEventListener('click', () => {
-      if (currentType === 'stream') bgAudio.pause();
-      else if (widget) widget.pause();
-    });
-    prevBtn.addEventListener('click', () => { /* no-op for simple test page */ });
-    nextBtn.addEventListener('click', () => { /* no-op for simple test page */ });
+            playBtn.addEventListener("click", () => {
+                if (currentType === "stream") bgAudio.play();
+                else if (widget) widget.play();
+            });
+            pauseBtn.addEventListener("click", () => {
+                if (currentType === "stream") bgAudio.pause();
+                else if (widget) widget.pause();
+            });
+            prevBtn.addEventListener("click", () => {
+                /* no-op for simple test page */
+            });
+            nextBtn.addEventListener("click", () => {
+                /* no-op for simple test page */
+            });
 
-    // top-right music toggle
-    btnMusic.addEventListener('click', ()=>{
-      if (currentType === 'stream'){
-        if (bgAudio.paused) { bgAudio.play(); btnMusic.textContent='⏸'; }
-        else { bgAudio.pause(); btnMusic.textContent='♪'; }
-      } else {
-        // soundcloud
-        if (!widget) { initWidget(); setTimeout(()=>widget && widget.play(), 600); btnMusic.textContent='⏸'; return; }
-        widget.getCurrentSound((s)=>{} );
-        widget.isPaused((paused)=>{
-          if (paused) { widget.play(); btnMusic.textContent='⏸'; }
-          else { widget.pause(); btnMusic.textContent='♪'; }
-        });
-      }
-    });
+            // top-right music toggle
+            btnMusic.addEventListener("click", () => {
+                if (currentType === "stream") {
+                    if (bgAudio.paused) {
+                        bgAudio.play();
+                        btnMusic.textContent = "⏸";
+                    } else {
+                        bgAudio.pause();
+                        btnMusic.textContent = "♪";
+                    }
+                } else {
+                    // soundcloud
+                    if (!widget) {
+                        initWidget();
+                        setTimeout(() => widget && widget.play(), 600);
+                        btnMusic.textContent = "⏸";
+                        return;
+                    }
+                    widget.getCurrentSound((s) => {});
+                    widget.isPaused((paused) => {
+                        if (paused) {
+                            widget.play();
+                            btnMusic.textContent = "⏸";
+                        } else {
+                            widget.pause();
+                            btnMusic.textContent = "♪";
+                        }
+                    });
+                }
+            });
 
-    // sync audio element state to UI
-    bgAudio.addEventListener('play', ()=> btnMusic.textContent='⏸');
-    bgAudio.addEventListener('pause', ()=> btnMusic.textContent='♪');
-
-  </script>
-</body>
+            // sync audio element state to UI
+            bgAudio.addEventListener("play", () => (btnMusic.textContent = "⏸"));
+            bgAudio.addEventListener("pause", () => (btnMusic.textContent = "♪"));
+        </script>
+    </body>
 </html>

@@ -2,6 +2,7 @@ import type { HeroIdleManager } from "../idleManager";
 import type { HeroImageManager } from "../imageManager";
 import type { HeroSlideshowManager } from "../slideshowManager";
 import type { ClosePanelsDetail, SlideshowControlDetail, WelcomeModeDetail } from "../types";
+
 import { HeroUIManager } from "../uiManager";
 
 export class ModeHandler {
@@ -9,12 +10,37 @@ export class ModeHandler {
         private idleManager: HeroIdleManager,
         private imageManager: HeroImageManager, // Needed for reset logic? Or just slideshowManager handles it.
         private slideshowManager: HeroSlideshowManager,
-        private uiManager: HeroUIManager
-    ) { }
+        private uiManager: HeroUIManager,
+    ) {}
 
     public init(): void {
         this.setupEventListeners();
         this.bindUI();
+    }
+
+    private bindUI(): void {
+        // 歡迎畫面遮罩點擊 (Welcome Overlay)
+        this.uiManager.bindWelcomeOverlay((e) => {
+            e?.stopPropagation();
+            this.idleManager.reset();
+
+            // Welcome Overlay Click -> Go to Calendar Mode
+            // 統一透過 welcome-mode 事件處理所有清理工作 (Remove initial-welcome, immersion-mode, show grid)
+            window.dispatchEvent(
+                new CustomEvent<WelcomeModeDetail>("welcome-mode", {
+                    detail: { active: false, targetMode: "calendar" },
+                }),
+            );
+        });
+
+        // 沉浸模式手動切換 (Immersion Mode Toggle)
+        this.uiManager.bindImmersionMode(() => this.idleManager.reset());
+
+        // 更換圖片/映畫按鈕 (Change Image / Artwork Button)
+        this.uiManager.bindChangeImage(() => this.idleManager.reset());
+
+        // Background Click
+        this.uiManager.bindBackgroundClick();
     }
 
     private setupEventListeners(): void {
@@ -67,7 +93,7 @@ export class ModeHandler {
                 this.idleManager.clear();
 
                 // determine if we should enter Artwork mode or Zen mode
-                const targetIsArtwork = (targetMode === "artwork") ? true : wasArtwork;
+                const targetIsArtwork = targetMode === "artwork" ? true : wasArtwork;
 
                 // 進入沉浸模式時強制啟動幻燈片 (Force start slideshow in immersion mode)
                 window.dispatchEvent(
@@ -128,30 +154,5 @@ export class ModeHandler {
                 }
             }
         }) as EventListener);
-    }
-
-    private bindUI(): void {
-        // 歡迎畫面遮罩點擊 (Welcome Overlay)
-        this.uiManager.bindWelcomeOverlay((e) => {
-            e?.stopPropagation();
-            this.idleManager.reset();
-
-            // Welcome Overlay Click -> Go to Calendar Mode
-            // 統一透過 welcome-mode 事件處理所有清理工作 (Remove initial-welcome, immersion-mode, show grid)
-            window.dispatchEvent(
-                new CustomEvent<WelcomeModeDetail>("welcome-mode", { detail: { active: false, targetMode: "calendar" } }),
-            );
-        });
-
-        // 沉浸模式手動切換 (Immersion Mode Toggle)
-        this.uiManager.bindImmersionMode(() => this.idleManager.reset());
-
-        // 更換圖片/映畫按鈕 (Change Image / Artwork Button)
-        this.uiManager.bindChangeImage(
-            () => this.idleManager.reset()
-        );
-
-        // Background Click
-        this.uiManager.bindBackgroundClick();
     }
 }

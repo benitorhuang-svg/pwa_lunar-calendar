@@ -99,11 +99,6 @@ export class HeroMusicPlayer {
         return this.customPlaylist.length;
     }
 
-    private saveLastSelection(url: string): void {
-        if (!url) return;
-        localStorage.setItem("zen_music_last_url", url);
-    }
-
     /**
      * 暫停音樂 (Pause Music)
      */
@@ -174,5 +169,10 @@ export class HeroMusicPlayer {
         this.bgMusic.src = url;
         this.saveLastSelection(url);
         this.play();
+    }
+
+    private saveLastSelection(url: string): void {
+        if (!url) return;
+        localStorage.setItem("zen_music_last_url", url);
     }
 }

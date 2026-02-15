@@ -1,15 +1,31 @@
 import type { HeroIdleManager } from "../idleManager";
-import type { HeroUIManager } from "../uiManager";
 import type { RenderPanelsDetail, ToggleGridViewDetail, TogglePanelDetail } from "../types";
+import type { HeroUIManager } from "../uiManager";
 
 export class PanelUIHandler {
     constructor(
         private uiManager: HeroUIManager,
-        private idleManager: HeroIdleManager
-    ) { }
+        private idleManager: HeroIdleManager,
+    ) {}
 
     public init(): void {
         this.bindEvents();
+    }
+
+    public setupInteractionButtons(): void {
+        // 切換網格按鈕 (Toggle Grid Button)
+        this.uiManager.bindToggleGrid(() => {
+            this.idleManager.reset();
+            window.dispatchEvent(new CustomEvent("toggle-grid"));
+        });
+
+        // 切換年月面板按鈕 (Toggle Year/Month Button)
+        this.uiManager.bindToggleYearMonth(() => {
+            this.idleManager.reset();
+            window.dispatchEvent(
+                new CustomEvent<TogglePanelDetail>("toggle-panel", { detail: "yearMonth" }),
+            );
+        });
     }
 
     private bindEvents(): void {
@@ -55,21 +71,5 @@ export class PanelUIHandler {
                 }
             });
         }
-    }
-
-    public setupInteractionButtons(): void {
-        // 切換網格按鈕 (Toggle Grid Button)
-        this.uiManager.bindToggleGrid(() => {
-            this.idleManager.reset();
-            window.dispatchEvent(new CustomEvent("toggle-grid"));
-        });
-
-        // 切換年月面板按鈕 (Toggle Year/Month Button)
-        this.uiManager.bindToggleYearMonth(() => {
-            this.idleManager.reset();
-            window.dispatchEvent(
-                new CustomEvent<TogglePanelDetail>("toggle-panel", { detail: "yearMonth" }),
-            );
-        });
     }
 }

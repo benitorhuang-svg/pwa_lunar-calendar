@@ -1,11 +1,27 @@
-import { HeroLayoutManager } from "./layoutManager";
 import { HeroGalleryManager } from "../galleryManager";
+import { HeroLayoutManager } from "./layoutManager";
 
 export class HeroModeUIManager {
+    public get changeImageBtn(): HTMLElement | null {
+        return this.btnChangeImage;
+    }
+    public get immersionBtn(): HTMLElement | null {
+        return this.btnImmersion;
+    }
+    public get nextHeroBtn(): HTMLElement | null {
+        return this.btnNextHero;
+    }
+    public get prevHeroBtn(): HTMLElement | null {
+        return this.btnPrevHero;
+    }
     private btnChangeImage: HTMLElement | null = null;
+
     private btnImmersion: HTMLElement | null = null;
-    private btnPrevHero: HTMLElement | null = null;
+
     private btnNextHero: HTMLElement | null = null;
+
+    private btnPrevHero: HTMLElement | null = null;
+
     private galleryManager: HeroGalleryManager;
 
     constructor(galleryManager: HeroGalleryManager) {
@@ -17,23 +33,6 @@ export class HeroModeUIManager {
         this.btnImmersion = document.getElementById("btnImmersion");
         this.btnPrevHero = document.getElementById("btnPrevHero");
         this.btnNextHero = document.getElementById("btnNextHero");
-    }
-
-    public updateImmersionUI(active: boolean): void {
-        const iconCal = document.getElementById("iconCalendar");
-        const iconImm = document.getElementById("iconImmersion");
-
-        if (active) {
-            this.btnImmersion?.classList.add("active");
-            // Show Calendar Icon (to exit immersion), Hide Immersion Icon
-            if (iconCal) iconCal.style.display = "block";
-            if (iconImm) iconImm.style.display = "none";
-        } else {
-            this.btnImmersion?.classList.remove("active");
-            // Hide Calendar Icon, Show Immersion Icon (to enter immersion)
-            if (iconCal) iconCal.style.display = "none";
-            if (iconImm) iconImm.style.display = "block";
-        }
     }
 
     public updateArtworkModeUI(isArtwork: boolean, layoutManager: HeroLayoutManager): void {
@@ -95,6 +94,23 @@ export class HeroModeUIManager {
         }
     }
 
+    public updateImmersionUI(active: boolean): void {
+        const iconCal = document.getElementById("iconCalendar");
+        const iconImm = document.getElementById("iconImmersion");
+
+        if (active) {
+            this.btnImmersion?.classList.add("active");
+            // Show Calendar Icon (to exit immersion), Hide Immersion Icon
+            if (iconCal) iconCal.style.display = "block";
+            if (iconImm) iconImm.style.display = "none";
+        } else {
+            this.btnImmersion?.classList.remove("active");
+            // Hide Calendar Icon, Show Immersion Icon (to enter immersion)
+            if (iconCal) iconCal.style.display = "none";
+            if (iconImm) iconImm.style.display = "block";
+        }
+    }
+
     public updateModeTheme(isArtwork: boolean): void {
         if (isArtwork) {
             document.body.classList.add("mode-artwork");
@@ -109,21 +125,5 @@ export class HeroModeUIManager {
             this.btnNextHero?.classList.remove("group-image");
             this.btnNextHero?.classList.add("group-calendar");
         }
-    }
-
-    public get changeImageBtn(): HTMLElement | null {
-        return this.btnChangeImage;
-    }
-
-    public get immersionBtn(): HTMLElement | null {
-        return this.btnImmersion;
-    }
-
-    public get prevHeroBtn(): HTMLElement | null {
-        return this.btnPrevHero;
-    }
-
-    public get nextHeroBtn(): HTMLElement | null {
-        return this.btnNextHero;
     }
 }

@@ -1,7 +1,14 @@
 import type { HeroIdleManager } from "../idleManager";
 import type { HeroImageManager } from "../imageManager";
 import type { HeroSlideshowManager } from "../slideshowManager";
-import type { ClosePanelsDetail, NavigateMonthDetail, RenderHeroDetail, SlideshowControlDetail, WelcomeModeDetail } from "../types";
+import type {
+    ClosePanelsDetail,
+    NavigateMonthDetail,
+    RenderHeroDetail,
+    SlideshowControlDetail,
+    WelcomeModeDetail,
+} from "../types";
+
 import { HeroUIManager } from "../uiManager";
 
 export class NavigationHandler {
@@ -9,13 +16,8 @@ export class NavigationHandler {
         private idleManager: HeroIdleManager,
         private imageManager: HeroImageManager,
         private slideshowManager: HeroSlideshowManager,
-        private uiManager: HeroUIManager
-    ) { }
-
-    public init(): void {
-        this.bindNavigationEvents();
-        this.bindGlobalEvents();
-    }
+        private uiManager: HeroUIManager,
+    ) {}
 
     public handleNavigation(direction: number): void {
         this.idleManager.reset();
@@ -39,6 +41,24 @@ export class NavigationHandler {
         }
     }
 
+    public init(): void {
+        this.bindNavigationEvents();
+        this.bindGlobalEvents();
+    }
+
+    private bindGlobalEvents(): void {
+        // 渲染 Hero (Render Hero)
+        window.addEventListener("render-hero", ((e: CustomEvent<RenderHeroDetail>) => {
+            const { changeBg, date, lunar, transitionOverride } = e.detail;
+            this.imageManager.updateHeroLogic(
+                changeBg !== undefined ? changeBg : false,
+                transitionOverride || null,
+                typeof date === "string" ? new Date(date) : date,
+                lunar,
+            );
+        }) as EventListener);
+    }
+
     private bindNavigationEvents(): void {
         // 導航按鈕 (Navigation Buttons)
         this.uiManager.bindNavigation(
@@ -51,17 +71,22 @@ export class NavigationHandler {
             e.stopPropagation();
             this.idleManager.reset();
 
-            const isImmersion = document.body.classList.contains("immersion-mode") ||
+            const isImmersion =
+                document.body.classList.contains("immersion-mode") ||
                 document.body.classList.contains("initial-welcome");
 
             if (isImmersion) {
                 // Go to Calendar Grid
                 window.dispatchEvent(
-                    new CustomEvent<WelcomeModeDetail>("welcome-mode", { detail: { active: false, targetMode: "calendar" } }),
+                    new CustomEvent<WelcomeModeDetail>("welcome-mode", {
+                        detail: { active: false, targetMode: "calendar" },
+                    }),
                 );
                 document.body.classList.remove("initial-welcome");
                 window.dispatchEvent(
-                    new CustomEvent<ClosePanelsDetail>("close-panels", { detail: { showGrid: true } }),
+                    new CustomEvent<ClosePanelsDetail>("close-panels", {
+                        detail: { showGrid: true },
+                    }),
                 );
             } else {
                 // Go to Immersion Mode (Artwork Mode)
@@ -76,22 +101,11 @@ export class NavigationHandler {
                     }),
                 );
                 window.dispatchEvent(
-                    new CustomEvent<WelcomeModeDetail>("welcome-mode", { detail: { active: true } }),
+                    new CustomEvent<WelcomeModeDetail>("welcome-mode", {
+                        detail: { active: true },
+                    }),
                 );
             }
         });
-    }
-
-    private bindGlobalEvents(): void {
-        // 渲染 Hero (Render Hero)
-        window.addEventListener("render-hero", ((e: CustomEvent<RenderHeroDetail>) => {
-            const { changeBg, date, lunar, transitionOverride } = e.detail;
-            this.imageManager.updateHeroLogic(
-                changeBg !== undefined ? changeBg : false,
-                transitionOverride || null,
-                typeof date === "string" ? new Date(date) : date,
-                lunar,
-            );
-        }) as EventListener);
     }
 }

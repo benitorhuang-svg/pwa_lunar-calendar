@@ -83,8 +83,7 @@ export class CalendarEventHandlers {
         window.addEventListener("update-calendar-title", ((
             e: CustomEvent<UpdateCalendarTitleDetail>,
         ) => {
-            const { lunarText } = e.detail;
-            this.renderer.updateTitle(lunarText);
+            this.renderer.updateTitle(e.detail);
         }) as EventListener);
 
         // 切換網格視圖 (Toggle Grid View)

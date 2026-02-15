@@ -5,6 +5,7 @@
  */
 
 import type { CalendarCellBuilder } from "./calendarCellBuilder";
+import type { UpdateCalendarTitleDetail } from "../types";
 
 export class CalendarRenderer {
     private cellBuilder: CalendarCellBuilder;
@@ -114,9 +115,11 @@ export class CalendarRenderer {
      * 更新日曆標題 (農曆資訊)
      * Update calendar title with Lunar info
      */
-    public updateTitle(lunarText: null | { day: string; ganzhi: string; month: string }): void {
+    public updateTitle(detail: null | UpdateCalendarTitleDetail): void {
         const calendarTitle = document.getElementById("calendarTitle");
-        if (!calendarTitle || !lunarText) return;
+        if (!calendarTitle || !detail) return;
+
+        const { lunarText, year, month } = detail;
 
         // 特殊月份名稱轉換
         // Helper to convert special Lunar month names
@@ -128,6 +131,17 @@ export class CalendarRenderer {
         };
 
         const displayMonth = mapMonth(lunarText.month);
-        calendarTitle.textContent = `${lunarText.ganzhi}年 · ${displayMonth}月 · ${lunarText.day}`;
+        calendarTitle.innerHTML = `
+            <div class="title-main">
+                <span class="lunar-ganzhi">${lunarText.ganzhi}年</span>
+                <span class="lunar-sep">·</span>
+                <span class="lunar-month">${displayMonth}月</span>
+            </div>
+            <div class="title-sub" style="font-size: 0.9rem; opacity: 0.4; font-family: var(--font-serif-num); margin-left: 10px; font-weight: 300;">
+                <span class="greg-year">${year}</span>
+                <span class="lunar-sep" style="margin: 0 4px;">.</span>
+                <span class="greg-month">${(month + 1).toString().padStart(2, "0")}</span>
+            </div>
+        `;
     }
 }

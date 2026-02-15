@@ -12,14 +12,14 @@ import "../../styles/hero/notepad.css";
             <div class="note-header-zen">
                 <div class="note-date-display">
                     <input
+                        aria-label="選擇日期"
                         class="note-date-picker-zen"
                         id="noteDatePicker"
                         type="date"
-                        aria-label="選擇日期"
                     />
                     <span class="date-sep">/</span>
                     <div class="font-selector-zen">
-                        <select id="noteFontSelect" aria-label="切換字體">
+                        <select aria-label="切換字體" id="noteFontSelect">
                             <option value="font-serif">雅致襯線 (Serif)</option>
                             <option value="font-sans">極簡黑體 (Sans)</option>
                             <option value="font-calligraphy">行雲流水 (Calligraphy)</option>
@@ -31,10 +31,10 @@ import "../../styles/hero/notepad.css";
                 <div class="header-tools-right">
                     <button class="note-close-trigger" id="btnNoteClose" title="關閉隨筆">
                         <svg
-                            viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
                             stroke-width="1.5"
+                            viewBox="0 0 24 24"
                         >
                             <path d="M6 18L18 6M6 6l12 12"></path>
                         </svg>

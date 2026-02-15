@@ -43,24 +43,25 @@ export class PanelRenderers {
             : "";
 
         this.panelToday.innerHTML = `
-
     <div class="panel-detail-body">
         <div class="panel-side-accent">
             <div class="vertical-text">${ganzhi}年 · ${monthText}月${dayText}</div>
         </div>
         <div class="panel-main-content">
-            <div class="detail-header-group" style="display:flex; justify-content:space-between; align-items:flex-start; border-left:none; padding-left:0;">
-                <div>
-                    <div class="detail-header" style="margin-bottom:5px">${date.getMonth() + 1}/${date.getDate()}</div>
-                    <div class="detail-sub-main" style="font-size:1.2rem; opacity:0.7">${date.getFullYear()} · ${ganzhi}年</div>
+            <div class="detail-top-section">
+                <div class="date-display">
+                    <div class="detail-header">${date.getMonth() + 1}/${date.getDate()}</div>
+                    <div class="detail-sub-main">${date.getFullYear()} · ${ganzhi}年</div>
                 </div>
                 <div class="traditional-seal">${zodiac.charAt(0)}</div>
             </div>
             
-            <div class="detail-info-row" style="margin-top:-10px">
-                <span>${monthGZ}月</span>
-                <span>${dayGZ}日</span>
-                <span style="color:#d4af37">${termPeriod.current}</span>
+            <div class="detail-info-row">
+                <div class="lunar-gz-tags">
+                    <span>${monthGZ}月</span>
+                    <span>${dayGZ}日</span>
+                </div>
+                <div class="solar-term">${termPeriod.current}</div>
             </div>
 
             <div class="detail-lucky-pill">
@@ -69,24 +70,18 @@ export class PanelRenderers {
             
             ${festivalHtml}
             
-            <div class="yiji-item">
-                <span class="yiji-label yiji-label--good">宜</span>
-                <div class="tag-container">
-                    ${yi
-                .slice(0, 5)
-                .map((t: string) => `<span class="tag">${t}</span>`)
-                .join("")}
-                    ${yi.length === 0 ? '<span class="tag">諸事平吉</span>' : ""}
+            <div class="detail-yiji-section">
+                <div class="yiji-item">
+                    <span class="yiji-label yiji-label--good">宜</span>
+                    <div class="tag-container">
+                        ${yi.length > 0 ? yi.slice(0, 5).map((t: string) => `<span class="tag">${t}</span>`).join("") : '<span class="tag">諸事平吉</span>'}
+                    </div>
                 </div>
-            </div>
-            <div class="yiji-item">
-                <span class="yiji-label yiji-label--bad">忌</span>
-                <div class="tag-container">
-                    ${ji
-                .slice(0, 5)
-                .map((t: string) => `<span class="tag">${t}</span>`)
-                .join("")}
-                    ${ji.length === 0 ? '<span class="tag">諸事不忌</span>' : ""}
+                <div class="yiji-item">
+                    <span class="yiji-label yiji-label--bad">忌</span>
+                    <div class="tag-container">
+                        ${ji.length > 0 ? ji.slice(0, 5).map((t: string) => `<span class="tag">${t}</span>`).join("") : '<span class="tag">諸事不忌</span>'}
+                    </div>
                 </div>
             </div>
         </div>
@@ -96,7 +91,7 @@ export class PanelRenderers {
         setTimeout(() => {
             window.dispatchEvent(
                 new CustomEvent("today-panel-rendered", {
-                    detail: { year: selectedYear, month: selectedMonth, day: selectedDay },
+                    detail: { day: selectedDay, month: selectedMonth, year: selectedYear },
                 }),
             );
         }, 0);
@@ -139,7 +134,7 @@ export class PanelRenderers {
         monthGrid.className = "panel-grid";
 
         for (let i = 0; i < 12; i++) {
-            const isTodayMonth = selectedYear === today.getFullYear() && i === today.getMonth();
+            const isTodayMonth = i === today.getMonth();
             const item = document.createElement("button");
             item.type = "button";
             item.ariaLabel = `${selectedYear}年${i + 1}月`;

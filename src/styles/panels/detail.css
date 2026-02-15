@@ -50,7 +50,9 @@
 /* Redesigned interactive title */
 .panel-note-title.clickable-title {
     cursor: pointer;
-    transition: color 0.2s, transform 0.2s;
+    transition:
+        color 0.2s,
+        transform 0.2s;
     user-select: none;
 }
 
@@ -141,139 +143,169 @@ select.panel-font-select option,
 }
 
 .panel-side-accent {
-    width: 60px;
-    background: var(--cal-border);
-    /* Or a slightly darker variant of bg */
+    width: 48px;
+    /* Slightly narrower for elegance */
+    background: linear-gradient(to bottom, var(--cal-border), rgba(212, 175, 55, 0.05));
     display: flex;
     align-items: center;
     justify-content: center;
-    border-right: 1px solid var(--cal-border);
+    border-right: 0.5px solid rgba(212, 175, 55, 0.1);
     flex-shrink: 0;
+    border-bottom-left-radius: inherit;
+    /* Fix: match card corner */
+    border-top-left-radius: inherit;
+    /* Support top-left as well */
 }
 
 .vertical-text {
     writing-mode: vertical-rl;
     text-orientation: mixed;
     font-family: var(--font-calligraphy);
-    font-size: 1.25rem;
-    letter-spacing: 0.3em;
+    font-size: 1.15rem;
+    letter-spacing: 0.4em;
+    /* Posh spacing */
     color: var(--cal-lunar-text);
-    opacity: 0.9;
+    opacity: 0.7;
+    /* Subtler */
     white-space: nowrap;
 }
 
 .panel-main-content {
     flex: 1;
-    padding: 24px 30px;
+    padding: 30px 35px;
+    /* More breathing room */
     display: flex;
     flex-direction: column;
-    justify-content: center;
 }
 
 /* Detail Elements inside Main Content */
-.detail-header-group {
+.detail-top-section {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+}
+
+.date-display {
+    display: flex;
+    flex-direction: column;
 }
 
 .detail-header {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
+    /* Larger for focus */
     font-weight: 700;
-    margin-bottom: 2px;
-    letter-spacing: 0.05em;
+    letter-spacing: -0.02em;
     color: var(--cal-text);
     font-family: var(--font-serif-num);
-    line-height: 1;
+    line-height: 0.9;
+    margin-bottom: 8px;
 }
 
 .detail-sub-main {
     font-family: var(--font-calligraphy);
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     color: var(--cal-lunar-text);
     font-weight: 300;
-    letter-spacing: 0.12em;
-    margin-top: 4px;
-    opacity: 0.9;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
 }
 
 .detail-info-row {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 15px;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: var(--cal-lunar-text);
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     font-family: var(--font-calligraphy);
-    opacity: 0.9;
+}
+
+.lunar-gz-tags {
+    display: flex;
+    gap: 12px;
+    opacity: 0.85;
+}
+
+.solar-term {
+    color: #d4af37;
+    font-weight: 500;
+    letter-spacing: 0.15em;
 }
 
 .detail-lucky-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: var(--cal-nav-bg);
-    border: 1px solid var(--cal-border);
-    padding: 8px 24px;
+    background: rgba(212, 175, 55, 0.08);
+    /* Sophisticated tinted background */
+    border: 0.5px solid rgba(212, 175, 55, 0.2);
+    padding: 10px 24px;
     border-radius: 50px;
-    color: var(--cal-nav-color);
-    font-size: 1rem;
-    letter-spacing: 0.1em;
-    margin-bottom: 25px;
+    color: var(--cal-header-text);
+    font-size: 1.05rem;
+    letter-spacing: 0.12em;
+    margin-bottom: 30px;
     align-self: flex-start;
     font-family: var(--font-calligraphy);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 /* Yiji Section (Suitable/Unsuitable Activities) */
-.detail-yiji {
+.detail-yiji-section {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding-top: 24px;
-    border-top: 1px solid var(--cal-border);
+    gap: 20px;
+    padding-top: 25px;
+    border-top: 0.5px solid rgba(212, 175, 55, 0.15);
+    /* Match theme accents */
     width: 100%;
+    position: relative;
 }
 
+/* Red Seal Positioning */
 .traditional-seal {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     background: #c62828;
-    /* Default Seal Red */
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-calligraphy);
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     color: #fff;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+    box-shadow:
+        0 6px 15px rgba(198, 40, 40, 0.3),
+        inset 0 0 10px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    transform: rotate(5deg);
+    /* Artistic tilt */
+    margin-top: 5px;
 }
 
 .yiji-item {
     display: flex;
     align-items: flex-start;
-    gap: 14px;
+    gap: 18px;
 }
 
 .yiji-label {
-    font-size: 1rem;
+    font-family: var(--font-calligraphy);
+    font-size: 1.2rem;
     font-weight: 600;
     letter-spacing: 0.1em;
-    opacity: 1;
-    margin-top: 2px;
-    /* Align with tags */
-    min-width: 24px;
+    min-width: 25px;
+    text-align: center;
+    line-height: 1;
+    margin-top: 4px;
 }
 
-.yiji-label--good {
-    color: var(--cal-text);
-}
-
-/* Use theme color for Yi/Ji text if desired, or keep simple */
 .yiji-label--good {
     color: #d4af37;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
 }
 
 .yiji-label--bad {
@@ -282,16 +314,18 @@ select.panel-font-select option,
 
 .tag-container {
     display: flex;
-    flex-wrap: nowrap;
-    gap: 8px;
-    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 12px 18px;
     flex: 1;
 }
 
 .tag {
-    font-size: 0.9rem;
+    font-family: var(--font-sans);
+    /* Better readability for tags */
+    font-size: 0.95rem;
+    font-weight: 300;
     opacity: 0.85;
     letter-spacing: 0.05em;
     color: var(--cal-text);
-    margin-right: 12px;
+    white-space: nowrap;
 }

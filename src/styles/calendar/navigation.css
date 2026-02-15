@@ -19,33 +19,36 @@
 }
 
 .btn-today-quick {
-    background: rgba(255, 255, 255, 0.4);
+    background: var(--glass-bg, rgba(255, 255, 255, 0.2));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     color: var(--cal-text);
-    border: 0.5px solid var(--cal-border);
-    padding: 3px 12px;
-    border-radius: 20px;
-    /* Pill shape is more modern */
-    font-size: 0.7rem;
+    border: 1px solid var(--cal-border, rgba(255, 255, 255, 0.1));
+    padding: 5px 16px;
+    border-radius: 50px;
+    font-size: 0.8rem;
     font-weight: 500;
     cursor: pointer;
-    font-family: var(--font-serif);
+    font-family: var(--font-calligraphy);
     white-space: nowrap;
     opacity: 0.8;
     margin-right: 4px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
     display: inline-flex;
     align-items: center;
-    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: all 0.4s var(--ease-out-expo);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .btn-today-quick:active {
-    transform: scale(0.92);
+    transform: scale(0.95);
 }
 
 .btn-today-quick:hover {
     background: var(--cal-bg);
-    border-color: var(--cal-text);
+    border-color: var(--cal-header-text);
+    color: var(--cal-header-text);
     opacity: 1;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }

@@ -65,7 +65,8 @@
 }
 
 /* Premium Ken Burns (Only for static state, disabled during transition) */
-#heroBgContainer.idle-motion .hero-bg-item:not(.is-next):not(.is-prev):not(.is-leaving-next):not(.is-leaving-prev) {
+#heroBgContainer.idle-motion
+    .hero-bg-item:not(.is-next):not(.is-prev):not(.is-leaving-next):not(.is-leaving-prev) {
     animation: kenBurnsSmooth 60s ease-in-out infinite alternate;
 }
 

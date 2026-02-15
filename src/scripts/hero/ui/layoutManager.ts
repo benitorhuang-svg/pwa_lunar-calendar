@@ -1,12 +1,48 @@
 export class HeroLayoutManager {
-    private heroDockWrapper: HTMLElement | null = null;
-    private heroHeader: HTMLElement | null = null;
-    private welcomeOverlay: HTMLElement | null = null;
-    private btnYearMonth: HTMLElement | null = null;
+    public get dayBtn(): HTMLElement | null {
+        return this.btnDay;
+    }
+    public get dockWrapper(): HTMLElement | null {
+        return this.heroDockWrapper;
+    }
+    public get header(): HTMLElement | null {
+        return this.heroHeader;
+    }
+    public get headerInfoStrip(): HTMLElement | null {
+        return this.infoStrip;
+    }
+    public get headerToggleBtn(): HTMLElement | null {
+        return this.btnHeaderToggle;
+    }
+    public get installButton(): HTMLElement | null {
+        return this.installBtn;
+    }
+    public get overlay(): HTMLElement | null {
+        return this.welcomeOverlay;
+    }
+    public get yearMonthBtn(): HTMLElement | null {
+        return this.btnYearMonth;
+    }
+
     private btnDay: HTMLElement | null = null;
+
     private btnHeaderToggle: HTMLElement | null = null;
-    private installBtn: HTMLElement | null = null;
+
+    private btnYearMonth: HTMLElement | null = null;
+
+    private heroDockWrapper: HTMLElement | null = null;
+
+    private heroHeader: HTMLElement | null = null;
+
     private infoStrip: HTMLElement | null = null;
+
+    private installBtn: HTMLElement | null = null;
+
+    private welcomeOverlay: HTMLElement | null = null;
+
+    public hideInstallButton(): void {
+        if (this.installBtn) this.installBtn.style.display = "none";
+    }
 
     public init(): void {
         this.heroDockWrapper = document.querySelector(".hero-dock-wrapper");
@@ -19,44 +55,25 @@ export class HeroLayoutManager {
         this.infoStrip = document.getElementById("heroInfoStrip");
     }
 
-    public get overlay(): HTMLElement | null {
-        return this.welcomeOverlay;
+    public removeActiveState(element: HTMLElement | null): void {
+        element?.classList.remove("active");
     }
 
-    public get header(): HTMLElement | null {
-        return this.heroHeader;
+    public setHeaderVisibility(visible: boolean): void {
+        if (this.heroHeader) {
+            this.heroHeader.style.opacity = visible ? "1" : "0";
+            this.heroHeader.style.pointerEvents = visible ? "auto" : "none";
+        }
     }
 
-    public get headerInfoStrip(): HTMLElement | null {
-        return this.infoStrip;
-    }
-
-    public get yearMonthBtn(): HTMLElement | null {
-        return this.btnYearMonth;
-    }
-
-    public get dayBtn(): HTMLElement | null {
-        return this.btnDay;
-    }
-
-    public get headerToggleBtn(): HTMLElement | null {
-        return this.btnHeaderToggle;
-    }
-
-    public get installButton(): HTMLElement | null {
-        return this.installBtn;
-    }
-
-    public get dockWrapper(): HTMLElement | null {
-        return this.heroDockWrapper;
+    public setYearMonthBtnVisibility(visible: boolean): void {
+        if (this.btnYearMonth) {
+            this.btnYearMonth.style.display = visible ? "flex" : "none";
+        }
     }
 
     public showInstallButton(): void {
         if (this.installBtn) this.installBtn.style.display = "block";
-    }
-
-    public hideInstallButton(): void {
-        if (this.installBtn) this.installBtn.style.display = "none";
     }
 
     public toggleGridView(show: boolean): void {
@@ -101,22 +118,5 @@ export class HeroLayoutManager {
             }
         }
         this.btnDay?.classList.remove("active");
-    }
-
-    public setHeaderVisibility(visible: boolean): void {
-        if (this.heroHeader) {
-            this.heroHeader.style.opacity = visible ? "1" : "0";
-            this.heroHeader.style.pointerEvents = visible ? "auto" : "none";
-        }
-    }
-
-    public setYearMonthBtnVisibility(visible: boolean): void {
-        if (this.btnYearMonth) {
-            this.btnYearMonth.style.display = visible ? "flex" : "none";
-        }
-    }
-
-    public removeActiveState(element: HTMLElement | null): void {
-        element?.classList.remove("active");
     }
 }

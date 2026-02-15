@@ -1,14 +1,15 @@
 import type { HeroIdleManager } from "../idleManager";
-import type { HeroMusicPlayer } from "../musicPlayer";
 import type { HeroImageManager } from "../imageManager";
+import type { HeroMusicPlayer } from "../musicPlayer";
+
 import { HeroUIManager } from "../uiManager";
 
 export class MediaHandler {
     constructor(
         private imageManager: HeroImageManager,
         private musicPlayer: HeroMusicPlayer,
-        private uiManager: HeroUIManager
-    ) { }
+        private uiManager: HeroUIManager,
+    ) {}
 
     public init(): void {
         this.bindGalleryControls();
@@ -74,6 +75,14 @@ export class MediaHandler {
         });
     }
 
+    private async deleteCustomStation(id: string, name: string): Promise<void> {
+        const { galleryStorage } = await import("../galleryStorage");
+        await galleryStorage.deleteAudio(id);
+        await this.musicPlayer.loadCustomPlaylist();
+        await this.renderCustomStationsFromStorage();
+        console.log(`[Hero] Custom Radio '${name}' deleted via list`);
+    }
+
     private async renderCustomStationsFromStorage(): Promise<void> {
         const { galleryStorage } = await import("../galleryStorage");
         const allAudio = await galleryStorage.getAllAudio();
@@ -93,13 +102,5 @@ export class MediaHandler {
                 this.musicPlayer.playUrl(url);
             },
         );
-    }
-
-    private async deleteCustomStation(id: string, name: string): Promise<void> {
-        const { galleryStorage } = await import("../galleryStorage");
-        await galleryStorage.deleteAudio(id);
-        await this.musicPlayer.loadCustomPlaylist();
-        await this.renderCustomStationsFromStorage();
-        console.log(`[Hero] Custom Radio '${name}' deleted via list`);
     }
 }

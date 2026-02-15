@@ -17,71 +17,19 @@ export class NoteManager {
         this.setupEventListeners();
     }
 
-    private getNoteKey(date: Date): string {
-        const y = date.getFullYear();
-        const m = (date.getMonth() + 1).toString().padStart(2, "0");
-        const d = date.getDate().toString().padStart(2, "0");
-        return `zen_note_${y}-${m}-${d}`;
-    }
-
-    private loadNoteForPanel(year: number, month: number, day: number): void {
-        const date = new Date(year, month, day);
-        const key = this.getNoteKey(date);
-
-        // Font preference binding (Global setting)
-        const savedFont = localStorage.getItem("note_font_pref");
-        const fontSelect = document.getElementById("panelNoteFontSelect") as HTMLSelectElement;
-        if (fontSelect && savedFont) {
-            fontSelect.value = savedFont;
-        }
-
-        // Open Notepad Trigger
-        const btnOpen = document.getElementById("btnOpenNotePad");
-        if (btnOpen) {
-            btnOpen.onclick = (e) => {
-                e.stopPropagation();
-                window.dispatchEvent(new CustomEvent("open-notepad", {
-                    detail: { year, month, day } // Pass date context
-                }));
-            };
-        }
-
-        // Export binding (Select Menu)
-        const exportSelect = document.getElementById("panelNoteExportSelect") as HTMLSelectElement;
-        if (exportSelect) {
-            exportSelect.onchange = (e) => {
-                e.stopPropagation();
-                const format = exportSelect.value;
-                if (format) {
-                    const content = localStorage.getItem(key) || "";
-                    this.exportPanelNote(date, content, format);
-                    exportSelect.value = ""; // Reset selection
-                }
-            };
-        }
-
-        // Font selector change (Save pref only)
-        if (fontSelect) {
-            fontSelect.onchange = (e) => {
-                e.stopPropagation();
-                const fontClass = (e.target as HTMLSelectElement).value;
-                localStorage.setItem("note_font_pref", fontClass);
-            }
-        }
-    }
-
     private exportPanelNote(date: Date, content: string, format: string): void {
-        if (!content && format !== 'png') { // PNG might handle empty generic view?
+        if (!content && format !== "png") {
+            // PNG might handle empty generic view?
             alert("目前沒有內容可匯出");
             return;
         }
 
         const now = new Date();
-        const timeStr = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`;
-        const dateStr = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}`;
+        const timeStr = `${now.getHours().toString().padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}`;
+        const dateStr = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, "0")}${date.getDate().toString().padStart(2, "0")}`;
         const filename = `zen_note_${dateStr}_${timeStr}.${format}`;
 
-        if (format === 'txt') {
+        if (format === "txt") {
             const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
@@ -94,6 +42,13 @@ export class NoteManager {
         } else {
             alert(`目前尚未支援 ${format.toUpperCase()} 匯出功能，請等待後續更新。`);
         }
+    }
+
+    private getNoteKey(date: Date): string {
+        const y = date.getFullYear();
+        const m = (date.getMonth() + 1).toString().padStart(2, "0");
+        const d = date.getDate().toString().padStart(2, "0");
+        return `zen_note_${y}-${m}-${d}`;
     }
 
     private loadNoteForOverlay(year: number, month: number, day: number): void {
@@ -114,7 +69,9 @@ export class NoteManager {
 
             // Font preference (Overlay)
             const savedFont = localStorage.getItem("note_font_pref");
-            const overlayFontSelect = document.getElementById("noteFontSelect") as HTMLSelectElement;
+            const overlayFontSelect = document.getElementById(
+                "noteFontSelect",
+            ) as HTMLSelectElement;
             if (savedFont) {
                 overlayEditor.className = `note-textarea-zen ${savedFont}`;
                 if (overlayFontSelect) overlayFontSelect.value = savedFont;
@@ -125,20 +82,20 @@ export class NoteManager {
                     const fontClass = (e.target as HTMLSelectElement).value;
                     overlayEditor.className = `note-textarea-zen ${fontClass}`;
                     localStorage.setItem("note_font_pref", fontClass);
-                }
+                };
             }
         }
 
         // Setup Date Picker Display
         if (datePicker) {
-            const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+            const dateStr = `${year}-${(month + 1).toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
             datePicker.value = dateStr;
 
             // Handle date change
             datePicker.onchange = (e) => {
                 const newDateStr = (e.target as HTMLInputElement).value;
                 if (newDateStr) {
-                    const parts = newDateStr.split('-').map(Number);
+                    const parts = newDateStr.split("-").map(Number);
                     if (parts.length >= 3) {
                         const y = parts[0]!;
                         const m = parts[1]!;
@@ -181,18 +138,68 @@ export class NoteManager {
         }
     }
 
+    private loadNoteForPanel(year: number, month: number, day: number): void {
+        const date = new Date(year, month, day);
+        const key = this.getNoteKey(date);
+
+        // Font preference binding (Global setting)
+        const savedFont = localStorage.getItem("note_font_pref");
+        const fontSelect = document.getElementById("panelNoteFontSelect") as HTMLSelectElement;
+        if (fontSelect && savedFont) {
+            fontSelect.value = savedFont;
+        }
+
+        // Open Notepad Trigger
+        const btnOpen = document.getElementById("btnOpenNotePad");
+        if (btnOpen) {
+            btnOpen.onclick = (e) => {
+                e.stopPropagation();
+                window.dispatchEvent(
+                    new CustomEvent("open-notepad", {
+                        detail: { day, month, year }, // Pass date context
+                    }),
+                );
+            };
+        }
+
+        // Export binding (Select Menu)
+        const exportSelect = document.getElementById("panelNoteExportSelect") as HTMLSelectElement;
+        if (exportSelect) {
+            exportSelect.onchange = (e) => {
+                e.stopPropagation();
+                const format = exportSelect.value;
+                if (format) {
+                    const content = localStorage.getItem(key) || "";
+                    this.exportPanelNote(date, content, format);
+                    exportSelect.value = ""; // Reset selection
+                }
+            };
+        }
+
+        // Font selector change (Save pref only)
+        if (fontSelect) {
+            fontSelect.onchange = (e) => {
+                e.stopPropagation();
+                const fontClass = (e.target as HTMLSelectElement).value;
+                localStorage.setItem("note_font_pref", fontClass);
+            };
+        }
+    }
+
     private setupEventListeners(): void {
         this.btnPen = document.getElementById("btnPen");
 
         // Toggle Open (Unified Panel) - Force Open for 'Enter Note Mode'
         this.btnPen?.addEventListener("click", (e: MouseEvent) => {
             e.stopPropagation();
-            window.dispatchEvent(new CustomEvent("toggle-panel", { detail: { type: "today", force: "open" } }));
+            window.dispatchEvent(
+                new CustomEvent("toggle-panel", { detail: { force: "open", type: "today" } }),
+            );
         });
 
         // Listen for Panel Render
         window.addEventListener("today-panel-rendered", ((e: CustomEvent) => {
-            const { year, month, day } = e.detail || {};
+            const { day, month, year } = e.detail || {};
             if (year && month !== undefined && day) {
                 this.loadNoteForPanel(year, month, day);
             } else {
@@ -203,7 +210,7 @@ export class NoteManager {
 
         // Listen for Open NotePad (Full Screen)
         window.addEventListener("open-notepad", ((e: CustomEvent) => {
-            const { year, month, day } = e.detail || {};
+            const { day, month, year } = e.detail || {};
             if (year && month !== undefined && day) {
                 this.loadNoteForOverlay(year, month, day);
             } else {

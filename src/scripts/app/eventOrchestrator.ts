@@ -170,9 +170,13 @@ export class AppEventOrchestrator {
 
     private setupPanelEvents(): void {
         // 切換面板 (Toggle Panel)
-        window.addEventListener("toggle-panel", ((e: CustomEvent<string | { type: string; force?: "open" | "close" }>) => {
+        window.addEventListener("toggle-panel", ((
+            e: CustomEvent<string | { force?: "close" | "open"; type: string }>,
+        ) => {
             const detail = e.detail;
-            const type = (typeof detail === "string" ? detail : detail.type) as "today" | "yearMonth";
+            const type = (typeof detail === "string" ? detail : detail.type) as
+                | "today"
+                | "yearMonth";
             const force = typeof detail === "object" ? detail.force : undefined;
 
             const currentActive = this.state.getState().activePanel;
@@ -234,7 +238,9 @@ export class AppEventOrchestrator {
             // 如果正處於沈浸/歡迎模式，點擊日曆按鈕應視為「要求回歸日曆模式」
             if (isImmersion) {
                 window.dispatchEvent(
-                    new CustomEvent("welcome-mode", { detail: { active: false, targetMode: "calendar" } })
+                    new CustomEvent("welcome-mode", {
+                        detail: { active: false, targetMode: "calendar" },
+                    }),
                 );
                 return;
             }

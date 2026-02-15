@@ -15,10 +15,17 @@ import { HeroModeUIManager } from "./ui/modeUIManager";
  * Coordinates LayoutManager and ModeUIManager, while keeping event binding logic
  */
 export class HeroUIManager {
-    private layoutManager: HeroLayoutManager;
-    private modeUIManager: HeroModeUIManager;
+    /**
+     * 檢查日曆視圖是否處於活動狀態
+     */
+    public get isCalendarActive(): boolean {
+        return this.layoutManager.dayBtn?.classList.contains("active") ?? false;
+    }
     private galleryManager: HeroGalleryManager;
     private heroBgContainer: HTMLElement | null = null;
+    private layoutManager: HeroLayoutManager;
+
+    private modeUIManager: HeroModeUIManager;
 
     constructor() {
         this.layoutManager = new HeroLayoutManager();
@@ -26,27 +33,14 @@ export class HeroUIManager {
         this.modeUIManager = new HeroModeUIManager(this.galleryManager);
     }
 
-    /**
-     * 檢查日曆視圖是否處於活動狀態
-     */
-    public get isCalendarActive(): boolean {
-        return this.layoutManager.dayBtn?.classList.contains("active") ?? false;
-    }
-
-    public init(): void {
-        this.layoutManager.init();
-        this.galleryManager.init();
-        this.modeUIManager.init();
-
-        this.heroBgContainer = document.getElementById("heroBgContainer");
-    }
-
-    // --- 事件綁定 (Event Binding) ---
-
     public bindBackgroundClick(): void {
         const handler = (e: Event) => {
             // Check if we are interacting with a control that shouldn't trigger background click
-            if ((e.target as HTMLElement).closest('button, .hero-dock, .hero-gallery-submenu, .music-control-wrapper')) {
+            if (
+                (e.target as HTMLElement).closest(
+                    "button, .hero-dock, .hero-gallery-submenu, .music-control-wrapper",
+                )
+            ) {
                 return;
             }
 
@@ -95,6 +89,8 @@ export class HeroUIManager {
         this.heroBgContainer?.addEventListener("mousedown", handler);
         this.heroBgContainer?.addEventListener("touchstart", handler, { passive: true });
     }
+
+    // --- 事件綁定 (Event Binding) ---
 
     public bindChangeImage(resetIdle: () => void): void {
         this.modeUIManager.changeImageBtn?.addEventListener("click", () => {
@@ -148,7 +144,9 @@ export class HeroUIManager {
     }
 
     public bindHeaderToggle(callback: (e: MouseEvent) => void): void {
-        this.layoutManager.headerToggleBtn?.addEventListener("click", (e) => callback(e as MouseEvent));
+        this.layoutManager.headerToggleBtn?.addEventListener("click", (e) =>
+            callback(e as MouseEvent),
+        );
     }
 
     public bindImmersionMode(resetIdle: () => void): void {
@@ -158,7 +156,6 @@ export class HeroUIManager {
             resetIdle();
 
             const isImmersion = document.body.classList.contains("immersion-mode");
-
 
             if (isImmersion) {
                 // Immersion (Zen or Artwork) -> Calendar Mode
@@ -211,23 +208,17 @@ export class HeroUIManager {
     public bindWelcomeOverlay(callback: (e: MouseEvent) => void): void {
         const overlay = this.layoutManager.overlay;
         overlay?.addEventListener("click", (e) => callback(e));
-        overlay?.addEventListener(
-            "touchstart",
-            (e) => callback(e as unknown as MouseEvent),
-            { passive: false },
-        );
+        overlay?.addEventListener("touchstart", (e) => callback(e as unknown as MouseEvent), {
+            passive: false,
+        });
     }
-
-    // --- 代理子管理器方法 (Delegate Methods) ---
 
     // Layout
     public hideInstallButton(): void {
         this.layoutManager.hideInstallButton();
     }
 
-    public showInstallButton(): void {
-        this.layoutManager.showInstallButton();
-    }
+    // --- 代理子管理器方法 (Delegate Methods) ---
 
     public hidePanelActiveStates(): void {
         this.layoutManager.removeActiveState(this.layoutManager.yearMonthBtn);
@@ -235,30 +226,12 @@ export class HeroUIManager {
         this.layoutManager.removeActiveState(this.modeUIManager.changeImageBtn);
     }
 
-    public toggleGridView(show: boolean): void {
-        this.layoutManager.toggleGridView(show);
-        if (show) {
-            this.galleryManager.setVisibility(false);
-        }
-    }
+    public init(): void {
+        this.layoutManager.init();
+        this.galleryManager.init();
+        this.modeUIManager.init();
 
-    public updatePanelsForType(type?: "today" | "yearMonth"): void {
-        this.layoutManager.updatePanelsForType(type);
-        this.modeUIManager.changeImageBtn?.classList.remove("active");
-    }
-
-    // Mode
-    public updateArtworkModeUI(isArtwork: boolean): void {
-        // Pass layoutManager to allow mode manager to control layout visibility
-        this.modeUIManager.updateArtworkModeUI(isArtwork, this.layoutManager);
-    }
-
-    public updateImmersionUI(active: boolean): void {
-        this.modeUIManager.updateImmersionUI(active);
-    }
-
-    public updateModeTheme(isArtwork: boolean): void {
-        this.modeUIManager.updateModeTheme(isArtwork);
+        this.heroBgContainer = document.getElementById("heroBgContainer");
     }
 
     // Gallery Delegate
@@ -283,5 +256,35 @@ export class HeroUIManager {
         } else {
             document.body.classList.remove("bg-fit-contain");
         }
+    }
+
+    public showInstallButton(): void {
+        this.layoutManager.showInstallButton();
+    }
+
+    public toggleGridView(show: boolean): void {
+        this.layoutManager.toggleGridView(show);
+        if (show) {
+            this.galleryManager.setVisibility(false);
+        }
+    }
+
+    // Mode
+    public updateArtworkModeUI(isArtwork: boolean): void {
+        // Pass layoutManager to allow mode manager to control layout visibility
+        this.modeUIManager.updateArtworkModeUI(isArtwork, this.layoutManager);
+    }
+
+    public updateImmersionUI(active: boolean): void {
+        this.modeUIManager.updateImmersionUI(active);
+    }
+
+    public updateModeTheme(isArtwork: boolean): void {
+        this.modeUIManager.updateModeTheme(isArtwork);
+    }
+
+    public updatePanelsForType(type?: "today" | "yearMonth"): void {
+        this.layoutManager.updatePanelsForType(type);
+        this.modeUIManager.changeImageBtn?.classList.remove("active");
     }
 }
