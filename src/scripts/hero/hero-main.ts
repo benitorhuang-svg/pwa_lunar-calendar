@@ -40,5 +40,10 @@ const eventHandlers = new HeroEventHandlers(
 eventHandlers.init();
 
 // Initial Load
-const season = imageManager.getSeason(new Date());
-imageManager.detectHeroImages(season);
+(async () => {
+    const season = imageManager.getSeason(new Date());
+    await imageManager.detectHeroImages(season);
+
+    // Signal to resource loader that core logic AND first batch of images are ready
+    window.dispatchEvent(new CustomEvent("app-logic-ready"));
+})();

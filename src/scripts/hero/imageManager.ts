@@ -28,14 +28,17 @@ export class HeroImageManager {
         const seasonalPlaylist: string[] = [];
         this.manifest = await this.loadManifest(); // Ensure manifest is loaded once
 
-        // 1. 取得季節圖片 (Get seasonal images)
-        for (const season of ImageRules.SEASONS) {
-            const images = await this.getImagesForSeason(season);
+        // 1. 取得季節圖片 (Get seasonal images) - Parallel fetch
+        const seasonPromises = ImageRules.SEASONS.map(async (s) => ({
+            name: s,
+            images: await this.getImagesForSeason(s),
+        }));
 
-            // If it's the target season, ensure the first image is always the same (e.g. 1.webp)
-            // so the resourceLoader can reliably preload it.
-            if (season === targetSeason && images.length > 0) {
-                // Keep the first image (usually 1.webp or numerically first) at the start
+        const seasonsResults = await Promise.all(seasonPromises);
+
+        for (const { name: s, images } of seasonsResults) {
+            // Priority: Target Season
+            if (s === targetSeason && images.length > 0) {
                 const first = images[0];
                 const rest = images.slice(1);
                 if (ImageRules.ENABLE_RANDOM_SHUFFLE) {
@@ -111,6 +114,9 @@ export class HeroImageManager {
         console.log(`[Hero] Mode: ${this.galleryMode}, Playlist Size: ${this.heroList.length}`);
 
         await this.preloadHeroImages();
+
+        // Signal back to resourceLoader that the bulk of images for current season are ready
+        window.dispatchEvent(new CustomEvent("app-images-preloaded"));
 
         if (!isFallback) {
             window.dispatchEvent(new CustomEvent("request-hero-change"));
@@ -356,18 +362,21 @@ export class HeroImageManager {
     }
 
     private async preloadHeroImages(): Promise<void> {
-        // Parallel preloading with a limit or just all at once for modern browsers
-        const preloadPromises = this.heroList.map(async (src) => {
-            try {
-                const exists = await this.checkImageExists(src);
-                if (exists) {
-                    const img = new Image();
-                    img.src = src;
+        // Optimized: Only preload current season and default at startup to save mobile bandwidth
+        // The rest can be loaded predictionally or on-demand
+        const highPriority = this.heroList.slice(0, 15); // Preload first 15 images immediately
+
+        const preloadPromises = highPriority.map(async (src) => {
+            if (this.heroCache[src]) return; // Already cached
+
+            return new Promise<void>((resolve) => {
+                const img = new Image();
+                img.onload = img.onerror = () => {
                     this.heroCache[src] = img;
-                }
-            } catch (e) {
-                console.warn(`[Hero] Failed to preload: ${src}`, e);
-            }
+                    resolve();
+                };
+                img.src = src;
+            });
         });
 
         await Promise.all(preloadPromises);

@@ -9,7 +9,7 @@ export class PanelRenderers {
     private panelToday: HTMLElement | null = null;
     private panelYearMonth: HTMLElement | null = null;
 
-    constructor() {}
+    constructor() { }
 
     public init(): void {
         this.panelYearMonth = document.getElementById("panelYearMonth");
@@ -38,6 +38,13 @@ export class PanelRenderers {
         const ji = lunar.getDayJi();
         const festival = lunar.getFestival() || lunar.getSolarFestival();
 
+        console.log("[Floater] Rendering today panel for:", date.toDateString());
+        console.log("[Floater] Lunar Data:", { ganzhi, monthText, dayText, zodiac, luck, jianchu, festival });
+
+        if (!ganzhi || !monthText || !dayText) {
+            console.warn("[Floater] Critical lunar data missing, showing basic date info.");
+        }
+
         this.panelToday.innerHTML = `
     <div class="panel-detail-body">
         <div class="panel-side-accent">
@@ -57,8 +64,8 @@ export class PanelRenderers {
                 
                 <!-- Right Side Cluster: Zodiac & Solar Term -->
                 <div class="detail-right-cluster">
-                    <div class="traditional-seal">${zodiac.charAt(0)}</div>
-                    <div class="solar-term">${termPeriod.current}</div>
+                    <div class="traditional-seal">${(zodiac && zodiac.length > 0) ? zodiac.charAt(0) : "曆"}</div>
+                    <div class="solar-term">${termPeriod?.current || "平吉"}</div>
                 </div>
             </div>
             
@@ -73,27 +80,25 @@ export class PanelRenderers {
                 <div class="yiji-item">
                     <span class="yiji-label yiji-label--good">宜</span>
                     <div class="tag-container">
-                        ${
-                            yi.length > 0
-                                ? yi
-                                      .slice(0, 5)
-                                      .map((t: string) => `<span class="tag">${t}</span>`)
-                                      .join("")
-                                : '<span class="tag">諸事平吉</span>'
-                        }
+                        ${yi.length > 0
+                ? yi
+                    .slice(0, 5)
+                    .map((t: string) => `<span class="tag">${t}</span>`)
+                    .join("")
+                : '<span class="tag">諸事平吉</span>'
+            }
                     </div>
                 </div>
                 <div class="yiji-item">
                     <span class="yiji-label yiji-label--bad">忌</span>
                     <div class="tag-container">
-                        ${
-                            ji.length > 0
-                                ? ji
-                                      .slice(0, 5)
-                                      .map((t: string) => `<span class="tag">${t}</span>`)
-                                      .join("")
-                                : '<span class="tag">諸事不忌</span>'
-                        }
+                        ${ji.length > 0
+                ? ji
+                    .slice(0, 5)
+                    .map((t: string) => `<span class="tag">${t}</span>`)
+                    .join("")
+                : '<span class="tag">諸事不忌</span>'
+            }
                     </div>
                 </div>
             </div>

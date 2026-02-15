@@ -64,17 +64,31 @@
 
 ## 5. 資源加載系統 (Resource Loading System)
 
-採用 `ResourceLoader` 進行權重式預載 (Weighted Preloading)：
+採用基於「邏輯門鎖 (Logic Gate)」與「平行預熱 (Parallel Warming)」的混合加載策略：
 
-- **權重分配**：核心腳本 (20%)、字體 (20%)、第一張 Hero 圖 (30%)、其餘輪播圖 (20%)、音訊 (10%)。
+- **雙層進度追蹤**：進度條不僅追蹤靜態資源下載，還監聽應用程式核心邏輯與組件初始化完成的 `app-logic-ready` 訊號。
+- **權重分配**：
+  - **核心腳本 (15%)**: 真正反映應用程式逻辑就緒狀態。
+  - **首張 Hero 圖 (25%)**: 強制先行下載。
+  - **字體 (15%)**: 確保 Playfair Display & 織芒星書法體無閃爍加載。
+  - **其餘輪播圖 (15%)**: 採用平行預熱。
+  - **音訊 (10%)**: 視音頻。
+  - **SW 更新 check (20%)**: Service Worker 版本檢查。
 - **優化機制**：
-    - **Masterpiece Prioritization**：強制 `assets/gallery/default/1.webp` 作為最優先資源，確保加載遮罩背景與首張英雄圖無縫接軌。
-    - 使用 `Image()` 對象進行背景預熱。
-    - 結合 `APP_BASE_URL` (from `appConfig.ts`) 確保路徑安全性。
-    - 提供超時保護機制，確保加載異常時仍能進入應用。
-    - **CSS Fallback Strategy**：`background.css` 使用相對路徑 (`../../public/...`) 確保 Vite 編譯時能夠正確解析並打包 Fallback 圖。
+  - **平行預熱 (Parallel Warming)**：`HeroImageManager` 捨棄循序 for-loop，改用 `Promise.all` 併發請求，顯著縮短等待時間。
+  - **首圖確定性 (Deterministic First-Load)**：確保當前季節的首張圖片（通常為 1.webp）必被預載，防止加載畫面進入主畫面時發生未預期 404 或閃爍。
+  - **非阻塞更新**：Service Worker 的更新檢查不再阻塞資源下載。
+  - **超時保護**：8 秒強制門限，確保極端網路環境下仍能進入應用。
 
-## 6. PWA 與 離線強化
+## 6. 視覺與圖形質量 (Visual Fidelity)
+
+追求極致的「數位高級感」，移除所有可能產生雜訊或顆粒感的後製效果：
+
+- **移除數位噪點 (No Grain Policy)**：全面移除 SVG `feTurbulence` 噪點紋理（包括玻璃卡片、日曆網格、隨筆面板及藝廊菜單），確保 4K 螢幕下的純淨觀感。
+- **原始色彩復原**：背景圖片移除 CSS `saturate` 與 `brightness` 濾鏡，保留攝影作品最真實的寬容度與質感。
+- **流暢轉場**：背景切換採用 1.6s 的 `cubic-bezier(0.2, 0.8, 0.2, 1)` 動態平移與淡入，模擬絲綢般的切換效果。
+
+## 7. PWA 與 離線強化
 
 - **技術實現**: 基於 `@vite-pwa/astro`。
 - **Service Worker**: 採 `autoUpdate` 策略。

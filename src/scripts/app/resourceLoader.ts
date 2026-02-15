@@ -179,11 +179,18 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         const baseDir = APP_BASE_URL || "/";
         const galleryDir = (baseDir + "assets/gallery/" + season + "/").replace(/\/+/g, "/");
 
+        const isSlideshowFile = (f: string) => !/[\u4e00-\u9fa5]/.test(f);
+
         const manifest = GALLERY_MANIFEST as Record<string, string[]>;
-        let imageList = (manifest[season] || []).map((f: string) => galleryDir + f);
+        let imageList = (manifest[season] || [])
+            .filter(isSlideshowFile)
+            .map((f: string) => galleryDir + f);
+
         if (imageList.length === 0) {
             const defaultDir = (baseDir + "assets/gallery/default/").replace(/\/+/g, "/");
-            imageList = (manifest["default"] || []).map((f: string) => defaultDir + f);
+            imageList = (manifest["default"] || [])
+                .filter(isSlideshowFile)
+                .map((f: string) => defaultDir + f);
         }
 
         if (imageList.length === 0) {
@@ -192,44 +199,18 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             return;
         }
 
-        // Fallback function
-        const loadFallback = () => {
-            console.warn("[Loader] Primary hero image failed, attempting fallback...");
-            const fallbackImg = new Image();
-            fallbackImg.onload = fallbackImg.onerror = () => {
-                console.log("[Loader] Fallback image loaded (or failed safely)");
-                markDone("heroFirst");
-            };
-            // Fallback to default/1.webp or similar if available, or just manifest default
-            const fallbackPath = (baseDir + "assets/gallery/default/1.webp").replace(/\/+/g, "/");
-            fallbackImg.src = fallbackPath;
-        };
-
+        // --- Critical Path: Preload First Image ---
         const img = new Image();
-        img.onload = () => {
-            markDone("heroFirst");
-        };
+        img.onload = () => markDone("heroFirst");
         img.onerror = () => {
-            loadFallback();
+            console.warn("[Loader] HeroFirst load failed, using fallback...");
+            markDone("heroFirst");
         };
 
         if (imageList[0]) img.src = imageList[0]!;
-        else loadFallback();
 
-        if (imageList.length <= 1) {
-            markDone("heroAll");
-        } else {
-            const remaining = imageList.length - 1;
-            let loaded = 0;
-            for (let i = 1; i < imageList.length; i++) {
-                const img = new Image();
-                img.onload = img.onerror = () => {
-                    loaded++;
-                    if (loaded >= remaining) markDone("heroAll");
-                };
-                if (imageList[i]) img.src = imageList[i] as string;
-            }
-        }
+        // --- Note: heroAll (the rest) will be signaled via CustomEvent from the app's ImageManager ---
+        window.addEventListener("app-images-preloaded", () => markDone("heroAll"));
     }
 
     function preloadAudio(): void {

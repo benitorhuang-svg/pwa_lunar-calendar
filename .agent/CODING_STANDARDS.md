@@ -51,6 +51,9 @@
 - **資源路徑**: 在 CSS 中引用 `public/` 資源時，若需作為 Fallback 或建置資源，應使用相對路徑 (`../../public/...`) 以確保 Vite 正確解析。
 - **組件內部腳本**: 優先使用「模組化熱插拔」設計。大片段 JS 邏輯必須透過 `import` 載入外部模組，保持 `.astro` 檔案的 `script` 標籤簡潔。
 - **註解**: 複雜邏輯必須撰寫「中英對照」註解，說明「為什麼這樣做」。
+- **效能優化 (Performance)**:
+    - **平行預熱 (Parallel Preloading)**: 在初始化資源時，優先採用 `Promise.all` 進行平行加載，避免序列阻塞。
+    - **邏輯門控 (Loading Gatekeepers)**: 關鍵流程（如加載畫面消失）必須結合「靜態資源就緒」與「應用邏輯就緒 (`DOMContentLoaded` + `app-logic-ready`)」雙重門檻。
 
 ## 3. Astro 組件與 CSS 樣式準則 (Component & Styling)
 
