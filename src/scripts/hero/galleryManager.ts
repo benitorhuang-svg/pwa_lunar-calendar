@@ -171,6 +171,35 @@ export class HeroGalleryManager {
                 }
             }
         });
+
+        // Listen for music restored event
+        window.addEventListener("music-restored", ((e: CustomEvent) => {
+            const url = e.detail.url;
+            if (!url) return;
+
+            const allRadioItems = document.querySelectorAll(".radio-item");
+            allRadioItems.forEach((ri) => ri.classList.remove("active"));
+
+            const match = Array.from(allRadioItems).find(
+                (item) => (item as HTMLElement).dataset.url === url
+            );
+            if (match) {
+                match.classList.add("active");
+            }
+        }) as EventListener);
+
+        // Initial check for static items
+        const lastUrl = localStorage.getItem("zen_music_last_url");
+        if (lastUrl) {
+            const allRadioItems = document.querySelectorAll(".radio-item");
+            allRadioItems.forEach((ri) => {
+                if ((ri as HTMLElement).dataset.url === lastUrl) {
+                    ri.classList.add("active");
+                } else {
+                    ri.classList.remove("active");
+                }
+            });
+        }
     }
 
     public init(): void {
@@ -223,6 +252,15 @@ export class HeroGalleryManager {
                 this.gallerySubmenu?.classList.remove("show");
             });
 
+            // Check if this station was the last played
+            const lastUrl = localStorage.getItem("zen_music_last_url");
+            if (lastUrl && lastUrl === station.url) {
+                // Deactivate others
+                const allRadioItems = document.querySelectorAll(".radio-item");
+                allRadioItems.forEach((ri) => ri.classList.remove("active"));
+                btn.classList.add("active");
+            }
+
             const delBtn = document.createElement("button");
             delBtn.className = "radio-delete-btn";
             delBtn.textContent = "✕";
@@ -230,9 +268,7 @@ export class HeroGalleryManager {
 
             delBtn.addEventListener("click", (e) => {
                 e.stopPropagation();
-                if (confirm(`確定要移除「${station.name}」嗎？`)) {
-                    onDelete(station.id, station.name);
-                }
+                onDelete(station.id, station.name);
             });
 
             row.appendChild(btn);

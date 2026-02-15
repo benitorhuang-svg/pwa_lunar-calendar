@@ -24,6 +24,8 @@ export class HeroUIManager {
     private galleryManager: HeroGalleryManager;
     private heroBgContainer: HTMLElement | null = null;
     private layoutManager: HeroLayoutManager;
+    private toastContainer: HTMLElement | null = null;
+    private zenGestureHint: HTMLElement | null = null;
 
     private modeUIManager: HeroModeUIManager;
 
@@ -75,6 +77,7 @@ export class HeroUIManager {
                             detail: { action: "start", isArtwork: false },
                         }),
                     );
+                    this.showZenGestureHint();
                 } else {
                     // Status 4 (Zen) -> Status 3 (Artwork)
                     window.dispatchEvent(
@@ -106,6 +109,8 @@ export class HeroUIManager {
                         detail: { action: "start", isArtwork: false },
                     }),
                 );
+
+                this.showZenGestureHint();
 
                 // 2. IMPORTANT: Force 'immersion-mode' class to stay / be added
                 // Just in case 'slideshow-control' handler removed it or it was missing
@@ -161,8 +166,21 @@ export class HeroUIManager {
     }
 
     public bindHeaderToggle(callback: (e: MouseEvent) => void): void {
-        this.layoutManager.headerToggleBtn?.addEventListener("click", (e) =>
-            callback(e as MouseEvent),
+        const btn = this.layoutManager.headerToggleBtn;
+        if (!btn) return;
+
+        // Desktop Click
+        btn.addEventListener("click", (e) => callback(e as MouseEvent));
+
+        // Mobile Touch (Prevent ghost clicks and delay)
+        btn.addEventListener(
+            "touchstart",
+            (e) => {
+                e.preventDefault(); // Stop mouse emulation
+                e.stopPropagation();
+                callback(e as unknown as MouseEvent);
+            },
+            { passive: false },
         );
     }
 
@@ -249,6 +267,8 @@ export class HeroUIManager {
         this.modeUIManager.init();
 
         this.heroBgContainer = document.getElementById("heroBgContainer");
+        this.zenGestureHint = document.getElementById("zenGestureHint");
+        this.toastContainer = document.getElementById("toastContainer");
     }
 
     // Gallery Delegate
@@ -303,5 +323,38 @@ export class HeroUIManager {
     public updatePanelsForType(type?: "today" | "yearMonth"): void {
         this.layoutManager.updatePanelsForType(type);
         this.modeUIManager.changeImageBtn?.classList.remove("active");
+    }
+
+
+
+    public showToast(message: string, type: "info" | "error" = "info"): void {
+        if (!this.toastContainer) return;
+
+        const toast = document.createElement("div");
+        toast.className = `toast ${type === "error" ? "toast-error" : ""}`;
+        toast.innerHTML = `<span class="toast-icon">${type === "error" ? "⚠️" : "✨"}</span> ${message}`;
+
+        this.toastContainer.appendChild(toast);
+
+        // Auto remove
+        setTimeout(() => {
+            toast.classList.add("hiding");
+            toast.addEventListener("animationend", () => {
+                toast.remove();
+            });
+        }, 3000);
+    }
+
+    private showZenGestureHint(): void {
+        const hasShown = localStorage.getItem("hasShownZenHint");
+        if (!hasShown && this.zenGestureHint) {
+            this.zenGestureHint.classList.add("show");
+            localStorage.setItem("hasShownZenHint", "true");
+
+            // Auto hide handled by CSS animation, but remove class to reset state
+            setTimeout(() => {
+                this.zenGestureHint?.classList.remove("show");
+            }, 4600);
+        }
     }
 }

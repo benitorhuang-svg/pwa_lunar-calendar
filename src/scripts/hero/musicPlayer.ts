@@ -90,9 +90,28 @@ export class HeroMusicPlayer {
         const lastUrl = localStorage.getItem("zen_music_last_url");
         if (lastUrl) {
             const idx = this.combinedPlaylist.indexOf(lastUrl);
+
+            // Check if it's in playlist OR it's an external link (Radio)
+            // Note: Blob URLs will change, so they won't match lastUrl. 
+            // We might need a better way for blobs, but for now support persistent URLs.
             if (idx !== -1) {
                 this.trackIdx = idx;
-                console.log(`[ZenMusic] Restored last selection: ${idx} (${lastUrl})`);
+                if (this.bgMusic) this.bgMusic.src = lastUrl;
+                console.log(`[ZenMusic] Restored via Playlist: ${idx}`);
+            } else if (lastUrl.startsWith("http")) {
+                // External Radio URL
+                if (this.bgMusic) this.bgMusic.src = lastUrl;
+                console.log(`[ZenMusic] Restored External URL: ${lastUrl}`);
+            }
+
+            // Update UI
+            window.dispatchEvent(
+                new CustomEvent("music-restored", { detail: { url: lastUrl } }),
+            );
+        } else {
+            // Default
+            if (this.combinedPlaylist.length > 0 && this.bgMusic) {
+                this.bgMusic.src = this.combinedPlaylist[0] || "";
             }
         }
 
