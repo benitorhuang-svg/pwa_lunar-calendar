@@ -41,7 +41,9 @@
     - **發送者**: `window.dispatchEvent(new CustomEvent<DetailType>('name', { detail: ... }))`。
     - **接收者**: `window.addEventListener('name', ((e: CustomEvent<DetailType>) => { ... }) as EventListener)`。
 - **職責分離 (SoC)**:
-    - **Manager**: 處理資料、計算與狀態。
+    - **Manager**: 處理資料、計算與狀態。應避免成為 "God Class"，若邏輯過於複雜（超過 300 行），**必須**進行原子化拆分。
+        - **原子化 (Atomization)**: 將大型 Manager 拆分為多個職責單一的 Sub-Managers (如 `LayoutManager`, `ModeManager`, `StateManager`)。
+        - **外觀模式 (Facade)**: 主 Manager (如 `UIManager`) 轉型為協調者，僅負責初始化與API轉發，保留乾淨的對外介面。
     - **Handler**: 處理使用者輸入與事件分配。
     - **Renderer**: 處理 DOM 操作與動畫。
     - **Orchestrator**: 負責跨模組的業務流轉。
@@ -54,10 +56,11 @@
 
 ### 組件模組化 (Component Modularity)
 
-- **原子化設計 (Atomic Design)**：遵循 Brad Frost 的原子設計理論，將 UI 拆分為不同層級，確保組件的高度重用性。
-    - **原子 (Atoms)**：最基礎的 HTML 標籤、SVG 圖示或單一功能的基礎組件。
-    - **分子 (Molecules)**：由多個原子組合成的簡單功能塊 (例：帶有刪除按鈕的電台列、帶有圖示的導航按鈕)。
-    - **生物 (Organisms)**：由分子與原子構成的複雜 UI 區域 (例：整個 `HeroDock.astro` 或 `HeroGallerySubmenu.astro`)。
+- **原子化設計 (Atomic Design)**：遵循 Brad Frost 的原子設計理論，將 UI 與 **邏輯控制 (Logic Control)** 拆分為不可再分的最小單元。
+    - **原子 (Atoms)**：最基礎的 HTML 標籤、SVG 圖示或單一功能的 Helper Class。
+    - **分子 (Molecules)**：功能單一的小型 Manager (如 `LayoutManager`, `ThemeManager`) 或 UI 區塊。
+    - **生物 (Organisms)**：複合功能的 Facade Manager (如 `UIManager`) 或大型 UI 組件。
+- **精準控制 (Precision Control)**：透過細粒度的拆分，確保每個模組僅負責單一職責，從而實現對版面與狀態的精準控制，避免副作用。
 - **拆分時機**：當組件滿足以下任一條件時，**必須**進行拆分：
     - 總行數超過 300 行。
     - 包含超過 100 行的內聯 `<style>`。

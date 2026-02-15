@@ -170,20 +170,30 @@ export class AppEventOrchestrator {
 
     private setupPanelEvents(): void {
         // 切換面板 (Toggle Panel)
-        window.addEventListener("toggle-panel", ((e: CustomEvent<string>) => {
-            const type = e.detail as "today" | "yearMonth";
-            const isSamePanel = this.state.getState().activePanel === type;
+        window.addEventListener("toggle-panel", ((e: CustomEvent<string | { type: string; force?: "open" | "close" }>) => {
+            const detail = e.detail;
+            const type = (typeof detail === "string" ? detail : detail.type) as "today" | "yearMonth";
+            const force = typeof detail === "object" ? detail.force : undefined;
+
+            const currentActive = this.state.getState().activePanel;
+            const isSamePanel = currentActive === type;
 
             this.state.setActivePanel(null);
             window.dispatchEvent(new CustomEvent("hide-panels"));
 
-            if (isSamePanel) {
+            let shouldOpen = !isSamePanel;
+            if (force === "open") shouldOpen = true;
+            if (force === "close") shouldOpen = false;
+
+            if (!shouldOpen) {
+                // Close / Show Grid
                 window.dispatchEvent(
                     new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
                         detail: { show: true },
                     }),
                 );
             } else {
+                // Open Panel
                 this.state.setActivePanel(type);
                 window.dispatchEvent(
                     new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
@@ -219,10 +229,18 @@ export class AppEventOrchestrator {
 
         // 切換網格 (Toggle Grid)
         window.addEventListener("toggle-grid", () => {
-            const calendarSection = document.getElementById("calendarSection");
-            if (!calendarSection) return;
+            const isImmersion = document.body.classList.contains("immersion-mode");
 
-            const isShowing = calendarSection.classList.contains("show-grid");
+            // 如果正處於沈浸/歡迎模式，點擊日曆按鈕應視為「要求回歸日曆模式」
+            if (isImmersion) {
+                window.dispatchEvent(
+                    new CustomEvent("welcome-mode", { detail: { active: false, targetMode: "calendar" } })
+                );
+                return;
+            }
+
+            const calendarSection = document.getElementById("calendarSection");
+            const isShowing = calendarSection?.classList.contains("show-grid") ?? false;
 
             this.state.setActivePanel(null);
             window.dispatchEvent(new CustomEvent("hide-panels"));

@@ -8,6 +8,11 @@
     /* 
      * Lowered z-index to stay BELOW the top-right tools (100001)
      * so they remain natively clickable even if layering overlaps.
+     * Hierarchy: 
+     * 100001: Top Right Tools
+     * 100000: NotePad Overlay
+     * 2000: Daily Panel / Suspension Panels
+     * 1500: Calendar Section
      */
     z-index: 100000;
     background: transparent;

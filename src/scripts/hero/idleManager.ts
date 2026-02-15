@@ -41,16 +41,12 @@ export class HeroIdleManager {
             this.idleTimer = null;
         }
 
-        const isInitialWelcome = document.body.classList.contains("initial-welcome");
-        const isImmersion = document.body.classList.contains("immersion-mode");
 
-        // 1. 喚醒邏輯：如果當前處於沉浸模式（且非初始歡迎），交互後應退出沉浸
-        // 注意：如果在筆記模式下，我們不視為「需要退出沉浸」，因為筆記模式本身就不會進入沉浸
-        if (isImmersion && !isInitialWelcome && !this.isNoteMode) {
-            console.log("[Global Idle] Wake up: Exiting Immersion Mode");
-            this.lastToggleTime = Date.now();
-            window.dispatchEvent(new CustomEvent("welcome-mode", { detail: { active: false } }));
-        }
+
+        // 1. 喚醒邏輯：已移除自動退出沉浸的邏輯，避免在映畫模式下互動(如切換圖片)導致跳出
+        // 狀態切換應由 UI 事件(按鈕、背景點擊)明確觸發
+        // The auto-exit logic is removed to prevent exiting immersion mode during interaction in Artwork Mode.
+        // State transitions should be explicitly triggered by UI events.
 
         // 2. 設置沉浸超時邏輯
         this.idleTimer = setTimeout(() => {

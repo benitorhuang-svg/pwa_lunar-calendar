@@ -94,3 +94,10 @@ export interface UpdateCalendarTitleDetail {
     month: number;
     year: number;
 }
+
+export type TogglePanelDetail = string | { type: "today" | "yearMonth"; force?: "open" | "close" };
+
+export interface WelcomeModeDetail {
+    active: boolean;
+    targetMode?: "calendar" | "artwork";
+}

@@ -54,34 +54,17 @@
     display: block;
 }
 
-body.mode-immersion .immersion-toggle-btn .icon-calendar {
+body.immersion-mode .immersion-toggle-btn .icon-calendar {
     display: block;
 }
 
-body.mode-immersion .immersion-toggle-btn .icon-immersion {
+body.immersion-mode .immersion-toggle-btn .icon-immersion {
     display: none;
 }
 
-/* Active State for Immersion Mode - Strong Visual Feedback */
-body.mode-immersion .immersion-toggle-btn {
-    color: #2d2a26;
-    /* Dark text for contrast */
-    background: linear-gradient(135deg, #d4af37, #f0d060);
-    /* Vibrant Gold */
-    border-color: #d4af37;
-    box-shadow:
-        0 0 25px rgba(212, 175, 55, 0.4),
-        0 0 10px rgba(212, 175, 55, 0.2);
-    transform: scale(1.1);
-}
-
-body.mode-artwork.mode-immersion .immersion-toggle-btn {
-    color: #000;
-    background: rgba(255, 255, 255, 0.95);
-    /* Bright White in Artwork */
-    border-color: #fff;
-    box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
-}
+/* Active State for Immersion Mode - Strong Visual Feedback Removed for Consistency */
+/* body.immersion-mode .immersion-toggle-btn { ... } */
+/* body.mode-artwork.immersion-mode .immersion-toggle-btn { ... } */
 
 /* Calendar Mode (Not Artwork) Styling for Music playing */
 body:not(.mode-artwork) .music-toggle-btn.playing {

@@ -1,46 +1,18 @@
 /* Calendar Section & Grid Layout */
+/* Calendar Section - Inherits .glass-card-template */
 .calendar-section {
-    display: flex;
-    flex-direction: column;
+    /* Specific Logic */
     justify-content: flex-start;
-
-    height: auto;
-    min-height: 68dvh;
-    max-height: 72dvh;
-    width: calc(100% - 40px);
-    margin: 0 20px;
-
-    border-radius: 48px;
-    /* High rounding to match NotePad */
     padding: 15px 16px 10px 16px;
 
-    position: absolute;
-    bottom: 100px;
-    left: 0;
     z-index: 1500;
 
-    /* Frosted White Style (魔砂白) */
-    backdrop-filter: blur(40px) saturate(140%);
-    -webkit-backdrop-filter: blur(40px) saturate(140%);
-
-    background: var(--cal-bg);
-    color: var(--cal-text);
-
-    border: 1px solid var(--cal-border);
-
-    box-shadow:
-        0 40px 120px rgba(0, 0, 0, 0.18),
-        inset 0 0 100px rgba(255, 255, 255, 0.1);
-
-    touch-action: manipulation;
-    overflow: hidden;
-
+    /* Animation State */
     transform: translateY(40px);
     opacity: 0;
     visibility: hidden;
     transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
     pointer-events: none;
-    will-change: transform, opacity;
 }
 
 /* Digital Noise Overlay */

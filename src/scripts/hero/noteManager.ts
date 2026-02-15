@@ -1,84 +1,20 @@
 /**
  * Note Manager
- * 負責處理隨筆記錄功能，包括介面顯示、儲存、字體切換與匯出
- * Responsible for note-taking features: UI toggle, storage, font switching, and export
+ * 負責處理隨筆記錄功能 (Responsible for note-taking features)
+ * Refactored to use the unified Daily Card (panelToday).
  */
 
 import { HeroIdleManager } from "./idleManager";
 
 export class NoteManager {
-    private btnClose: HTMLElement | null = null;
-    private btnExport: HTMLElement | null = null;
     private btnPen: HTMLElement | null = null;
-    private btnSave: HTMLElement | null = null;
-    private datePicker: HTMLInputElement | null = null;
-    private editor: HTMLTextAreaElement | null = null;
-    private fontSelect: HTMLSelectElement | null = null;
-    private idleManager: HeroIdleManager;
-    private statusIndicator: HTMLElement | null = null;
 
-    private overlay: HTMLElement | null = null;
-
-    constructor(idleManager: HeroIdleManager) {
-        this.idleManager = idleManager;
+    constructor(_idleManager: HeroIdleManager) {
+        // idleManager no longer needed for unified panel
     }
 
     public init(): void {
-        this.cacheElements();
         this.setupEventListeners();
-
-        // Load today's note by default
-        this.loadNote(new Date());
-    }
-
-    private cacheElements(): void {
-        this.overlay = document.getElementById("notePadOverlay");
-        this.btnPen = document.getElementById("btnPen");
-        this.btnClose = document.getElementById("btnNoteClose");
-        this.btnSave = document.getElementById("btnNoteSave");
-        this.btnExport = document.getElementById("btnNoteExport");
-        this.fontSelect = document.getElementById("noteFontSelect") as HTMLSelectElement;
-        this.datePicker = document.getElementById("noteDatePicker") as HTMLInputElement;
-        this.editor = document.getElementById("noteEditor") as HTMLTextAreaElement;
-        this.statusIndicator = document.getElementById("noteStatus");
-
-        // Set date picker to today
-        if (this.datePicker) {
-            this.datePicker.valueAsDate = new Date();
-        }
-    }
-
-    private closeNotePad(): void {
-        if (this.overlay) {
-            this.overlay.classList.remove("active");
-            document.body.classList.remove("note-mode-active"); // UI Cleanup
-            this.idleManager.isNoteMode = false; // Resume immersion potential
-            this.idleManager.reset(); // Reset timer
-        }
-    }
-
-    private exportNote(): void {
-        if (!this.editor) return;
-
-        const content = this.editor.value;
-        if (!content) {
-            alert("目前沒有內容可匯出 (No content to export)");
-            return;
-        }
-
-        const dateStr = this.datePicker?.value || "untited";
-        const filename = `zen_note_${dateStr}.txt`;
-
-        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
     }
 
     private getNoteKey(date: Date): string {
@@ -88,111 +24,193 @@ export class NoteManager {
         return `zen_note_${y}-${m}-${d}`;
     }
 
-    private loadNote(date: Date): void {
+    private loadNoteForPanel(year: number, month: number, day: number): void {
+        const date = new Date(year, month, day);
+        const key = this.getNoteKey(date);
+
+        // Font preference binding (Global setting)
+        const savedFont = localStorage.getItem("note_font_pref");
+        const fontSelect = document.getElementById("panelNoteFontSelect") as HTMLSelectElement;
+        if (fontSelect && savedFont) {
+            fontSelect.value = savedFont;
+        }
+
+        // Open Notepad Trigger
+        const btnOpen = document.getElementById("btnOpenNotePad");
+        if (btnOpen) {
+            btnOpen.onclick = (e) => {
+                e.stopPropagation();
+                window.dispatchEvent(new CustomEvent("open-notepad", {
+                    detail: { year, month, day } // Pass date context
+                }));
+            };
+        }
+
+        // Export binding (Select Menu)
+        const exportSelect = document.getElementById("panelNoteExportSelect") as HTMLSelectElement;
+        if (exportSelect) {
+            exportSelect.onchange = (e) => {
+                e.stopPropagation();
+                const format = exportSelect.value;
+                if (format) {
+                    const content = localStorage.getItem(key) || "";
+                    this.exportPanelNote(date, content, format);
+                    exportSelect.value = ""; // Reset selection
+                }
+            };
+        }
+
+        // Font selector change (Save pref only)
+        if (fontSelect) {
+            fontSelect.onchange = (e) => {
+                e.stopPropagation();
+                const fontClass = (e.target as HTMLSelectElement).value;
+                localStorage.setItem("note_font_pref", fontClass);
+            }
+        }
+    }
+
+    private exportPanelNote(date: Date, content: string, format: string): void {
+        if (!content && format !== 'png') { // PNG might handle empty generic view?
+            alert("目前沒有內容可匯出");
+            return;
+        }
+
+        const now = new Date();
+        const timeStr = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`;
+        const dateStr = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}`;
+        const filename = `zen_note_${dateStr}_${timeStr}.${format}`;
+
+        if (format === 'txt') {
+            const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } else {
+            alert(`目前尚未支援 ${format.toUpperCase()} 匯出功能，請等待後續更新。`);
+        }
+    }
+
+    private loadNoteForOverlay(year: number, month: number, day: number): void {
+        const date = new Date(year, month, day);
         const key = this.getNoteKey(date);
         const content = localStorage.getItem(key);
 
-        if (this.editor) {
-            this.editor.value = content || "";
-        }
-    }
+        const overlayEditor = document.getElementById("noteEditor") as HTMLTextAreaElement;
+        const datePicker = document.getElementById("noteDatePicker") as HTMLInputElement;
 
-    private openNotePad(): void {
-        if (this.overlay) {
-            // 1. Force Exit Welcome/Immersion Mode & Close other panels to avoid overlap
-            window.dispatchEvent(new CustomEvent("welcome-mode", { detail: { active: false } }));
-            window.dispatchEvent(new CustomEvent("close-panels", { detail: { showGrid: false } }));
-            document.body.classList.remove("initial-welcome");
+        if (overlayEditor) {
+            overlayEditor.value = content || "";
 
-            // 2. Activate Note Focus Mode
-            this.overlay.classList.add("active");
-            document.body.classList.add("note-mode-active");
-            this.idleManager.isNoteMode = true;
+            // Auto-save
+            overlayEditor.oninput = () => {
+                localStorage.setItem(key, overlayEditor.value);
+            };
 
-            // 3. Load content
-            if (this.datePicker?.valueAsDate) {
-                this.loadNote(this.datePicker.valueAsDate);
+            // Font preference (Overlay)
+            const savedFont = localStorage.getItem("note_font_pref");
+            const overlayFontSelect = document.getElementById("noteFontSelect") as HTMLSelectElement;
+            if (savedFont) {
+                overlayEditor.className = `note-textarea-zen ${savedFont}`;
+                if (overlayFontSelect) overlayFontSelect.value = savedFont;
+            }
+
+            if (overlayFontSelect) {
+                overlayFontSelect.onchange = (e) => {
+                    const fontClass = (e.target as HTMLSelectElement).value;
+                    overlayEditor.className = `note-textarea-zen ${fontClass}`;
+                    localStorage.setItem("note_font_pref", fontClass);
+                }
             }
         }
-    }
 
-    private saveNote(): void {
-        if (!this.datePicker?.valueAsDate || !this.editor) return;
+        // Setup Date Picker Display
+        if (datePicker) {
+            const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+            datePicker.value = dateStr;
 
-        const key = this.getNoteKey(this.datePicker.valueAsDate);
-        const content = this.editor.value;
+            // Handle date change
+            datePicker.onchange = (e) => {
+                const newDateStr = (e.target as HTMLInputElement).value;
+                if (newDateStr) {
+                    const parts = newDateStr.split('-').map(Number);
+                    if (parts.length >= 3) {
+                        const y = parts[0]!;
+                        const m = parts[1]!;
+                        const d = parts[2]!;
+                        if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+                            this.loadNoteForOverlay(y, m - 1, d);
+                        }
+                    }
+                }
+            };
+        }
 
-        localStorage.setItem(key, content);
+        // Bind Save/Export in Overlay
+        const btnSave = document.getElementById("btnNoteSave");
+        if (btnSave) {
+            btnSave.onclick = () => {
+                const overlay = document.getElementById("notePadOverlay");
+                if (overlay) overlay.classList.remove("active");
+                document.body.classList.remove("note-mode-active");
+                window.dispatchEvent(new CustomEvent("toggle-panel", { detail: "today" }));
+            };
+        }
+
+        const btnExport = document.getElementById("btnNoteExport");
+        if (btnExport) {
+            btnExport.onclick = () => {
+                this.exportPanelNote(date, overlayEditor?.value || "", "txt");
+            };
+        }
+
+        // Close button logic (also handled in eventHandlers but binding here ensures data safety if needed)
+        const btnClose = document.getElementById("btnNoteClose");
+        if (btnClose) {
+            btnClose.onclick = () => {
+                const overlay = document.getElementById("notePadOverlay");
+                if (overlay) overlay.classList.remove("active");
+                document.body.classList.remove("note-mode-active");
+                window.dispatchEvent(new CustomEvent("toggle-panel", { detail: "today" }));
+            };
+        }
     }
 
     private setupEventListeners(): void {
-        // Toggle Open
-        this.btnPen?.addEventListener("mousedown", (e: MouseEvent) => {
+        this.btnPen = document.getElementById("btnPen");
+
+        // Toggle Open (Unified Panel) - Force Open for 'Enter Note Mode'
+        this.btnPen?.addEventListener("click", (e: MouseEvent) => {
             e.stopPropagation();
-            this.openNotePad();
+            window.dispatchEvent(new CustomEvent("toggle-panel", { detail: { type: "today", force: "open" } }));
         });
 
-        // Close
-        this.btnClose?.addEventListener("click", (e: Event) => {
-            e.stopPropagation();
-            this.closeNotePad();
-        });
-
-        // Save
-        this.btnSave?.addEventListener("click", (e: Event) => {
-            e.stopPropagation();
-            this.saveNote();
-            // Feedback
-            if (this.statusIndicator) {
-                this.statusIndicator.textContent = "✧ 記憶已留存 (Saved)";
-                this.statusIndicator.style.color = "rgba(255, 255, 255, 0.6)";
-                setTimeout(() => {
-                    if (this.statusIndicator) {
-                        this.statusIndicator.textContent = "在此刻寫下感受";
-                        this.statusIndicator.style.color = "";
-                    }
-                }, 3000);
+        // Listen for Panel Render
+        window.addEventListener("today-panel-rendered", ((e: CustomEvent) => {
+            const { year, month, day } = e.detail || {};
+            if (year && month !== undefined && day) {
+                this.loadNoteForPanel(year, month, day);
+            } else {
+                const today = new Date();
+                this.loadNoteForPanel(today.getFullYear(), today.getMonth(), today.getDate());
             }
-        });
+        }) as EventListener);
 
-        // Export (TXT)
-        this.btnExport?.addEventListener("click", (e: Event) => {
-            e.stopPropagation();
-            this.exportNote();
-        });
-
-        // Font Change
-        this.fontSelect?.addEventListener("change", (e: Event) => {
-            e.stopPropagation();
-            const fontClass = (e.target as HTMLSelectElement).value;
-            if (this.editor) {
-                this.editor.className = `note-textarea-zen ${fontClass}`;
-                // Save font preference
-                localStorage.setItem("note_font_pref", fontClass);
+        // Listen for Open NotePad (Full Screen)
+        window.addEventListener("open-notepad", ((e: CustomEvent) => {
+            const { year, month, day } = e.detail || {};
+            if (year && month !== undefined && day) {
+                this.loadNoteForOverlay(year, month, day);
+            } else {
+                // Fallback to today
+                const today = new Date();
+                this.loadNoteForOverlay(today.getFullYear(), today.getMonth(), today.getDate());
             }
-        });
-
-        // Date Change -> Load note for that date
-        this.datePicker?.addEventListener("change", (e: Event) => {
-            e.stopPropagation();
-            if (this.datePicker?.valueAsDate) {
-                this.loadNote(this.datePicker.valueAsDate);
-            }
-        });
-
-        // Prevent typing/clicks in canvas from bubbling to window (avoid idle reset interference)
-        this.editor?.addEventListener("mousedown", (e: MouseEvent) => e.stopPropagation());
-        this.editor?.addEventListener("touchstart", (e: TouchEvent) => e.stopPropagation());
-        this.editor?.addEventListener("keypress", (e: KeyboardEvent) => e.stopPropagation());
-
-        this.overlay?.addEventListener("mousedown", (e: MouseEvent) => e.stopPropagation());
-        this.overlay?.addEventListener("touchstart", (e: TouchEvent) => e.stopPropagation());
-
-        // Load font preference
-        const savedFont = localStorage.getItem("note_font_pref");
-        if (savedFont && this.editor && this.fontSelect) {
-            this.editor.className = `note-textarea-zen ${savedFont}`;
-            this.fontSelect.value = savedFont;
-        }
+        }) as EventListener);
     }
 }

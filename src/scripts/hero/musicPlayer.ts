@@ -85,7 +85,23 @@ export class HeroMusicPlayer {
 
         this.combinedPlaylist = [...this.zenPlaylist, ...this.customPlaylist];
         console.log(`[ZenMusic] Playlist updated. Total tracks: ${this.combinedPlaylist.length}`);
+
+        // Restore last selection if available
+        const lastUrl = localStorage.getItem("zen_music_last_url");
+        if (lastUrl) {
+            const idx = this.combinedPlaylist.indexOf(lastUrl);
+            if (idx !== -1) {
+                this.trackIdx = idx;
+                console.log(`[ZenMusic] Restored last selection: ${idx} (${lastUrl})`);
+            }
+        }
+
         return this.customPlaylist.length;
+    }
+
+    private saveLastSelection(url: string): void {
+        if (!url) return;
+        localStorage.setItem("zen_music_last_url", url);
     }
 
     /**
@@ -105,7 +121,9 @@ export class HeroMusicPlayer {
 
         // 初始化第一首
         if (!this.bgMusic.src || this.bgMusic.src === "" || this.bgMusic.ended) {
-            this.bgMusic.src = this.combinedPlaylist[this.trackIdx] || "";
+            const url = this.combinedPlaylist[this.trackIdx] || "";
+            this.bgMusic.src = url;
+            this.saveLastSelection(url);
         }
 
         if (this.btnMusic) this.btnMusic.classList.add("loading"); // Indicate loading start
@@ -131,7 +149,9 @@ export class HeroMusicPlayer {
     public playIndex(idx: number): void {
         if (!this.bgMusic || idx < 0 || idx >= this.combinedPlaylist.length) return;
         this.trackIdx = idx;
-        this.bgMusic.src = this.combinedPlaylist[this.trackIdx] || "";
+        const url = this.combinedPlaylist[this.trackIdx] || "";
+        this.bgMusic.src = url;
+        this.saveLastSelection(url);
         this.play();
     }
 
@@ -143,13 +163,16 @@ export class HeroMusicPlayer {
             this.trackIdx = idx;
         }
         this.bgMusic.src = url;
+        this.saveLastSelection(url);
         this.play();
     }
 
     private playNext(): void {
         if (!this.bgMusic) return;
         this.trackIdx = (this.trackIdx + 1) % this.combinedPlaylist.length;
-        this.bgMusic.src = this.combinedPlaylist[this.trackIdx] || "";
+        const url = this.combinedPlaylist[this.trackIdx] || "";
+        this.bgMusic.src = url;
+        this.saveLastSelection(url);
         this.play();
     }
 }
