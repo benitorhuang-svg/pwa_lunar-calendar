@@ -1,7 +1,4 @@
-/**
- * Hero Music Player
- * 負責音樂播放器邏輯 (Responsible for music player logic)
- */
+import { AUDIO_MANIFEST } from "../generated/audioManifest";
 
 export class HeroMusicPlayer {
     private bgMusic: HTMLAudioElement | null = null;
@@ -14,11 +11,14 @@ export class HeroMusicPlayer {
     private zenPlaylist: string[];
 
     constructor(baseDir: string) {
-        this.zenPlaylist = [
-            (baseDir + "assets/audio/ambient.mp3").replace(/\/+/g, "/"),
-            (baseDir + "assets/audio/danyvin.mp3").replace(/\/+/g, "/"),
-            (baseDir + "assets/audio/danyvin-journey.mp3").replace(/\/+/g, "/"),
-        ];
+        // Automatically populated from public/assets/audio via generated manifest
+        this.zenPlaylist = AUDIO_MANIFEST.map((file: string) =>
+            (baseDir + "assets/audio/" + file).replace(/\/+/g, "/"),
+        );
+
+        // Add external/hardcoded sources if any (keeping the Jamendo one for demo/convenience)
+        this.zenPlaylist.push("https://mp3l.jamendo.com/?trackid=953602&format=mp31&from=app-dev");
+
         this.combinedPlaylist = [...this.zenPlaylist];
         this.trackIdx = Math.floor(Math.random() * this.combinedPlaylist.length);
     }
@@ -91,7 +91,9 @@ export class HeroMusicPlayer {
             window.dispatchEvent(new CustomEvent("music-restored", { detail: { url: lastUrl } }));
         } else {
             if (this.combinedPlaylist.length > 0 && this.bgMusic) {
-                this.bgMusic.src = this.combinedPlaylist[0] || "";
+                // Pick a random track from the newly expanded list
+                this.trackIdx = Math.floor(Math.random() * this.combinedPlaylist.length);
+                this.bgMusic.src = this.combinedPlaylist[this.trackIdx] || "";
             }
         }
         return this.customPlaylist.length;
