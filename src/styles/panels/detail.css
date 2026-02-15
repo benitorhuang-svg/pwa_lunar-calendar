@@ -174,7 +174,7 @@ select.panel-font-select option,
     flex: 1;
     flex: 1;
     /* Fixed padding for consistent card feel */
-    padding: 30px 45px 35px 30px;
+    padding: 25px 22px 30px 22px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -196,7 +196,7 @@ select.panel-font-select option,
 }
 
 .detail-header {
-    font-size: 3.2rem;
+    font-size: 2.6rem;
     font-weight: 700;
     letter-spacing: -0.02em;
     color: var(--cal-text);
@@ -207,12 +207,8 @@ select.panel-font-select option,
 
 .detail-sub-main {
     font-family: var(--font-calligraphy);
-    font-size: 1.25rem;
-    color: var(--cal-lunar-text);
-    font-weight: 300;
-    letter-spacing: 0.1em;
-    opacity: 0.7;
-    margin-top: 15px;
+    font-size: 1.1rem;
+    margin-top: 10px;
     /* Moved from inline style */
 }
 
@@ -338,24 +334,22 @@ select.panel-font-select option,
 .detail-yiji-section {
     display: flex;
     flex-direction: column;
-    gap: clamp(12px, 2vh, 20px);
+    gap: 15px;
     /* Condensed gap */
-    padding-top: clamp(15px, 3vh, 25px);
+    padding-top: 20px;
     /* Restored/Increased padding for separation from line */
 
     /* Premium Gradient Separator Line */
     border-top: none;
-    background-image: linear-gradient(
-        90deg,
-        rgba(212, 175, 55, 0) 0%,
-        rgba(212, 175, 55, 0.4) 50%,
-        rgba(212, 175, 55, 0) 100%
-    );
+    background-image: linear-gradient(90deg,
+            rgba(212, 175, 55, 0) 0%,
+            rgba(212, 175, 55, 0.4) 50%,
+            rgba(212, 175, 55, 0) 100%);
     background-size: 100% 1px;
     background-position: top center;
     background-repeat: no-repeat;
 
-    margin-top: 30px;
+    margin-top: 25px;
     /* Fixed spacing instead of auto */
     /* Match theme accents */
     width: 100%;
@@ -365,14 +359,14 @@ select.panel-font-select option,
 /* Red Seal Positioning */
 /* Red Seal Positioning */
 .traditional-seal {
-    width: 64px;
-    height: 64px;
+    width: 52px;
+    height: 52px;
     background: #c62828;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-calligraphy);
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     color: #fff;
     border-radius: 10px;
     box-shadow:
@@ -430,74 +424,3 @@ select.panel-font-select option,
 }
 
 /* Responsive Adjustments for Smaller Screens (Minimal overrides needed now due to clamp) */
-@media (max-width: 480px) {
-    .panel-main-content {
-        padding: 25px 22px 30px 22px;
-        /* Balanced mobile padding */
-    }
-
-    .detail-top-section {
-        flex-direction: row;
-        align-items: flex-start;
-        margin-bottom: 20px;
-    }
-
-    .detail-header {
-        font-size: 2.6rem;
-        /* Larger date on mobile as per requirement */
-    }
-
-    .year-label {
-        font-size: 0.4em;
-        margin-left: 8px;
-    }
-
-    .detail-sub-main {
-        font-size: 1.1rem;
-        margin-top: 10px;
-    }
-
-    /* Scale down the red seal */
-    .traditional-seal {
-        width: 52px;
-        height: 52px;
-        font-size: 1.8rem;
-        margin-top: 0;
-        border-radius: 8px;
-    }
-
-    .solar-term {
-        font-size: 1rem;
-    }
-
-    /* Adjust mid row spacing */
-    .detail-mid-row {
-        gap: 12px;
-        margin-top: 12px;
-    }
-
-    .detail-lucky-pill {
-        padding: 6px 18px;
-        font-size: 0.95rem;
-    }
-
-    .detail-festival-tag {
-        font-size: 1.1rem;
-    }
-
-    /* Yiji section adjustments */
-    .detail-yiji-section {
-        padding-top: 20px;
-        gap: 15px;
-        margin-top: 25px;
-    }
-
-    .yiji-label {
-        font-size: 1.1rem;
-        min-width: 22px;
-    }
-
-    .tag {
-        font-size: 0.95rem;
-    }
-}

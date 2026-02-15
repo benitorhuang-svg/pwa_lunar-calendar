@@ -118,7 +118,7 @@ body.initial-welcome .suspension-panel#panelToday {
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
     margin: 0 !important;
-    width: min(90%, 550px) !important;
+    width: min(90%, var(--app-max-width, 500px)) !important;
     filter: none;
     transition: opacity var(--duration-base) var(--ease-out-expo);
 }

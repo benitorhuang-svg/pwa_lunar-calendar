@@ -22,8 +22,8 @@
     background: rgba(15, 15, 20, 0.75);
     backdrop-filter: blur(25px) saturate(180%);
     -webkit-backdrop-filter: blur(25px) saturate(180%);
-    padding: clamp(8px, 1.5vh, 10px) clamp(14px, 3vw, 18px);
-    border-radius: clamp(20px, 4vw, 24px);
+    padding: 10px 16px;
+    border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow:
         0 10px 40px rgba(0, 0, 0, 0.4),
@@ -35,12 +35,12 @@
     background: transparent;
     border: none;
     color: rgba(255, 255, 255, 0.65);
-    width: clamp(36px, 10vw, 44px);
-    height: clamp(36px, 10vw, 44px);
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: clamp(12px, 3vw, 16px);
+    border-radius: 14px;
     cursor: pointer;
     transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
     position: relative;
@@ -49,7 +49,7 @@
 
 .dock-item span {
     display: none;
-    font-size: clamp(0.75rem, 2vw, 0.82rem);
+    font-size: 0.8rem;
     font-weight: 500;
     font-family: var(--font-serif);
     margin-left: 6px;
@@ -216,13 +216,13 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     -webkit-backdrop-filter: blur(40px) saturate(140%);
 
     border: 1px solid rgba(255, 255, 255, 0.28);
-    border-radius: clamp(24px, 5vw, 36px);
+    border-radius: 24px;
 
     display: flex;
     flex-direction: column;
     min-width: min(420px, 85vw);
     /* Responsive width constraint using min() mostly covers needs, clamp for fallback */
-    width: clamp(300px, 78vw, 420px);
+    width: min(94%, 500px);
     padding: 0;
     overflow: hidden;
     opacity: 0;
@@ -253,9 +253,9 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     border: none;
     color: rgba(255, 255, 255, 0.9);
     /* High contrast text */
-    padding: clamp(8px, 1.5vh, 10px) clamp(12px, 2vw, 16px);
-    border-radius: clamp(8px, 2vw, 12px);
-    font-size: clamp(0.8rem, 2.5vw, 0.88rem);
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -310,7 +310,7 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: clamp(0.65rem, 2vw, 0.7rem);
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.7);
     /* Brighter header */
     padding-left: 4px;
@@ -331,7 +331,7 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
     /* Clearer text */
     padding: 8px 12px;
     border-radius: 8px;
-    font-size: clamp(0.75rem, 2.5vw, 0.8rem);
+    font-size: 0.8rem;
     text-align: left;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -393,14 +393,18 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
 
 .submenu-column {
     flex: 1;
-    padding: 12px 8px;
+    padding: 10px 12px;
     display: flex;
     flex-direction: column;
     gap: 2px;
+    /* Ensure columns have equal width basis */
+    flex-basis: 0;
+    min-width: 0;
 }
 
 .image-column {
     background: rgba(255, 255, 255, 0.02);
+    border-bottom: none;
 }
 
 .music-column {
@@ -409,13 +413,14 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
 
 .vertical-column-divider {
     width: 1px;
-    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.06), transparent);
+    display: block;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.12), transparent);
 }
 
 .column-divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.04);
-    margin: 4px 12px;
+    background: rgba(255, 255, 255, 0.06);
+    margin: 4px 8px;
 }
 
 .submenu-footer {
@@ -434,42 +439,7 @@ body:not(.mode-artwork) .group-image {
 }
 
 /* Mobile Responsive Adjustments for Gallery Menu */
-@media (max-width: 500px) {
-    .gallery-submenu {
-        /* Width is now handled by clamp in main rule, just ensure positioning */
-        width: 85vw;
-        /* Safe mobile width */
-        left: 50%;
-        bottom: 80px;
-        /* Raise slightly to clear dock */
-    }
 
-    .submenu-main-container {
-        flex-direction: column;
-    }
-
-    .vertical-column-divider {
-        display: none;
-        /* Hide vertical separator in stack mode */
-    }
-
-    .column-divider {
-        display: block;
-        /* Ensure horizontal dividers work */
-        margin: 4px 0;
-    }
-
-    .submenu-column {
-        width: 100%;
-        padding: 10px 16px;
-        /* slightly more padding for touch */
-    }
-
-    /* Add a visual separator between the two stacked columns if needed */
-    .image-column {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    }
-}
 
 /* Gallery Empty Notice */
 .gallery-empty-notice {

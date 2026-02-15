@@ -55,7 +55,7 @@ body.note-mode-active #welcomeInteractionOverlay {
 .note-container.glass-morphic {
     position: relative;
     width: 100%;
-    max-width: 820px;
+    max-width: var(--app-max-width, 500px);
     height: 100%;
     max-height: 82vh;
     /* Slightly more height for the extended base */
@@ -127,15 +127,7 @@ body.note-mode-active #welcomeInteractionOverlay {
     cursor: pointer;
 }
 
-.font-selector-zen select {
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.4);
-    font-family: var(--font-sans);
-    font-size: 0.85rem;
-    cursor: pointer;
-    outline: none;
-}
+
 
 .note-close-trigger {
     background: rgba(255, 255, 255, 0.1);
@@ -156,53 +148,11 @@ body.note-mode-active #welcomeInteractionOverlay {
     transform: rotate(90deg);
 }
 
-/* 
- * Automated Content: Quote of the Day 
- */
-.note-quote-pane {
-    margin-bottom: 2.5rem;
-    padding: 1.5rem 0;
-    border-left: 2px solid rgba(255, 255, 255, 0.4);
-    padding-left: 1.5rem;
-    position: relative;
-    animation: fadeInSlideUp 1s ease forwards;
-}
-
-.quote-text {
-    font-family: var(--font-serif);
-    font-size: 1.35rem;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.95);
-    font-style: italic;
-    letter-spacing: 0.02em;
-}
-
-.quote-decoration {
-    position: absolute;
-    bottom: -10px;
-    right: 0;
-    width: 60px;
-    height: 1px;
-    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2));
-}
-
-@keyframes fadeInSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* Pure Editor Canvas (No lines) */
 .note-editor-canvas {
     flex: 1;
     position: relative;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 
 .note-textarea-zen {
@@ -275,54 +225,4 @@ body.note-mode-active #welcomeInteractionOverlay {
 .note-action-pill.primary:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 35px rgba(255, 255, 255, 0.3);
-}
-
-.note-action-pill.secondary {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #fff;
-}
-
-.note-action-pill.secondary:hover {
-    background: rgba(255, 255, 255, 0.18);
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: translateY(-3px);
-}
-
-/* Typography Overrides */
-.note-textarea-zen.font-serif {
-    font-family: "Playfair Display", serif;
-}
-
-.note-textarea-zen.font-sans {
-    font-family: var(--font-sans);
-    font-weight: 300;
-}
-
-.note-textarea-zen.font-calligraphy {
-    font-family: var(--font-calligraphy);
-    font-size: 1.8rem;
-}
-
-.note-textarea-zen.font-hand {
-    font-family: var(--font-hand);
-    font-size: 1.7rem;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-    .note-container.glass-morphic {
-        max-height: 92vh;
-        border-radius: 32px;
-    }
-
-    .note-footer-zen {
-        padding: 2rem 2rem 3rem 2rem;
-        margin-left: -2rem;
-        margin-right: -2rem;
-    }
-
-    .note-content-area {
-        padding: 2.5rem 2rem 1.5rem 2rem;
-    }
 }

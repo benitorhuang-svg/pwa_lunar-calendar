@@ -1,5 +1,3 @@
-import { getRandomQuote } from "../../data/calendarQuotes";
-import { Lunar } from "../core/lunar";
 import { HeroIdleManager } from "./idleManager";
 
 export class NoteManager {
@@ -11,33 +9,6 @@ export class NoteManager {
 
     public init(): void {
         this.setupEventListeners();
-    }
-
-    private exportPanelNote(date: Date, content: string, format: string): void {
-        if (!content && format !== "png") {
-            // PNG might handle empty generic view?
-            alert("目前沒有內容可匯出");
-            return;
-        }
-
-        const now = new Date();
-        const timeStr = `${now.getHours().toString().padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}`;
-        const dateStr = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, "0")}${date.getDate().toString().padStart(2, "0")}`;
-        const filename = `zen_note_${dateStr}_${timeStr}.${format}`;
-
-        if (format === "txt") {
-            const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        } else {
-            alert(`目前尚未支援 ${format.toUpperCase()} 匯出功能，請等待後續更新。`);
-        }
     }
 
     private getNoteKey(date: Date): string {
@@ -55,8 +26,6 @@ export class NoteManager {
         const overlayEditor = document.getElementById("noteEditor") as HTMLTextAreaElement;
         const datePicker = document.getElementById("noteDatePicker") as HTMLInputElement;
 
-        this.updateQuoteForDate(date);
-
         if (overlayEditor) {
             overlayEditor.value = content || "";
 
@@ -64,24 +33,6 @@ export class NoteManager {
             overlayEditor.oninput = () => {
                 localStorage.setItem(key, overlayEditor.value);
             };
-
-            // Font preference (Overlay)
-            const savedFont = localStorage.getItem("note_font_pref");
-            const overlayFontSelect = document.getElementById(
-                "noteFontSelect",
-            ) as HTMLSelectElement;
-            if (savedFont) {
-                overlayEditor.className = `note-textarea-zen ${savedFont}`;
-                if (overlayFontSelect) overlayFontSelect.value = savedFont;
-            }
-
-            if (overlayFontSelect) {
-                overlayFontSelect.onchange = (e) => {
-                    const fontClass = (e.target as HTMLSelectElement).value;
-                    overlayEditor.className = `note-textarea-zen ${fontClass}`;
-                    localStorage.setItem("note_font_pref", fontClass);
-                };
-            }
         }
 
         // Setup Date Picker Display
@@ -106,82 +57,28 @@ export class NoteManager {
             };
         }
 
-        // Bind Save/Export in Overlay
+        // Bind Save (Close)
         const btnSave = document.getElementById("btnNoteSave");
         if (btnSave) {
             btnSave.onclick = () => {
-                const overlay = document.getElementById("notePadOverlay");
-                if (overlay) overlay.classList.remove("active");
-                document.body.classList.remove("note-mode-active");
-                window.dispatchEvent(new CustomEvent("toggle-panel", { detail: "today" }));
+                this.closeOverlay();
             };
         }
 
-        const btnExport = document.getElementById("btnNoteExport");
-        if (btnExport) {
-            btnExport.onclick = () => {
-                this.exportPanelNote(date, overlayEditor?.value || "", "txt");
-            };
-        }
-
-        // Close button logic (also handled in eventHandlers but binding here ensures data safety if needed)
+        // Close button logic
         const btnClose = document.getElementById("btnNoteClose");
         if (btnClose) {
             btnClose.onclick = () => {
-                const overlay = document.getElementById("notePadOverlay");
-                if (overlay) overlay.classList.remove("active");
-                document.body.classList.remove("note-mode-active");
-                window.dispatchEvent(new CustomEvent("toggle-panel", { detail: "today" }));
+                this.closeOverlay();
             };
         }
     }
 
-    private loadNoteForPanel(year: number, month: number, day: number): void {
-        const date = new Date(year, month, day);
-        const key = this.getNoteKey(date);
-
-        // Font preference binding (Global setting)
-        const savedFont = localStorage.getItem("note_font_pref");
-        const fontSelect = document.getElementById("panelNoteFontSelect") as HTMLSelectElement;
-        if (fontSelect && savedFont) {
-            fontSelect.value = savedFont;
-        }
-
-        // Open Notepad Trigger
-        const btnOpen = document.getElementById("btnOpenNotePad");
-        if (btnOpen) {
-            btnOpen.onclick = (e) => {
-                e.stopPropagation();
-                window.dispatchEvent(
-                    new CustomEvent("open-notepad", {
-                        detail: { day, month, year }, // Pass date context
-                    }),
-                );
-            };
-        }
-
-        // Export binding (Select Menu)
-        const exportSelect = document.getElementById("panelNoteExportSelect") as HTMLSelectElement;
-        if (exportSelect) {
-            exportSelect.onchange = (e) => {
-                e.stopPropagation();
-                const format = exportSelect.value;
-                if (format) {
-                    const content = localStorage.getItem(key) || "";
-                    this.exportPanelNote(date, content, format);
-                    exportSelect.value = ""; // Reset selection
-                }
-            };
-        }
-
-        // Font selector change (Save pref only)
-        if (fontSelect) {
-            fontSelect.onchange = (e) => {
-                e.stopPropagation();
-                const fontClass = (e.target as HTMLSelectElement).value;
-                localStorage.setItem("note_font_pref", fontClass);
-            };
-        }
+    private closeOverlay(): void {
+        const overlay = document.getElementById("notePadOverlay");
+        if (overlay) overlay.classList.remove("active");
+        document.body.classList.remove("note-mode-active");
+        window.dispatchEvent(new CustomEvent("toggle-panel", { detail: "today" }));
     }
 
     private setupEventListeners(): void {
@@ -195,17 +92,6 @@ export class NoteManager {
             );
         });
 
-        // Listen for Panel Render
-        window.addEventListener("today-panel-rendered", ((e: CustomEvent) => {
-            const { day, month, year } = e.detail || {};
-            if (year && month !== undefined && day) {
-                this.loadNoteForPanel(year, month, day);
-            } else {
-                const today = new Date();
-                this.loadNoteForPanel(today.getFullYear(), today.getMonth(), today.getDate());
-            }
-        }) as EventListener);
-
         // Listen for Open NotePad (Full Screen)
         window.addEventListener("open-notepad", ((e: CustomEvent) => {
             const { day, month, year } = e.detail || {};
@@ -217,54 +103,5 @@ export class NoteManager {
                 this.loadNoteForOverlay(today.getFullYear(), today.getMonth(), today.getDate());
             }
         }) as EventListener);
-    }
-
-    private updateQuoteForDate(date: Date): void {
-        const quoteEl = document.getElementById("noteQuoteText");
-        if (!quoteEl) return;
-
-        const lunar = Lunar.fromDate(date);
-        const solarTerm = lunar.getSolarTermPeriod()?.current;
-        const festival = lunar.getFestival() || lunar.getSolarFestival();
-
-        let key: string;
-        const month = date.getMonth() + 1;
-
-        // Season Logic
-        let season: string;
-        if (month >= 3 && month <= 5) season = "spring";
-        else if (month >= 6 && month <= 8) season = "summer";
-        else if (month >= 9 && month <= 11) season = "autumn";
-        else season = "winter";
-
-        // Priority: Festival > Solar Term > Season > Generic
-        if (
-            festival &&
-            (festival.includes("春節") ||
-                festival.includes("元宵") ||
-                festival.includes("中秋") ||
-                festival.includes("端午"))
-        ) {
-            key = festival.includes("春節")
-                ? "春節"
-                : festival.includes("元宵")
-                  ? "元宵節"
-                  : festival.includes("中秋")
-                    ? "中秋節"
-                    : "端午節";
-        } else if (solarTerm) {
-            key = solarTerm;
-        } else {
-            key = season;
-        }
-
-        const quote = getRandomQuote(key);
-        quoteEl.innerHTML = quote;
-
-        // Add a subtle re-fade animation
-        quoteEl.style.animation = "none";
-        // Trigger reflow
-        void quoteEl.offsetWidth;
-        quoteEl.style.animation = "fadeInSlideUp 1s ease forwards";
     }
 }
