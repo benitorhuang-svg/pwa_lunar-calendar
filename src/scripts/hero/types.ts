@@ -24,5 +24,5 @@ export type TogglePanelDetail = string;
 // 歡迎模式/沉浸模式事件詳細資訊 (Detail for Welcome/Immersion mode)
 export interface WelcomeModeDetail {
     active: boolean; // 是否啟用 (Whether active)
-    targetMode?: "artwork" | "calendar";
+    targetMode?: "artwork" | "calendar" | "zen";
 }

@@ -213,6 +213,15 @@ select.panel-font-select option,
     font-weight: 300;
     letter-spacing: 0.1em;
     opacity: 0.7;
+    margin-top: 15px;
+    /* Moved from inline style */
+}
+
+.detail-right-cluster {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
 }
 
 .detail-info-row {
@@ -236,6 +245,29 @@ select.panel-font-select option,
     color: #d4af37;
     font-weight: 500;
     letter-spacing: 0.15em;
+    font-size: 1.1rem;
+    /* Moved from inline style */
+    text-align: right;
+    /* Moved from inline style */
+}
+
+/* Year Label Style */
+.year-label {
+    font-size: 0.5em;
+    opacity: 0.6;
+    margin-left: 8px;
+    font-weight: 300;
+    vertical-align: middle;
+}
+
+/* Mid Row for Lucky Pill and Festival */
+.detail-mid-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    /* Spacing between pill and festival */
+    margin-bottom: 0;
+    margin-top: 0;
 }
 
 .detail-lucky-pill {
@@ -250,13 +282,23 @@ select.panel-font-select option,
     color: var(--cal-header-text);
     font-size: 1.05rem;
     letter-spacing: 0.12em;
-    letter-spacing: 0.12em;
-    margin-bottom: 0;
-    /* Let margin-top: auto on next element handle spacing */
     align-self: flex-start;
     font-family: var(--font-calligraphy);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-    margin-top: 0;
+}
+
+.detail-festival-tag {
+    font-family: var(--font-calligraphy);
+    font-size: 1.25rem;
+    /* Slightly larger than pill text */
+    color: #ff6b6b;
+    /* Festival Red */
+    border-bottom: 1px solid rgba(255, 107, 107, 0.3);
+    /* Subtle underline */
+    padding-bottom: 2px;
+    text-shadow: 0 0 10px rgba(255, 107, 107, 0.2);
+    /* Glow */
+    letter-spacing: 0.1em;
 }
 
 /* Yiji Section (Suitable/Unsuitable Activities) */
@@ -267,7 +309,18 @@ select.panel-font-select option,
     /* Condensed gap */
     padding-top: 25px;
     /* Restored/Increased padding for separation from line */
-    border-top: 0.5px solid rgba(212, 175, 55, 0.15);
+    padding-top: 25px;
+
+    /* Premium Gradient Separator Line */
+    border-top: none;
+    background-image: linear-gradient(90deg,
+            rgba(212, 175, 55, 0) 0%,
+            rgba(212, 175, 55, 0.4) 50%,
+            rgba(212, 175, 55, 0) 100%);
+    background-size: 100% 1px;
+    background-position: top center;
+    background-repeat: no-repeat;
+
     margin-top: auto;
     /* Push to bottom */
     /* Match theme accents */
@@ -339,4 +392,17 @@ select.panel-font-select option,
     letter-spacing: 0.05em;
     color: var(--cal-text);
     white-space: nowrap;
+}
+
+/* Responsive Adjustments for Smaller Screens */
+@media (max-width: 480px) {
+    .panel-main-content {
+        padding: 30px 25px 30px 25px;
+        /* Tighter padding on mobile */
+    }
+
+    .detail-header {
+        font-size: 2rem;
+        /* Slightly smaller date on mobile */
+    }
 }

@@ -38,9 +38,7 @@ export class PanelRenderers {
         const ji = lunar.getDayJi();
         const festival = lunar.getFestival() || lunar.getSolarFestival();
 
-        const festivalHtml = festival
-            ? `<div class="detail-sub-main" style="color:#ff6b6b; margin-top:10px">${festival}</div>`
-            : "";
+
 
         this.panelToday.innerHTML = `
     <div class="panel-detail-body">
@@ -53,24 +51,25 @@ export class PanelRenderers {
                     <!-- Line 1: Western Date (Month/Day Year) -->
                     <div class="detail-header">
                         ${date.getMonth() + 1}/${date.getDate()}
-                        <span style="font-size: 0.5em; opacity: 0.6; margin-left: 8px; font-weight: 300; vertical-align: middle;">${date.getFullYear()}</span>
+                        <span class="year-label">${date.getFullYear()}</span>
                     </div>
                     <!-- Line 2: Chinese Date (Year Month Day) -->
-                    <div class="detail-sub-main" style="margin-top: 15px;">${ganzhi}年 · ${monthGZ}月 ${dayGZ}日</div>
+                    <div class="detail-sub-main">${ganzhi}年 · ${monthGZ}月 ${dayGZ}日</div>
                 </div>
                 
                 <!-- Right Side Cluster: Zodiac & Solar Term -->
-                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 12px;">
+                <div class="detail-right-cluster">
                     <div class="traditional-seal">${zodiac.charAt(0)}</div>
-                    <div class="solar-term" style="font-size: 1.1rem; text-align: right;">${termPeriod.current}</div>
+                    <div class="solar-term">${termPeriod.current}</div>
                 </div>
             </div>
             
-            <div class="detail-lucky-pill">
-                ${jianchu}日 · ${luck}
+            <div class="detail-mid-row">
+                <div class="detail-lucky-pill">
+                    ${jianchu}日 · ${luck}
+                </div>
+                ${festival ? `<div class="detail-festival-tag">${festival}</div>` : ""}
             </div>
-            
-            ${festivalHtml}
             
             <div class="detail-yiji-section">
                 <div class="yiji-item">

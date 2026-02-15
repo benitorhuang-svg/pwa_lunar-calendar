@@ -220,7 +220,8 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
 
     display: flex;
     flex-direction: column;
-    min-width: 420px;
+    min-width: min(420px, 85vw);
+    /* Responsive width constraint */
     padding: 0;
     overflow: hidden;
     opacity: 0;
@@ -434,4 +435,41 @@ body.mode-artwork .group-calendar {
 
 body:not(.mode-artwork) .group-image {
     display: none;
+}
+
+/* Mobile Responsive Adjustments for Gallery Menu */
+@media (max-width: 500px) {
+    .gallery-submenu {
+        width: 85vw;
+        /* Reduced from 92vw to prevent edge overflow */
+        left: 50%;
+        bottom: 80px;
+        /* Raise slightly to clear dock */
+    }
+
+    .submenu-main-container {
+        flex-direction: column;
+    }
+
+    .vertical-column-divider {
+        display: none;
+        /* Hide vertical separator in stack mode */
+    }
+
+    .column-divider {
+        display: block;
+        /* Ensure horizontal dividers work */
+        margin: 4px 0;
+    }
+
+    .submenu-column {
+        width: 100%;
+        padding: 10px 16px;
+        /* slightly more padding for touch */
+    }
+
+    /* Add a visual separator between the two stacked columns if needed */
+    .image-column {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
 }

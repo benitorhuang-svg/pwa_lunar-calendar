@@ -86,8 +86,7 @@ export class HeroUIManager {
             }
         };
 
-        this.heroBgContainer?.addEventListener("mousedown", handler);
-        this.heroBgContainer?.addEventListener("touchstart", handler, { passive: true });
+        this.heroBgContainer?.addEventListener("click", handler);
     }
 
     // --- 事件綁定 (Event Binding) ---
