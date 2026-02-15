@@ -333,11 +333,10 @@ select.panel-font-select option,
 /* Yiji Section (Suitable/Unsuitable Activities) */
 .detail-yiji-section {
     display: flex;
-    flex-direction: row;
-    /* Side-by-side layout (Yi Left, Ji Right) */
-    align-items: flex-start;
-    gap: 0;
-    /* Remove gap, use internal padding/borders */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    /* Condensed gap */
     padding-top: 20px;
     /* Restored/Increased padding for separation from line */
 
@@ -382,26 +381,9 @@ select.panel-font-select option,
 }
 
 .yiji-item {
-    flex: 1;
     display: flex;
-    flex-direction: column;
-    /* Stack Label and Tags vertically within each column */
-    align-items: center;
-    gap: 10px;
-    padding: 0 10px;
-    position: relative;
-    /* For divider */
-}
-
-/* Vertical Divider between Yi and Ji */
-.yiji-item:first-child::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 5px;
-    bottom: 5px;
-    width: 1px;
-    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.15), transparent);
+    align-items: flex-start;
+    gap: 18px;
 }
 
 .yiji-label {
@@ -412,9 +394,8 @@ select.panel-font-select option,
     min-width: 25px;
     text-align: center;
     line-height: 1;
-    margin-top: 0;
-    font-size: 1.4rem;
-    /* Larger, distinct header */
+    line-height: 1;
+    margin-top: 4px;
 }
 
 .yiji-label--good {
@@ -429,18 +410,15 @@ select.panel-font-select option,
 .tag-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    /* Center align tags in column */
-    gap: 6px 10px;
-    /* Tighter spacing */
+    gap: 12px 18px;
     flex: 1;
+    justify-content: flex-start;
 }
 
 .tag {
     font-family: var(--font-sans);
     /* Better readability for tags */
-    font-size: 0.85rem;
-    /* Slightly smaller for side-by-side fit */
+    font-size: 0.95rem;
     font-weight: 300;
     opacity: 0.85;
     letter-spacing: 0.05em;
