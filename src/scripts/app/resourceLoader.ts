@@ -60,6 +60,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     }
 
     // --- Service Worker Update Logic ---
+    // --- Service Worker Update Logic ---
     async function checkSWUpdate(): Promise<void> {
         if (!("serviceWorker" in navigator)) {
             markDone("update");
@@ -73,43 +74,51 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                 return;
             }
 
-            // If a worker is waiting, it means update is ready
+            // A. Check if already waiting (Update ready)
             if (registration.waiting) {
-                console.log("[Loader] Update found (waiting), reloading...");
+                console.log("[Loader] Update waiting, boosting...");
                 if (loadingText) loadingText.textContent = "更新中...";
-                // Send skipWaiting to the waiting worker
                 registration.waiting.postMessage({ type: "SKIP_WAITING" });
-
-                // Reload on controller change
                 navigator.serviceWorker.addEventListener("controllerchange", () => {
                     window.location.reload();
                 });
-                return; // Logic stops here, page will reload
+                return; // Wait for reload
             }
 
-            // Listen for new worker installing
-            registration.addEventListener("updatefound", () => {
-                const newWorker = registration.installing;
-                if (newWorker) {
-                    console.log("[Loader] New version found, installing...");
-                    newWorker.addEventListener("statechange", () => {
-                        if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-                            console.log("[Loader] Update installed, reloading...");
-                            if (loadingText) loadingText.textContent = "更新中...";
-                            newWorker.postMessage({ type: "SKIP_WAITING" });
-                        }
-                    });
-                }
-            });
-
-            // Also reload if controller changes externally
-            navigator.serviceWorker.addEventListener("controllerchange", () => {
-                window.location.reload();
-            });
-
-            // Check for update actively
+            // B. Check for update actively
             await registration.update();
-            markDone("update"); // If no immediate waiting worker found, proceed
+
+            // C. After update check, acts if installing
+            if (registration.installing) {
+                const installingWorker = registration.installing;
+                console.log("[Loader] New version installing...");
+                if (loadingText) loadingText.textContent = "下載更新中...";
+
+                installingWorker.addEventListener("statechange", () => {
+                    if (installingWorker.state === "installed") {
+                        if (navigator.serviceWorker.controller) {
+                            console.log("[Loader] Installed, reloading...");
+                            if (loadingText) loadingText.textContent = "安裝更新中...";
+                            installingWorker.postMessage({ type: "SKIP_WAITING" });
+                            // Reload will happen via controllerchange listener attached below
+                        } else {
+                            // First install
+                            markDone("update");
+                        }
+                    }
+                });
+
+                navigator.serviceWorker.addEventListener("controllerchange", () => {
+                    window.location.reload();
+                });
+
+                // DO NOT markDone("update") here. We wait for installation.
+                // But add a safety timeout in case installation stalls?
+                // Let's rely on the global safety timeout (8000ms) to force entry if stuck.
+            } else {
+                // No update found
+                markDone("update");
+            }
 
         } catch (e) {
             console.warn("[Loader] SW check failed:", e);
@@ -183,10 +192,29 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             return;
         }
 
+        // Fallback function
+        const loadFallback = () => {
+            console.warn("[Loader] Primary hero image failed, attempting fallback...");
+            const fallbackImg = new Image();
+            fallbackImg.onload = fallbackImg.onerror = () => {
+                console.log("[Loader] Fallback image loaded (or failed safely)");
+                markDone("heroFirst");
+            };
+            // Fallback to default/1.webp or similar if available, or just manifest default
+            const fallbackPath = (baseDir + "assets/gallery/default/1.webp").replace(/\/+/g, "/");
+            fallbackImg.src = fallbackPath;
+        };
+
         const img = new Image();
-        img.onload = img.onerror = () => { markDone("heroFirst"); };
+        img.onload = () => {
+            markDone("heroFirst");
+        };
+        img.onerror = () => {
+            loadFallback();
+        };
+
         if (imageList[0]) img.src = imageList[0]!;
-        else markDone("heroFirst");
+        else loadFallback();
 
         if (imageList.length <= 1) {
             markDone("heroAll");
