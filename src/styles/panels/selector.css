@@ -7,9 +7,18 @@
 
 .panel-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
     gap: 15px 8px;
     padding: 0 15px;
+}
+
+/* Year Grid: 5 columns (for 10 items) */
+.panel-grid-year {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+/* Month Grid: 4 columns (for 12 items) */
+.panel-grid-month {
+    grid-template-columns: repeat(4, 1fr);
 }
 
 .panel-section-container {

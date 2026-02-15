@@ -16,6 +16,7 @@ export class HeroGalleryManager {
     private gallerySubmenu: HTMLElement | null = null;
     private submenuItems: NodeListOf<HTMLElement> | null = null;
     private textGalleryFit: HTMLElement | null = null;
+    private galleryEmptyNotice: HTMLElement | null = null;
 
     public bindControls(callbacks: {
         onClear: () => void;
@@ -119,12 +120,18 @@ export class HeroGalleryManager {
         // File Inputs
         this.galleryInput?.addEventListener("change", (e) => {
             const files = (e.target as HTMLInputElement).files;
-            if (files && files.length > 0) callbacks.onFileSelect(files);
+            if (files && files.length > 0) {
+                callbacks.onFileSelect(files);
+                if (this.galleryEmptyNotice) this.galleryEmptyNotice.style.display = "none";
+            }
         });
 
         this.folderInput?.addEventListener("change", (e) => {
             const files = (e.target as HTMLInputElement).files;
-            if (files && files.length > 0) callbacks.onFileSelect(files);
+            if (files && files.length > 0) {
+                callbacks.onFileSelect(files);
+                if (this.galleryEmptyNotice) this.galleryEmptyNotice.style.display = "none";
+            }
         });
 
         // Mode Switching
@@ -135,9 +142,34 @@ export class HeroGalleryManager {
                     callbacks.onModeChange(mode);
                     this.submenuItems?.forEach((i) => i.classList.remove("active"));
                     item.classList.add("active");
+
+                    // Hide notice if switching away from custom or if custom has images (logic handled by image manager response, but safe to hide first)
+                    // Actually, if we switch to custom and it's empty, the event will fire again. 
+                    // If we switch to default/hybrid, we should hide it.
+                    if (mode !== "custom" && this.galleryEmptyNotice) {
+                        this.galleryEmptyNotice.style.display = "none";
+                    }
+
                     this.gallerySubmenu?.classList.remove("show");
                 }
             });
+        });
+
+        // Listen for empty custom list event
+        window.addEventListener("custom-list-empty", () => {
+            if (this.galleryEmptyNotice) {
+                this.galleryEmptyNotice.style.display = "flex";
+                // Auto open submenu if closed so user sees the valid options
+                if (!this.gallerySubmenu?.classList.contains("show")) {
+                    this.gallerySubmenu?.classList.add("show");
+                }
+                // Ensure custom button is active visually
+                const customBtn = document.querySelector('.submenu-item[data-mode="custom"]');
+                if (customBtn) {
+                    this.submenuItems?.forEach(i => i.classList.remove("active"));
+                    customBtn.classList.add("active");
+                }
+            }
         });
     }
 
@@ -150,6 +182,7 @@ export class HeroGalleryManager {
         this.btnGalleryClear = document.getElementById("btnGalleryClear");
         this.btnGalleryFitToggle = document.getElementById("btnGalleryFitToggle");
         this.textGalleryFit = document.getElementById("textGalleryFit");
+        this.galleryEmptyNotice = document.getElementById("galleryEmptyNotice");
         this.galleryInput = document.getElementById("galleryInput") as HTMLInputElement;
         this.folderInput = document.getElementById("folderInput") as HTMLInputElement;
         this.submenuItems = document.querySelectorAll(".submenu-item[data-mode]");

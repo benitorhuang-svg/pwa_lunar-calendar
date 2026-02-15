@@ -47,11 +47,23 @@ export class HeroImageManager {
         let fullPlaylist: string[] = [];
 
         if (this.galleryMode === "default") {
+            // 純預設模式：只播放季節圖片
             fullPlaylist = seasonalPlaylist;
         } else if (this.galleryMode === "custom") {
-            fullPlaylist = this.customHeroList.length > 0 ? this.customHeroList : seasonalPlaylist;
+            // 純自選模式：只播放使用者匯入圖片
+            if (this.customHeroList.length > 0) {
+                fullPlaylist = this.customHeroList;
+            } else {
+                console.warn("[Hero] Custom mode selected but no images found. Showing placeholder.");
+                // Fallback: Show a specific placeholder (e.g., default/1.png) to indicate "No Images"
+                // Instead of silently falling back to seasonal playlist.
+                fullPlaylist = [`${this.BASE_HERO_DIR}default/1.png`];
+
+                // Notify UI to prompt user to import images
+                window.dispatchEvent(new CustomEvent("custom-list-empty"));
+            }
         } else if (this.galleryMode === "hybrid") {
-            // 混合模式：交叉排列或隨機隨機混合 (Hybrid: Mixed)
+            // 混合模式：兩者合併並隨機 (Hybrid: Mixed)
             fullPlaylist = [...seasonalPlaylist, ...this.customHeroList];
             if (ImageRules.ENABLE_RANDOM_SHUFFLE) {
                 fullPlaylist.sort(() => Math.random() - 0.5);

@@ -42,6 +42,10 @@ const { defaultAudio } = Astro.props;
                 >
                 <span>自選圖片</span>
             </button>
+            <div id="galleryEmptyNotice" class="gallery-empty-notice" style="display: none;">
+                <span class="notice-icon">⚠️</span>
+                <span>尚無自選圖片，請先匯入</span>
+            </div>
             <button class="submenu-item" data-mode="hybrid" id="btnGalleryHybrid">
                 <svg
                     fill="none"

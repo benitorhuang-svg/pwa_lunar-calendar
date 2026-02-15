@@ -132,7 +132,7 @@ export class PanelRenderers {
         monthSection.appendChild(monthHeader);
 
         const monthGrid = document.createElement("div");
-        monthGrid.className = "panel-grid";
+        monthGrid.className = "panel-grid panel-grid-month";
 
         for (let i = 0; i < 12; i++) {
             const isTodayMonth = i === today.getMonth();
@@ -160,10 +160,11 @@ export class PanelRenderers {
         yearSection.appendChild(yearHeader);
 
         const yearGrid = document.createElement("div");
-        yearGrid.className = "panel-grid";
+        yearGrid.className = "panel-grid panel-grid-year";
+        // Show 10 years: current - 4 to + 5
         const startYear = selectedYear - 4;
 
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < 10; i++) {
             const y = startYear + i;
             const item = document.createElement("button");
             item.type = "button";

@@ -17,13 +17,17 @@ export class NavigationHandler {
         private imageManager: HeroImageManager,
         private slideshowManager: HeroSlideshowManager,
         private uiManager: HeroUIManager,
-    ) {}
+    ) { }
 
     public handleNavigation(direction: number): void {
         this.idleManager.reset();
 
         // 映畫模式下切換圖片 (Switch images in Artwork Mode)
-        if (this.idleManager.isArtwork) {
+        // 映畫模式下切換圖片 (Switch images in Artwork Mode OR Zen Mode)
+        // Check if body has immersion-mode class (Zen) or idleManager says artwork
+        const isImmersion = document.body.classList.contains("immersion-mode");
+
+        if (this.idleManager.isArtwork || isImmersion) {
             this.imageManager.switchHero(direction, false, () =>
                 this.slideshowManager.reset(
                     (o, a) => this.imageManager.switchHero(o, a),
