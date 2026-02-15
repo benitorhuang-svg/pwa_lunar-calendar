@@ -29,30 +29,30 @@
         transform 1.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* 1. Next Interaction (>) : Slide Everything to the RIGHT */
-/* New image comes from left to center */
-.hero-bg-item.is-next {
-    opacity: 0;
-    transform: translateX(-100%);
-}
-
-/* Old image goes from center to right */
-.hero-bg-item.is-leaving-next {
-    opacity: 0;
-    transform: translateX(100%);
-}
-
-/* 2. Prev Interaction (<) : Slide Everything to the LEFT */
+/* 1. Next Interaction (>) : Slide Everything to the LEFT (Standard Gallery) */
 /* New image comes from right to center */
-.hero-bg-item.is-prev {
+.hero-bg-item.is-next {
     opacity: 0;
     transform: translateX(100%);
 }
 
 /* Old image goes from center to left */
-.hero-bg-item.is-leaving-prev {
+.hero-bg-item.is-leaving-next {
     opacity: 0;
     transform: translateX(-100%);
+}
+
+/* 2. Prev Interaction (<) : Slide Everything to the RIGHT (Standard Gallery) */
+/* New image comes from left to center */
+.hero-bg-item.is-prev {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+/* Old image goes from center to right */
+.hero-bg-item.is-leaving-prev {
+    opacity: 0;
+    transform: translateX(100%);
 }
 
 /* 3. Default Fade (Auto change) */
@@ -65,8 +65,7 @@
 }
 
 /* Premium Ken Burns (Only for static state, disabled during transition) */
-#heroBgContainer.idle-motion
-    .hero-bg-item:not(.is-next):not(.is-prev):not(.is-leaving-next):not(.is-leaving-prev) {
+#heroBgContainer.idle-motion .hero-bg-item:not(.is-next):not(.is-prev):not(.is-leaving-next):not(.is-leaving-prev) {
     animation: kenBurnsSmooth 60s ease-in-out infinite alternate;
 }
 

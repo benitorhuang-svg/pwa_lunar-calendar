@@ -397,12 +397,72 @@ select.panel-font-select option,
 /* Responsive Adjustments for Smaller Screens */
 @media (max-width: 480px) {
     .panel-main-content {
-        padding: 30px 25px 30px 25px;
+        padding: 25px 20px 30px 20px;
         /* Tighter padding on mobile */
     }
 
+    .detail-top-section {
+        flex-direction: row;
+        /* Force row layout */
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
     .detail-header {
-        font-size: 2rem;
-        /* Slightly smaller date on mobile */
+        font-size: 2.2rem;
+        /* Slightly smaller date on mobile but keep it prominent */
+    }
+
+    .year-label {
+        font-size: 0.4em;
+        /* Scale down year */
+        margin-left: 6px;
+    }
+
+    .detail-sub-main {
+        font-size: 1rem;
+        margin-top: 8px;
+        /* Tighter spacing */
+    }
+
+    /* Scale down the red seal */
+    .traditional-seal {
+        width: 42px;
+        height: 42px;
+        font-size: 1.4rem;
+        margin-top: 0;
+    }
+
+    .solar-term {
+        font-size: 0.95rem;
+    }
+
+    /* Adjust mid row spacing */
+    .detail-mid-row {
+        gap: 10px;
+    }
+
+    .detail-lucky-pill {
+        padding: 6px 16px;
+        font-size: 0.9rem;
+    }
+
+    .detail-festival-tag {
+        font-size: 1rem;
+    }
+
+    /* Yiji section adjustments */
+    .detail-yiji-section {
+        padding-top: 20px;
+        gap: 15px;
+    }
+
+    .yiji-label {
+        font-size: 1rem;
+        min-width: 20px;
+    }
+
+    .tag {
+        font-size: 0.85rem;
     }
 }

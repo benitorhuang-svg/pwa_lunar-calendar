@@ -220,7 +220,7 @@ body:not(.mode-artwork) .dock-item:not(#btnDay):hover {
 
     display: flex;
     flex-direction: column;
-    min-width: min(420px, 85vw);
+    min-width: min(420px, 78vw);
     /* Responsive width constraint */
     padding: 0;
     overflow: hidden;
@@ -440,8 +440,8 @@ body:not(.mode-artwork) .group-image {
 /* Mobile Responsive Adjustments for Gallery Menu */
 @media (max-width: 500px) {
     .gallery-submenu {
-        width: 85vw;
-        /* Reduced from 92vw to prevent edge overflow */
+        width: 78vw;
+        /* Further reduced to 78vw */
         left: 50%;
         bottom: 80px;
         /* Raise slightly to clear dock */
