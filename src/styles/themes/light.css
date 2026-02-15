@@ -20,10 +20,12 @@
     --cal-border: rgba(0, 0, 0, 0.08);
     --cal-border-glow: rgba(0, 0, 0, 0.15);
 
-    /* Typography - Ink Grinds */
-    --cal-text: #2c2c2c;
-    /* Soft Charcoal */
-    --cal-lunar-text: #6e6e6e;
+    /* Typography - Ink Grinds (High Contrast) */
+    --cal-text: #111111;
+    /* Almost Black */
+    --cal-lunar-text: #4e4e4e;
+    /* Darker Grey */
+    --cal-header-text: #111111;
     /* Stone Gray */
     --cal-header-text: #1a1a1a;
     /* Dark Ink */
@@ -36,7 +38,8 @@
     /* Traditional Seal Red */
     --cal-today-text: #fff;
 
-    --cal-term-color: #8b4513;
+    --cal-term-color: #5d2906;
+    /* Darker Saddle Brown */
     /* Saddle Brown */
 
     /* Panel Specifics */

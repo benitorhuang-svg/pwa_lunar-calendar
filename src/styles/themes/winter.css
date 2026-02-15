@@ -19,10 +19,12 @@
     --cal-border: rgba(176, 196, 222, 0.15);
     --cal-border-glow: rgba(255, 255, 255, 0.8);
 
-    /* Typography - Deep Winter Ink */
-    --cal-text: #1a2a33;
-    --cal-lunar-text: #546e7a;
-    --cal-header-text: #1a2a33;
+    /* Typography - Deep Winter Ink (Enhanced Contrast) */
+    --cal-text: #0e1c24;
+    /* Near Black Navy */
+    --cal-lunar-text: #37474f;
+    /* Darker Slate */
+    --cal-header-text: #0e1c24;
 
     /* Hero Overrides */
     --hero-text-color: #1a2a33;
@@ -32,22 +34,21 @@
     --panel-item-bg: rgba(119, 136, 153, 0.05);
     /* Cool Grey tint */
     --panel-border: rgba(176, 196, 222, 0.3);
-    --panel-divider: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(176, 196, 222, 0.3) 20%,
-        rgba(176, 196, 222, 0.3) 80%,
-        transparent 100%
-    );
+    --panel-divider: linear-gradient(90deg,
+            transparent 0%,
+            rgba(176, 196, 222, 0.3) 20%,
+            rgba(176, 196, 222, 0.3) 80%,
+            transparent 100%);
 
     /* Interactive Elements - Frozen Lake */
-    --cal-nav-bg: rgba(176, 196, 222, 0.05);
-    --cal-nav-color: #4682b4;
+    --cal-nav-bg: rgba(70, 130, 180, 0.08);
+    --cal-nav-color: #274d6e;
+    /* Darker Steel Blue */
 
     --cal-today-bg: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
     --cal-today-text: #ffffff;
-    --cal-term-color: #455a64;
-    /* 深藍灰色，提升冬天淺背景下的清晰度 */
+    --cal-term-color: #263238;
+    /* 極深藍灰色，顯著提升冬天淺背景下的清晰度 (Significantly Darkened) */
     --cal-festival-red: #d32f2f;
     /* 鮮紅 */
 

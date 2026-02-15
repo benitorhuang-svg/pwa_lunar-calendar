@@ -100,9 +100,22 @@ export class HeroUIManager {
             if (isArtwork) {
                 // Enter Zen Mode (Immersion with no UI)
                 // Stay in immersion mode but disable Artwork UI
+
+                // 1. Set internal state to "Not Artwork" (Zen)
                 window.dispatchEvent(
                     new CustomEvent<SlideshowControlDetail>("slideshow-control", {
                         detail: { action: "start", isArtwork: false },
+                    }),
+                );
+
+                // 2. IMPORTANT: Force 'immersion-mode' class to stay / be added
+                // Just in case 'slideshow-control' handler removed it or it was missing
+                document.body.classList.add("immersion-mode");
+
+                // 3. Ensure UI knows we are in immersion
+                window.dispatchEvent(
+                    new CustomEvent<WelcomeModeDetail>("welcome-mode", {
+                        detail: { active: true, targetMode: "zen" }, // Use "zen" or just rely on active: true
                     }),
                 );
             } else {
@@ -122,6 +135,14 @@ export class HeroUIManager {
                 window.dispatchEvent(
                     new CustomEvent<ClosePanelsDetail>("close-panels", {
                         detail: { showGrid: false },
+                    }),
+                );
+
+                // Ensure we are in immersion mode (Artwork is a type of immersion)
+                document.body.classList.add("immersion-mode");
+                window.dispatchEvent(
+                    new CustomEvent<WelcomeModeDetail>("welcome-mode", {
+                        detail: { active: true, targetMode: "artwork" },
                     }),
                 );
             }

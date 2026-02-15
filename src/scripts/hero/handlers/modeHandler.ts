@@ -101,7 +101,10 @@ export class ModeHandler {
                 this.idleManager.clear();
 
                 // determine if we should enter Artwork mode or Zen mode
-                const targetIsArtwork = targetMode === "artwork" ? true : wasArtwork;
+                // if targetMode is 'zen', we explicitly want isArtwork=false
+                let targetIsArtwork = wasArtwork;
+                if (targetMode === "artwork") targetIsArtwork = true;
+                if (targetMode === "zen") targetIsArtwork = false;
 
                 // 進入沉浸模式時強制啟動幻燈片 (Force start slideshow in immersion mode)
                 window.dispatchEvent(

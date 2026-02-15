@@ -18,10 +18,12 @@
     --cal-border: rgba(184, 134, 11, 0.15);
     --cal-border-glow: rgba(218, 165, 32, 0.4);
 
-    /* Typography - Deep Amber Earth */
-    --cal-text: #3c2a1e;
-    --cal-lunar-text: #8d6e63;
-    --cal-header-text: #3c2a1e;
+    /* Typography - Deep Amber Earth (Enhanced Contrast) */
+    --cal-text: #2d1e16;
+    /* Darker Brown/Black */
+    --cal-lunar-text: #5d4037;
+    /* Richer Brown */
+    --cal-header-text: #2d1e16;
 
     /* Hero Overrides */
     --hero-text-color: #3c2a1e;
@@ -31,23 +33,23 @@
     --panel-item-bg: rgba(139, 69, 19, 0.05);
     /* SaddleBrown tint */
     --panel-border: rgba(184, 134, 11, 0.25);
-    --panel-divider: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(184, 134, 11, 0.3) 20%,
-        rgba(184, 134, 11, 0.3) 80%,
-        transparent 100%
-    );
+    --panel-divider: linear-gradient(90deg,
+            transparent 0%,
+            rgba(184, 134, 11, 0.3) 20%,
+            rgba(184, 134, 11, 0.3) 80%,
+            transparent 100%);
 
     /* Interactive Elements - Harvest */
-    --cal-nav-bg: rgba(139, 69, 19, 0.04);
-    --cal-nav-color: #8b4513;
+    --cal-nav-bg: rgba(139, 69, 19, 0.08);
+    /* Slightly more visible */
+    --cal-nav-color: #6d360f;
+    /* Darker SaddleBrown */
 
     --cal-today-bg: linear-gradient(135deg, #d35400 0%, #a04000 100%);
     /* Pumpkin/Rust */
     --cal-today-text: #ffffff;
-    --cal-term-color: #af6000;
-    /* 更深焦橙色，確保在米色背景上清晰 */
+    --cal-term-color: #945200;
+    /* 更深焦橙色，確保在米色背景上清晰 (Darkened for clarity) */
     --cal-festival-red: #bf360c;
     /* 深橘紅 */
 

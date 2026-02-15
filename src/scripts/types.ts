@@ -99,5 +99,5 @@ export interface UpdateCalendarTitleDetail {
 
 export interface WelcomeModeDetail {
     active: boolean;
-    targetMode?: "artwork" | "calendar";
+    targetMode?: "artwork" | "calendar" | "zen";
 }

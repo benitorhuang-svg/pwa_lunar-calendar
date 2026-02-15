@@ -19,10 +19,12 @@
     /* Very subtle teal border */
     --cal-border-glow: rgba(0, 191, 255, 0.4);
 
-    /* Typography - Deep Abyss & Steel Blue */
-    --cal-text: #003355;
-    --cal-lunar-text: #5a8da0;
-    --cal-header-text: #003355;
+    /* Typography - Deep Abyss & Steel Blue (Enhanced Contrast) */
+    --cal-text: #002244;
+    /* Near Black Blue */
+    --cal-lunar-text: #004d6d;
+    /* Dark Teal */
+    --cal-header-text: #002244;
 
     /* Hero Overrides */
     --hero-text-color: #003355;
@@ -32,23 +34,22 @@
     --panel-item-bg: rgba(0, 100, 150, 0.05);
     /* Very light blue tint */
     --panel-border: rgba(135, 206, 250, 0.3);
-    --panel-divider: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(135, 206, 250, 0.3) 20%,
-        rgba(135, 206, 250, 0.3) 80%,
-        transparent 100%
-    );
+    --panel-divider: linear-gradient(90deg,
+            transparent 0%,
+            rgba(135, 206, 250, 0.3) 20%,
+            rgba(135, 206, 250, 0.3) 80%,
+            transparent 100%);
 
     /* Interactive Elements - Ocean Gems */
-    --cal-nav-bg: rgba(0, 120, 180, 0.05);
-    --cal-nav-color: #0077be;
+    --cal-nav-bg: rgba(0, 119, 190, 0.08);
+    --cal-nav-color: #005f99;
+    /* Deep Azure */
 
     --cal-today-bg: linear-gradient(135deg, #48cae4 0%, #0077b6 100%);
     --cal-today-text: #ffffff;
 
-    --cal-term-color: #d81b60;
-    /* 更鮮豔的粉紅，提高對比 */
+    --cal-term-color: #ad1457;
+    /* 更深洋紅，提高與淡藍背景的對比 (Deep Magenta) */
     --cal-festival-red: #c2185b;
     /* 節慶紅 */
 
