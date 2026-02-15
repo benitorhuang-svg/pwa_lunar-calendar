@@ -4,7 +4,6 @@ import { HeroHeaderManager } from "./headerManager";
 import { HeroIdleManager } from "./idleManager";
 import { HeroImageManager } from "./imageManager";
 import { HeroMusicPlayer } from "./musicPlayer";
-import { NoteManager } from "./noteManager";
 import { ParallaxManager } from "./parallaxManager";
 import { HeroSlideshowManager } from "./slideshowManager";
 
@@ -18,14 +17,12 @@ const slideshowManager = new HeroSlideshowManager(10000);
 const headerManager = new HeroHeaderManager();
 const parallaxManager = new ParallaxManager();
 
-const noteManager = new NoteManager(idleManager);
-
 // Init Managers (DOM elements)
 imageManager.init();
 musicPlayer.init();
 headerManager.init();
 idleManager.setupListeners();
-noteManager.init();
+
 parallaxManager.init();
 
 // Core Logic & Event Handlers

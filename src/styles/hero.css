@@ -2,7 +2,6 @@
 @import "./hero/header.css";
 @import "./hero/dock.css";
 @import "./hero/music-player.css";
-@import "./hero/notepad.css";
 
 /* 1. Hero Section (UI & Overlay Layer) */
 .hero-section {

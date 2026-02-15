@@ -13,7 +13,6 @@
 }
 
 .music-toggle-btn,
-.pen-toggle-btn,
 .immersion-toggle-btn {
     background: rgba(15, 15, 20, 0.7);
     /* Match dock base depth */
@@ -36,7 +35,6 @@
 }
 
 .music-toggle-btn:hover,
-.pen-toggle-btn:hover,
 .immersion-toggle-btn:hover {
     background: rgba(15, 15, 20, 0.9);
     color: #fff;
