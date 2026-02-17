@@ -13,9 +13,12 @@
 
 .hero-info-strip {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 0;
     padding: 6px 20px;
+    padding-bottom: 8px;
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
@@ -25,6 +28,73 @@
     font-family: var(--font-serif-num);
     box-shadow: var(--shadow-lg);
     pointer-events: auto;
+
+    /* Button Reset & Interactive */
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    transition: all 0.3s var(--ease-out-expo);
+    overflow: hidden;
+    /* For shine effects */
+}
+
+.today-date-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    line-height: 1.2;
+}
+
+.today-action-row {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    opacity: 0.7;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    font-family: var(--font-serif-tw, serif);
+    transition: opacity 0.3s ease;
+}
+
+.hero-info-strip:hover .today-action-row {
+    opacity: 1;
+    color: var(--color-accent, #d4af37);
+}
+
+.hero-info-strip:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.hero-info-strip:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.underline-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg,
+            transparent 10%,
+            rgba(212, 175, 55, 0.4) 50%,
+            transparent 90%);
+    opacity: 0.6;
+    transition: all 0.4s ease;
+}
+
+.hero-info-strip:hover .underline-indicator {
+    opacity: 1;
+    height: 3px;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            #d4af37 50%,
+            transparent 100%);
+    box-shadow: 0 -2px 8px rgba(212, 175, 55, 0.4);
 }
 
 #infoYear {

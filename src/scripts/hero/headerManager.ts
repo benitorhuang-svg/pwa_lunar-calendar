@@ -9,6 +9,7 @@ export class HeroHeaderManager {
     private dayEl: HTMLElement | null = null;
     private monthEl: HTMLElement | null = null;
     private yearEl: HTMLElement | null = null;
+    private stripEl: HTMLElement | null = null;
 
     public init(): void {
         this.cacheElements();
@@ -45,11 +46,21 @@ export class HeroHeaderManager {
         this.yearEl = document.getElementById("infoYear");
         this.monthEl = document.getElementById("infoMonth");
         this.dayEl = document.getElementById("infoDay");
+        this.stripEl = document.getElementById("heroInfoStrip");
     }
 
     private setupEventListeners(): void {
         // 為了將左上角日期鎖定為「今日」，我們不再監聽 render-hero 或 render-panels 事件來更新日期
         // To lock the top-left date to "Today", we no longer listen to render-hero or render-panels events to update the date.
+
+        // Add click listener for "Back to Today" functionality
+        if (this.stripEl) {
+            this.stripEl.addEventListener("click", () => {
+                console.log("[HeroHeader] Back to Today clicked");
+                // Dispatch event to return to today
+                window.dispatchEvent(new CustomEvent("go-to-today"));
+            });
+        }
 
         // 如果需要每分鐘更新一次（跨日更新），可以在此處添加 setInterval
         // If minute-by-minute updates (for date rollover) are needed, a setInterval could be added here.
