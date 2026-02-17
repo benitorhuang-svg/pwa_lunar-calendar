@@ -1,8 +1,12 @@
-/* Selection Panel (Year / Month Selector) - Digital Premium Revitalized */
 #panelYearMonth.bottom-panel {
     cursor: auto;
-    padding-bottom: 25px;
-    /* Year/Month needs this for grid rhythm */
+    padding-bottom: 10px;
+    /* Reduced redundant padding */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    /* Enable scroll if content overflows */
+    -webkit-overflow-scrolling: touch;
 }
 
 .panel-grid {
@@ -22,10 +26,10 @@
 }
 
 .panel-section-container {
-    padding: 25px 25px;
+    padding: 20px 25px 30px 25px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
 }
 
 .panel-section-header {
@@ -113,6 +117,7 @@
 }
 
 @keyframes goldAuraPulse {
+
     0%,
     100% {
         transform: translate(-50%, -50%) scale(1);
@@ -139,14 +144,12 @@
 
 /* Divider between Year and Month */
 .panel-section-divider {
-    height: 0.5px;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(212, 175, 55, 0.1) 50%,
-        transparent 100%
-    );
-    margin: 2px 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(212, 175, 55, 0.15) 50%,
+            transparent 100%);
+    margin: 8px 0;
     width: 100%;
 }
 
