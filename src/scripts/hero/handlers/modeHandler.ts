@@ -17,11 +17,97 @@ export class ModeHandler {
         private imageManager: HeroImageManager, // Needed for reset logic? Or just slideshowManager handles it.
         private slideshowManager: HeroSlideshowManager,
         private uiManager: HeroUIManager,
-    ) { }
+    ) {}
 
     public init(): void {
         this.setupEventListeners();
         this.bindUI();
+    }
+
+    private afterEnter(from: AppMode, to: AppMode): void {
+        console.log(`[Lifecycle] after-enter-mode: ${from} → ${to}`);
+
+        // 1. Activate timers for new mode
+        this.idleManager.activateForMode(to);
+
+        // 2. Handle specific mode entry side effects
+        switch (to) {
+            case "artwork":
+                this.uiManager.updateImmersionUI(true);
+                window.dispatchEvent(
+                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
+                        detail: { action: "start", isArtwork: true },
+                    }),
+                );
+                window.dispatchEvent(
+                    new CustomEvent<ClosePanelsDetail>("close-panels", {
+                        detail: { showGrid: false },
+                    }),
+                );
+
+                // T210: Fullscreen Exit if coming from Zen
+                if (from === "zen") {
+                    this.uiManager.toggleFullscreen(false);
+                }
+                break;
+
+            case "calendar":
+                this.uiManager.updateImmersionUI(false);
+                window.dispatchEvent(
+                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
+                        detail: { action: "stop" },
+                    }),
+                );
+                window.dispatchEvent(
+                    new CustomEvent<ClosePanelsDetail>("close-panels", {
+                        detail: { showGrid: true },
+                    }),
+                );
+                break;
+
+            case "note":
+                this.uiManager.updateImmersionUI(false);
+                break;
+
+            case "welcome":
+                this.uiManager.updateImmersionUI(true);
+                window.dispatchEvent(
+                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
+                        detail: { action: "start", isArtwork: false },
+                    }),
+                );
+                break;
+
+            case "zen":
+                this.uiManager.updateImmersionUI(true);
+                window.dispatchEvent(
+                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
+                        detail: { action: "start", isArtwork: false },
+                    }),
+                );
+                window.dispatchEvent(
+                    new CustomEvent<ClosePanelsDetail>("close-panels", {
+                        detail: { showGrid: false },
+                    }),
+                );
+
+                // T210: Fullscreen Entry
+                this.uiManager.toggleFullscreen(true);
+
+                if (from === "artwork") {
+                    this.uiManager.showZenHint();
+                }
+                break;
+        }
+    }
+
+    private beforeExit(from: AppMode): void {
+        console.log(`[Lifecycle] before-exit-mode: ${from}`);
+        this.idleManager.deactivateAll();
+
+        if (from === "calendar") {
+            // Placeholder for calendar-specific cleanup if needed
+        }
     }
 
     private bindUI(): void {
@@ -31,7 +117,9 @@ export class ModeHandler {
             this.idleManager.resetInteraction();
 
             // Welcome Overlay Click -> Go to Calendar Mode
-            window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "calendar" } }));
+            window.dispatchEvent(
+                new CustomEvent("transition-mode", { detail: { to: "calendar" } }),
+            );
         });
 
         // 沉浸模式手動切換 (Immersion Mode Toggle)
@@ -113,91 +201,5 @@ export class ModeHandler {
 
             window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to } }));
         }) as EventListener);
-    }
-
-    private beforeExit(from: AppMode): void {
-        console.log(`[Lifecycle] before-exit-mode: ${from}`);
-        this.idleManager.deactivateAll();
-
-        if (from === "calendar") {
-            // Placeholder for calendar-specific cleanup if needed
-        }
-    }
-
-    private afterEnter(from: AppMode, to: AppMode): void {
-        console.log(`[Lifecycle] after-enter-mode: ${from} → ${to}`);
-
-        // 1. Activate timers for new mode
-        this.idleManager.activateForMode(to);
-
-        // 2. Handle specific mode entry side effects
-        switch (to) {
-            case "welcome":
-                this.uiManager.updateImmersionUI(true);
-                window.dispatchEvent(
-                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                        detail: { action: "start", isArtwork: false },
-                    }),
-                );
-                break;
-
-            case "artwork":
-                this.uiManager.updateImmersionUI(true);
-                window.dispatchEvent(
-                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                        detail: { action: "start", isArtwork: true },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent<ClosePanelsDetail>("close-panels", {
-                        detail: { showGrid: false },
-                    }),
-                );
-
-                // T210: Fullscreen Exit if coming from Zen
-                if (from === "zen") {
-                    this.uiManager.toggleFullscreen(false);
-                }
-                break;
-
-            case "zen":
-                this.uiManager.updateImmersionUI(true);
-                window.dispatchEvent(
-                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                        detail: { action: "start", isArtwork: false },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent<ClosePanelsDetail>("close-panels", {
-                        detail: { showGrid: false },
-                    }),
-                );
-
-                // T210: Fullscreen Entry
-                this.uiManager.toggleFullscreen(true);
-
-                if (from === "artwork") {
-                    this.uiManager.showZenHint();
-                }
-                break;
-
-            case "calendar":
-                this.uiManager.updateImmersionUI(false);
-                window.dispatchEvent(
-                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                        detail: { action: "stop" },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent<ClosePanelsDetail>("close-panels", {
-                        detail: { showGrid: true },
-                    }),
-                );
-                break;
-
-            case "note":
-                this.uiManager.updateImmersionUI(false);
-                break;
-        }
     }
 }

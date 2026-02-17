@@ -5,17 +5,18 @@
 
 import type { Lunar } from "../core/lunar";
 import type { AppMode, AppState, ThemeName } from "../types";
+
 import { TRANSITION_CLASS_MAP, VALID_TRANSITIONS } from "./transitionTable";
 
 export class AppStateManager {
-    private isTransitioning: boolean = false;
-    private transitionQueue: AppMode[] = [];
     private activePanel: "today" | "yearMonth" | null;
+    private isTransitioning: boolean = false;
     private mode: AppMode;
     private selectedDay: number;
     private selectedMonth: number;
     private selectedYear: number;
     private today: Date;
+    private transitionQueue: AppMode[] = [];
 
     constructor() {
         const now = new Date();
@@ -45,6 +46,19 @@ export class AppStateManager {
             "theme-winter",
         );
         appContainer.classList.add(theme);
+    }
+
+    /**
+     * T216: 強制釋放轉移鎖 (Force Release Lock)
+     */
+    public forceReleaseLock(): void {
+        console.warn("[FSM] Force releasing transition lock");
+        this.isTransitioning = false;
+        this.processQueue();
+    }
+
+    public getMode(): AppMode {
+        return this.mode;
     }
 
     public getState(): AppState {
@@ -116,18 +130,6 @@ export class AppStateManager {
         this.selectedDay = day;
     }
 
-    public setMonth(month: number): void {
-        this.selectedMonth = month;
-    }
-
-    public setYear(year: number): void {
-        this.selectedYear = year;
-    }
-
-    public getMode(): AppMode {
-        return this.mode;
-    }
-
     public setMode(to: AppMode): void {
         const from = this.mode;
         if (from === to) return;
@@ -147,6 +149,14 @@ export class AppStateManager {
         }
 
         this.executeModeTransition(from, to);
+    }
+
+    public setMonth(month: number): void {
+        this.selectedMonth = month;
+    }
+
+    public setYear(year: number): void {
+        this.selectedYear = year;
     }
 
     private executeModeTransition(from: AppMode, to: AppMode): void {
@@ -193,14 +203,5 @@ export class AppStateManager {
             console.log(`[FSM] Processing queued transition to: ${nextMode}`);
             this.setMode(nextMode);
         }
-    }
-
-    /**
-     * T216: 強制釋放轉移鎖 (Force Release Lock)
-     */
-    public forceReleaseLock(): void {
-        console.warn("[FSM] Force releasing transition lock");
-        this.isTransitioning = false;
-        this.processQueue();
     }
 }

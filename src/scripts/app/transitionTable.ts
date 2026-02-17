@@ -13,11 +13,11 @@ export interface TransitionClassSwap {
  * 定義每個模式允許遷移到的目標模式
  */
 export const VALID_TRANSITIONS: Record<AppMode, AppMode[]> = {
-    welcome: ["calendar", "zen"],
-    calendar: ["artwork", "note"],
     artwork: ["calendar", "zen"],
-    zen: ["artwork"],
+    calendar: ["artwork", "note"],
     note: ["calendar"],
+    welcome: ["calendar", "zen"],
+    zen: ["artwork"],
 };
 
 /**
@@ -25,13 +25,13 @@ export const VALID_TRANSITIONS: Record<AppMode, AppMode[]> = {
  * 精確定義每個轉換路徑中需要 add/remove 的 class
  */
 export const TRANSITION_CLASS_MAP: Record<string, TransitionClassSwap> = {
-    "welcome->calendar": {
+    "artwork->calendar": {
         add: [],
-        remove: ["initial-welcome", "immersion-mode"],
+        remove: ["immersion-mode", "mode-artwork"],
     },
-    "welcome->zen": {
+    "artwork->zen": {
         add: [],
-        remove: ["initial-welcome"],
+        remove: ["mode-artwork"],
     },
     "calendar->artwork": {
         add: ["immersion-mode", "mode-artwork"],
@@ -41,20 +41,20 @@ export const TRANSITION_CLASS_MAP: Record<string, TransitionClassSwap> = {
         add: ["note-mode-active"],
         remove: [],
     },
-    "artwork->calendar": {
+    "note->calendar": {
         add: [],
-        remove: ["immersion-mode", "mode-artwork"],
+        remove: ["note-mode-active"],
     },
-    "artwork->zen": {
+    "welcome->calendar": {
         add: [],
-        remove: ["mode-artwork"],
+        remove: ["initial-welcome", "immersion-mode"],
+    },
+    "welcome->zen": {
+        add: [],
+        remove: ["initial-welcome"],
     },
     "zen->artwork": {
         add: ["mode-artwork"],
         remove: [],
-    },
-    "note->calendar": {
-        add: [],
-        remove: ["note-mode-active"],
     },
 };

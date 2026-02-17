@@ -1,10 +1,7 @@
 import type { HeroIdleManager } from "../idleManager";
 import type { HeroImageManager } from "../imageManager";
 import type { HeroSlideshowManager } from "../slideshowManager";
-import type {
-    NavigateMonthDetail,
-    RenderHeroDetail,
-} from "../types";
+import type { NavigateMonthDetail, RenderHeroDetail } from "../types";
 
 import { HeroUIManager } from "../uiManager";
 
@@ -14,7 +11,7 @@ export class NavigationHandler {
         private imageManager: HeroImageManager,
         private slideshowManager: HeroSlideshowManager,
         private uiManager: HeroUIManager,
-    ) { }
+    ) {}
 
     public handleNavigation(direction: number): void {
         this.idleManager.resetInteraction();
@@ -66,7 +63,5 @@ export class NavigationHandler {
             () => this.handleNavigation(-1),
             () => this.handleNavigation(1),
         );
-
-
     }
 }

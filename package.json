@@ -17,23 +17,23 @@
     },
     "dependencies": {
         "@vite-pwa/astro": "^1.2.0",
-        "astro": "^4.16.18",
+        "astro": "^5.17.2",
         "vite-plugin-pwa": "^1.2.0",
         "workbox-window": "^7.4.0"
     },
     "devDependencies": {
-        "@eslint/js": "^10.0.1",
+        "@eslint/js": "^9.39.2",
         "@typescript-eslint/eslint-plugin": "^8.55.0",
         "@typescript-eslint/parser": "^8.55.0",
         "astro-eslint-parser": "^1.2.2",
         "eslint": "^10.0.0",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-astro": "^1.5.0",
+        "eslint-config-prettier": "^6.15.0",
+        "eslint-plugin-astro": "^0.9.0",
         "eslint-plugin-perfectionist": "^5.5.0",
-        "eslint-plugin-prettier": "^5.5.5",
+        "eslint-plugin-prettier": "^2.7.0",
         "prettier": "^3.8.1",
         "prettier-plugin-astro": "^0.14.1",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.55.0"
+        "typescript-eslint": "^8.14.0"
     }
 }

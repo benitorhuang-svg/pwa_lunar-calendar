@@ -145,8 +145,6 @@ body[data-gallery-empty="true"] #galleryEmptyNotice {
     display: flex;
 }
 
-
-
 /* 5. Panel-driven HUD Visibility (CSS-driven visibility unification) */
 body[data-active-panel="today"] .hero-dock-wrapper,
 body[data-active-panel="today"] .hero-header,

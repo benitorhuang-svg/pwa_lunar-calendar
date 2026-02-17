@@ -1,6 +1,4 @@
-import type {
-    RequestHeroChangeDetail,
-} from "./types";
+import type { RequestHeroChangeDetail } from "./types";
 
 import { HeroGalleryManager } from "./galleryManager";
 import { HeroLayoutManager } from "./ui/layoutManager";
@@ -18,15 +16,15 @@ export class HeroUIManager {
     public get isCalendarActive(): boolean {
         return this.layoutManager.dayBtn?.classList.contains("active") ?? false;
     }
+    private btnFaq: HTMLElement | null = null;
+    private faqOverlay: HTMLElement | null = null;
     private galleryManager: HeroGalleryManager;
     private layoutManager: HeroLayoutManager;
+
     private modeUIManager: HeroModeUIManager;
+
     private toastContainer: HTMLElement | null = null;
-
     private zenGestureHint: HTMLElement | null = null;
-
-    private faqOverlay: HTMLElement | null = null;
-    private btnFaq: HTMLElement | null = null;
 
     constructor() {
         this.layoutManager = new HeroLayoutManager();
@@ -58,7 +56,9 @@ export class HeroUIManager {
             if (isWelcome) return;
 
             if (!isImmersion) {
-                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
+                window.dispatchEvent(
+                    new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
+                );
                 return;
             }
 
@@ -72,7 +72,11 @@ export class HeroUIManager {
             window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
         };
 
-        document.addEventListener("click", handler, true);
+        // Use BUBBLING phase (not capture) so button handlers with
+        // stopPropagation() can prevent this from firing.
+        // Using capture phase (true) was the root cause of the
+        // "immersion button flicker" bug on mobile.
+        document.addEventListener("click", handler);
 
         // T211: Sync mode if user exits fullscreen via system (e.g., ESC key) with Transition Lock Guard
         document.addEventListener("fullscreenchange", () => {
@@ -82,7 +86,7 @@ export class HeroUIManager {
 
             // If we're in Zen mode but no longer fullscreen, return to Artwork
             if (isImmersion && !isArtwork && !isWelcome && !document.fullscreenElement) {
-                // Note: Transitioning state is checked in stateManager, 
+                // Note: Transitioning state is checked in stateManager,
                 // but we dispatch here. Orchestrator's queue will handle it if locked.
                 window.dispatchEvent(
                     new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
@@ -102,7 +106,9 @@ export class HeroUIManager {
             if (isArtwork) {
                 window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "zen" } }));
             } else {
-                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
+                window.dispatchEvent(
+                    new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
+                );
                 window.dispatchEvent(
                     new CustomEvent<RequestHeroChangeDetail>("request-hero-change", {
                         detail: {
@@ -127,8 +133,6 @@ export class HeroUIManager {
         this.galleryManager.bindControls(callbacks);
     }
 
-
-
     public bindImmersionMode(resetIdle: () => void): void {
         const handler = (e: Event) => {
             e.stopPropagation();
@@ -137,9 +141,13 @@ export class HeroUIManager {
             const isImmersion = document.body.classList.contains("immersion-mode");
 
             if (isImmersion) {
-                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "calendar" } }));
+                window.dispatchEvent(
+                    new CustomEvent("transition-mode", { detail: { to: "calendar" } }),
+                );
             } else {
-                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
+                window.dispatchEvent(
+                    new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
+                );
             }
         };
         const btn = this.modeUIManager.immersionBtn;
@@ -297,6 +305,26 @@ export class HeroUIManager {
         );
     }
 
+    public showZenHint(): void {
+        this.showZenGestureHint();
+    }
+
+    public toggleFullscreen(enable: boolean): void {
+        if (enable) {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch((err) => {
+                    console.warn(`Fullscreen request failed: ${err.message}`);
+                });
+            }
+        } else {
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch((err) => {
+                    console.warn(`Fullscreen exit failed: ${err.message}`);
+                });
+            }
+        }
+    }
+
     public toggleGridView(show: boolean): void {
         this.layoutManager.toggleGridView(show);
         if (show) {
@@ -321,10 +349,6 @@ export class HeroUIManager {
     public updatePanelsForType(type?: "today" | "yearMonth"): void {
         this.layoutManager.updatePanelsForType(type);
         this.modeUIManager.changeImageBtn?.classList.remove("active");
-    }
-
-    public showZenHint(): void {
-        this.showZenGestureHint();
     }
 
     private bindFaqButton(): void {
@@ -428,22 +452,6 @@ export class HeroUIManager {
             setTimeout(() => {
                 this.zenGestureHint?.classList.remove("show");
             }, 4600);
-        }
-    }
-
-    public toggleFullscreen(enable: boolean): void {
-        if (enable) {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch((err) => {
-                    console.warn(`Fullscreen request failed: ${err.message}`);
-                });
-            }
-        } else {
-            if (document.fullscreenElement) {
-                document.exitFullscreen().catch((err) => {
-                    console.warn(`Fullscreen exit failed: ${err.message}`);
-                });
-            }
         }
     }
 }

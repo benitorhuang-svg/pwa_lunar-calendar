@@ -19,13 +19,13 @@ import type {
 } from "../types";
 import type { AppStateManager } from "./stateManager";
 
-import { Lunar } from "../core/lunar";
 import { HolidayService } from "../core/holidayService";
+import { Lunar } from "../core/lunar";
 
 export class AppEventOrchestrator {
-    private state: AppStateManager;
     private holidayService = HolidayService.getInstance();
-    private lastFetchedYear: number | null = null;
+    private lastFetchedYear: null | number = null;
+    private state: AppStateManager;
 
     constructor(stateManager: AppStateManager) {
         this.state = stateManager;
@@ -41,27 +41,6 @@ export class AppEventOrchestrator {
         // 初始抓取 (Initial fetch)
         const currentYear = this.state.getState().selectedYear;
         this.fetchHolidays(currentYear);
-    }
-
-    private async fetchHolidays(year: number): Promise<void> {
-        if (this.lastFetchedYear === year) return;
-        this.lastFetchedYear = year;
-
-        const systemYear = new Date().getFullYear();
-        const fetchTasks = [this.holidayService.fetchYearData(year)];
-
-        // 總是抓取前一年 (Always fetch previous year)
-        fetchTasks.push(this.holidayService.fetchYearData(year - 1));
-
-        // 只有當「下一年」早於或等於系統年份，或者已經是下半年時，才主動抓取下一年
-        // (Only proactive fetch next year if it's already released or late in the year)
-        const currentMonth = new Date().getMonth(); // 0-11
-        if (year < systemYear || (year === systemYear && currentMonth >= 5)) {
-            fetchTasks.push(this.holidayService.fetchYearData(year + 1));
-        }
-
-        await Promise.all(fetchTasks);
-        this.updateState(); // 重新渲染以套用假期 (Re-render to apply)
     }
 
     /**
@@ -100,23 +79,6 @@ export class AppEventOrchestrator {
             this.forceRecovery("calendar");
             this.state.forceReleaseLock(); // Ensure lock is released even on error
         }
-    }
-
-    private dispatchModeLifecycle(eventName: string, from: AppMode, to: AppMode): void {
-        window.dispatchEvent(
-            new CustomEvent<ModeChangedDetail>(eventName, {
-                detail: { from, to },
-            }),
-        );
-    }
-
-    /**
-     * T216: 強制模式恢復 (Force Mode Recovery)
-     */
-    private forceRecovery(target: AppMode = "calendar"): void {
-        console.warn(`[Orchestrator] Forcing recovery to mode: ${target}`);
-        // Direct set to skip lifecycle and break loops
-        this.state.setMode(target);
     }
 
     public updateState(): void {
@@ -207,6 +169,44 @@ export class AppEventOrchestrator {
                 }),
             );
         }
+    }
+
+    private dispatchModeLifecycle(eventName: string, from: AppMode, to: AppMode): void {
+        window.dispatchEvent(
+            new CustomEvent<ModeChangedDetail>(eventName, {
+                detail: { from, to },
+            }),
+        );
+    }
+
+    private async fetchHolidays(year: number): Promise<void> {
+        if (this.lastFetchedYear === year) return;
+        this.lastFetchedYear = year;
+
+        const systemYear = new Date().getFullYear();
+        const fetchTasks = [this.holidayService.fetchYearData(year)];
+
+        // 總是抓取前一年 (Always fetch previous year)
+        fetchTasks.push(this.holidayService.fetchYearData(year - 1));
+
+        // 只有當「下一年」早於或等於系統年份，或者已經是下半年時，才主動抓取下一年
+        // (Only proactive fetch next year if it's already released or late in the year)
+        const currentMonth = new Date().getMonth(); // 0-11
+        if (year < systemYear || (year === systemYear && currentMonth >= 5)) {
+            fetchTasks.push(this.holidayService.fetchYearData(year + 1));
+        }
+
+        await Promise.all(fetchTasks);
+        this.updateState(); // 重新渲染以套用假期 (Re-render to apply)
+    }
+
+    /**
+     * T216: 強制模式恢復 (Force Mode Recovery)
+     */
+    private forceRecovery(target: AppMode = "calendar"): void {
+        console.warn(`[Orchestrator] Forcing recovery to mode: ${target}`);
+        // Direct set to skip lifecycle and break loops
+        this.state.setMode(target);
     }
 
     private setupHeroEvents(): void {

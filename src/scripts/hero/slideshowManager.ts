@@ -11,16 +11,6 @@ export class HeroSlideshowManager {
         this.INTERVAL = interval;
     }
 
-    public setIntervalMs(ms: number): void {
-        if (typeof ms !== "number" || Number.isNaN(ms) || ms <= 0) return;
-        this.INTERVAL = ms;
-        // If timer is running, restart is responsibility of caller (handlers/mode)
-        if (this.slideshowTimer) {
-            clearInterval(this.slideshowTimer);
-            this.slideshowTimer = null;
-        }
-    }
-
     public getIntervalMs(): number {
         return this.INTERVAL;
     }
@@ -35,6 +25,16 @@ export class HeroSlideshowManager {
     ): void {
         this.stop();
         this.start(switchCallback, minImages);
+    }
+
+    public setIntervalMs(ms: number): void {
+        if (typeof ms !== "number" || Number.isNaN(ms) || ms <= 0) return;
+        this.INTERVAL = ms;
+        // If timer is running, restart is responsibility of caller (handlers/mode)
+        if (this.slideshowTimer) {
+            clearInterval(this.slideshowTimer);
+            this.slideshowTimer = null;
+        }
     }
 
     public start(switchCallback: (_offset: number, _isAuto: boolean) => void, minImages = 2): void {

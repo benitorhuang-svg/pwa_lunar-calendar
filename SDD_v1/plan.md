@@ -25,32 +25,34 @@
 **專案類型**：Single-page PWA（Astro SSG 輸出）  
 **效能目標**：首屏 ≤8s（含超時保護）、模式切換 ≤200ms、背景動畫 60fps  
 **限制條件**：
+
 - 農曆計算範圍 1900-2100
 - 強制 HTTPS（音訊串流）
 - 觸控區域 ≥44×44px
 - 零第三方 UI 框架（純原生 DOM API）
 
-**規模／範疇**：  
-- 5 種操作模式  
-- 7 種色彩主題  
-- 20+ 種 CustomEvent 契約  
-- ~30 個 TypeScript 模組  
-- ~15 個 CSS 樣式模組  
-- ~10 個 Astro 組件  
+**規模／範疇**：
+
+- 5 種操作模式
+- 7 種色彩主題
+- 20+ 種 CustomEvent 契約
+- ~30 個 TypeScript 模組
+- ~15 個 CSS 樣式模組
+- ~10 個 Astro 組件
 
 ---
 
 ## 專案憲章檢查 (Constitution Check)
 
-| 憲章原則 | 符合狀態 | 備註 |
-|----------|----------|------|
-| I. 數位高級感優先 | ✅ | 玻璃擬態、1.6s 絲綢轉場、60fps 動畫、無噪點 |
-| II. 模組化與職責分離 | ✅ | Manager/Handler/Renderer/Orchestrator 四層+ 分離 |
-| III. 類型安全不可協商 | ✅ | CustomEvent 全泛型定義於 types.ts |
-| IV. 品質門檻 | ✅ | ESLint Zero Errors 政策執行中 |
-| V. 響應式行動優先 | ✅ | clamp()、vw/vh、4 段斷點 |
-| VI. 命名即文件 | ✅ | kebab-case 檔案、BEM-inspired class |
-| VII. 簡單性 YAGNI | ✅ | 無第三方 UI 框架、原生 DOM |
+| 憲章原則              | 符合狀態 | 備註                                             |
+| --------------------- | -------- | ------------------------------------------------ |
+| I. 數位高級感優先     | ✅       | 玻璃擬態、1.6s 絲綢轉場、60fps 動畫、無噪點      |
+| II. 模組化與職責分離  | ✅       | Manager/Handler/Renderer/Orchestrator 四層+ 分離 |
+| III. 類型安全不可協商 | ✅       | CustomEvent 全泛型定義於 types.ts                |
+| IV. 品質門檻          | ✅       | ESLint Zero Errors 政策執行中                    |
+| V. 響應式行動優先     | ✅       | clamp()、vw/vh、4 段斷點                         |
+| VI. 命名即文件        | ✅       | kebab-case 檔案、BEM-inspired class              |
+| VII. 簡單性 YAGNI     | ✅       | 無第三方 UI 框架、原生 DOM                       |
 
 ---
 
@@ -256,15 +258,12 @@ lunar-calendar/
 ### 2. Z-Index 分層管理
 
 ```css
---z-index-hero-bg:         0       /* HeroBackground：背景底圖 */
---z-index-base:            1       /* 主體內容 */
---z-index-calendar-grid:   50      /* CalendarBoard：日曆網格 */
---z-index-dock:            100     /* HeroDock：底部控制列 */
---z-index-panel-overlay:   1000    /* PanelBackOverlay：面板背景遮罩 */
---z-index-panel:           1100    /* FloatingPanels：彈出面板 */
---z-index-header:          2000    /* HeroHeader + 右上按鈕群 */
---z-index-loading:         10000   /* loadingOverlay：首屏加載 */
---z-index-welcome:         100005  /* WelcomeOverlay：歡迎卡片 */
+--z-index-hero-bg: 0 /* HeroBackground：背景底圖 */ --z-index-base: 1 /* 主體內容 */
+    --z-index-calendar-grid: 50 /* CalendarBoard：日曆網格 */ --z-index-dock: 100
+    /* HeroDock：底部控制列 */ --z-index-panel-overlay: 1000 /* PanelBackOverlay：面板背景遮罩 */
+    --z-index-panel: 1100 /* FloatingPanels：彈出面板 */ --z-index-header: 2000
+    /* HeroHeader + 右上按鈕群 */ --z-index-loading: 10000 /* loadingOverlay：首屏加載 */
+    --z-index-welcome: 100005 /* WelcomeOverlay：歡迎卡片 */;
 ```
 
 ### 3. HeroDock 版面佈局詳解
@@ -289,10 +288,10 @@ HeroDock 是整個應用最關鍵的互動元件，因為它在不同模式下�
 
 #### 3.2 Dock 功能群組切換
 
-| CSS Class | 可見時機 | 包含元素 | 備註 |
-|-----------|----------|----------|------|
-| `.group-calendar` | 日曆模式 (Calendar) | 年月按鈕 `btnYearMonth` | 金色系 |
-| `.group-image` (`.gallery-control-wrapper`) | 映畫模式 (Artwork) | 藝廊選單觸發器 | 銀白色系 |
+| CSS Class                                   | 可見時機            | 包含元素                | 備註     |
+| ------------------------------------------- | ------------------- | ----------------------- | -------- |
+| `.group-calendar`                           | 日曆模式 (Calendar) | 年月按鈕 `btnYearMonth` | 金色系   |
+| `.group-image` (`.gallery-control-wrapper`) | 映畫模式 (Artwork)  | 藝廊選單觸發器          | 銀白色系 |
 
 **切換邏輯**（定義於 `ModeHandler.applyModeSideEffects()`）：
 
@@ -312,28 +311,30 @@ HeroDock 是整個應用最關鍵的互動元件，因為它在不同模式下�
 
 步進鍵的功能隨模式變化——此為「功能色系歸屬感」設計哲學的核心體現：
 
-| 模式 | `< >` 功能 | 色系 | 事件 |
-|------|-----------|------|------|
+| 模式         | `< >` 功能          | 色系             | 事件                     |
+| ------------ | ------------------- | ---------------- | ------------------------ |
 | **日曆模式** | 月份步進（上/下月） | 香檳金 `#D4AF37` | `navigate-month` (-1/+1) |
-| **映畫模式** | 圖片步進（上/下張） | 晶透白 `#FFFFFF` | `request-hero-change` |
-| **Zen 模式** | Dock 隱藏（不可見） | — | 滑動手勢替代 |
+| **映畫模式** | 圖片步進（上/下張） | 晶透白 `#FFFFFF` | `request-hero-change`    |
+| **Zen 模式** | Dock 隱藏（不可見） | —                | 滑動手勢替代             |
 
 #### 3.4 Dock 響應式行為
 
 ```css
 /* 核心策略：行動優先、底部固定、水平置中 */
 .hero-dock {
-  position: fixed;
-  bottom: var(--safe-bottom);    /* 安全區域適配 */
-  left: 50%;
-  transform: translateX(-50%);   /* 強制水平置中 */
-  max-width: 500px;              /* 最大寬度限制 */
-  width: calc(100% - 2rem);      /* 小螢幕撐滿減邊距 */
+    position: fixed;
+    bottom: var(--safe-bottom); /* 安全區域適配 */
+    left: 50%;
+    transform: translateX(-50%); /* 強制水平置中 */
+    max-width: 500px; /* 最大寬度限制 */
+    width: calc(100% - 2rem); /* 小螢幕撐滿減邊距 */
 }
 
 /* 行動端: 移除工具列文字，純圖標驅動 */
 @media (max-width: 767px) {
-  .dock-btn span:empty + ... { /* 補償內邊距 */ }
+    .dock-btn span:empty + ... {
+        /* 補償內邊距 */
+    }
 }
 ```
 
@@ -437,13 +438,13 @@ HeroDock 是整個應用最關鍵的互動元件，因為它在不同模式下�
 ```css
 /* 所有面板統一定位策略 */
 .floating-panel {
-  position: fixed;
-  bottom: calc(var(--safe-bottom) + var(--dock-height) + 1rem);
-  left: 50%;
-  transform: translateX(-50%);         /* 強制水平置中 */
-  max-width: 500px;
-  width: calc(100% - 2rem);
-  animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); /* 底部滑入 */
+    position: fixed;
+    bottom: calc(var(--safe-bottom) + var(--dock-height) + 1rem);
+    left: 50%;
+    transform: translateX(-50%); /* 強制水平置中 */
+    max-width: 500px;
+    width: calc(100% - 2rem);
+    animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); /* 底部滑入 */
 }
 ```
 
@@ -453,17 +454,17 @@ HeroDock 是整個應用最關鍵的互動元件，因為它在不同模式下�
 Toggle 規則:
   toggle-panel('yearMonth') 且 activePanel === 'yearMonth'
     → 關閉面板, activePanel = null
-  
+
   toggle-panel('yearMonth') 且 activePanel === 'today'
     → 關閉 today, 開啟 yearMonth, activePanel = 'yearMonth'
-  
+
   toggle-panel('yearMonth') 且 activePanel === null
     → 開啟 yearMonth, activePanel = 'yearMonth'
 
 背景遮罩同步:
   activePanel !== null → #panelBackOverlay 顯示
   activePanel === null → #panelBackOverlay 隱藏
-  
+
   點擊 #panelBackOverlay → close-panels 事件 → 關閉所有面板
 
 body[data-active-panel]:
@@ -522,15 +523,16 @@ stateDiagram-v2
 
 FSM 必須依據此表驗證每次轉換的合法性。非法轉換應被拒絕並記錄 `console.warn`。
 
-| From ＼ To | Welcome | Calendar | Artwork | Zen | Note |
-|------------|---------|----------|---------|-----|------|
-| **Welcome** | — | ✅ 點擊背景/按鈕 | ❌ | ✅ 閒置6s | ❌ |
-| **Calendar** | ❌ | — | ✅ 映畫按鈕/背景 | ❌ | ✅ 筆記按鈕 |
-| **Artwork** | ❌ | ✅ 日曆按鈕 | — | ✅ 背景/閒置 | ❌ |
-| **Zen** | ❌ | ❌ | ✅ 點擊/Esc/滑動 | — | ❌ |
-| **Note** | ❌ | ✅ 關閉面板 | ❌ | ❌ | — |
+| From ＼ To   | Welcome | Calendar         | Artwork          | Zen          | Note        |
+| ------------ | ------- | ---------------- | ---------------- | ------------ | ----------- |
+| **Welcome**  | —       | ✅ 點擊背景/按鈕 | ❌               | ✅ 閒置6s    | ❌          |
+| **Calendar** | ❌      | —                | ✅ 映畫按鈕/背景 | ❌           | ✅ 筆記按鈕 |
+| **Artwork**  | ❌      | ✅ 日曆按鈕      | —                | ✅ 背景/閒置 | ❌          |
+| **Zen**      | ❌      | ❌               | ✅ 點擊/Esc/滑動 | —            | ❌          |
+| **Note**     | ❌      | ✅ 關閉面板      | ❌               | ❌           | —           |
 
 **守衛規則 (Guards)**：
+
 - `Calendar → Artwork`：必須先清除所有開啟的面板 (`activePanel = null`)
 - `Artwork → Zen`：不強制 fullscreen 成功（iOS 降級處理）
 - `Welcome → Zen`：僅限 IdleManager 自動觸發，不接受手動觸發
@@ -575,32 +577,33 @@ FSM 必須依據此表驗證每次轉換的合法性。非法轉換應被拒絕�
 
 - **原子 Class 替換**：`performTransition()` 內的 class 操作必須是「先 add 新 class → 再 remove 舊 class」，**絕不能先移除所有 class**。這避免了中間幀因沒有 class 而導致 CSS 條件選擇器失效，造成佈局閃爍。
 
-  ```typescript
-  // ❌ 錯誤：當前實作 — 先清空再添加，導致 1 幀無 class
-  body.classList.remove("initial-welcome", "immersion-mode", "mode-artwork", "note-mode-active");
-  body.classList.add(...newClasses);
+    ```typescript
+    // ❌ 錯誤：當前實作 — 先清空再添加，導致 1 幀無 class
+    body.classList.remove("initial-welcome", "immersion-mode", "mode-artwork", "note-mode-active");
+    body.classList.add(...newClasses);
 
-  // ✅ 正確：原子替換 — 在 rAF 內先加後減
-  requestAnimationFrame(() => {
-    body.classList.add(...classesToAdd);
-    body.classList.remove(...classesToRemove);
-  });
-  ```
+    // ✅ 正確：原子替換 — 在 rAF 內先加後減
+    requestAnimationFrame(() => {
+        body.classList.add(...classesToAdd);
+        body.classList.remove(...classesToRemove);
+    });
+    ```
 
 - **轉移鎖 (Transition Lock)**：防止高頻操作（如快速連擊模式按鈕）導致多次轉換重疊。鎖定期間的新請求排入 FIFO 佇列，當前轉換完成後自動處理佇列首項。
 
-  ```typescript
-  interface TransitionQueue {
-    isTransitioning: boolean;
-    queue: AppMode[];
-  }
-  ```
+    ```typescript
+    interface TransitionQueue {
+        isTransitioning: boolean;
+        queue: AppMode[];
+    }
+    ```
 
 - **計時器清理時序**：`beforeExit` 階段必須先清理所有計時器（idle/artwork/slideshow），避免計時器在轉換過程中觸發回調導致狀態污染。
 
 #### 1.4 IdleManager 重構方案
 
 **當前問題**：
+
 - `idleTimer`（全域閒置→Zen）與 `artworkTimer`（映畫自動換圖）共享 `reset()` 方法，導致非預期的計時器重啟
 - `reset()` 被過多來源呼叫（全域 mousedown/touchstart/keypress + 各 Handler 顯式呼叫），行為難以追蹤
 - 歡迎模式的 6s 與映畫模式的 15s 閒置超時混用同一個 `idleTimer`，語義不清
@@ -637,6 +640,7 @@ FSM 必須依據此表驗證每次轉換的合法性。非法轉換應被拒絕�
 ```
 
 **重構後流程**：
+
 - 進入 Welcome → `activateForMode('welcome')` → 啟動 `welcomeTimer`(6s)
 - 進入 Artwork → `activateForMode('artwork')` → 啟動 `zenTimer`(15s) + `artworkSlideTimer`(5s 循環)
 - 使用者互動 → `resetInteraction()` → 僅重置 `welcomeTimer` 或 `zenTimer`（依當前活躍計時器），**不影響** `artworkSlideTimer`
@@ -654,30 +658,31 @@ FSM 必須依據此表驗證每次轉換的合法性。非法轉換應被拒絕�
 
 ### 2. AppMode 切換時的 Body Class 映射
 
-| AppMode | body.classList 操作 | DOM 效果 |
-|---------|---------------------|----------|
-| `welcome` | add: `initial-welcome`, `immersion-mode` | 隱藏 Dock/Grid，顯示歡迎卡片 |
-| `calendar` | remove: all above | 顯示日曆網格、Dock (金色系) |
-| `artwork` | add: `immersion-mode`, `mode-artwork` | 隱藏網格，Dock (銀色系)，顯示藝廊選單 |
-| `zen` | add: `immersion-mode`; remove: `mode-artwork` | 隱藏全部 UI，全螢幕 |
-| `note` | add: `note-mode-active` | 顯示筆記面板 |
+| AppMode    | body.classList 操作                           | DOM 效果                              |
+| ---------- | --------------------------------------------- | ------------------------------------- |
+| `welcome`  | add: `initial-welcome`, `immersion-mode`      | 隱藏 Dock/Grid，顯示歡迎卡片          |
+| `calendar` | remove: all above                             | 顯示日曆網格、Dock (金色系)           |
+| `artwork`  | add: `immersion-mode`, `mode-artwork`         | 隱藏網格，Dock (銀色系)，顯示藝廊選單 |
+| `zen`      | add: `immersion-mode`; remove: `mode-artwork` | 隱藏全部 UI，全螢幕                   |
+| `note`     | add: `note-mode-active`                       | 顯示筆記面板                          |
 
 #### 2.1 原子 Class 替換表 (Atomic Class Swap Table)
 
 以下表格精確定義每個轉換路徑中需要 add/remove 的 class，確保在 `requestAnimationFrame` 內以「先 add → 後 remove」的順序一次性完成：
 
-| 轉換路徑 | classList.add | classList.remove | 備註 |
-|----------|-------------|-----------------|------|
-| `Welcome → Calendar` | _(無)_ | `initial-welcome`, `immersion-mode` | 恢復基礎佈局 |
-| `Welcome → Zen` | _(無)_ | `initial-welcome` | 保留 `immersion-mode` |
-| `Calendar → Artwork` | `immersion-mode`, `mode-artwork` | _(無)_ | 進入沉浸映畫 |
-| `Calendar → Note` | `note-mode-active` | _(無)_ | 疊加筆記層 |
-| `Artwork → Calendar` | _(無)_ | `immersion-mode`, `mode-artwork` | 退出沉浸 |
-| `Artwork → Zen` | _(無)_ | `mode-artwork` | 保留 `immersion-mode` |
-| `Zen → Artwork` | `mode-artwork` | _(無)_ | 保留 `immersion-mode` |
-| `Note → Calendar` | _(無)_ | `note-mode-active` | 恢復日曆 |
+| 轉換路徑             | classList.add                    | classList.remove                    | 備註                  |
+| -------------------- | -------------------------------- | ----------------------------------- | --------------------- |
+| `Welcome → Calendar` | _(無)_                           | `initial-welcome`, `immersion-mode` | 恢復基礎佈局          |
+| `Welcome → Zen`      | _(無)_                           | `initial-welcome`                   | 保留 `immersion-mode` |
+| `Calendar → Artwork` | `immersion-mode`, `mode-artwork` | _(無)_                              | 進入沉浸映畫          |
+| `Calendar → Note`    | `note-mode-active`               | _(無)_                              | 疊加筆記層            |
+| `Artwork → Calendar` | _(無)_                           | `immersion-mode`, `mode-artwork`    | 退出沉浸              |
+| `Artwork → Zen`      | _(無)_                           | `mode-artwork`                      | 保留 `immersion-mode` |
+| `Zen → Artwork`      | `mode-artwork`                   | _(無)_                              | 保留 `immersion-mode` |
+| `Note → Calendar`    | _(無)_                           | `note-mode-active`                  | 恢復日曆              |
 
 **實作要點**：
+
 ```typescript
 // stateManager.setMode(to) 的理想實作
 public setMode(to: AppMode): void {
@@ -706,7 +711,7 @@ public setMode(to: AppMode): void {
   ┌──────────┐
   │ 色系: 金  │  功能: navigate-month(-1/+1)
   │ 可見: 是  │  回饋: scale(0.96) on :active
-  │ 圖標: ◀▶ │  
+  │ 圖標: ◀▶ │
   └──────────┘
        │ 切換至「映畫」
        ▼
@@ -714,7 +719,7 @@ public setMode(to: AppMode): void {
   ┌──────────┐
   │ 色系: 銀  │  功能: request-hero-change (prev/next)
   │ 可見: 是  │  回饋: scale(0.96) on :active
-  │ 圖標: ◀▶ │  
+  │ 圖標: ◀▶ │
   └──────────┘
        │ 切換至「Zen」
        ▼
@@ -831,66 +836,78 @@ public setMode(to: AppMode): void {
 
 ### 4. 元件可見性矩陣 (Visibility Matrix)
 
-| 元件 | Welcome | Calendar | Artwork | Zen | Note |
-|------|---------|----------|---------|-----|------|
-| **HeroBackground** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **WelcomeOverlay** | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **HeroHeader** | ❌ | ✅ | ✅ | ❌ | 視上下文 |
-| **HeroDock** | ❌ | ✅ | ✅ | ❌ | 視上下文 |
-| **CalendarBoard** | ❌ | ✅ | ❌ | ❌ | ❌ |
-| **FloatingPanels** | 今日面板 | 可切換 | ❌ | ❌ | ❌ |
-| **PanelBackOverlay** | ❌ | 需要時 | ❌ | ❌ | ❌ |
-| **右上工具按鈕** | ❌ | 部分 | ✅ | ❌ | ❌ |
-| **FAQ 面板** | ❌ | ❌ | ✅ | ❌ | ❌ |
-| **筆記面板** | ❌ | ❌ | ❌ | ❌ | ✅ |
-| **.group-calendar** | ❌ | ✅ | ❌ | ❌ | ❌ |
-| **.group-image** | ❌ | ❌ | ✅ | ❌ | ❌ |
+| 元件                 | Welcome  | Calendar | Artwork | Zen | Note     |
+| -------------------- | -------- | -------- | ------- | --- | -------- |
+| **HeroBackground**   | ✅       | ✅       | ✅      | ✅  | ✅       |
+| **WelcomeOverlay**   | ✅       | ❌       | ❌      | ❌  | ❌       |
+| **HeroHeader**       | ❌       | ✅       | ✅      | ❌  | 視上下文 |
+| **HeroDock**         | ❌       | ✅       | ✅      | ❌  | 視上下文 |
+| **CalendarBoard**    | ❌       | ✅       | ❌      | ❌  | ❌       |
+| **FloatingPanels**   | 今日面板 | 可切換   | ❌      | ❌  | ❌       |
+| **PanelBackOverlay** | ❌       | 需要時   | ❌      | ❌  | ❌       |
+| **右上工具按鈕**     | ❌       | 部分     | ✅      | ❌  | ❌       |
+| **FAQ 面板**         | ❌       | ❌       | ✅      | ❌  | ❌       |
+| **筆記面板**         | ❌       | ❌       | ❌      | ❌  | ✅       |
+| **.group-calendar**  | ❌       | ✅       | ❌      | ❌  | ❌       |
+| **.group-image**     | ❌       | ❌       | ✅      | ❌  | ❌       |
 
 CSS 實作策略：透過 body class (`initial-welcome`, `immersion-mode`, `mode-artwork`, `note-mode-active`) 配合後代選擇器控制可見性：
 
 ```css
 body.initial-welcome .hero-dock,
-body.initial-welcome .calendar-section { display: none; }
+body.initial-welcome .calendar-section {
+    display: none;
+}
 
-body.immersion-mode .calendar-section { display: none; }
-body.immersion-mode:not(.mode-artwork) .hero-dock { display: none; }
+body.immersion-mode .calendar-section {
+    display: none;
+}
+body.immersion-mode:not(.mode-artwork) .hero-dock {
+    display: none;
+}
 
-body.mode-artwork .group-calendar { display: none; }
-body.mode-artwork .group-image { display: flex; }
-body:not(.mode-artwork) .group-image { display: none; }
+body.mode-artwork .group-calendar {
+    display: none;
+}
+body.mode-artwork .group-image {
+    display: flex;
+}
+body:not(.mode-artwork) .group-image {
+    display: none;
+}
 ```
 
 ### 5. 色系同步轉移表
 
-| 觸發 | 前色系 | 後色系 | 影響元件 |
-|------|--------|--------|----------|
-| Calendar → Artwork | 香檳金 | 極地純銀 | Dock 框線、步進鍵、分隔線、高亮按鈕、音樂波紋 |
-| Artwork → Calendar | 極地純銀 | 香檳金 | 同上 |
-| Any → Zen | 任意 | 無 (UI 隱藏) | 全部隱藏 |
-| Zen → Artwork | 無 | 極地純銀 | Dock 重新顯示為銀色系 |
+| 觸發               | 前色系   | 後色系       | 影響元件                                      |
+| ------------------ | -------- | ------------ | --------------------------------------------- |
+| Calendar → Artwork | 香檳金   | 極地純銀     | Dock 框線、步進鍵、分隔線、高亮按鈕、音樂波紋 |
+| Artwork → Calendar | 極地純銀 | 香檳金       | 同上                                          |
+| Any → Zen          | 任意     | 無 (UI 隱藏) | 全部隱藏                                      |
+| Zen → Artwork      | 無       | 極地純銀     | Dock 重新顯示為銀色系                         |
 
-| 色彩屬性 | 日曆模式 (Gold) | 映畫模式 (Silver) |
-|----------|----------------|------------------|
-| 基調色 | `rgba(45,42,38,0.6)` | `rgba(15,15,25,0.82)` |
-| 強調色 | `#D4AF37` | `#FFFFFF` |
-| 光暈 | `rgba(212,175,55,0.15)` | `rgba(255,255,255,0.1)` |
-| 框線 | 金色半透明 20% | 銀白半透明 18% |
-| 分隔線 | 金色垂直漸層 | 銀白色垂直漸層 |
+| 色彩屬性 | 日曆模式 (Gold)         | 映畫模式 (Silver)       |
+| -------- | ----------------------- | ----------------------- |
+| 基調色   | `rgba(45,42,38,0.6)`    | `rgba(15,15,25,0.82)`   |
+| 強調色   | `#D4AF37`               | `#FFFFFF`               |
+| 光暈     | `rgba(212,175,55,0.15)` | `rgba(255,255,255,0.1)` |
+| 框線     | 金色半透明 20%          | 銀白半透明 18%          |
+| 分隔線   | 金色垂直漸層            | 銀白色垂直漸層          |
 
 ### 6. 轉換副作用清單 (Transition Side Effects Matrix)
 
 以下矩陣定義每個合法轉換路徑中，**除了 body class 以外**的所有副作用。這些副作用必須在生命週期的正確階段執行。
 
-| 轉換路徑 | beforeExit (Phase 1) | beforeEnter (Phase 2) | performTransition (Phase 3) | afterEnter (Phase 4) |
-|----------|---------------------|----------------------|---------------------------|---------------------|
-| **Welcome → Calendar** | `idleManager.deactivateAll()` | 準備 grid 顯示狀態 | 原子 class 替換 + Dock 顯示 (金色) + CalendarBoard 顯示 | `slideshowManager.stop()` + 發送 `mode-changed` |
-| **Welcome → Zen** | `idleManager.deactivateAll()` | — | 原子 class 替換 + 全 UI 隱藏 | `slideshowManager.start(non-artwork)` + 發送 `mode-changed` |
-| **Calendar → Artwork** | `close-panels` + `idleManager.deactivateAll()` | 準備 Dock 銀色系 + Gallery 顯示 | 原子 class 替換 + `.group-calendar` 隱藏 + `.group-image` 顯示 + CalendarBoard 隱藏 | `idleManager.activateForMode('artwork')` + 發送 `mode-changed` |
-| **Calendar → Note** | `idleManager.deactivateAll()` | — | 原子 class 替換 + 筆記面板顯示 | 發送 `mode-changed` |
-| **Artwork → Calendar** | `idleManager.deactivateAll()` + `slideshowManager.stop()` | 準備 Dock 金色系 + CalendarBoard | 原子 class 替換 + `.group-image` 隱藏 + `.group-calendar` 顯示 + CalendarBoard 顯示 | `close-panels({showGrid: true})` + 發送 `mode-changed` |
-| **Artwork → Zen** | `idleManager.deactivateAll()` | 準備 fullscreen request | 原子 class 替換 + Dock/Header 隱藏 | `requestFullscreen()` (可失敗) + `slideshowManager.start(non-artwork)` + 顯示 Zen Hint (首次) + 發送 `mode-changed` |
-| **Zen → Artwork** | `slideshowManager.stop()` | 準備 Dock 銀色系 + Gallery | 原子 class 替換 + Dock/Header 重新顯示 | `exitFullscreen()` (可失敗) + `idleManager.activateForMode('artwork')` + 發送 `mode-changed` |
-| **Note → Calendar** | — | 準備 CalendarBoard 顯示 | 原子 class 替換 + 筆記面板隱藏 | 發送 `mode-changed` |
+| 轉換路徑               | beforeExit (Phase 1)                                      | beforeEnter (Phase 2)            | performTransition (Phase 3)                                                         | afterEnter (Phase 4)                                                                                                |
+| ---------------------- | --------------------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Welcome → Calendar** | `idleManager.deactivateAll()`                             | 準備 grid 顯示狀態               | 原子 class 替換 + Dock 顯示 (金色) + CalendarBoard 顯示                             | `slideshowManager.stop()` + 發送 `mode-changed`                                                                     |
+| **Welcome → Zen**      | `idleManager.deactivateAll()`                             | —                                | 原子 class 替換 + 全 UI 隱藏                                                        | `slideshowManager.start(non-artwork)` + 發送 `mode-changed`                                                         |
+| **Calendar → Artwork** | `close-panels` + `idleManager.deactivateAll()`            | 準備 Dock 銀色系 + Gallery 顯示  | 原子 class 替換 + `.group-calendar` 隱藏 + `.group-image` 顯示 + CalendarBoard 隱藏 | `idleManager.activateForMode('artwork')` + 發送 `mode-changed`                                                      |
+| **Calendar → Note**    | `idleManager.deactivateAll()`                             | —                                | 原子 class 替換 + 筆記面板顯示                                                      | 發送 `mode-changed`                                                                                                 |
+| **Artwork → Calendar** | `idleManager.deactivateAll()` + `slideshowManager.stop()` | 準備 Dock 金色系 + CalendarBoard | 原子 class 替換 + `.group-image` 隱藏 + `.group-calendar` 顯示 + CalendarBoard 顯示 | `close-panels({showGrid: true})` + 發送 `mode-changed`                                                              |
+| **Artwork → Zen**      | `idleManager.deactivateAll()`                             | 準備 fullscreen request          | 原子 class 替換 + Dock/Header 隱藏                                                  | `requestFullscreen()` (可失敗) + `slideshowManager.start(non-artwork)` + 顯示 Zen Hint (首次) + 發送 `mode-changed` |
+| **Zen → Artwork**      | `slideshowManager.stop()`                                 | 準備 Dock 銀色系 + Gallery       | 原子 class 替換 + Dock/Header 重新顯示                                              | `exitFullscreen()` (可失敗) + `idleManager.activateForMode('artwork')` + 發送 `mode-changed`                        |
+| **Note → Calendar**    | —                                                         | 準備 CalendarBoard 顯示          | 原子 class 替換 + 筆記面板隱藏                                                      | 發送 `mode-changed`                                                                                                 |
 
 ### 7. Fullscreen 降級策略 (Fullscreen Degradation)
 
@@ -941,6 +958,7 @@ fullscreenchange 事件同步:
 3. `modeHandler.applyModeSideEffects()` — **不含** fullscreen 邏輯
 
 **影響**：
+
 - `transition-mode` 事件與 `toggleFullscreen()` 的執行順序不保證——可能先進入 Zen class 但 fullscreen 尚未啟動
 - `fullscreenchange` listener 直接 dispatch `transition-mode`，但未經轉移鎖（若已引入則會衝突）
 - Fullscreen 失敗時的降級邏輯無法在轉換生命週期中統一處理
@@ -986,13 +1004,11 @@ fullscreenchange 事件同步:
 
 ```typescript
 document.addEventListener("fullscreenchange", () => {
-  if (document.fullscreenElement) return; // 進入全螢幕不需處理
-  if (stateManager.getMode() !== "zen") return; // 不在 Zen 模式不處理
-  
-  // 透過標準轉換路徑退出，經過轉移鎖保護
-  window.dispatchEvent(
-    new CustomEvent("transition-mode", { detail: { to: "artwork" } })
-  );
+    if (document.fullscreenElement) return; // 進入全螢幕不需處理
+    if (stateManager.getMode() !== "zen") return; // 不在 Zen 模式不處理
+
+    // 透過標準轉換路徑退出，經過轉移鎖保護
+    window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
 });
 ```
 
@@ -1005,28 +1021,29 @@ document.addEventListener("fullscreenchange", () => {
 ```typescript
 // 現行程式碼 — toggle-grid handler
 if (mode === "artwork" || mode === "zen" || mode === "welcome") {
-    dispatch("transition-mode", { to: "calendar" });  // 模式切換！
+    dispatch("transition-mode", { to: "calendar" }); // 模式切換！
     return;
 }
 if (mode === "calendar") {
-    dispatch("transition-mode", { to: "artwork" });    // 模式切換！
+    dispatch("transition-mode", { to: "artwork" }); // 模式切換！
     return;
 }
 // 僅在極少數情況下才執行真正的 grid toggle
 ```
 
 **影響**：
+
 - 事件語義與實際行為不符，違反憲章 §VI 命名原則
 - 日曆按鈕 (`btnDay`) 的功能語義混亂——有時是 mode toggle，有時是 grid toggle
 - 新開發者難以理解事件流
 
 **重構方案**：
 
-| 場景 | 觸發來源 | 當前事件 | 重構後事件 |
-|------|---------|---------|-----------|
-| Calendar → Artwork | `btnDay` (映畫按鈕) 點擊 | `toggle-grid` | `transition-mode { to: "artwork" }` |
+| 場景               | 觸發來源                 | 當前事件      | 重構後事件                           |
+| ------------------ | ------------------------ | ------------- | ------------------------------------ |
+| Calendar → Artwork | `btnDay` (映畫按鈕) 點擊 | `toggle-grid` | `transition-mode { to: "artwork" }`  |
 | Artwork → Calendar | `btnDay` (日曆按鈕) 點擊 | `toggle-grid` | `transition-mode { to: "calendar" }` |
-| 顯示/隱藏日曆網格 | 面板關閉時 | `toggle-grid` | `toggle-grid-view { show: true }` |
+| 顯示/隱藏日曆網格  | 面板關閉時               | `toggle-grid` | `toggle-grid-view { show: true }`    |
 
 讓 `toggle-grid` 回歸純粹的網格切換語義，模式轉換由按鈕 handler 直接 dispatch `transition-mode`。
 
@@ -1068,16 +1085,17 @@ if (mode === "calendar") {
 .hero-header,
 .calendar-section,
 .gallery-control-wrapper {
-  transition: opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-              transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition:
+        opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+        transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* 使用 opacity + pointer-events 替代 display:none */
 /* 避免 display:none → display:flex 無法觸發 CSS transition */
 body.immersion-mode:not(.mode-artwork) .hero-dock-wrapper {
-  opacity: 0;
-  pointer-events: none;
-  /* 不使用 display:none，讓 transition 可以平滑執行 */
+    opacity: 0;
+    pointer-events: none;
+    /* 不使用 display:none，讓 transition 可以平滑執行 */
 }
 ```
 
@@ -1109,10 +1127,10 @@ if (target.closest("button, a, input, ... #welcomeInteractionOverlay, ...")) ret
 
 ```typescript
 const handler = (e: MouseEvent) => {
-  const currentMode = stateManager.getMode();
-  // Welcome 模式的點擊由 WelcomeOverlay 專責處理
-  if (currentMode === "welcome") return;
-  // ... 其餘邏輯
+    const currentMode = stateManager.getMode();
+    // Welcome 模式的點擊由 WelcomeOverlay 專責處理
+    if (currentMode === "welcome") return;
+    // ... 其餘邏輯
 };
 ```
 
@@ -1165,71 +1183,71 @@ const handler = (e: MouseEvent) => {
 
 ### 日曆事件
 
-| 事件名稱 | Payload 型別 | 來源 | 消費者 |
-|----------|-------------|------|--------|
-| `date-selected` | `DateSelectedDetail` `{day, month, year}` | CalendarEventHandlers | EventOrchestrator |
-| `navigate-month` | `NavigateMonthDetail` `(-1\|1)` | CalendarEventHandlers / NavigationHandler | EventOrchestrator |
-| `year-selected` | `number` | PanelEventHandlers | EventOrchestrator |
-| `month-selected` | `number` | PanelEventHandlers | EventOrchestrator |
-| `go-to-today` | `void` | Dock 按鈕 | EventOrchestrator |
-| `render-calendar` | `RenderCalendarDetail` | EventOrchestrator | CalendarRenderer |
-| `update-calendar-title` | `UpdateCalendarTitleDetail` | EventOrchestrator | CalendarRenderer |
+| 事件名稱                | Payload 型別                              | 來源                                      | 消費者            |
+| ----------------------- | ----------------------------------------- | ----------------------------------------- | ----------------- |
+| `date-selected`         | `DateSelectedDetail` `{day, month, year}` | CalendarEventHandlers                     | EventOrchestrator |
+| `navigate-month`        | `NavigateMonthDetail` `(-1\|1)`           | CalendarEventHandlers / NavigationHandler | EventOrchestrator |
+| `year-selected`         | `number`                                  | PanelEventHandlers                        | EventOrchestrator |
+| `month-selected`        | `number`                                  | PanelEventHandlers                        | EventOrchestrator |
+| `go-to-today`           | `void`                                    | Dock 按鈕                                 | EventOrchestrator |
+| `render-calendar`       | `RenderCalendarDetail`                    | EventOrchestrator                         | CalendarRenderer  |
+| `update-calendar-title` | `UpdateCalendarTitleDetail`               | EventOrchestrator                         | CalendarRenderer  |
 
 ### 模式事件
 
-| 事件名稱 | Payload 型別 | 來源 | 消費者 |
-|----------|-------------|------|--------|
-| `transition-mode` | `{to: AppMode}` | 任意觸發器 | ModeHandler |
-| `mode-changed` | `ModeChangedDetail` `{from, to}` | ModeHandler | 全域監聽者 |
-| `welcome-mode` | `{active: boolean, targetMode?}` | WelcomeOverlay | EventOrchestrator |
+| 事件名稱          | Payload 型別                     | 來源           | 消費者            |
+| ----------------- | -------------------------------- | -------------- | ----------------- |
+| `transition-mode` | `{to: AppMode}`                  | 任意觸發器     | ModeHandler       |
+| `mode-changed`    | `ModeChangedDetail` `{from, to}` | ModeHandler    | 全域監聽者        |
+| `welcome-mode`    | `{active: boolean, targetMode?}` | WelcomeOverlay | EventOrchestrator |
 
 ### Hero 事件
 
-| 事件名稱 | Payload 型別 | 來源 | 消費者 |
-|----------|-------------|------|--------|
-| `render-hero` | `RenderHeroDetail` | EventOrchestrator | ImageManager |
-| `request-hero-change` | `RequestHeroChangeDetail` | NavigationHandler | EventOrchestrator |
-| `slideshow-control` | `SlideshowControlDetail` `{action, isArtwork?}` | ModeHandler | SlideshowManager |
-| `artwork-idle-slide` | `void` | IdleManager | NavigationHandler |
+| 事件名稱              | Payload 型別                                    | 來源              | 消費者            |
+| --------------------- | ----------------------------------------------- | ----------------- | ----------------- |
+| `render-hero`         | `RenderHeroDetail`                              | EventOrchestrator | ImageManager      |
+| `request-hero-change` | `RequestHeroChangeDetail`                       | NavigationHandler | EventOrchestrator |
+| `slideshow-control`   | `SlideshowControlDetail` `{action, isArtwork?}` | ModeHandler       | SlideshowManager  |
+| `artwork-idle-slide`  | `void`                                          | IdleManager       | NavigationHandler |
 
 ### UI 事件
 
-| 事件名稱 | Payload 型別 | 來源 | 消費者 |
-|----------|-------------|------|--------|
-| `toggle-panel` | `string \| {type, force?}` | Dock 按鈕 | PanelEventHandlers |
-| `close-panels` | `ClosePanelsDetail` `{showGrid}` | 多處 | PanelEventHandlers |
-| `toggle-grid` | `void` | Dock 按鈕 | CalendarEventHandlers |
-| `toggle-grid-view` | `ToggleGridViewDetail` `{show}` | EventOrchestrator | CalendarEventHandlers |
-| `render-panels` | `RenderPanelsDetail` | EventOrchestrator | PanelRenderers |
+| 事件名稱           | Payload 型別                     | 來源              | 消費者                |
+| ------------------ | -------------------------------- | ----------------- | --------------------- |
+| `toggle-panel`     | `string \| {type, force?}`       | Dock 按鈕         | PanelEventHandlers    |
+| `close-panels`     | `ClosePanelsDetail` `{showGrid}` | 多處              | PanelEventHandlers    |
+| `toggle-grid`      | `void`                           | Dock 按鈕         | CalendarEventHandlers |
+| `toggle-grid-view` | `ToggleGridViewDetail` `{show}`  | EventOrchestrator | CalendarEventHandlers |
+| `render-panels`    | `RenderPanelsDetail`             | EventOrchestrator | PanelRenderers        |
 
 ### 生命週期事件
 
-| 事件名稱 | Payload 型別 | 來源 | 消費者 |
-|----------|-------------|------|--------|
-| `app-logic-ready` | `void` | AppController | ResourceLoader |
-| `app-images-preloaded` | `void` | ImageManager | ResourceLoader |
-| `loader-finished` | `void` | ResourceLoader | AppController |
-| `music-restored` | `void` | MusicPlayer | UI 同步 |
-| `today-panel-rendered` | `void` | PanelRenderers | PanelEventHandlers |
+| 事件名稱               | Payload 型別 | 來源           | 消費者             |
+| ---------------------- | ------------ | -------------- | ------------------ |
+| `app-logic-ready`      | `void`       | AppController  | ResourceLoader     |
+| `app-images-preloaded` | `void`       | ImageManager   | ResourceLoader     |
+| `loader-finished`      | `void`       | ResourceLoader | AppController      |
+| `music-restored`       | `void`       | MusicPlayer    | UI 同步            |
+| `today-panel-rendered` | `void`       | PanelRenderers | PanelEventHandlers |
 
 ---
 
 ## 複雜度追蹤
 
-| 項目 | 為何需要 | 為何拒絕更簡單的替代方案 |
-|------|----------|--------------------------|
-| 五種操作模式 | 產品定位「時間的藝術品」需要多層次體驗 | 三種模式無法區分「操作中沉浸」與「純淨沉浸」 |
-| 雙色系同步 | 降低認知負荷的關鍵設計决策 | 單色系無法表達模式功能語義 |
-| EventOrchestrator 中心化 | 30+ 模組間通訊需要解耦 | 直接引用會導致循環依賴 |
-| IdleManager 三域計時器 | 歡迎/映畫模式的閒置需求不同，自動換圖需獨立運作 | 單一計時器無法覆蓋 6s/15s 兩種場景；雙計時器共享 reset() 導致語義混亂 |
-| 加載門鎖 (Logic Gate) | 防止邏輯未就緒時顯示不完整 UI | 純資源進度條無法保障邏輯安全 |
-| FSM 轉移鎖 + 佇列 | 高頻操作下避免多重轉換重疊導致 DOM 污染 | 純 debounce 會丟棄合法的操作意圖 |
-| 原子 Class 替換 | 消除中間幀無 class 造成的 CSS 選擇器失效 | 先清空再添加的寫法簡單但會閃爍 |
-| Fullscreen 降級策略 | iOS Safari 不支援 programmatic fullscreen | 不降級會導致 Zen 模式在 iOS 上行為異常 |
-| Fullscreen 生命週期整合 | 分散的 fullscreen 呼叫與轉換生命週期時序衝突 | 獨立呼叫無法被轉移鎖保護，失敗降級無法被統一處理 |
-| CSS-driven visibility | 消除 inline style 與 CSS class 的優先權衝突 | JS 直接操作 style 會殘留 inline style，覆蓋 CSS 規則，增加狀態同步負擔 |
-| toggle-grid 語義拆分 | 事件名與行為不符造成維護混亂 | 重載設計違反命名即文件原則，新開發者無法從事件名推斷行為 |
-| 錯誤恢復回滾策略 | 轉換中途異常需安全恢復至 Calendar | 不處理異常會導致應用卡在不一致狀態（如轉移鎖永久鎖定） |
+| 項目                     | 為何需要                                        | 為何拒絕更簡單的替代方案                                               |
+| ------------------------ | ----------------------------------------------- | ---------------------------------------------------------------------- |
+| 五種操作模式             | 產品定位「時間的藝術品」需要多層次體驗          | 三種模式無法區分「操作中沉浸」與「純淨沉浸」                           |
+| 雙色系同步               | 降低認知負荷的關鍵設計决策                      | 單色系無法表達模式功能語義                                             |
+| EventOrchestrator 中心化 | 30+ 模組間通訊需要解耦                          | 直接引用會導致循環依賴                                                 |
+| IdleManager 三域計時器   | 歡迎/映畫模式的閒置需求不同，自動換圖需獨立運作 | 單一計時器無法覆蓋 6s/15s 兩種場景；雙計時器共享 reset() 導致語義混亂  |
+| 加載門鎖 (Logic Gate)    | 防止邏輯未就緒時顯示不完整 UI                   | 純資源進度條無法保障邏輯安全                                           |
+| FSM 轉移鎖 + 佇列        | 高頻操作下避免多重轉換重疊導致 DOM 污染         | 純 debounce 會丟棄合法的操作意圖                                       |
+| 原子 Class 替換          | 消除中間幀無 class 造成的 CSS 選擇器失效        | 先清空再添加的寫法簡單但會閃爍                                         |
+| Fullscreen 降級策略      | iOS Safari 不支援 programmatic fullscreen       | 不降級會導致 Zen 模式在 iOS 上行為異常                                 |
+| Fullscreen 生命週期整合  | 分散的 fullscreen 呼叫與轉換生命週期時序衝突    | 獨立呼叫無法被轉移鎖保護，失敗降級無法被統一處理                       |
+| CSS-driven visibility    | 消除 inline style 與 CSS class 的優先權衝突     | JS 直接操作 style 會殘留 inline style，覆蓋 CSS 規則，增加狀態同步負擔 |
+| toggle-grid 語義拆分     | 事件名與行為不符造成維護混亂                    | 重載設計違反命名即文件原則，新開發者無法從事件名推斷行為               |
+| 錯誤恢復回滾策略         | 轉換中途異常需安全恢復至 Calendar               | 不處理異常會導致應用卡在不一致狀態（如轉移鎖永久鎖定）                 |
 
 ---
 
@@ -1242,6 +1260,7 @@ const handler = (e: MouseEvent) => {
 **檔案**：`src/scripts/app/stateManager.ts` — `setMode()`
 
 **問題**：當前實作先移除所有模式 class，再添加新 class。在高幀率螢幕（120Hz+）上，這會在移除與添加之間產生 1 幀的無 class 狀態，導致依賴 body class 的 CSS 後代選擇器短暫失效，造成：
+
 - Dock 在切換瞬間閃現/消失
 - CalendarBoard 在 Artwork 模式下短暫顯示
 - 色系變數跳動
@@ -1255,6 +1274,7 @@ const handler = (e: MouseEvent) => {
 **問題**：進入 Artwork 模式時，`applyModeSideEffects` 先呼叫 `idleManager.clear()` 再呼叫 `idleManager.reset()`。但 `reset()` 發出的 `slideshow-control: start` 事件最終又觸發 `idleManager.setArtworkMode(true)` → `restartArtworkTimer()` → `idleManager.reset()`，導致 `reset()` 被呼叫兩次。
 
 **影響**：
+
 - 閒置計時器被不必要地重啟
 - 200ms debounce 邏輯偶爾失效（因兩次 reset 間隔 > 200ms）
 - DevTools 中可見多餘的 setTimeout 堆疊
@@ -1266,6 +1286,7 @@ const handler = (e: MouseEvent) => {
 **檔案**：`src/scripts/app/eventOrchestrator.ts` — `transitionMode()`
 
 **問題**：當前只檢查 `from === to`（同模式不轉換），但不驗證轉換路徑的合法性。例如：
+
 - `CalendarEventHandlers` 中的 `toggle-grid` 可以直接觸發 `Welcome → Calendar`
 - IdleManager 可以從 Welcome 直接跳到 Zen，跳過 Calendar/Artwork
 
@@ -1278,6 +1299,7 @@ const handler = (e: MouseEvent) => {
 **檔案**：`src/scripts/app/stateManager.ts` — `setMode()`
 
 **問題**：模式切換時不主動清理 `activePanel` 狀態。雖然 `applyModeSideEffects` 會 dispatch `close-panels` 事件，但依賴事件觸發的異步處理來清理狀態，存在時序風險：
+
 1. `setMode('artwork')` 被呼叫
 2. body class 已更新為 immersion
 3. `close-panels` 事件被 dispatch
@@ -1299,6 +1321,7 @@ const handler = (e: MouseEvent) => {
 **檔案**：`src/scripts/hero/ui/modeUIManager.ts`, `layoutManager.ts`
 
 **問題**：元素的可見性透過多種方式控制，缺乏一致性：
+
 - 有些用 `style.display = 'none'`
 - 有些用 `style.opacity = '0'` + `style.pointerEvents = 'none'`
 - 有些用 `classList.add/remove`
@@ -1326,6 +1349,7 @@ if (isArtwork) {
 而 `modeHandler.applyModeSideEffects()` 中 `zen` 分支**不含** fullscreen 邏輯。
 
 **影響**：
+
 - `transition-mode` 事件異步處理，`toggleFullscreen()` 同步呼叫——執行順序不確定
 - 轉移鎖機制（若引入）無法覆蓋 fullscreen 操作
 - Fullscreen 失敗的降級處理孤立於轉換生命週期外
@@ -1346,6 +1370,7 @@ constructor(idleTimeout = 15000) {  // ← Welcome 也用 15s！
 ```
 
 **影響**：
+
 - 歡迎模式的閒置自動轉場時間為 15 秒而非 6 秒
 - 使用者等待時間過長，影響首次體驗的「儀式感」流暢度
 - 直接違反 User Story 1 驗收情境 #4
@@ -1359,6 +1384,7 @@ constructor(idleTimeout = 15000) {  // ← Welcome 也用 15s！
 **問題**：`toggle-grid` 事件 handler 被重載為模式切換觸發器，在大多數模式下實際不執行 grid toggle，而是 dispatch `transition-mode`。事件名稱與實際行為嚴重不符。
 
 **影響**：
+
 - 違反憲章 §VI 命名原則（命名即文件）
 - 追蹤事件流時引起混淆
 - `btnDay` 按鈕的語義在不同模式下不一致
@@ -1374,17 +1400,25 @@ constructor(idleTimeout = 15000) {  // ← Welcome 也用 15s！
 ```typescript
 // 現行程式碼
 if (type === "today") {
-    if (this.btnYearMonth) { this.btnYearMonth.style.display = "none"; }
-    if (this.heroHeader) { this.heroHeader.style.opacity = "0"; }
-    if (this.heroDockWrapper) { this.heroDockWrapper.style.opacity = "0"; }
+    if (this.btnYearMonth) {
+        this.btnYearMonth.style.display = "none";
+    }
+    if (this.heroHeader) {
+        this.heroHeader.style.opacity = "0";
+    }
+    if (this.heroDockWrapper) {
+        this.heroDockWrapper.style.opacity = "0";
+    }
 }
 ```
 
 此操作的 inline style 優先權高於 CSS class 規則，會覆蓋 body class 後代選擇器的行為，導致：
+
 - 面板關閉後 Header/Dock 的 opacity 可能仍為 0（inline style 殘留）
 - CSS-driven visibility 策略被架空
 
 **影響**：
+
 - `toggleGridView(true)` 需額外還原 `style.opacity = "1"`，形成脆弱的雙向同步
 - 新增模式時容易遺漏 style 還原
 
@@ -1405,7 +1439,8 @@ if (type === "today") {
 **問題**：使用 `document.addEventListener("click", handler, true)` (capture 階段) 攔截所有 click 事件。雖然 handler 內有 `target.closest(...)` 排除邏輯，但排除清單依賴 CSS selector 字串維護：
 
 ```typescript
-if (target.closest("button, a, input, textarea, select, .hero-dock, .hero-gallery-submenu, ...")) return;
+if (target.closest("button, a, input, textarea, select, .hero-dock, .hero-gallery-submenu, ..."))
+    return;
 ```
 
 新增 UI 元件時容易遺漏加入排除清單，導致意外觸發模式切換。

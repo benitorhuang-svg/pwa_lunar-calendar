@@ -34,12 +34,15 @@ export default defineConfig({
             registerType: "autoUpdate",
             workbox: {
                 clientsClaim: true,
-                // skipWaiting is NOT set here on purpose.
-                // Loading Page controls the update lifecycle:
-                // 1. SW installs & precaches all assets (enters "waiting" state)
-                // 2. Loading Page detects the waiting SW
-                // 3. Loading Page sends SKIP_WAITING after confirming install
-                // 4. Page reloads with all new assets ready
+                // skipWaiting: true is REQUIRED with generateSW mode.
+                // Workbox's generateSW does NOT generate a message listener for
+                // SKIP_WAITING, so manual postMessage from Loading Page was a dead end.
+                // With skipWaiting + clientsClaim:
+                // 1. SW installs & precaches all assets
+                // 2. SW auto-activates (skipWaiting) and claims clients (clientsClaim)
+                // 3. "controllerchange" fires on the page
+                // 4. Loading Page catches it → window.location.reload()
+                // 5. After reload, all assets are fresh → Loading Page proceeds
                 globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,mp3}"],
                 maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // Increased to 15MB
                 runtimeCaching: [
@@ -77,6 +80,7 @@ export default defineConfig({
                         urlPattern: /\.(?:mp3|wav)$/,
                     },
                 ],
+                skipWaiting: true,
             },
         }),
     ],

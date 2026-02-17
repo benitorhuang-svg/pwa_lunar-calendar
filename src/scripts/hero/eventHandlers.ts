@@ -17,10 +17,10 @@ import { ModeHandler } from "./handlers/modeHandler";
 // New Handlers
 import { NavigationHandler } from "./handlers/navigationHandler";
 import { PanelUIHandler } from "./handlers/panelUIHandler";
+import { SlideshowSettingsHandler } from "./handlers/slideshowSettingsHandler";
 import { HeroPWAHandler } from "./pwaHandler";
 import { HeroTouchHandler } from "./touchHandler";
 import { HeroUIManager } from "./uiManager";
-import { SlideshowSettingsHandler } from "./handlers/slideshowSettingsHandler";
 
 export class HeroEventHandlers {
     private idleManager: HeroIdleManager;
@@ -31,10 +31,10 @@ export class HeroEventHandlers {
     // Components
     private navigationHandler: NavigationHandler;
     private panelUIHandler: PanelUIHandler;
-    private slideshowSettingsHandler: SlideshowSettingsHandler;
-
     private pwaHandler: HeroPWAHandler;
+
     private slideshowManager: HeroSlideshowManager;
+    private slideshowSettingsHandler: SlideshowSettingsHandler;
     private touchHandler: HeroTouchHandler;
     private uiManager: HeroUIManager;
 
@@ -82,7 +82,11 @@ export class HeroEventHandlers {
         this.mediaHandler = new MediaHandler(this.imageManager, this.musicPlayer, this.uiManager);
 
         this.panelUIHandler = new PanelUIHandler(this.uiManager, this.idleManager);
-        this.slideshowSettingsHandler = new SlideshowSettingsHandler(this.slideshowManager, this.uiManager, this.idleManager);
+        this.slideshowSettingsHandler = new SlideshowSettingsHandler(
+            this.slideshowManager,
+            this.uiManager,
+            this.idleManager,
+        );
     }
 
     public init(): void {

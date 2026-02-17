@@ -4,8 +4,8 @@
  * Responsible for constructing calendar grid cells
  */
 
-import { Lunar } from "../core/lunar";
 import { HolidayService } from "../core/holidayService";
+import { Lunar } from "../core/lunar";
 
 export class CalendarCellBuilder {
     private holidayService = HolidayService.getInstance();
@@ -34,7 +34,9 @@ export class CalendarCellBuilder {
 
         // 取得政府休假資訊 (Fetch Govt Holiday Info)
         const holidayInfo = this.holidayService.getHolidayInfo(y, m, d);
-        const isOfficialHoliday = holidayInfo ? holidayInfo.isHoliday : (date.getDay() === 0 || date.getDay() === 6);
+        const isOfficialHoliday = holidayInfo
+            ? holidayInfo.isHoliday
+            : date.getDay() === 0 || date.getDay() === 6;
 
         const cell = document.createElement("button");
         cell.type = "button";

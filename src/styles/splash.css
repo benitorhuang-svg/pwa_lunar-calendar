@@ -94,9 +94,11 @@ body.app-loaded #appContainer {
     padding: 20px;
 
     /* 使用單層背景漸層 + Clip 技術，保證 100% 重合 */
-    background: linear-gradient(to right,
-            #f0d060 var(--loading-progress, 0%),
-            rgba(255, 255, 255, 0.4) var(--loading-progress, 0%));
+    background: linear-gradient(
+        to right,
+        #f0d060 var(--loading-progress, 0%),
+        rgba(255, 255, 255, 0.4) var(--loading-progress, 0%)
+    );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -110,7 +112,6 @@ body.app-loaded #appContainer {
 }
 
 @keyframes loadingTextBreath {
-
     0%,
     100% {
         filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.4));
@@ -159,12 +160,14 @@ body.app-loaded .loading-text {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+    font-family: var(--font-sans, "Inter", system-ui, sans-serif);
     font-size: 0.75rem;
     font-weight: 400;
     letter-spacing: 0.08em;
     color: rgba(255, 255, 255, 0.35);
-    transition: color 0.4s ease, transform 0.3s ease;
+    transition:
+        color 0.4s ease,
+        transform 0.3s ease;
 }
 
 .status-item.done {
@@ -183,7 +186,9 @@ body.app-loaded .loading-text {
     font-size: 0.85rem;
     width: 1.2em;
     text-align: center;
-    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.3s ease;
+    transition:
+        transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+        color 0.3s ease;
 }
 
 .status-label {
@@ -228,4 +233,23 @@ body.app-loaded:not(.initial-welcome) .hero-dock-wrapper {
         opacity var(--duration-hero-entrance) var(--ease-standard),
         transform var(--duration-hero-entrance) var(--ease-entrance) !important;
     transition-delay: 0.3s !important;
+}
+
+/* DEBUG CONSOLE (Temporary) */
+.debug-console {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: left;
+    padding: 10px;
+    pointer-events: none;
+    z-index: 99999;
+    font-family: monospace;
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow: hidden;
+    text-shadow: 0 1px 2px black;
 }

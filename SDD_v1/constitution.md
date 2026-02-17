@@ -68,15 +68,15 @@
 
 ### 技術棧
 
-| 項目 | 選型 | 備註 |
-|------|------|------|
-| **核心框架** | Astro v4.16+ | 群島架構 (Island Architecture) |
-| **語言** | TypeScript (ESM) | 強制 ES Modules |
-| **品質工具** | ESLint + Prettier + Ruff | Zero Errors 政策 |
-| **路徑解析** | `@/` → `src/` | tsconfig.json paths |
-| **PWA** | @vite-pwa/astro | autoUpdate 策略 |
-| **農曆引擎** | 本地 lunar-core.js | 基於 lunar-javascript，1900-2100 |
-| **狀態儲存** | IndexedDB + localStorage | 零伺服器、客戶端私有 |
+| 項目         | 選型                     | 備註                             |
+| ------------ | ------------------------ | -------------------------------- |
+| **核心框架** | Astro v4.16+             | 群島架構 (Island Architecture)   |
+| **語言**     | TypeScript (ESM)         | 強制 ES Modules                  |
+| **品質工具** | ESLint + Prettier + Ruff | Zero Errors 政策                 |
+| **路徑解析** | `@/` → `src/`            | tsconfig.json paths              |
+| **PWA**      | @vite-pwa/astro          | autoUpdate 策略                  |
+| **農曆引擎** | 本地 lunar-core.js       | 基於 lunar-javascript，1900-2100 |
+| **狀態儲存** | IndexedDB + localStorage | 零伺服器、客戶端私有             |
 
 ### 效能要求
 
@@ -120,8 +120,8 @@
 
 ### 修訂記錄
 
-| 版本 | 日期 | 變更摘要 |
-|------|------|----------|
-| 1.0.0 | 2026-02-17 | 初始版本 |
-| 1.1.0 | 2026-02-17 | 新增 FSM 正規化原則、模式轉換效能要求（rAF 批次、CLS 零容忍） |
+| 版本  | 日期       | 變更摘要                                                                |
+| ----- | ---------- | ----------------------------------------------------------------------- |
+| 1.0.0 | 2026-02-17 | 初始版本                                                                |
+| 1.1.0 | 2026-02-17 | 新增 FSM 正規化原則、模式轉換效能要求（rAF 批次、CLS 零容忍）           |
 | 1.2.0 | 2026-02-17 | 新增可見性單一控制源原則、Fullscreen 生命週期整合原則、CSS 動畫協調要求 |

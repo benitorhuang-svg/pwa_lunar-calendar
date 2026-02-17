@@ -4,10 +4,10 @@
  */
 
 export interface HolidayInfo {
-    date: string;       // YYYYMMDD
-    isHoliday: boolean;
     category?: string;
+    date: string; // YYYYMMDD
     description?: string;
+    isHoliday: boolean;
 }
 
 export class HolidayService {
@@ -15,7 +15,7 @@ export class HolidayService {
     private holidayMap: Map<string, HolidayInfo> = new Map();
     private loadedYears: Set<number> = new Set();
 
-    private constructor() { }
+    private constructor() {}
 
     public static getInstance(): HolidayService {
         if (!HolidayService.instance) {
@@ -53,14 +53,16 @@ export class HolidayService {
 
             if (response.status === 404) {
                 // Future years might not be available yet, this is expected
-                console.log(`[HolidayService] Holiday data for ${year} is not yet available (404).`);
+                console.log(
+                    `[HolidayService] Holiday data for ${year} is not yet available (404).`,
+                );
                 this.loadedYears.add(year); // Mark as attempt to avoid repeated fetches
                 return;
             }
 
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-            const data = await response.json() as HolidayInfo[];
+            const data = (await response.json()) as HolidayInfo[];
             this.processData(data);
             this.loadedYears.add(year);
 
@@ -71,18 +73,12 @@ export class HolidayService {
         }
     }
 
-    private processData(data: HolidayInfo[]): void {
-        data.forEach(item => {
-            this.holidayMap.set(item.date, item);
-        });
-    }
-
     /**
      * 檢查指定日期是否為假期 (Check if a date is a holiday)
      */
     public getHolidayInfo(year: number, month: number, day: number): HolidayInfo | null {
         // month is 0-indexed in JS, but API/Data usually uses 1-indexed or YYYYMMDD
-        const dateStr = `${year}${String(month + 1).padStart(2, '0')}${String(day).padStart(2, '0')}`;
+        const dateStr = `${year}${String(month + 1).padStart(2, "0")}${String(day).padStart(2, "0")}`;
         return this.holidayMap.get(dateStr) || null;
     }
 
@@ -94,5 +90,11 @@ export class HolidayService {
         const date = new Date(year, month, day);
         const dayOfWeek = date.getDay();
         return dayOfWeek === 0 || dayOfWeek === 6;
+    }
+
+    private processData(data: HolidayInfo[]): void {
+        data.forEach((item) => {
+            this.holidayMap.set(item.date, item);
+        });
     }
 }

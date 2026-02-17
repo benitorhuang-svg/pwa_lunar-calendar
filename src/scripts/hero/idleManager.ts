@@ -6,14 +6,14 @@ import type { AppMode } from "../types";
  * (Responsible for three-domain timer architecture)
  */
 export class HeroIdleManager {
+    private static readonly ARTWORK_SLIDE_TIMEOUT = 5000;
     private static readonly WELCOME_IDLE_TIMEOUT = 6000;
     private static readonly ZEN_IDLE_TIMEOUT = 15000;
-    private static readonly ARTWORK_SLIDE_TIMEOUT = 5000;
 
-    private welcomeTimer: number | null = null;
-    private zenTimer: number | null = null;
-    private artworkSlideTimer: number | null = null;
+    private artworkSlideTimer: null | number = null;
     private currentMode: AppMode = "welcome";
+    private welcomeTimer: null | number = null;
+    private zenTimer: null | number = null;
 
     constructor() {
         // No auto-init here, wait for AppController/ModeHandler to call activateForMode
@@ -27,12 +27,12 @@ export class HeroIdleManager {
         this.currentMode = mode;
 
         switch (mode) {
-            case "welcome":
-                this.startWelcomeTimer();
-                break;
             case "artwork":
                 this.startZenTimer();
                 this.startArtworkSlideTimer();
+                break;
+            case "welcome":
+                this.startWelcomeTimer();
                 break;
             case "zen":
                 // In Zen mode, we might want to track interaction to go back to Artwork?
@@ -54,6 +54,13 @@ export class HeroIdleManager {
     }
 
     /**
+     * 暫停/恢復輪播 (Pause/Resume slide timer)
+     */
+    public pauseSlideTimer(): void {
+        this.clearArtworkSlideTimer();
+    }
+
+    /**
      * T206: 重置使用者互動計時器 (Reset interaction-based timers)
      * 僅重置閒置轉場計時器，不影響圖片輪播
      */
@@ -67,25 +74,40 @@ export class HeroIdleManager {
         }
     }
 
-    /**
-     * 暫停/恢復輪播 (Pause/Resume slide timer)
-     */
-    public pauseSlideTimer(): void {
-        this.clearArtworkSlideTimer();
-    }
-
     public resumeSlideTimer(): void {
         if (this.currentMode === "artwork") {
             this.startArtworkSlideTimer();
         }
     }
 
-    private startWelcomeTimer(): void {
-        this.clearWelcomeTimer();
-        this.welcomeTimer = window.setTimeout(() => {
-            console.log("[IdleManager] Welcome idle reached (6s): Transitioning to Zen");
-            window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "zen" } }));
-        }, HeroIdleManager.WELCOME_IDLE_TIMEOUT);
+    /**
+     * 綁定全域互動監聽 (Bind global interaction listeners)
+     */
+    public setupInteractionListeners(): void {
+        // According to US1: Welcome tracks mousedown, touchstart, keypress (no mousemove)
+        const baseEvents = ["mousedown", "touchstart", "keypress"];
+        baseEvents.forEach((evt) => {
+            window.addEventListener(evt, () => this.resetInteraction(), { passive: true });
+        });
+
+        // According to US3: Artwork mode IDLE includes mousemove?
+        // SDD says "Artwork mode Zen timer tracks mousemove", "Welcome mode doesn't track mousemove"
+        window.addEventListener(
+            "mousemove",
+            () => {
+                if (this.currentMode === "artwork") {
+                    this.resetInteraction();
+                }
+            },
+            { passive: true },
+        );
+    }
+
+    private clearArtworkSlideTimer(): void {
+        if (this.artworkSlideTimer) {
+            clearTimeout(this.artworkSlideTimer);
+            this.artworkSlideTimer = null;
+        }
     }
 
     private clearWelcomeTimer(): void {
@@ -93,14 +115,6 @@ export class HeroIdleManager {
             clearTimeout(this.welcomeTimer);
             this.welcomeTimer = null;
         }
-    }
-
-    private startZenTimer(): void {
-        this.clearZenTimer();
-        this.zenTimer = window.setTimeout(() => {
-            console.log("[IdleManager] Artwork idle reached (15s): Transitioning to Zen");
-            window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "zen" } }));
-        }, HeroIdleManager.ZEN_IDLE_TIMEOUT);
     }
 
     private clearZenTimer(): void {
@@ -118,29 +132,19 @@ export class HeroIdleManager {
         }, HeroIdleManager.ARTWORK_SLIDE_TIMEOUT);
     }
 
-    private clearArtworkSlideTimer(): void {
-        if (this.artworkSlideTimer) {
-            clearTimeout(this.artworkSlideTimer);
-            this.artworkSlideTimer = null;
-        }
+    private startWelcomeTimer(): void {
+        this.clearWelcomeTimer();
+        this.welcomeTimer = window.setTimeout(() => {
+            console.log("[IdleManager] Welcome idle reached (6s): Transitioning to Zen");
+            window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "zen" } }));
+        }, HeroIdleManager.WELCOME_IDLE_TIMEOUT);
     }
 
-    /**
-     * 綁定全域互動監聽 (Bind global interaction listeners)
-     */
-    public setupInteractionListeners(): void {
-        // According to US1: Welcome tracks mousedown, touchstart, keypress (no mousemove)
-        const baseEvents = ["mousedown", "touchstart", "keypress"];
-        baseEvents.forEach((evt) => {
-            window.addEventListener(evt, () => this.resetInteraction(), { passive: true });
-        });
-
-        // According to US3: Artwork mode IDLE includes mousemove? 
-        // SDD says "Artwork mode Zen timer tracks mousemove", "Welcome mode doesn't track mousemove"
-        window.addEventListener("mousemove", () => {
-            if (this.currentMode === "artwork") {
-                this.resetInteraction();
-            }
-        }, { passive: true });
+    private startZenTimer(): void {
+        this.clearZenTimer();
+        this.zenTimer = window.setTimeout(() => {
+            console.log("[IdleManager] Artwork idle reached (15s): Transitioning to Zen");
+            window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "zen" } }));
+        }, HeroIdleManager.ZEN_IDLE_TIMEOUT);
     }
 }

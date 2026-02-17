@@ -6,7 +6,7 @@ export class PanelUIHandler {
     constructor(
         private uiManager: HeroUIManager,
         private idleManager: HeroIdleManager,
-    ) { }
+    ) {}
 
     public init(): void {
         this.bindEvents();
@@ -23,13 +23,17 @@ export class PanelUIHandler {
 
             if (isImmersion || isWelcome) {
                 // immersion/artwork/zen/welcome -> calendar
-                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "calendar" } }));
+                window.dispatchEvent(
+                    new CustomEvent("transition-mode", { detail: { to: "calendar" } }),
+                );
             } else {
                 // calendar -> artwork (or toggle grid if preferred, but usually this button is mode toggle)
                 // If we want it to toggle grid in calendar mode:
                 // window.dispatchEvent(new CustomEvent("toggle-grid"));
                 // But current user flow says it switches to Artwork.
-                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
+                window.dispatchEvent(
+                    new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
+                );
             }
         });
 

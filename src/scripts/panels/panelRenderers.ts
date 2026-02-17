@@ -3,15 +3,15 @@
  * 負責渲染年月選擇面板和今日詳情面板 (Responsible for rendering Year/Month selection panel and Today's detail panel)
  */
 
-import { Lunar } from "../core/lunar";
 import { HolidayService } from "../core/holidayService";
+import { Lunar } from "../core/lunar";
 
 export class PanelRenderers {
+    private holidayService = HolidayService.getInstance();
     private panelToday: HTMLElement | null = null;
     private panelYearMonth: HTMLElement | null = null;
-    private holidayService = HolidayService.getInstance();
 
-    constructor() { }
+    constructor() {}
 
     public init(): void {
         this.panelYearMonth = document.getElementById("panelYearMonth");
@@ -42,7 +42,11 @@ export class PanelRenderers {
         const festival = lunar.getFestival() || lunar.getSolarFestival();
 
         // 假期資訊 (Holiday Info)
-        const holidayInfo = this.holidayService.getHolidayInfo(selectedYear, selectedMonth, selectedDay);
+        const holidayInfo = this.holidayService.getHolidayInfo(
+            selectedYear,
+            selectedMonth,
+            selectedDay,
+        );
 
         console.log("[Floater] Rendering today panel for:", date.toDateString());
         console.log("[Floater] Lunar Data:", {
@@ -66,15 +70,15 @@ export class PanelRenderers {
                 <div class="panel-main-content">
                     <div class="detail-top-section">
                         ${this.renderDateDisplay(
-            date,
-            monthText,
-            dayText,
-            jianchu,
-            luck,
-            festival,
-            termPeriod?.current,
-            holidayInfo?.isHoliday ? holidayInfo.description || "休假" : null
-        )}
+                            date,
+                            monthText,
+                            dayText,
+                            jianchu,
+                            luck,
+                            festival,
+                            termPeriod?.current,
+                            holidayInfo?.isHoliday ? holidayInfo.description || "休假" : null,
+                        )}
                         ${this.renderRightCluster(zodiac)}
                     </div>
                     ${this.renderYijiSection(yi, ji)}
@@ -183,17 +187,20 @@ export class PanelRenderers {
         dayText: string,
         jianchu: string,
         luck: string,
-        festival: string | null,
-        termName: string | null,
-        holidayDesc: string | null = null
+        festival: null | string,
+        termName: null | string,
+        holidayDesc: null | string = null,
     ): string {
         const finalizedMonth = monthText.endsWith("月") ? monthText : monthText + "月";
         // Filter out default "平吉" or similar from the date line
         const displayTerm = termName && termName !== "平吉" ? termName : "";
 
         // Combine festival and holiday if both exist, or prioritize holiday description
-        const holidayTag = holidayDesc ? `<span class="fest-tag holiday-highlight">${holidayDesc}</span>` : "";
-        const festivalTag = festival && festival !== holidayDesc ? `<span class="fest-tag">${festival}</span>` : "";
+        const holidayTag = holidayDesc
+            ? `<span class="fest-tag holiday-highlight">${holidayDesc}</span>`
+            : "";
+        const festivalTag =
+            festival && festival !== holidayDesc ? `<span class="fest-tag">${festival}</span>` : "";
 
         return `
             <div class="date-display">
@@ -234,17 +241,17 @@ export class PanelRenderers {
         const yiTags =
             yi.length > 0
                 ? yi
-                    .slice(0, 5)
-                    .map((t) => `<span class="tag">${t}</span>`)
-                    .join("")
+                      .slice(0, 5)
+                      .map((t) => `<span class="tag">${t}</span>`)
+                      .join("")
                 : '<span class="tag">諸事平吉</span>';
 
         const jiTags =
             ji.length > 0
                 ? ji
-                    .slice(0, 5)
-                    .map((t) => `<span class="tag">${t}</span>`)
-                    .join("")
+                      .slice(0, 5)
+                      .map((t) => `<span class="tag">${t}</span>`)
+                      .join("")
                 : '<span class="tag">諸事不忌</span>';
 
         return `

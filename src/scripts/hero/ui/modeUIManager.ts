@@ -59,7 +59,6 @@ export class HeroModeUIManager {
     }
 
     public updateImmersionUI(active: boolean): void {
-
         if (active) {
             this.btnImmersion?.classList.add("active");
         } else {

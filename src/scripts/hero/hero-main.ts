@@ -50,4 +50,3 @@ eventHandlers.init();
 window.addEventListener("app-images-preloaded", () => {
     (window as any).__APP_IMAGES_PRELOADED__ = true;
 });
-
