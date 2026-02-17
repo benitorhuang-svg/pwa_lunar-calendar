@@ -3,9 +3,13 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": [
+                "src/*"
+            ]
         },
-        "types": ["@vite-pwa/astro/info"],
+        "types": [
+            "vite-plugin-pwa/info"
+        ],
         "allowJs": true,
         "checkJs": true
     }
