@@ -4,8 +4,10 @@
  */
 
 import type {
+    AppMode,
     ClosePanelsDetail,
     DateSelectedDetail,
+    ModeChangedDetail,
     NavigateMonthDetail,
     RenderCalendarDetail,
     RenderHeroDetail,
@@ -31,6 +33,25 @@ export class AppEventOrchestrator {
         this.setupPanelEvents();
         this.setupSelectionEvents();
         this.setupHeroEvents();
+        this.setupModeTransitionEvents();
+    }
+
+    /**
+     * 集中式模式轉換 (Centralized Mode Transition)
+     * 所有模式切換應通過此方法或 'transition-mode' 事件
+     */
+    public transitionMode(to: AppMode): void {
+        const from = this.state.getMode();
+        if (from === to) return;
+
+        this.state.setMode(to);
+
+        // 發送模式變更通知 (Dispatch mode-changed notification)
+        window.dispatchEvent(
+            new CustomEvent<ModeChangedDetail>("mode-changed", {
+                detail: { from, to },
+            }),
+        );
     }
 
     public updateState(): void {
@@ -95,10 +116,9 @@ export class AppEventOrchestrator {
     }
 
     private checkAutoSlideshow(): void {
-        const isImmersion = document.body.classList.contains("immersion-mode");
-        // 如果已經在沈浸模式，由 IdleManager 控制幻燈片，Orchestrator 不進行干預
-        // If in immersion mode, IdleManager controls slideshow, Orchestrator stays out
-        if (isImmersion) return;
+        const mode = this.state.getMode();
+        // 沈浸模式下由 IdleManager 控制
+        if (mode === "zen" || mode === "artwork" || mode === "welcome") return;
 
         const calendarSection = document.getElementById("calendarSection");
         const isGrid = calendarSection ? calendarSection.classList.contains("show-grid") : false;
@@ -135,6 +155,16 @@ export class AppEventOrchestrator {
                     detail: { changeBg, date, lunar, transitionOverride },
                 }),
             );
+        }) as EventListener);
+    }
+
+    /**
+     * 監聽模式轉換事件 (Listen for mode transition events)
+     * 統一入口：外部通過 dispatch 'transition-mode' 事件觸發
+     */
+    private setupModeTransitionEvents(): void {
+        window.addEventListener("transition-mode", ((e: CustomEvent<{ to: AppMode }>) => {
+            this.transitionMode(e.detail.to);
         }) as EventListener);
     }
 
@@ -233,10 +263,10 @@ export class AppEventOrchestrator {
 
         // 切換網格 (Toggle Grid)
         window.addEventListener("toggle-grid", () => {
-            const isImmersion = document.body.classList.contains("immersion-mode");
+            const mode = this.state.getMode();
 
             // 如果正處於沈浸/歡迎模式，點擊日曆按鈕應視為「要求回歸日曆模式」
-            if (isImmersion) {
+            if (mode === "artwork" || mode === "zen" || mode === "welcome") {
                 window.dispatchEvent(
                     new CustomEvent("welcome-mode", {
                         detail: { active: false, targetMode: "calendar" },

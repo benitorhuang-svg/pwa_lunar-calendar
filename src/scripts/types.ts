@@ -3,9 +3,13 @@
  * 定義全域共用的型別與介面
  */
 
+// 應用模式 (Application Mode) — 五大核心狀態
+export type AppMode = "welcome" | "calendar" | "artwork" | "zen" | "note";
+
 // 應用程式狀態 (Application State)
 export interface AppState {
     activePanel: "today" | "yearMonth" | null;
+    mode: AppMode;
     selectedDay: number;
     selectedMonth: number;
     selectedYear: number;
@@ -100,4 +104,10 @@ export interface UpdateCalendarTitleDetail {
 export interface WelcomeModeDetail {
     active: boolean;
     targetMode?: "artwork" | "calendar" | "zen";
+}
+
+// 模式變更事件 (Mode Changed Event)
+export interface ModeChangedDetail {
+    from: AppMode;
+    to: AppMode;
 }

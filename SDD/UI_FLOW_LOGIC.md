@@ -41,6 +41,7 @@
 - **顯示**:
     - 顯示底部 Dock (HeroDock) 用於切換圖片或音樂。
     - 顯示頂部資訊條。
+    - 右上工具按鈕（由右至左）：🎵 音樂、🖼️ 沉浸模式、❓ FAQ。
     - 側邊顯示「切換日曆」按鈕。
 - **流轉**:
     - 點擊畫面中央/背景 $\rightarrow$ **狀態 3 (純淨)**。
@@ -96,14 +97,31 @@ stateDiagram
 
 ## 4. 事件驅動架構 (Event Orchestration)
 
-系統使用 `CustomEven` 進行狀態通知：
+系統使用 `CustomEvent` 進行狀態通知：
 
 | 事件名稱 (Event)    | 參數 (Detail)                               | 描述                                |
 | :------------------ | :------------------------------------------ | :---------------------------------- |
+| `transition-mode`   | `{ to: AppMode }`                           | **集中式模式轉換** (推薦使用)。     |
+| `mode-changed`      | `{ from: AppMode, to: AppMode }`            | **模式變更通知** (由 Orchestrator 發出)。 |
 | `welcome-mode`      | `{ active: false, targetMode: 'calendar' }` | **強制進入狀態 2** (日曆主模式)。   |
 | `welcome-mode`      | `{ active: true }`                          | **進入狀態 4** (映畫模式)。         |
 | `close-panels`      | `{ showGrid: true }`                        | 關閉浮動層並顯示網格 (輔助狀態 2)。 |
 | `slideshow-control` | `{ action: 'start', isArtwork: true }`      | 啟動輪播並顯示 Dock (輔助狀態 4)。  |
+
+### 4.1 集中式模式狀態 (Centralized AppMode)
+
+應用模式以 `AppMode` 型別管理，定義於 `types.ts`：
+
+```typescript
+type AppMode = "welcome" | "calendar" | "artwork" | "zen" | "note";
+```
+
+`AppStateManager.setMode(mode)` 負責統一映射 DOM class：
+- `welcome` → `initial-welcome`, `immersion-mode`
+- `artwork` → `immersion-mode`, `mode-artwork`
+- `zen` → `immersion-mode`
+- `note` → `note-mode-active`
+- `calendar` → (無特殊 class)
 
 ## 5. UI 層級規範 (Z-Index Hierarchy)
 
@@ -171,3 +189,17 @@ stateDiagram
 - **審美升級**: 為追求極致的數位高級感與圖片通透度，移除全站點所有模擬紙質感的 SVG 噪點。
 - **範圍**: 包含玻璃卡片面板、日曆網格背景、藝廊控制菜單。
 - **色彩**: 背景圖片移除飽和度(saturate)與亮度(brightness)濾鏡，確保在廣色域螢幕上顯示最正確的色準。
+
+### 6.11 農曆全面遵循欽定協紀辨方書 (Qinding Xieji Bianfang Shu Compliance)
+
+- **建除十二客**: 依據欽定協紀辨方書校訂建除吉凶等級（建:中/除:吉/滿:小凶/平:凶/定:吉/執:小凶/破:大凶/危:凶/成:大吉/收:吉/開:大吉/閉:凶）。
+- **二十八宿值日**: 新增二十八宿（角亢氐房心尾箕…）循環值日系統，含禽星動物名與吉凶判定。
+- **綜合吉凶**: `getComprehensiveLuck()` 結合建除十二客主判與二十八宿輔判，提供更精確的吉凶評估。
+- **宜忌表**: 依據建除十二客校訂每日宜忌項目。
+- **今日面板**: 顯示當日二十八宿宿名標籤（含禽星 tooltip）。
+
+### 6.12 FAQ 面板 (FAQ Panel)
+
+- **入口**: 右上角第三個按鈕（由右至左：音樂、沉浸模式、FAQ）。
+- **UI**: 玻璃質感浮動面板，含問答條目、關閉按鈕。
+- **行為**: 點擊按鈕切換開關，點擊背景遮罩或關閉鈕關閉。

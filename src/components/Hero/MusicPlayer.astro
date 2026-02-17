@@ -4,7 +4,7 @@ import "../../styles/hero/music-player.css";
 
 <!-- Music Player & Utility Controls -->
 <div class="music-control-wrapper">
-    <!-- 1. Music Toggle (Rightmost in display) -->
+    <!-- 1. Music Toggle (Rightmost in display due to row-reverse) -->
     <button
         aria-label="播放背景音樂"
         class="music-toggle-btn"
@@ -72,6 +72,30 @@ import "../../styles/hero/music-player.css";
             <line x1="16" x2="16" y1="2" y2="6"></line>
             <line x1="8" x2="8" y1="2" y2="6"></line>
             <line x1="3" x2="21" y1="10" y2="10"></line>
+        </svg>
+    </button>
+
+    <!-- 3. FAQ Button (Leftmost in display due to row-reverse) -->
+    <button
+        aria-label="常見問題"
+        class="faq-toggle-btn"
+        id="btnFaq"
+        title="常見問題 FAQ"
+        type="button"
+    >
+        <svg
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+        >
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" x2="12.01" y1="17" y2="17"></line>
         </svg>
     </button>
 

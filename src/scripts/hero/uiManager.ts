@@ -29,6 +29,9 @@ export class HeroUIManager {
 
     private zenGestureHint: HTMLElement | null = null;
 
+    private faqOverlay: HTMLElement | null = null;
+    private btnFaq: HTMLElement | null = null;
+
     constructor() {
         this.layoutManager = new HeroLayoutManager();
         this.galleryManager = new HeroGalleryManager();
@@ -281,8 +284,11 @@ export class HeroUIManager {
         this.heroBgContainer = document.getElementById("heroBgContainer");
         this.zenGestureHint = document.getElementById("zenGestureHint");
         this.toastContainer = document.getElementById("toastContainer");
+        this.faqOverlay = document.getElementById("faqPanelOverlay");
+        this.btnFaq = document.getElementById("btnFaq");
 
         this.bindGlobalActions();
+        this.bindFaqButton();
     }
 
     // Gallery Delegate
@@ -380,6 +386,37 @@ export class HeroUIManager {
     public updatePanelsForType(type?: "today" | "yearMonth"): void {
         this.layoutManager.updatePanelsForType(type);
         this.modeUIManager.changeImageBtn?.classList.remove("active");
+    }
+
+    private bindFaqButton(): void {
+        const closeBtn = document.getElementById("btnFaqClose");
+
+        this.btnFaq?.addEventListener("click", () => {
+            if (this.faqOverlay) {
+                const isActive = this.faqOverlay.classList.contains("active");
+                if (isActive) {
+                    this.faqOverlay.classList.remove("active");
+                    this.btnFaq?.classList.remove("active");
+                } else {
+                    this.faqOverlay.classList.add("active");
+                    this.btnFaq?.classList.add("active");
+                }
+            }
+            this.hapticFeedback("light");
+        });
+
+        closeBtn?.addEventListener("click", () => {
+            this.faqOverlay?.classList.remove("active");
+            this.btnFaq?.classList.remove("active");
+        });
+
+        // Close on overlay background click
+        this.faqOverlay?.addEventListener("click", (e) => {
+            if (e.target === this.faqOverlay) {
+                this.faqOverlay?.classList.remove("active");
+                this.btnFaq?.classList.remove("active");
+            }
+        });
     }
 
     private bindGlobalActions(): void {
