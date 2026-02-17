@@ -5,8 +5,11 @@
  */
 
 import { Lunar } from "../core/lunar";
+import { HolidayService } from "../core/holidayService";
 
 export class CalendarCellBuilder {
+    private holidayService = HolidayService.getInstance();
+
     /**
      * 建立單一日期單元格
      * Create a single day cell element
@@ -19,36 +22,32 @@ export class CalendarCellBuilder {
         today: Date, // 系統當日 (System Today)
         selectedDay: null | number, // 當前月份被選中的日期 (Selected day in current month)
     ): HTMLButtonElement {
-        // 注意：這裡 month 是 0-indexed，Date 建構函數自動處理月份溢位 (e.g. month-1 where month=0 becomes previous year)
-        // Note: JS Date constructor handles month overflow/underflow automatically
         const date = new Date(year, month, day);
+        const y = date.getFullYear();
+        const m = date.getMonth();
+        const d = date.getDate();
 
         // 取得農曆資訊 (Fetch Lunar Info)
         const lunar = Lunar.fromDate(date);
         const term = lunar.getJieQi();
         const festival = lunar.getFestival() || lunar.getSolarFestival();
 
+        // 取得政府休假資訊 (Fetch Govt Holiday Info)
+        const holidayInfo = this.holidayService.getHolidayInfo(y, m, d);
+        const isOfficialHoliday = holidayInfo ? holidayInfo.isHoliday : (date.getDay() === 0 || date.getDay() === 6);
+
         const cell = document.createElement("button");
         cell.type = "button";
 
         // 設定 Class (Set Classes)
         cell.className = `day-cell ${isOtherMonth ? "other-month" : ""}`;
-        cell.tabIndex = isOtherMonth ? -1 : 0; // 非當月日期不可聚焦 (Disable focus for other month)
+        if (isOfficialHoliday) cell.classList.add("is-holiday");
 
-        // 設定資料屬性，供點擊事件使用
-        // Set data attributes for click handling
-        // Note: Adjusting date back to actual year/month if it was overflowed by "day" is tricky if we just passed standardized year/month.
-        // But here `year` and `month` passed in are the *target* context of the cell.
-        // Actually, if we pass month-1 and day, Date object calculates correct timestamp, but dataset needs the correct visual year/month.
-        // The Renderer logic passes the intended logical year/month for the cell.
-        // Let's rely on the passed arguments as the "visual" date.
+        cell.tabIndex = isOtherMonth ? -1 : 0;
 
-        // Important: If we are rendering "Prev Month" padding, the passed `month` is already `month - 1`.
-        // So `date.getMonth()` should generally match `month` (modulo 12).
-
-        cell.dataset.year = date.getFullYear().toString();
-        cell.dataset.month = date.getMonth().toString();
-        cell.dataset.day = date.getDate().toString();
+        cell.dataset.year = y.toString();
+        cell.dataset.month = m.toString();
+        cell.dataset.day = d.toString();
 
         if (isOtherMonth) cell.dataset.other = "true";
 
@@ -58,15 +57,14 @@ export class CalendarCellBuilder {
         }
 
         // 標記選中狀態 (Mark Selected)
-        // 只有非其他月份的日期才顯示選中態 (Only show selected state for current month cells)
-        if (!isOtherMonth && selectedDay && day === selectedDay) {
+        if (!isOtherMonth && selectedDay && d === selectedDay) {
             cell.classList.add("selected");
         }
 
         // 建立公曆數字 (Gregorian Number)
         const greg = document.createElement("div");
         greg.className = "gregorian-num";
-        greg.textContent = day.toString();
+        greg.textContent = d.toString();
 
         // 建立農曆/節日文字 (Lunar/Festival Text)
         const lunarDiv = document.createElement("div");
@@ -75,9 +73,13 @@ export class CalendarCellBuilder {
         const lunarDateStr = lunar.getDayInChinese();
         let bottomText = lunarDateStr;
 
-        // 優先顯示節日，其次節氣，最後農曆日期
-        // Priority: Festival > Solar Term > Lunar Date
-        if (festival) {
+        // 優先顯示政府節日描述 > 農曆節日 > 節氣 > 農曆日期
+        // Priority: Govt Description > Festival > Solar Term > Lunar Date
+        if (holidayInfo && holidayInfo.description && holidayInfo.isHoliday) {
+            bottomText = holidayInfo.description;
+            lunarDiv.style.color = "var(--cal-holiday-red, #ff6b6b)";
+            lunarDiv.classList.add("official-holiday");
+        } else if (festival) {
             bottomText = festival;
             lunarDiv.style.color = "var(--cal-festival-red, #ff6b6b)";
             lunarDiv.style.fontWeight = "700";
@@ -88,6 +90,7 @@ export class CalendarCellBuilder {
             lunarDiv.style.fontWeight = "700";
             lunarDiv.style.opacity = "1";
         }
+
         lunarDiv.textContent = bottomText;
 
         cell.appendChild(greg);
@@ -96,7 +99,7 @@ export class CalendarCellBuilder {
         // 無障礙標籤 (A11y Label)
         cell.setAttribute(
             "aria-label",
-            `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 · ${bottomText}`,
+            `${y}年${m + 1}月${d}日 · ${bottomText}${isOfficialHoliday ? " (休假)" : ""}`,
         );
 
         return cell;

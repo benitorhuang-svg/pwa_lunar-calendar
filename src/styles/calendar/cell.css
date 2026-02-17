@@ -67,12 +67,20 @@
     transform-style: preserve-3d;
 }
 
-/* Weekend Color (Sun & Sat) */
-/* 週末顏色 (週日與週六) */
+/* Weekend & Holiday Colors */
+/* 週末與假日顏色 */
+.day-cell.is-holiday,
 .day-cell:nth-child(7n),
 .day-cell:nth-child(7n + 1) {
     color: #b05a5a;
     /* Slightly more muted vermilion */
+}
+
+/* Specific styling for Official Government Holiday text */
+.official-holiday {
+    color: #ff6b6b !important;
+    font-weight: 700 !important;
+    opacity: 1 !important;
 }
 
 /* Cell States */

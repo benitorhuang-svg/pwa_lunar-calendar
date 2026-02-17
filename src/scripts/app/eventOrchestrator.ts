@@ -20,9 +20,12 @@ import type {
 import type { AppStateManager } from "./stateManager";
 
 import { Lunar } from "../core/lunar";
+import { HolidayService } from "../core/holidayService";
 
 export class AppEventOrchestrator {
     private state: AppStateManager;
+    private holidayService = HolidayService.getInstance();
+    private lastFetchedYear: number | null = null;
 
     constructor(stateManager: AppStateManager) {
         this.state = stateManager;
@@ -34,6 +37,22 @@ export class AppEventOrchestrator {
         this.setupSelectionEvents();
         this.setupHeroEvents();
         this.setupModeTransitionEvents();
+
+        // 初始抓取 (Initial fetch)
+        const currentYear = this.state.getState().selectedYear;
+        this.fetchHolidays(currentYear);
+    }
+
+    private async fetchHolidays(year: number): Promise<void> {
+        if (this.lastFetchedYear === year) return;
+        this.lastFetchedYear = year;
+        await this.holidayService.fetchYearData(year);
+        // 抓取的同時也抓前後一年備用 (Fetch surrounding years)
+        await Promise.all([
+            this.holidayService.fetchYearData(year - 1),
+            this.holidayService.fetchYearData(year + 1)
+        ]);
+        this.updateState(); // 重新渲染以套用假期 (Re-render to apply)
     }
 
     /**
@@ -56,6 +75,10 @@ export class AppEventOrchestrator {
 
     public updateState(): void {
         const state = this.state.getState();
+
+        // 背景抓取假期 (Background fetch holidays)
+        this.fetchHolidays(state.selectedYear);
+
         const date = new Date(state.selectedYear, state.selectedMonth, state.selectedDay);
         const lunar = Lunar.fromDate(date);
         const theme = this.state.getTheme(date, lunar);

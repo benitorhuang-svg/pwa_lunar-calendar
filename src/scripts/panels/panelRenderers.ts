@@ -4,10 +4,12 @@
  */
 
 import { Lunar } from "../core/lunar";
+import { HolidayService } from "../core/holidayService";
 
 export class PanelRenderers {
     private panelToday: HTMLElement | null = null;
     private panelYearMonth: HTMLElement | null = null;
+    private holidayService = HolidayService.getInstance();
 
     constructor() { }
 
@@ -39,6 +41,9 @@ export class PanelRenderers {
         const ji = lunar.getDayJi();
         const festival = lunar.getFestival() || lunar.getSolarFestival();
 
+        // 假期資訊 (Holiday Info)
+        const holidayInfo = this.holidayService.getHolidayInfo(selectedYear, selectedMonth, selectedDay);
+
         console.log("[Floater] Rendering today panel for:", date.toDateString());
         console.log("[Floater] Lunar Data:", {
             dayText,
@@ -68,6 +73,7 @@ export class PanelRenderers {
             luck,
             festival,
             termPeriod?.current,
+            holidayInfo?.isHoliday ? holidayInfo.description || "休假" : null
         )}
                         ${this.renderRightCluster(zodiac)}
                     </div>
@@ -179,10 +185,15 @@ export class PanelRenderers {
         luck: string,
         festival: string | null,
         termName: string | null,
+        holidayDesc: string | null = null
     ): string {
         const finalizedMonth = monthText.endsWith("月") ? monthText : monthText + "月";
         // Filter out default "平吉" or similar from the date line
         const displayTerm = termName && termName !== "平吉" ? termName : "";
+
+        // Combine festival and holiday if both exist, or prioritize holiday description
+        const holidayTag = holidayDesc ? `<span class="fest-tag holiday-highlight">${holidayDesc}</span>` : "";
+        const festivalTag = festival && festival !== holidayDesc ? `<span class="fest-tag">${festival}</span>` : "";
 
         return `
             <div class="date-display">
@@ -197,7 +208,8 @@ export class PanelRenderers {
                     </div>
                     <div class="lunar-info-row-2">
                         <span class="lucky-bar">${jianchu}日 · ${luck}</span>
-                        ${festival ? `<span class="fest-tag">${festival}</span>` : ""}
+                        ${holidayTag}
+                        ${festivalTag}
                     </div>
                 </div>
             </div>`;
