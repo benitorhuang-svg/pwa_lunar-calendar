@@ -137,9 +137,11 @@
 
 /* Match the right-side controls' size */
 .slideshow-settings-btn {
-    width: 44px;
+    width: auto;
+    min-width: 44px;
     height: 44px;
-    border-radius: 50%;
+    padding: 0 12px;
+    border-radius: 40px;
     background: rgba(15, 15, 20, 0.7);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -149,7 +151,15 @@
     justify-content: center;
     cursor: pointer;
     color: rgba(255, 255, 255, 0.85);
-    padding: 0;
+    gap: 6px;
+}
+
+.current-setting-label {
+    font-family: var(--font-serif-num);
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.9;
+    letter-spacing: 0.05em;
 }
 
 /* Show only when in artwork (映畫) mode */
@@ -184,6 +194,12 @@ body.mode-artwork .slideshow-settings {
 
 .slideshow-settings-menu .menu-item:hover {
     background: rgba(255, 255, 255, 0.04);
+}
+
+.slideshow-settings-menu .menu-item.active {
+    background: linear-gradient(135deg, #e6d5a7 0%, #d4af37 100%);
+    color: #1a1a1a;
+    font-weight: 600;
 }
 
 .slideshow-settings-menu[aria-hidden="false"] {

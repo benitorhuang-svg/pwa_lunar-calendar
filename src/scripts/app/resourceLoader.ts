@@ -60,6 +60,50 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         }
     }
 
+    async function waitForInstallingWorker(worker: ServiceWorker): Promise<void> {
+        document.body.classList.add("is-updating");
+        if (loadingText) loadingText.textContent = "下載更新中...";
+
+        await new Promise<void>((resolve) => {
+            const onStateChange = () => {
+                if (worker.state === "installed") {
+                    if (navigator.serviceWorker.controller) {
+                        console.log("[Loader] Installed, reloading...");
+                        if (loadingText) loadingText.textContent = "安裝更新中...";
+
+                        const fallbackTimeout = window.setTimeout(() => {
+                            console.warn("[Loader] controllerchange timeout, continuing without reload.");
+                            markDone("update");
+                            resolve();
+                        }, 12000);
+
+                        navigator.serviceWorker.addEventListener(
+                            "controllerchange",
+                            () => {
+                                window.clearTimeout(fallbackTimeout);
+                                window.location.reload();
+                            },
+                            { once: true },
+                        );
+
+                        worker.postMessage({ type: "SKIP_WAITING" });
+                    } else {
+                        // First install
+                        markDone("update");
+                        resolve();
+                    }
+                } else if (worker.state === "redundant") {
+                    console.warn("[Loader] SW installation failed/redundant.");
+                    markDone("update");
+                    resolve();
+                }
+            };
+
+            worker.addEventListener("statechange", onStateChange);
+            onStateChange();
+        });
+    }
+
     // --- Service Worker Update Logic ---
     // --- Service Worker Update Logic ---
     async function checkSWUpdate(): Promise<void> {
@@ -81,48 +125,61 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                 document.body.classList.add("is-updating");
                 if (loadingText) loadingText.textContent = "更新中...";
                 registration.waiting.postMessage({ type: "SKIP_WAITING" });
-                navigator.serviceWorker.addEventListener("controllerchange", () => {
-                    window.location.reload();
-                });
+                navigator.serviceWorker.addEventListener(
+                    "controllerchange",
+                    () => {
+                        window.location.reload();
+                    },
+                    { once: true },
+                );
                 return; // Wait for reload
             }
 
             // B. Check for update actively
+            let updateFound = false;
+            registration.addEventListener(
+                "updatefound",
+                () => {
+                    updateFound = true;
+                },
+                { once: true },
+            );
+
             await registration.update();
+
+            // Allow micro-delay for late updatefound/installing propagation
+            await new Promise((resolve) => window.setTimeout(resolve, 600));
+
+            if (registration.waiting) {
+                console.log("[Loader] Update found after check, waiting worker ready.");
+                document.body.classList.add("is-updating");
+                if (loadingText) loadingText.textContent = "更新中...";
+                registration.waiting.postMessage({ type: "SKIP_WAITING" });
+                navigator.serviceWorker.addEventListener(
+                    "controllerchange",
+                    () => {
+                        window.location.reload();
+                    },
+                    { once: true },
+                );
+                return;
+            }
 
             // C. After update check, acts if installing
             if (registration.installing) {
-                const installingWorker = registration.installing;
                 console.log("[Loader] New version installing...");
-                document.body.classList.add("is-updating");
-                if (loadingText) loadingText.textContent = "下載更新中...";
-
-                installingWorker.addEventListener("statechange", () => {
-                    if (installingWorker.state === "installed") {
-                        if (navigator.serviceWorker.controller) {
-                            console.log("[Loader] Installed, reloading...");
-                            if (loadingText) loadingText.textContent = "安裝更新中...";
-                            installingWorker.postMessage({ type: "SKIP_WAITING" });
-                            // Reload will happen via controllerchange listener attached below
-                        } else {
-                            // First install
-                            markDone("update");
-                        }
-                    } else if (installingWorker.state === "redundant") {
-                        console.warn("[Loader] SW installation failed/redundant.");
-                        markDone("update");
-                    }
-                });
-
-                navigator.serviceWorker.addEventListener("controllerchange", () => {
-                    window.location.reload();
-                });
-
-                // DO NOT markDone("update") here. We wait for installation.
-                // But add a safety timeout in case installation stalls?
-                // Let's rely on the global safety timeout (8000ms) to force entry if stuck.
+                await waitForInstallingWorker(registration.installing);
             } else {
-                // No update found
+                if (updateFound) {
+                    // updatefound happened but worker object not yet visible, wait one more cycle.
+                    await new Promise((resolve) => window.setTimeout(resolve, 600));
+                    if (registration.installing) {
+                        await waitForInstallingWorker(registration.installing);
+                        return;
+                    }
+                }
+
+                // No update found (or updatefound had no installing worker)
                 markDone("update");
             }
         } catch (e) {
@@ -160,6 +217,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         setTimeout(() => {
             const overlay = document.getElementById("loadingOverlay");
             if (overlay) overlay.style.display = "none";
+            document.body.classList.add("loader-finished");
             window.dispatchEvent(new CustomEvent("loader-finished"));
         }, 1500);
     }

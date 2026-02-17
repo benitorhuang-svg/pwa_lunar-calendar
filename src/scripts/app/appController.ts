@@ -12,6 +12,7 @@ import { AppStateManager } from "./stateManager";
 // 初始化 (Initialize)
 const stateManager = new AppStateManager();
 const orchestrator = new AppEventOrchestrator(stateManager);
+let welcomeActivated = false;
 
 // Start initialization after a short delay to ensure all component scripts are ready
 window.addEventListener("DOMContentLoaded", () => {
@@ -57,16 +58,26 @@ function activateWelcome(): void {
  * 負責歡迎模式初始化邏輯
  */
 function initWelcomeMode(): void {
-    const checkAndActivate = () => {
-        if (document.body.classList.contains("app-loaded")) {
-            // Apply initial-welcome immediately to prevent HUD flash
-            if (!document.body.classList.contains("initial-welcome")) {
-                activateWelcome();
-            }
-            return true;
+    const tryActivateWelcome = () => {
+        if (welcomeActivated) return true;
+        if (!document.body.classList.contains("loader-finished")) return false;
+
+        // Apply initial-welcome immediately to prevent HUD flash
+        if (!document.body.classList.contains("initial-welcome")) {
+            activateWelcome();
         }
-        return false;
+
+        welcomeActivated = true;
+        return true;
     };
+
+    const checkAndActivate = () => {
+        return tryActivateWelcome();
+    };
+
+    window.addEventListener("loader-finished", () => {
+        checkAndActivate();
+    });
 
     if (!checkAndActivate()) {
         const observer = new MutationObserver((mutations) => {
