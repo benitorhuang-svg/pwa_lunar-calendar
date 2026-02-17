@@ -132,7 +132,6 @@ export class HeroUIManager {
     public bindImmersionMode(resetIdle: () => void): void {
         const handler = (e: Event) => {
             e.stopPropagation();
-            if (e.type === "mousedown") e.preventDefault();
             resetIdle();
 
             const isImmersion = document.body.classList.contains("immersion-mode");
@@ -144,8 +143,8 @@ export class HeroUIManager {
             }
         };
         const btn = this.modeUIManager.immersionBtn;
-        btn?.addEventListener("mousedown", handler);
-        btn?.addEventListener("touchstart", handler, { passive: false });
+        btn?.addEventListener("click", handler);
+        // Remove old complex handlers to avoid ghost clicks failing to stop propagation
     }
 
     public bindInstallButton(callback: () => void): void {
