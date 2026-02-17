@@ -1,8 +1,8 @@
-# 🏮 農民曆 PWA - 數位精品農曆 (Lunar Calendar)
+# 🏮 農民曆 PWA - 數位農曆 (Lunar Calendar)
 
 [![Deploy to GitHub Pages](https://github.com/benitorhuang-svg/pwa_lunar-calendar/actions/workflows/deploy.yml/badge.svg)](https://github.com/benitorhuang-svg/pwa_lunar-calendar/actions/workflows/deploy.yml)
 
-這是一個結合傳統農曆文化與現代極簡設計的 **數位精品農民曆**。採用 **Astro** 框架開發，具備完整的 PWA (Progressive Web App) 能力，為使用者提供最純粹、優雅的歲月交互體驗。
+這是一個結合傳統農曆文化與現代極簡設計的 **數位農民曆**。採用 **Astro** 框架開發，具備完整的 PWA (Progressive Web App) 能力，為使用者提供最純粹、優雅的歲月交互體驗。
 
 ---
 
@@ -16,7 +16,7 @@
 
 ## ✨ 核心特色
 
-### 🎨 數位精品視覺 (Digital Premium)
+### 🎨 數位視覺 (Digital Premium)
 
 - **沉浸式氛圍**: 自動切換的四季景觀背景，搭配優雅的「今日宜忌」卡片。
 - **毛玻璃質感**: 採用現代 Glassmorphism 設計，所有介面元件皆具備細膩的穿透感與圓角。

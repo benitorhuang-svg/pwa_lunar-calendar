@@ -12,6 +12,74 @@ import WelcomeOverlay from "./WelcomeOverlay.astro";
 <HeroDock />
 <MusicPlayer />
 
+<!-- FAQ Panel Overlay -->
+<div class="faq-panel-overlay" id="faqPanelOverlay">
+    <div class="faq-panel">
+        <div class="faq-panel-header">
+            <span class="faq-panel-title">常見問題 FAQ</span>
+            <button class="faq-panel-close" id="btnFaqClose" type="button" aria-label="關閉">
+                <svg
+                    fill="none"
+                    height="16"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="16"
+                >
+                    <line x1="18" x2="6" y1="6" y2="18"></line>
+                    <line x1="6" x2="18" y1="6" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">這是什麼應用程式？</div>
+            <div class="faq-answer">
+                這是一款數位農曆 PWA (漸進式網頁應用)，結合傳統曆法智慧與現代設計美學。
+                提供農曆日期、天干地支、二十四節氣、宜忌吉凶等完整資訊，
+                依據「欽定協紀辨方書」校訂。
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">如何切換不同模式？</div>
+            <div class="faq-answer">
+                右上角提供三個控制按鈕（由右至左）：<br />
+                🎵 <b>音樂</b> — 播放/暫停背景禪樂<br />
+                🖼️ <b>沉浸模式</b> — 切換日曆/映畫/純淨沉浸模式<br />
+                ❓ <b>FAQ</b> — 開啟本說明面板<br /><br />
+                點擊背景可在映畫 ↔ 純淨模式間切換。
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">農曆資料依據什麼版本？</div>
+            <div class="faq-answer">
+                本曆依據清代「欽定協紀辨方書」校訂，採用建除十二客、二十八宿值日、
+                天干地支紀日法，提供傳統宜忌與吉凶判斷。支援 1900–2100 年農曆轉換。
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">如何自訂背景圖片？</div>
+            <div class="faq-answer">
+                進入映畫模式後，點擊底部 Dock 的藝廊按鈕，可匯入自選圖片。
+                支援自選/預設/混合三種模式切換。圖片儲存於瀏覽器本地 IndexedDB。
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">如何添加自訂音樂電台？</div>
+            <div class="faq-answer">
+                進入映畫模式 → 打開藝廊選單 → 音樂電台區域， 可輸入線上音訊 URL 添加自訂電台。支援
+                MP3 串流格式。
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">可以離線使用嗎？</div>
+            <div class="faq-answer">
+                是的，本應用支援 PWA 離線功能。首次載入後，核心功能與預設圖片皆可離線運作。
+                可將此網頁「加入主畫面」作為獨立應用使用。
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Zen Mode Gesture Hint -->
 <div class="zen-gesture-hint" id="zenGestureHint">
     <div class="hint-icon">👆</div>

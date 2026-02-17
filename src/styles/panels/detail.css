@@ -330,6 +330,18 @@ select.panel-font-select option,
     letter-spacing: 0.1em;
 }
 
+.detail-mansion-tag {
+    font-family: var(--font-calligraphy);
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.05);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 14px;
+    border-radius: 50px;
+    letter-spacing: 0.1em;
+    cursor: help;
+}
+
 /* Yiji Section (Suitable/Unsuitable Activities) */
 .detail-yiji-section {
     display: flex;

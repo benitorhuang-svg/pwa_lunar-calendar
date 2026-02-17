@@ -4,10 +4,11 @@
  */
 
 import type { Lunar } from "../core/lunar";
-import type { AppState, ThemeName } from "../types";
+import type { AppMode, AppState, ThemeName } from "../types";
 
 export class AppStateManager {
     private activePanel: "today" | "yearMonth" | null;
+    private mode: AppMode;
     private selectedDay: number;
     private selectedMonth: number;
     private selectedYear: number;
@@ -20,6 +21,7 @@ export class AppStateManager {
         this.selectedDay = now.getDate();
         this.today = now;
         this.activePanel = null;
+        this.mode = "welcome";
     }
 
     /**
@@ -49,6 +51,7 @@ export class AppStateManager {
     public getState(): AppState {
         return {
             activePanel: this.activePanel,
+            mode: this.mode,
             selectedDay: this.selectedDay,
             selectedMonth: this.selectedMonth,
             selectedYear: this.selectedYear,
@@ -86,7 +89,7 @@ export class AppStateManager {
         // OR standard way: The `Lunar` class doesn't seem to expose numeric month.
         // I will add a `getLunarMonth(): number` to `Lunar` class later if needed, but for now let's use `(lunar as any)._lunarMonth`.
 
-        const lunarMonth = (lunar as any)._lunarMonth || date.getMonth() + 1;
+        const lunarMonth = lunar.getLunarMonth();
 
         let theme: ThemeName;
         const m = date.getMonth() + 1; // Gregorian Month for Seasons
@@ -134,6 +137,33 @@ export class AppStateManager {
 
     public setDay(day: number): void {
         this.selectedDay = day;
+    }
+
+    public getMode(): AppMode {
+        return this.mode;
+    }
+
+    public setMode(mode: AppMode): void {
+        this.mode = mode;
+        // 同步 DOM 狀態：將模式映射到 body class
+        document.body.classList.remove("initial-welcome", "immersion-mode", "mode-artwork", "note-mode-active");
+        switch (mode) {
+            case "welcome":
+                document.body.classList.add("initial-welcome", "immersion-mode");
+                break;
+            case "artwork":
+                document.body.classList.add("immersion-mode", "mode-artwork");
+                break;
+            case "zen":
+                document.body.classList.add("immersion-mode");
+                break;
+            case "note":
+                document.body.classList.add("note-mode-active");
+                break;
+            case "calendar":
+                // No special classes needed
+                break;
+        }
     }
 
     public setMonth(month: number): void {

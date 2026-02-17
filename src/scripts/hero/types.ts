@@ -9,20 +9,17 @@
 
 // Global Types
 export type {
+    AppMode,
     ClosePanelsDetail,
+    ModeChangedDetail,
     NavigateMonthDetail,
     RenderHeroDetail,
     RenderPanelsDetail,
     RequestHeroChangeDetail,
     SlideshowControlDetail,
     ToggleGridViewDetail,
+    WelcomeModeDetail,
 } from "../types";
 
 // 切換面板事件詳細資訊 (Detail for toggling specific panel)
 export type TogglePanelDetail = string;
-
-// 歡迎模式/沉浸模式事件詳細資訊 (Detail for Welcome/Immersion mode)
-export interface WelcomeModeDetail {
-    active: boolean; // 是否啟用 (Whether active)
-    targetMode?: "artwork" | "calendar" | "zen";
-}

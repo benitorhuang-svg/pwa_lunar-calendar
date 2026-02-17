@@ -32,7 +32,8 @@ export class PanelRenderers {
         const dayGZ = lunar.getDayInGanZhi();
         const monthGZ = lunar.getMonthInGanZhi();
         const jianchu = lunar.getJianChu();
-        const luck = lunar.getDayLuck();
+        const luck = lunar.getComprehensiveLuck();
+        const mansion = lunar.getMansion();
         const termPeriod = lunar.getSolarTermPeriod();
         const yi = lunar.getDayYi();
         const ji = lunar.getDayJi();
@@ -45,6 +46,7 @@ export class PanelRenderers {
             ganzhi,
             jianchu,
             luck,
+            mansion: mansion.name,
             monthText,
             zodiac,
         });
@@ -61,7 +63,7 @@ export class PanelRenderers {
                         ${this.renderDateDisplay(date, ganzhi, monthGZ, dayGZ)}
                         ${this.renderRightCluster(zodiac, termPeriod)}
                     </div>
-                    ${this.renderMidRow(jianchu, luck, festival)}
+                    ${this.renderMidRow(jianchu, luck, festival, mansion)}
                     ${this.renderYijiSection(yi, ji)}
                 </div>
             </div>`;
@@ -173,10 +175,11 @@ export class PanelRenderers {
             </div>`;
     }
 
-    private renderMidRow(jianchu: string, luck: string, festival: null | string): string {
+    private renderMidRow(jianchu: string, luck: string, festival: null | string, mansion: { animal: string; luck: string; name: string }): string {
         return `
             <div class="detail-mid-row">
                 <div class="detail-lucky-pill">${jianchu}日 · ${luck}</div>
+                <div class="detail-mansion-tag" title="${mansion.animal}">${mansion.name}宿</div>
                 ${festival ? `<div class="detail-festival-tag">${festival}</div>` : ""}
             </div>`;
     }
