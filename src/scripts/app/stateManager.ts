@@ -20,8 +20,9 @@ export class AppStateManager {
         this.selectedMonth = now.getMonth();
         this.selectedDay = now.getDate();
         this.today = now;
-        this.activePanel = null;
-        this.mode = "welcome";
+        // Apply user-preferred defaults: open calendar view and show today panel
+        this.activePanel = "today";
+        this.mode = "calendar";
     }
 
     /**

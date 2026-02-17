@@ -400,6 +400,12 @@ export class HeroUIManager {
                 } else {
                     this.faqOverlay.classList.add("active");
                     this.btnFaq?.classList.add("active");
+
+                    // Open first item by default if none are open
+                    const openItem = this.faqOverlay.querySelector(".faq-item.open");
+                    if (!openItem) {
+                        this.faqOverlay.querySelector(".faq-item")?.classList.add("open");
+                    }
                 }
             }
             this.hapticFeedback("light");
@@ -408,6 +414,23 @@ export class HeroUIManager {
         closeBtn?.addEventListener("click", () => {
             this.faqOverlay?.classList.remove("active");
             this.btnFaq?.classList.remove("active");
+        });
+
+        // Accordion functionality for FAQ items
+        const faqItems = this.faqOverlay?.querySelectorAll(".faq-item");
+        faqItems?.forEach((item) => {
+            const question = item.querySelector(".faq-question");
+            question?.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const isOpen = item.classList.contains("open");
+                // Close all others
+                faqItems.forEach((i) => i.classList.remove("open"));
+                // Toggle current
+                if (!isOpen) {
+                    item.classList.add("open");
+                }
+                this.hapticFeedback("light");
+            });
         });
 
         // Close on overlay background click

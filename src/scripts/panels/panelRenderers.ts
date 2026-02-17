@@ -9,7 +9,7 @@ export class PanelRenderers {
     private panelToday: HTMLElement | null = null;
     private panelYearMonth: HTMLElement | null = null;
 
-    constructor() {}
+    constructor() { }
 
     public init(): void {
         this.panelYearMonth = document.getElementById("panelYearMonth");
@@ -60,10 +60,9 @@ export class PanelRenderers {
                 ${this.renderSideAccent(ganzhi, monthGZ, dayGZ)}
                 <div class="panel-main-content">
                     <div class="detail-top-section">
-                        ${this.renderDateDisplay(date, monthText, dayText)}
+                        ${this.renderDateDisplay(date, monthText, dayText, jianchu, luck, festival)}
                         ${this.renderRightCluster(zodiac, termPeriod)}
                     </div>
-                    ${this.renderMidRow(jianchu, luck, festival)}
                     ${this.renderYijiSection(yi, ji)}
                 </div>
             </div>`;
@@ -164,22 +163,28 @@ export class PanelRenderers {
 
     // --- Sub-Renderers for Today Panel (Complex UI Decomposition) ---
 
-    private renderDateDisplay(date: Date, monthText: string, dayText: string): string {
+    private renderDateDisplay(
+        date: Date,
+        monthText: string,
+        dayText: string,
+        jianchu: string,
+        luck: string,
+        festival: string | null,
+    ): string {
+        const finalizedMonth = monthText.endsWith("月") ? monthText : monthText + "月";
         return `
             <div class="date-display">
                 <div class="detail-header">
                     ${date.getMonth() + 1}/${date.getDate()}
                     <span class="year-label">${date.getFullYear()}</span>
                 </div>
-                <div class="detail-sub-main">${monthText}${dayText}</div>
-            </div>`;
-    }
-
-    private renderMidRow(jianchu: string, luck: string, festival: null | string): string {
-        return `
-            <div class="detail-mid-row">
-                <div class="detail-lucky-pill">${jianchu}日 · ${luck}</div>
-                ${festival ? `<div class="detail-festival-tag">${festival}</div>` : ""}
+                <div class="detail-sub-main">
+                    <span class="lunar-main">${finalizedMonth}.${dayText}</span>
+                    <div class="lunar-extra-info">
+                        <span class="lucky-bar">${jianchu}日 · ${luck}</span>
+                        ${festival ? `<span class="fest-tag">${festival}</span>` : ""}
+                    </div>
+                </div>
             </div>`;
     }
 
@@ -204,17 +209,17 @@ export class PanelRenderers {
         const yiTags =
             yi.length > 0
                 ? yi
-                      .slice(0, 5)
-                      .map((t) => `<span class="tag">${t}</span>`)
-                      .join("")
+                    .slice(0, 5)
+                    .map((t) => `<span class="tag">${t}</span>`)
+                    .join("")
                 : '<span class="tag">諸事平吉</span>';
 
         const jiTags =
             ji.length > 0
                 ? ji
-                      .slice(0, 5)
-                      .map((t) => `<span class="tag">${t}</span>`)
-                      .join("")
+                    .slice(0, 5)
+                    .map((t) => `<span class="tag">${t}</span>`)
+                    .join("")
                 : '<span class="tag">諸事不忌</span>';
 
         return `

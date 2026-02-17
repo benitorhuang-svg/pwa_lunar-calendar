@@ -85,3 +85,14 @@ body.bg-fit-contain .hero-bg-item {
     background-repeat: no-repeat;
     background-color: #000;
 }
+
+/* All-black mode: hide background images and show solid black */
+body.all-black #heroBgContainer {
+    background-color: #000;
+}
+
+body.all-black .hero-bg-item {
+    background-image: none !important;
+    background-color: #000 !important;
+    opacity: 1 !important;
+}

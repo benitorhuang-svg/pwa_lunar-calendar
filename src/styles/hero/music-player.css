@@ -1,7 +1,7 @@
 /* Music & Utility Controls - Horizontal Layout */
 .music-control-wrapper {
     position: absolute;
-    top: calc(var(--safe-area-inset-top, 0px) + 3vh);
+    top: var(--hero-control-top);
     right: 20px;
     /* Absolute relative to .app-container */
     z-index: 100001;
@@ -235,47 +235,101 @@ body:not(.app-loaded) .music-control-wrapper {
 }
 
 .faq-item {
-    margin-bottom: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    padding-bottom: 16px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
 }
 
 .faq-item:last-child {
     border-bottom: none;
-    margin-bottom: 0;
 }
 
 .faq-question {
     font-weight: 600;
     font-size: 0.95rem;
     color: var(--gold-accent, #d4af37);
-    margin-bottom: 8px;
+    padding: 16px 0;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    margin-bottom: 0;
+    user-select: none;
 }
 
 .faq-question::before {
-    content: "Q";
-    background: rgba(212, 175, 55, 0.2);
+    content: none;
+    /* remove old Q circle */
+}
+
+/* Story Indicator Icon */
+.faq-story-icon {
+    width: 24px;
+    height: 24px;
+    background: rgba(212, 175, 55, 0.15);
     color: var(--gold-accent, #d4af37);
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: 0.7rem;
+    font-weight: 800;
     flex-shrink: 0;
 }
 
+/* Accordion Arrow */
+.faq-question::after {
+    content: "";
+    margin-left: auto;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    transform: rotate(45deg);
+    transition: all 0.3s var(--ease-out-expo);
+    margin-right: 4px;
+}
+
+.faq-item.open .faq-question::after {
+    transform: rotate(-135deg);
+    border-color: var(--gold-accent);
+}
+
+.faq-item.open .faq-question {
+    color: #fff;
+}
+
 .faq-answer {
-    font-size: 0.88rem;
-    line-height: 1.7;
-    color: rgba(255, 255, 255, 0.7);
-    padding-left: 30px;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.75);
+    padding-left: 36px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.5s var(--ease-zen);
+    pointer-events: none;
+}
+
+.faq-item.open .faq-answer {
+    max-height: 400px;
+    opacity: 1;
+    padding-bottom: 24px;
+    pointer-events: auto;
+}
+
+.faq-answer mark {
+    background: transparent;
+    color: #fff;
+    font-weight: 600;
+}
+
+.faq-inline-icon {
+    display: inline-flex;
+    vertical-align: middle;
+    margin: -2px 2px 0;
+    opacity: 0.9;
+    color: var(--gold-accent);
 }
 
 /* Scrollbar styling for FAQ panel */

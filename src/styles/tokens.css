@@ -51,6 +51,7 @@
     /* --- Layout & Safe Areas --- */
     --safe-top: env(safe-area-inset-top, 20px);
     --safe-bottom: env(safe-area-inset-bottom, 24px);
+    --hero-control-top: calc(var(--safe-top) + 3vh);
     --app-max-width: 100%;
 
     --radius-sm: 8px;
@@ -125,12 +126,14 @@ body {
         --app-max-width: 768px;
     }
 }
+
 /* Desktop: 1024px+ */
 @media (min-width: 1024px) {
     :root {
         --app-max-width: 1024px;
     }
 }
+
 /* Wide Desktop: 1440px+ */
 @media (min-width: 1440px) {
     :root {

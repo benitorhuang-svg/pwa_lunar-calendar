@@ -11,6 +11,20 @@ export class HeroSlideshowManager {
         this.INTERVAL = interval;
     }
 
+    public setIntervalMs(ms: number): void {
+        if (typeof ms !== "number" || Number.isNaN(ms) || ms <= 0) return;
+        this.INTERVAL = ms;
+        // If timer is running, restart is responsibility of caller (handlers/mode)
+        if (this.slideshowTimer) {
+            clearInterval(this.slideshowTimer);
+            this.slideshowTimer = null;
+        }
+    }
+
+    public getIntervalMs(): number {
+        return this.INTERVAL;
+    }
+
     public isActive(): boolean {
         return this.slideshowTimer !== null;
     }

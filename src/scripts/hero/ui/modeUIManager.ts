@@ -14,6 +14,9 @@ export class HeroModeUIManager {
     public get prevHeroBtn(): HTMLElement | null {
         return this.btnPrevHero;
     }
+    public get slideshowSettingsBtn(): HTMLElement | null {
+        return this.btnSlideshowSettings;
+    }
     private btnChangeImage: HTMLElement | null = null;
 
     private btnImmersion: HTMLElement | null = null;
@@ -21,6 +24,8 @@ export class HeroModeUIManager {
     private btnNextHero: HTMLElement | null = null;
 
     private btnPrevHero: HTMLElement | null = null;
+
+    private btnSlideshowSettings: HTMLElement | null = null;
 
     private galleryManager: HeroGalleryManager;
 
@@ -33,6 +38,7 @@ export class HeroModeUIManager {
         this.btnImmersion = document.getElementById("btnImmersion");
         this.btnPrevHero = document.getElementById("btnPrevHero");
         this.btnNextHero = document.getElementById("btnNextHero");
+        this.btnSlideshowSettings = document.getElementById("btnSlideshowSettings");
     }
 
     public updateArtworkModeUI(isArtwork: boolean, layoutManager: HeroLayoutManager): void {

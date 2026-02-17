@@ -32,49 +32,122 @@ import WelcomeOverlay from "./WelcomeOverlay.astro";
             </button>
         </div>
         <div class="faq-item">
-            <div class="faq-question">這是什麼應用程式？</div>
+            <div class="faq-question">
+                <span class="faq-story-icon">01</span>
+                這是什麼樣的應用程式？
+            </div>
             <div class="faq-answer">
-                這是一款數位農曆 PWA (漸進式網頁應用)，結合傳統曆法智慧與現代設計美學。
-                提供農曆日期、天干地支、二十四節氣、宜忌吉凶等完整資訊，
-                依據「欽定協紀辨方書」校訂。
+                這是一款將傳統農曆內容數位化的工具。我們把複雜的農曆日期、二十四節氣，還有傳統生活指南中的「宜」與「忌」整理出來，並搭配優美的風景影像，讓您在手機或電腦上就能輕鬆翻閱每天的時光資訊。
             </div>
         </div>
         <div class="faq-item">
-            <div class="faq-question">如何切換不同模式？</div>
+            <div class="faq-question">
+                <span class="faq-story-icon">02</span>
+                這些農曆資料是哪裡來的？
+            </div>
             <div class="faq-answer">
-                右上角提供三個控制按鈕（由右至左）：<br />
-                🎵 <b>音樂</b> — 播放/暫停背景禪樂<br />
-                🖼️ <b>沉浸模式</b> — 切換日曆/映畫/純淨沉浸模式<br />
-                ❓ <b>FAQ</b> — 開啟本說明面板<br /><br />
-                點擊背景可在映畫 ↔ 純淨模式間切換。
+                程式裡的農曆資訊是參考經典的《欽定協紀辨方書》來編製的。我們會計算每一天的日子屬性、節氣時間和傳統建議，並確保這些資訊和現代日曆完全對齊，讓您用起來更安心。
             </div>
         </div>
         <div class="faq-item">
-            <div class="faq-question">農曆資料依據什麼版本？</div>
+            <div class="faq-question">
+                <span class="faq-story-icon">03</span>
+                沒有網路的時候也能用嗎？
+            </div>
             <div class="faq-answer">
-                本曆依據清代「欽定協紀辨方書」校訂，採用建除十二客、二十八宿值日、
-                天干地支紀日法，提供傳統宜忌與吉凶判斷。支援 1900–2100 年農曆轉換。
+                沒問題！只要您第一次開啟過這個網頁，系統就會自動幫您記住日曆資料 and
+                預設的圖片。之後就算手機沒訊號或沒有
+                Wi-Fi，您還是可以像平常一樣打開它來查看內容。您也可以透過瀏覽器的「加入主畫面」功能，把它變成像一般
+                App 一樣使用。
             </div>
         </div>
         <div class="faq-item">
-            <div class="faq-question">如何自訂背景圖片？</div>
+            <div class="faq-question">
+                <span class="faq-story-icon">04</span>
+                如何切換不同的模式(看圖/看日曆)？
+            </div>
             <div class="faq-answer">
-                進入映畫模式後，點擊底部 Dock 的藝廊按鈕，可匯入自選圖片。
-                支援自選/預設/混合三種模式切換。圖片儲存於瀏覽器本地 IndexedDB。
+                您可以點擊右上角的
+                <span class="faq-inline-icon"
+                    ><svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"
+                        ></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path
+                            d="M7 21H5a2 2 0 0 1-2-2v-2"></path><circle cx="12" cy="12" r="1.5"
+                        ></circle></svg
+                    ></span
+                >
+                按鈕，在「詳細日曆」和「全螢幕看圖」之間切換。在看圖模式下，只要隨手點一下背景，介面就會全部收起來，讓您可以安靜地欣賞動態影像，不會被按鈕擋住。
             </div>
         </div>
         <div class="faq-item">
-            <div class="faq-question">如何添加自訂音樂電台？</div>
+            <div class="faq-question">
+                <span class="faq-story-icon">05</span>
+                可以換成我自己的圖片嗎？
+            </div>
             <div class="faq-answer">
-                進入映畫模式 → 打開藝廊選單 → 音樂電台區域， 可輸入線上音訊 URL 添加自訂電台。支援
-                MP3 串流格式。
+                可以的！在看圖模式下，點擊底部選單的
+                <span class="faq-inline-icon"
+                    ><svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path d="M12 20v-6M9 20v-10M15 20v-2M18 20v-8M21 20V4M6 20v-4M3 20v-2"
+                        ></path></svg
+                    ></span
+                >
+                圖示，就能上傳您喜歡的照片。另外，點擊左上角的
+                <span class="faq-inline-icon"
+                    ><svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><circle cx="12" cy="14" r="8"></circle><path d="M12 10v4l2 2"></path><path
+                            d="M12 2v4"></path><path d="M10 2h4"></path></svg
+                    ></span
+                >
+                碼錶圖示，還能設定自動換照片的速度，看您想要快一點還是慢慢跳都可以。
             </div>
         </div>
         <div class="faq-item">
-            <div class="faq-question">可以離線使用嗎？</div>
+            <div class="faq-question">
+                <span class="faq-story-icon">06</span>
+                背景音樂和電台要怎麼設定？
+            </div>
             <div class="faq-answer">
-                是的，本應用支援 PWA 離線功能。首次載入後，核心功能與預設圖片皆可離線運作。
-                可將此網頁「加入主畫面」作為獨立應用使用。
+                點擊右上角的
+                <span class="faq-inline-icon"
+                    ><svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"
+                        ></circle><circle cx="18" cy="16" r="3"></circle></svg
+                    ></span
+                >
+                圖示可以開啟或關閉音樂。如果您有自己喜歡的線上音樂或網路電台，也可以在藝廊設定裡貼上網址，這樣就能一邊看日曆一邊聽自己喜歡的聲音了。
             </div>
         </div>
     </div>

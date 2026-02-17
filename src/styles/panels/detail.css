@@ -208,8 +208,35 @@ select.panel-font-select option,
 .detail-sub-main {
     font-family: var(--font-calligraphy);
     font-size: 1.1rem;
-    margin-top: 10px;
-    /* Moved from inline style */
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--cal-lunar-text);
+}
+
+.lunar-extra-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    /* Reduced opacity/size for secondary info */
+    opacity: 0.85;
+}
+
+.lucky-bar {
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    padding: 2px 10px;
+    background: rgba(212, 175, 55, 0.1);
+    border: 0.5px solid rgba(212, 175, 55, 0.2);
+    border-radius: 4px;
+}
+
+.fest-tag {
+    color: #ff6b6b;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
 }
 
 .detail-right-cluster {
@@ -288,46 +315,11 @@ select.panel-font-select option,
     vertical-align: middle;
 }
 
-/* Mid Row for Lucky Pill and Festival */
-.detail-mid-row {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    /* Spacing between pill and festival */
-    margin-bottom: 0;
-    margin-top: 15px;
-    /* Added spacing */
-}
-
-.detail-lucky-pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(212, 175, 55, 0.08);
-    /* Sophisticated tinted background */
-    border: 0.5px solid rgba(212, 175, 55, 0.2);
-    padding: 10px 24px;
-    border-radius: 50px;
-    color: var(--cal-header-text);
-    font-size: 1.05rem;
-    letter-spacing: 0.12em;
-    align-self: flex-start;
-    font-family: var(--font-calligraphy);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
-
+/* Mid Row Obsolete (Integrated into Sub-Main) */
+.detail-mid-row,
+.detail-lucky-pill,
 .detail-festival-tag {
-    font-family: var(--font-calligraphy);
-    font-size: clamp(1rem, 3vw, 1.25rem);
-    /* Slightly larger than pill text */
-    color: #ff6b6b;
-    /* Festival Red */
-    border-bottom: 1px solid rgba(255, 107, 107, 0.3);
-    /* Subtle underline */
-    padding-bottom: 2px;
-    text-shadow: 0 0 10px rgba(255, 107, 107, 0.2);
-    /* Glow */
-    letter-spacing: 0.1em;
+    display: none;
 }
 
 .detail-mansion-tag {
