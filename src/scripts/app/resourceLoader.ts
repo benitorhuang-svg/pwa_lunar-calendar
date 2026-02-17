@@ -34,21 +34,9 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     let isLoaded = false;
     const loadingText = document.getElementById("loadingText") as HTMLElement | null;
 
-    // ★ GLOBAL SAFETY NET — Force-reveal after 12s no matter what
-    const GLOBAL_TIMEOUT = 12000;
-    setTimeout(() => {
-        if (!isLoaded) {
-            console.warn("[Loader] ★ GLOBAL TIMEOUT — force revealing app");
-            isLoaded = true;
-            document.body.classList.add("app-loaded");
-            const overlay = document.getElementById("loadingOverlay");
-            if (overlay) overlay.style.display = "none";
-            document.body.classList.add("loader-finished");
-            window.dispatchEvent(new CustomEvent("loader-finished"));
-        }
-    }, GLOBAL_TIMEOUT);
+    // (Moved Global Timeout to bottom to ensure revealApp is defined)
 
-    try { // ★ Wrap entire loader in try-catch
+    try {
 
         console.log("[Loader] Started");
 
@@ -56,12 +44,12 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
         // --- Resource Tracker ---
         const progress: Record<ProgressKey, boolean> = {
-            audio: false, // 10% - Audio ready
-            fonts: false, // 15% - Web fonts ready
-            heroAll: false, // 15% - All hero images preloaded
-            heroFirst: false, // 25% - First hero image loaded
-            scripts: false, // 15% - Core app scripts ready
-            update: false, // 20% - SW update check complete (most critical gate)
+            audio: false, // 10%
+            fonts: false, // 15%
+            heroAll: false, // 15%
+            heroFirst: false, // 25%
+            scripts: false, // 15%
+            update: false, // 20%
         };
 
         const weights: Record<ProgressKey, number> = {
@@ -98,7 +86,6 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                 console.log(`[Loader] ✓ ${key} | Total Progress: ${currentTotal}%`);
                 updateUI();
 
-                // Update status checklist UI
                 const icon = document.getElementById(`statusIcon_${key}`);
                 const item = icon?.closest(".status-item");
                 if (icon) icon.textContent = "✓";
@@ -117,77 +104,45 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         }
 
         function setLoadingStatus(text: string): void {
-            // Do not change main title text anymore.
-            // if (loadingText) loadingText.textContent = text;
+            const loadingText = document.getElementById("loadingText");
+            if (loadingText) loadingText.textContent = text;
             console.log(`[Loader Status] ${text}`);
         }
 
-        // ====================================================================
-        //  Service Worker Update Gate
-        //  這是 Loading Page 最核心的職責：
-        //  確認「是否有更新？」→「更新完了嗎？」→ 才放行
-        // ====================================================================
+        // ... (waitForInstallingWorker remains same, ensuring skipWaiting is handled there too if needed, but checkSWUpdate is main entry)
 
-        /**
-         * 當 SW 正在安裝（precaching 資源）時，等待它完成。
-         * 安裝完成後（所有資源已下載到 Cache），才通知 SW 接管並重整頁面。
-         */
         async function waitForInstallingWorker(worker: ServiceWorker): Promise<void> {
             document.body.classList.add("is-updating");
+            setLoadingStatus("正在下載更新...");
 
             return new Promise<void>((resolve) => {
                 const onStateChange = () => {
                     console.log(`[Loader] SW state: ${worker.state}`);
-
                     if (worker.state === "installed") {
-                        // precache 完成
-                        console.log("[Loader] ✓ All resources cached.");
-
-                        if (navigator.serviceWorker.controller) {
-                            // 有舊 SW → skipWaiting 會自動激活新 SW →
-                            // controllerchange 會自動 reload（由 checkSWUpdate 設立的監聽處理）
-                            // 如果 skipWaiting 太快，installed 可能被跳過，
-                            // 此時會走到下面的 activating/activated 分支
-                            console.log("[Loader] Waiting for auto-activate & reload...");
-                        } else {
-                            // 全新安裝（第一次造訪）→ 直接放行
-                            console.log("[Loader] First install complete → proceed.");
-                            markDone("update");
-                            resolve();
-                        }
+                        console.log("[Loader] ✓ Resources cached. Forcing activation...");
+                        // Force skipWaiting here too
+                        worker.postMessage({ type: 'SKIP_WAITING' });
                     } else if (worker.state === "activating" || worker.state === "activated") {
-                        // skipWaiting:true 會讓 SW 自動跳到這裡
                         if (navigator.serviceWorker.controller) {
-                            // controllerchange 監聽會處理 reload
-                            console.log(
-                                "[Loader] SW activated. Reload will follow via controllerchange.",
-                            );
+                            console.log("[Loader] SW activated. Waiting for reload...");
+                            setLoadingStatus("更新完成，重啟中...");
                         } else {
-                            // 首次安裝，沒有舊 controller
                             markDone("update");
                             resolve();
                         }
                     } else if (worker.state === "redundant") {
-                        console.warn("[Loader] SW installation failed/redundant.");
+                        console.warn("[Loader] SW redundant.");
                         markDone("update");
                         resolve();
                     }
                 };
-
                 worker.addEventListener("statechange", onStateChange);
                 onStateChange();
             });
         }
 
-        /**
-         * 主更新檢測邏輯
-         * With skipWaiting:true, the new SW auto-activates after install.
-         * We catch "controllerchange" and reload to ensure fresh assets.
-         */
         async function checkSWUpdate(): Promise<void> {
-            // 开发模式下跳过 SW 检查
             if (import.meta.env.DEV) {
-                console.log("[Loader] Dev mode → skip SW check");
                 markDone("update");
                 return;
             }
@@ -198,57 +153,49 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             }
 
             try {
-                // ★ 最重要：在任何 async 操作之前，先設立全域 controllerchange 監聽。
-                // 這樣無論 SW 何時 auto-activate，我們都能捕捉到。
                 let reloading = false;
                 navigator.serviceWorker.addEventListener("controllerchange", () => {
                     if (reloading) return;
                     reloading = true;
                     console.log("[Loader] ★ controllerchange → reloading...");
                     document.body.classList.add("is-updating");
+                    setLoadingStatus("更新完成，即將重整...");
                     window.location.reload();
                 });
 
                 const registration = await navigator.serviceWorker.getRegistration();
                 if (!registration) {
-                    console.log("[Loader] No SW registration → waiting for first install...");
                     await waitForFirstInstall();
                     return;
                 }
 
-                // ─── 情境 A：已有一個新版 SW 在等待 ───
-                // (理論上 skipWaiting:true 不會出現此情境，但保留防禦)
+                // A: Waiting
                 if (registration.waiting) {
-                    console.log("[Loader] Found waiting SW (unexpected with skipWaiting)");
+                    console.log("[Loader] Found waiting SW → forcing skipWaiting...");
                     document.body.classList.add("is-updating");
-                    // With skipWaiting:true, this shouldn't happen, but just in case:
-                    // The controllerchange listener above will handle the reload.
+                    setLoadingStatus("正在套用更新...");
+                    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    await new Promise(() => { }); // Block until reload
                     return;
                 }
 
-                // ─── 情境 B：正在安裝中 ───
+                // B: Installing
                 if (registration.installing) {
-                    console.log("[Loader] Found installing SW → waiting...");
-                    // With skipWaiting:true, after install completes the SW will
-                    // auto-activate → controllerchange → reload (handled above).
-                    // We just wait here. If it's a first install, handle differently.
                     await waitForInstallingWorker(registration.installing);
                     return;
                 }
 
-                // ─── 情境 C：主動向伺服器查詢是否有新版 ───
+                // C: Update Check
                 console.log("[Loader] Checking for updates...");
+                setLoadingStatus("檢查更新中...");
 
                 const updatePromise = new Promise<boolean>((resolve) => {
-                    registration.addEventListener(
-                        "updatefound",
-                        () => {
-                            console.log("[Loader] ⚡ updatefound!");
-                            resolve(true);
-                        },
-                        { once: true },
-                    );
-                    setTimeout(() => resolve(false), 3000);
+                    const listener = () => resolve(true);
+                    registration.addEventListener("updatefound", listener, { once: true });
+                    setTimeout(() => {
+                        registration.removeEventListener("updatefound", listener);
+                        resolve(false);
+                    }, 3000);
                 });
 
                 await registration.update();
@@ -257,16 +204,24 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                 if (hasUpdate) {
                     console.log("[Loader] Update found → SW installing...");
                     document.body.classList.add("is-updating");
-                    // With skipWaiting:true, after install → auto-activate →
-                    // controllerchange fires → reload (handled by listener above).
-                    // Just wait here forever; the reload will interrupt us.
+                    setLoadingStatus("發現新版本，下載中...");
+                    if (registration.installing) {
+                        await waitForInstallingWorker(registration.installing);
+                    } else {
+                        // Should be installing, but wait a bit to be sure
+                        await new Promise(r => setTimeout(r, 1000));
+                        if (registration.installing) {
+                            await waitForInstallingWorker(registration.installing);
+                        }
+                    }
+                    // Block until reload
                     await new Promise(() => { });
-                    return; // unreachable
+                    return;
                 }
 
-                // ─── 沒有更新 → 當前版本即最新 ───
-                console.log("[Loader] ✓ No update. Up to date.");
-                await new Promise((r) => setTimeout(r, 800));
+                console.log("[Loader] ✓ No update.");
+                setLoadingStatus("系統準備就緒");
+                await new Promise((r) => setTimeout(r, 500));
                 markDone("update");
             } catch (e) {
                 console.warn("[Loader] SW check failed:", e);
@@ -430,6 +385,29 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         // ====================================================================
         //  Main Execution
         // ====================================================================
+
+        // ====================================================================
+        //  Global Safety Timeout
+        // ====================================================================
+        // Validates if the app is stuck in loading state.
+        // Modified: If updating, allow much more time (e.g. 60s) for slow networks.
+        setTimeout(() => {
+            const isUpdating = document.body.classList.contains("is-updating");
+            if (!isLoaded) {
+                if (isUpdating) {
+                    console.log("[Loader] Update in progress... extending safety timeout (30s total).");
+                    setTimeout(() => {
+                        if (!isLoaded) {
+                            console.warn("[Loader] ★ Update process HUNG (30s). Force revealing app.");
+                            revealApp();
+                        }
+                    }, 18000);
+                } else {
+                    console.warn("[Loader] ★ GLOBAL TIMEOUT (12s) — force revealing app");
+                    revealApp();
+                }
+            }
+        }, 12000);
 
         // 1. Scripts readiness
         markActive("scripts");

@@ -58,12 +58,6 @@ export class HeroEventHandlers {
             (cb) => this.uiManager.bindInstallButton(cb),
         );
 
-        this.touchHandler = new HeroTouchHandler(
-            () => this.navigationHandler.handleNavigation(1), // Updated to use NavigationHandler
-            () => this.navigationHandler.handleNavigation(-1),
-            () => this.idleManager.reset(),
-        );
-
         // Initialize Sub-Handlers
         this.navigationHandler = new NavigationHandler(
             this.idleManager,
@@ -86,6 +80,30 @@ export class HeroEventHandlers {
             this.slideshowManager,
             this.uiManager,
             this.idleManager,
+        );
+
+        // Initialize Touch Handler LAST to ensure all dependencies are ready
+        this.touchHandler = new HeroTouchHandler(
+            () => {
+                // T385: Only handle global swipe in Artwork/Zen modes
+                if (
+                    document.body.classList.contains("mode-artwork") ||
+                    document.body.classList.contains("immersion-mode")
+                ) {
+                    console.log("[Hero] Swipe Left -> Next (Global)");
+                    this.navigationHandler.handleNavigation(1);
+                }
+            },
+            () => {
+                if (
+                    document.body.classList.contains("mode-artwork") ||
+                    document.body.classList.contains("immersion-mode")
+                ) {
+                    console.log("[Hero] Swipe Right -> Prev (Global)");
+                    this.navigationHandler.handleNavigation(-1);
+                }
+            },
+            () => this.idleManager.resetInteraction(),
         );
     }
 

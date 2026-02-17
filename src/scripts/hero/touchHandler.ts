@@ -13,10 +13,10 @@ export class HeroTouchHandler {
         private onSwipeLeft: () => void, // 向左滑動回呼 (Callback for left swipe)
         private onSwipeRight: () => void, // 向右滑動回呼 (Callback for right swipe)
         private onInteraction: () => void, // 互動事件回呼 (Callback for general interaction)
-    ) {}
+    ) { }
 
     public init(): void {
-        document.body.addEventListener(
+        window.addEventListener(
             "touchstart",
             (e: TouchEvent) => {
                 const touch = e.changedTouches[0];
@@ -25,10 +25,10 @@ export class HeroTouchHandler {
                     this.touchStartY = touch.clientY;
                 }
             },
-            { passive: true },
+            { passive: true, capture: true },
         );
 
-        document.body.addEventListener(
+        window.addEventListener(
             "touchend",
             (e: TouchEvent) => {
                 const touch = e.changedTouches[0];
@@ -62,7 +62,7 @@ export class HeroTouchHandler {
                     }
                 }
             },
-            { passive: true },
+            { passive: true, capture: true },
         );
     }
 }
