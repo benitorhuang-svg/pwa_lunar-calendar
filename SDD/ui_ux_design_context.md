@@ -2,7 +2,7 @@
 
 ## 1. 視覺設計與美學 (Visual Aesthetics)
 
-### 1.1 設計核心：數位精品 (Digital Premium)
+### 1.1 設計核心：數位 (Digital Premium)
 
 本專案不將農曆視為過時工具，而是將其定位為「具備當代美感的文化載體」。
 

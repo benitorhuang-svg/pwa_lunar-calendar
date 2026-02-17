@@ -444,7 +444,7 @@ export class HeroUIManager {
         }
 
         try {
-            const title = "Lunar Calendar | 數位精品曆";
+            const title = "Lunar Calendar | 數位農曆";
             const text = "在這個安靜的時刻，與您分享這份歲月靜好。";
             const url = window.location.href;
 
