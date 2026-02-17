@@ -34,6 +34,12 @@ export default defineConfig({
             registerType: "autoUpdate",
             workbox: {
                 clientsClaim: true,
+                // skipWaiting is NOT set here on purpose.
+                // Loading Page controls the update lifecycle:
+                // 1. SW installs & precaches all assets (enters "waiting" state)
+                // 2. Loading Page detects the waiting SW
+                // 3. Loading Page sends SKIP_WAITING after confirming install
+                // 4. Page reloads with all new assets ready
                 globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,mp3}"],
                 maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // Increased to 15MB
                 runtimeCaching: [
@@ -71,7 +77,6 @@ export default defineConfig({
                         urlPattern: /\.(?:mp3|wav)$/,
                     },
                 ],
-                skipWaiting: true,
             },
         }),
     ],

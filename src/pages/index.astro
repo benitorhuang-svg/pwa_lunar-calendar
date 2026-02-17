@@ -16,6 +16,34 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
         <div class="loading-content">
             <!-- 進度直接嵌入文字中 (Progress embedded in text) -->
             <div class="loading-text" id="loadingText">農民曆</div>
+
+            <!-- 同步狀態清單 (Sync Status Checklist) -->
+            <div class="loading-status-list" id="loadingStatusList">
+                <div class="status-item" data-key="update">
+                    <span class="status-icon" id="statusIcon_update">○</span>
+                    <span class="status-label">版本同步</span>
+                </div>
+                <div class="status-item" data-key="scripts">
+                    <span class="status-icon" id="statusIcon_scripts">○</span>
+                    <span class="status-label">核心邏輯</span>
+                </div>
+                <div class="status-item" data-key="fonts">
+                    <span class="status-icon" id="statusIcon_fonts">○</span>
+                    <span class="status-label">字體載入</span>
+                </div>
+                <div class="status-item" data-key="heroFirst">
+                    <span class="status-icon" id="statusIcon_heroFirst">○</span>
+                    <span class="status-label">首圖準備</span>
+                </div>
+                <div class="status-item" data-key="heroAll">
+                    <span class="status-icon" id="statusIcon_heroAll">○</span>
+                    <span class="status-label">圖庫預載</span>
+                </div>
+                <div class="status-item" data-key="audio">
+                    <span class="status-icon" id="statusIcon_audio">○</span>
+                    <span class="status-label">音訊準備</span>
+                </div>
+            </div>
         </div>
     </div>
 

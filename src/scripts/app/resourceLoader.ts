@@ -1,12 +1,35 @@
 /**
  * Resource Loading & Splash Screen Logic
- * 負責首屏加載遮罩邏輯
+ * Loading Page 的職責：
+ * 1. 確認 Service Worker 已完成所有資源的 precache（同步更新）
+ * 2. 確認首圖、字體、音訊等關鍵資源已就緒
+ * 3. 以上全部完成後，才放行進入每日資訊頁面
+ *
+ * 更新生命週期：
+ * ┌─────────────────────────────────────────────────────┐
+ * │  GitHub Pages 推送新版本                              │
+ * │  ↓                                                   │
+ * │  瀏覽器偵測到 sw.js 變更                              │
+ * │  ↓                                                   │
+ * │  新 SW 開始 install（precache 所有資源）               │
+ * │  ↓                                                   │
+ * │  install 完成 → 新 SW 進入 "waiting" 狀態             │
+ * │  ↓                                                   │
+ * │  Loading Page 偵測到 waiting SW                       │
+ * │  ↓                                                   │
+ * │  Loading Page 發送 SKIP_WAITING                       │
+ * │  ↓                                                   │
+ * │  新 SW activate → controllerchange                   │
+ * │  ↓                                                   │
+ * │  Loading Page 執行 window.location.reload()           │
+ * │  ↓                                                   │
+ * │  重整後：所有資源皆為最新版 → 放行進入 App              │
+ * └─────────────────────────────────────────────────────┘
  */
 
 import { APP_BASE_URL } from "../core/appConfig";
 import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
-// IIFE to run loader logic
 (async function () {
     let isLoaded = false;
     const loadingText = document.getElementById("loadingText") as HTMLElement | null;
@@ -14,23 +37,22 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     type ProgressKey = "audio" | "fonts" | "heroAll" | "heroFirst" | "scripts" | "update";
 
     // --- Resource Tracker ---
-    // Weight Distribution: scripts 15%, fonts 15%, hero images 40%, audio 10%, SW update 20%
     const progress: Record<ProgressKey, boolean> = {
-        audio: false,
-        fonts: false,
-        heroAll: false,
-        heroFirst: false,
-        scripts: false,
-        update: false, // New check for SW update
+        scripts: false,   // 15% - Core app scripts ready
+        heroFirst: false,  // 25% - First hero image loaded
+        fonts: false,      // 15% - Web fonts ready
+        heroAll: false,    // 15% - All hero images preloaded
+        audio: false,      // 10% - Audio ready
+        update: false,     // 20% - SW update check complete (most critical gate)
     };
 
     const weights: Record<ProgressKey, number> = {
-        audio: 10,
-        fonts: 15,
-        heroAll: 15, // Reduced hero weight slightly for update check
-        heroFirst: 25,
         scripts: 15,
-        update: 20, // Significant weight for update check
+        heroFirst: 25,
+        fonts: 15,
+        heroAll: 15,
+        audio: 10,
+        update: 20,
     };
 
     function calcPercent(): number {
@@ -45,7 +67,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     let actualPercent = 0;
     let visualPercent = 0;
     const startTime = Date.now();
-    const MIN_LOADING_TIME = 2000; // 至少動畫 2 秒
+    const MIN_LOADING_TIME = 2000;
 
     function updateUI(): void {
         actualPercent = calcPercent();
@@ -57,38 +79,71 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             const currentTotal = calcPercent();
             console.log(`[Loader] ✓ ${key} | Total Progress: ${currentTotal}%`);
             updateUI();
+
+            // Update status checklist UI
+            const icon = document.getElementById(`statusIcon_${key}`);
+            const item = icon?.closest(".status-item");
+            if (icon) icon.textContent = "✓";
+            if (item) {
+                item.classList.remove("active");
+                item.classList.add("done");
+            }
         }
     }
 
+    function markActive(key: ProgressKey): void {
+        const icon = document.getElementById(`statusIcon_${key}`);
+        const item = icon?.closest(".status-item");
+        if (icon && !progress[key]) icon.textContent = "◎";
+        if (item && !progress[key]) item.classList.add("active");
+    }
+
+    function setLoadingStatus(text: string): void {
+        // Do not change main title text anymore.
+        // if (loadingText) loadingText.textContent = text;
+        console.log(`[Loader Status] ${text}`);
+    }
+
+    // ====================================================================
+    //  Service Worker Update Gate
+    //  這是 Loading Page 最核心的職責：
+    //  確認「是否有更新？」→「更新完了嗎？」→ 才放行
+    // ====================================================================
+
+    /**
+     * 當 SW 正在安裝（precaching 資源）時，等待它完成。
+     * 安裝完成後（所有資源已下載到 Cache），才通知 SW 接管並重整頁面。
+     */
     async function waitForInstallingWorker(worker: ServiceWorker): Promise<void> {
         document.body.classList.add("is-updating");
-        if (loadingText) loadingText.textContent = "下載更新中...";
+        setLoadingStatus("正在同步更新...");
 
-        await new Promise<void>((resolve) => {
+        return new Promise<void>((resolve) => {
             const onStateChange = () => {
+                console.log(`[Loader] SW state: ${worker.state}`);
+
                 if (worker.state === "installed") {
+                    // ★ 關鍵：installed 表示 precache 全部完成
+                    // 所有提交的資源已經寫入 Cache Storage
+                    console.log("[Loader] ✓ 所有資源已同步完成");
+
                     if (navigator.serviceWorker.controller) {
-                        console.log("[Loader] Installed, reloading...");
-                        if (loadingText) loadingText.textContent = "安裝更新中...";
-
-                        const fallbackTimeout = window.setTimeout(() => {
-                            console.warn("[Loader] controllerchange timeout, continuing without reload.");
-                            markDone("update");
-                            resolve();
-                        }, 12000);
-
-                        navigator.serviceWorker.addEventListener(
-                            "controllerchange",
-                            () => {
-                                window.clearTimeout(fallbackTimeout);
-                                window.location.reload();
-                            },
-                            { once: true },
-                        );
-
-                        worker.postMessage({ type: "SKIP_WAITING" });
+                        // 有舊版 → 需要切換：告訴新 SW 接管，然後重整
+                        setLoadingStatus("安裝完成，重新載入...");
+                        activateAndReload(worker);
                     } else {
-                        // First install
+                        // 全新安裝（第一次造訪）→ 直接放行
+                        setLoadingStatus("農民曆");
+                        markDone("update");
+                        resolve();
+                    }
+                } else if (worker.state === "activating" || worker.state === "activated") {
+                    // 如果 skipWaiting 在 SW 內被觸發（配合 registerType: autoUpdate）
+                    // 直接重整確保一致性
+                    if (navigator.serviceWorker.controller) {
+                        setLoadingStatus("版本切換中...");
+                        window.location.reload();
+                    } else {
                         markDone("update");
                         resolve();
                     }
@@ -100,95 +155,169 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             };
 
             worker.addEventListener("statechange", onStateChange);
+            // Check current state immediately
             onStateChange();
         });
     }
 
-    // --- Service Worker Update Logic ---
-    // --- Service Worker Update Logic ---
+    /**
+     * 命令 waiting SW 接管，並在接管完成後重整頁面。
+     */
+    function activateAndReload(worker: ServiceWorker): void {
+        // 監聽 controller 切換
+        navigator.serviceWorker.addEventListener(
+            "controllerchange",
+            () => {
+                console.log("[Loader] Controller changed, reloading...");
+                window.location.reload();
+            },
+            { once: true },
+        );
+
+        // 發送 SKIP_WAITING 給新 SW
+        worker.postMessage({ type: "SKIP_WAITING" });
+
+        // 備援：如果 controllerchange 沒有觸發，強制重整
+        setTimeout(() => {
+            console.warn("[Loader] controllerchange timeout, forcing reload.");
+            window.location.reload();
+        }, 5000);
+    }
+
+    /**
+     * 主更新檢測邏輯
+     */
     async function checkSWUpdate(): Promise<void> {
+        // 开发模式下跳过 SW 检查 (Skip SW check in dev mode)
+        if (import.meta.env.DEV) {
+            console.log("[Loader] Development mode detected. Skipping SW update check.");
+            markDone("update");
+            return;
+        }
+
         if (!("serviceWorker" in navigator)) {
             markDone("update");
             return;
         }
 
         try {
+            setLoadingStatus("檢查版本...");
+
             const registration = await navigator.serviceWorker.getRegistration();
             if (!registration) {
-                markDone("update");
+                // 尚未註冊 SW（首次載入，SW 會由 registerSW.js 處理）
+                // 等待 SW 註冊並安裝完成
+                console.log("[Loader] No SW registration yet, waiting for first install...");
+                await waitForFirstInstall();
                 return;
             }
 
-            // A. Check if already waiting (Update ready)
+            // ─── 情境 A：已有一個新版 SW 在等待 ───
             if (registration.waiting) {
-                console.log("[Loader] Update waiting, boosting...");
+                console.log("[Loader] Found waiting SW → 同步更新中...");
+                setLoadingStatus("版本更新中...");
                 document.body.classList.add("is-updating");
-                if (loadingText) loadingText.textContent = "更新中...";
-                registration.waiting.postMessage({ type: "SKIP_WAITING" });
-                navigator.serviceWorker.addEventListener(
-                    "controllerchange",
+                activateAndReload(registration.waiting);
+                return; // 等待重整，不繼續
+            }
+
+            // ─── 情境 B：正在安裝中 ───
+            if (registration.installing) {
+                console.log("[Loader] Found installing SW → 等待完成...");
+                await waitForInstallingWorker(registration.installing);
+                return;
+            }
+
+            // ─── 情境 C：主動向伺服器查詢是否有新版 ───
+            setLoadingStatus("檢查更新...");
+
+            // 設立 updatefound 監聽（在 .update() 之前）
+            const updatePromise = new Promise<boolean>((resolve) => {
+                registration.addEventListener(
+                    "updatefound",
                     () => {
-                        window.location.reload();
+                        console.log("[Loader] ⚡ updatefound event");
+                        resolve(true);
                     },
                     { once: true },
                 );
-                return; // Wait for reload
-            }
 
-            // B. Check for update actively
-            let updateFound = false;
-            registration.addEventListener(
-                "updatefound",
-                () => {
-                    updateFound = true;
-                },
-                { once: true },
-            );
+                // 超時：如果 3 秒內沒有 updatefound，視為沒有更新
+                setTimeout(() => resolve(false), 3000);
+            });
 
+            // 觸發 SW 更新檢查
             await registration.update();
 
-            // Allow micro-delay for late updatefound/installing propagation
-            await new Promise((resolve) => window.setTimeout(resolve, 600));
+            const hasUpdate = await updatePromise;
 
-            if (registration.waiting) {
-                console.log("[Loader] Update found after check, waiting worker ready.");
-                document.body.classList.add("is-updating");
-                if (loadingText) loadingText.textContent = "更新中...";
-                (registration.waiting as ServiceWorker).postMessage({ type: "SKIP_WAITING" });
-                navigator.serviceWorker.addEventListener(
-                    "controllerchange",
-                    () => {
-                        window.location.reload();
-                    },
-                    { once: true },
-                );
+            if (hasUpdate) {
+                // 更新已觸發，等待安裝完成
+                if (registration.installing) {
+                    await waitForInstallingWorker(registration.installing);
+                } else if (registration.waiting) {
+                    // 安裝極快，已經到 waiting
+                    setLoadingStatus("版本更新中...");
+                    document.body.classList.add("is-updating");
+                    activateAndReload(registration.waiting);
+                }
                 return;
             }
 
-            // C. After update check, acts if installing
-            if (registration.installing) {
-                console.log("[Loader] New version installing...");
-                await waitForInstallingWorker(registration.installing);
-            } else {
-                if (updateFound) {
-                    // updatefound happened but worker object not yet visible, wait one more cycle.
-                    await new Promise((resolve) => window.setTimeout(resolve, 600));
-                    if (registration.installing) {
-                        await waitForInstallingWorker(registration.installing);
-                        return;
-                    }
-                }
+            // ─── 沒有更新 → 當前版本即最新 ───
+            console.log("[Loader] ✓ 目前已是最新版本");
+            setLoadingStatus("農民曆");
+            markDone("update");
 
-                // No update found (or updatefound had no installing worker)
-                markDone("update");
-            }
         } catch (e) {
             console.warn("[Loader] SW check failed:", e);
+            // 網路錯誤時仍允許放行（離線使用）
             markDone("update");
         }
     }
 
-    // 啟動平滑動畫循環 (Start smooth animation loop)
+    /**
+     * 首次造訪：等待 SW 完成首次安裝
+     */
+    async function waitForFirstInstall(): Promise<void> {
+        return new Promise<void>((resolve) => {
+            const onRegistration = async () => {
+                const reg = await navigator.serviceWorker.getRegistration();
+                if (reg) {
+                    if (reg.installing) {
+                        await waitForInstallingWorker(reg.installing);
+                    } else if (reg.active) {
+                        // 已啟動
+                        markDone("update");
+                    } else {
+                        // 等 updatefound
+                        reg.addEventListener("updatefound", async () => {
+                            if (reg.installing) {
+                                await waitForInstallingWorker(reg.installing);
+                            }
+                        }, { once: true });
+                    }
+                    resolve();
+                } else {
+                    // 再等一下
+                    setTimeout(onRegistration, 500);
+                }
+            };
+
+            // 給 registerSW.js 一點時間開始註冊
+            setTimeout(onRegistration, 300);
+
+            // 安全超時
+            setTimeout(() => {
+                markDone("update");
+                resolve();
+            }, 10000);
+        });
+    }
+
+    // ====================================================================
+    //  Animation Loop
+    // ====================================================================
     function startAnimationLoop(): void {
         const frame = () => {
             const elapsedTime = Date.now() - startTime;
@@ -196,8 +325,6 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             visualPercent = Math.min(actualPercent, timePercent);
 
             if (loadingText) {
-                // If text is overridden by update logic, don't update progress bar text content itself if embedded
-                // But here we use CSS var for bar width, text content is static usually
                 loadingText.style.setProperty("--loading-progress", visualPercent.toFixed(1) + "%");
             }
 
@@ -222,7 +349,9 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         }, 1500);
     }
 
-    // --- Resources ---
+    // ====================================================================
+    //  Resource Loaders
+    // ====================================================================
     function checkFonts(): boolean {
         if (document.fonts && document.fonts.status === "loaded") {
             markDone("fonts");
@@ -262,7 +391,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             return;
         }
 
-        // --- Critical Path: Preload First Image ---
+        // Critical Path: First Image
         const img = new Image();
         img.onload = () => markDone("heroFirst");
         img.onerror = () => {
@@ -272,7 +401,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
         if (imageList[0]) img.src = imageList[0]!;
 
-        // --- Note: heroAll (the rest) will be signaled via CustomEvent from the app's ImageManager ---
+        // heroAll will be signaled via CustomEvent from the app's ImageManager
         window.addEventListener("app-images-preloaded", () => markDone("heroAll"));
     }
 
@@ -296,43 +425,56 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         setTimeout(() => markDone("audio"), 2000);
     }
 
-    // --- Main ---
+    // ====================================================================
+    //  Main Execution
+    // ====================================================================
+
+    // 1. Scripts readiness
+    markActive("scripts");
     if ((window as any).__APP_LOGIC_READY__) {
         markDone("scripts");
     } else {
         window.addEventListener("app-logic-ready", () => markDone("scripts"));
     }
 
-    startAnimationLoop(); // Start visual loop early
+    // 2. Start animation
+    startAnimationLoop();
 
-    // Start all parallel tasks
+    // 3. Start resource loading (parallel)
+    markActive("heroFirst");
+    markActive("heroAll");
     preloadHeroImages();
+
+    markActive("audio");
     preloadAudio();
 
+    markActive("fonts");
     if (!checkFonts()) {
         document.fonts.ready.then(() => markDone("fonts"));
         setTimeout(() => markDone("fonts"), 3000);
     }
 
-    // SW Update Check - Await after starting others to prevent blocking initial downloads
+    // 4. ★ SW Update Check — THE GATE
+    // This is the most important check.
+    // It MUST complete (either "no update" or "update installed & reloaded")
+    // before the loading screen is dismissed.
+    markActive("update");
     await checkSWUpdate();
 
-    // Check for heroAll flag which might have been set by hero-main during image detection
+    // 5. Check for heroAll flag (might have been set during SW check)
     if ((window as any).__APP_IMAGES_PRELOADED__) {
         markDone("heroAll");
     } else {
         window.addEventListener("app-images-preloaded", () => markDone("heroAll"));
     }
 
-    // Safety timeout
-    // Safety timeout
+    // 6. Safety timeout (for non-update resources only)
     setTimeout(() => {
         let key: ProgressKey;
         for (key in progress) {
-            // Block force-completion ONLY if we are in a confirmed update state
-            // This ensures we don't accidentally let the user in while an update is installing
-            if (key === "update" && (document.body.classList.contains("is-updating"))) {
-                console.log("[Loader] Critical update in progress. Blocking access until reload.");
+            // NEVER force-complete "update" if an update is in progress
+            if (key === "update" && document.body.classList.contains("is-updating")) {
+                console.log("[Loader] ⚠ Critical update in progress. Waiting for reload.");
                 continue;
             }
 

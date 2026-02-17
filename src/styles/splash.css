@@ -79,8 +79,8 @@ body.app-loaded #appContainer {
     align-items: center;
     z-index: 10;
     text-align: center;
-    transform: translateY(-25vh);
-    /* 向上偏移，優化視覺重心 */
+    transform: translateY(-5vh);
+    /* 輕微上移，平衡清單高度，而非大幅貼頂 */
 }
 
 /* 毛筆字體進化：進度條嵌入文字 (墨染填滿效果) */
@@ -133,6 +133,66 @@ body.app-loaded .loading-text {
 /* 移除虛擬元素 ::after，避免對位誤差導致的殘影 */
 .loading-text::after {
     display: none !important;
+}
+
+/* --- Sync Status Checklist --- */
+.loading-status-list {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    align-items: flex-start;
+    min-width: 160px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: statusListEntrance 0.8s ease-out 1s forwards;
+}
+
+@keyframes statusListEntrance {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.35);
+    transition: color 0.4s ease, transform 0.3s ease;
+}
+
+.status-item.done {
+    color: rgba(240, 208, 96, 0.85);
+}
+
+.status-item.done .status-icon {
+    transform: scale(1.1);
+}
+
+.status-item.active {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.status-icon {
+    font-size: 0.85rem;
+    width: 1.2em;
+    text-align: center;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.3s ease;
+}
+
+.status-label {
+    white-space: nowrap;
+}
+
+body.app-loaded .loading-status-list {
+    opacity: 0 !important;
+    transition: opacity 0.3s ease;
 }
 
 /* --- 2. Staggered Entrance Elements --- */
