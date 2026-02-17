@@ -94,7 +94,8 @@ export class HeroUIManager {
     // --- 事件綁定 (Event Binding) ---
 
     public bindChangeImage(resetIdle: () => void): void {
-        this.modeUIManager.changeImageBtn?.addEventListener("click", () => {
+        this.modeUIManager.changeImageBtn?.addEventListener("click", (e) => {
+            e.stopPropagation();
             resetIdle();
             const isArtwork = document.body.classList.contains("mode-artwork");
 
@@ -148,20 +149,35 @@ export class HeroUIManager {
     }
 
     public bindInstallButton(callback: () => void): void {
-        this.layoutManager.installButton?.addEventListener("click", callback);
+        this.layoutManager.installButton?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            callback();
+        });
     }
 
     public bindNavigation(onPrev: () => void, onNext: () => void): void {
-        this.modeUIManager.prevHeroBtn?.addEventListener("click", onPrev);
-        this.modeUIManager.nextHeroBtn?.addEventListener("click", onNext);
+        this.modeUIManager.prevHeroBtn?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            onPrev();
+        });
+        this.modeUIManager.nextHeroBtn?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            onNext();
+        });
     }
 
     public bindToggleGrid(callback: () => void): void {
-        this.layoutManager.dayBtn?.addEventListener("click", callback);
+        this.layoutManager.dayBtn?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            callback();
+        });
     }
 
     public bindToggleYearMonth(callback: () => void): void {
-        this.layoutManager.yearMonthBtn?.addEventListener("click", callback);
+        this.layoutManager.yearMonthBtn?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            callback();
+        });
     }
 
     public bindWelcomeOverlay(callback: (e: MouseEvent) => void): void {

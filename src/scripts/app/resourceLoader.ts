@@ -229,14 +229,14 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             }
 
             // ─── 情境 C：主動向伺服器查詢是否有新版 ───
-            setLoadingStatus("檢查更新...");
+            console.log("[Loader] Checking for updates...");
 
             // 設立 updatefound 監聽（在 .update() 之前）
             const updatePromise = new Promise<boolean>((resolve) => {
                 registration.addEventListener(
                     "updatefound",
                     () => {
-                        console.log("[Loader] ⚡ updatefound event");
+                        console.log("[Loader] ⚡ updatefound event detected!");
                         resolve(true);
                     },
                     { once: true },
@@ -252,12 +252,13 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             const hasUpdate = await updatePromise;
 
             if (hasUpdate) {
+                console.log("[Loader] Update detected, waiting for installation...");
                 // 更新已觸發，等待安裝完成
                 if (registration.installing) {
                     await waitForInstallingWorker(registration.installing);
                 } else if (registration.waiting) {
                     // 安裝極快，已經到 waiting
-                    setLoadingStatus("版本更新中...");
+                    console.log("[Loader] Update already waiting.");
                     document.body.classList.add("is-updating");
                     activateAndReload(registration.waiting);
                 }
@@ -265,8 +266,12 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
             }
 
             // ─── 沒有更新 → 當前版本即最新 ───
-            console.log("[Loader] ✓ 目前已是最新版本");
-            setLoadingStatus("農民曆");
+            console.log("[Loader] ✓ No update found. System is up to date.");
+
+            // 強制延遲 800ms 讓使用者看到「版本同步」打勾的過程
+            // (Make the checkmark visible for at least a moment)
+            await new Promise(r => setTimeout(r, 800));
+
             markDone("update");
 
         } catch (e) {
