@@ -76,15 +76,16 @@ export class PanelRenderers {
             date,
             monthText,
             dayText,
+            zodiac,
             jianchu,
             luck,
             festival,
             termPeriod,
             holidayInfo?.isHoliday ? holidayInfo.description || "休假" : null,
         )}
-                        ${this.renderRightCluster(zodiac)}
+                        ${this.renderRightCluster(moon)}
                     </div>
-                    ${this.renderCultureSection(pentad, moon)}
+                    ${this.renderCultureSection(pentad)}
                 </div>
             </div>`;
 
@@ -189,6 +190,7 @@ export class PanelRenderers {
         date: Date,
         monthText: string,
         dayText: string,
+        zodiac: string,
         jianchu: string,
         luck: string,
         festival: null | string,
@@ -197,55 +199,63 @@ export class PanelRenderers {
     ): string {
         const finalizedMonth = monthText.endsWith("月") ? monthText : monthText + "月";
 
-        // Combine festival and holiday if both exist, or prioritize holiday description
-        const holidayTag = holidayDesc
-            ? `<span class="fest-tag holiday-highlight">${holidayDesc}</span>`
-            : "";
-        const festivalTag =
-            festival && festival !== holidayDesc ? `<span class="fest-tag">${festival}</span>` : "";
+        const festivalHtml = festival
+            ? `<div class="festival-tag-mini">${festival}</div>`
+            : holidayDesc
+                ? `<div class="festival-tag-mini">${holidayDesc}</div>`
+                : "";
 
-        // Solar Term Flow Visualization (Mini Version for Header)
-        // Layout: 立春 --1 天--> 雨水
         let termFlowHtml = "";
-        if (termPeriod && termPeriod.current) {
+        if (termPeriod) {
+            const isNextMonthTerm = termPeriod.daysToNext > 15;
             termFlowHtml = `
                 <div class="term-flow-mini">
-                    <span class="flow-node-mini highlight">${termPeriod.current}</span>
+                    <span class="flow-node-mini">${termPeriod.current}</span>
                     <div class="flow-arrow-mini">
-                        <span class="flow-line-mini"></span>
-                        <span class="flow-tag-mini">${termPeriod.daysToNext} 天</span>
-                        <span class="flow-arrow-head-mini"></span>
+                        <div class="flow-line-mini"></div>
+                        <div class="flow-tag-mini">${termPeriod.daysToNext} 天</div>
+                        <div class="flow-arrow-head-mini"></div>
                     </div>
-                    <span class="flow-node-mini dim">${termPeriod.next}</span>
-                </div>
-            `;
+                    <span class="flow-node-mini ${isNextMonthTerm ? "dim" : ""}">${termPeriod.next}</span>
+                </div>`;
         }
 
         return `
-            <div class="date-display">
-                <div class="detail-header">
-                    ${date.getMonth() + 1}/${date.getDate()}
-                    <span class="year-label">${date.getFullYear()}</span>
+            <div class="detail-sub-main">
+                <!-- Line 1: Month/Day Year -->
+                <div class="today-date-row">
+                    <span class="today-full-date">${date.getMonth() + 1}/${date.getDate()}</span>
+                    <span class="today-year-small">${date.getFullYear()}</span>
                 </div>
-                <div class="detail-sub-main">
-                    <div class="lunar-info-row-1">
-                        <span class="lunar-main">${finalizedMonth}.${dayText}</span>
-                        ${termFlowHtml}
-                    </div>
-                    <div class="lunar-info-row-2">
-                        <span class="lucky-bar">${jianchu}日 · ${luck}</span>
-                        ${holidayTag}
-                        ${festivalTag}
-                    </div>
+                
+                <!-- Line 2: (Zodiac) Lunar Date -->
+                <div class="lunar-info-row-1">
+                    <span class="zodiac-bracket">(${zodiac})</span>
+                    <span class="lunar-main">${finalizedMonth}.${dayText}</span>
+                </div>
+
+                <!-- Line 3: Solar Term Flow -->
+                <div class="lunar-term-row">
+                    ${termFlowHtml}
+                </div>
+
+                <!-- Line 4: Jianchu & Festival -->
+                <div class="lunar-info-row-2">
+                   <div class="jianchu-badge">${jianchu} · ${luck}</div>
+                   ${festivalHtml}
                 </div>
             </div>`;
     }
 
-    private renderRightCluster(zodiac: string): string {
-        const sealChar = zodiac && zodiac.length > 0 ? zodiac.charAt(0) : "曆";
+    private renderRightCluster(moon: { name: string; phase: number; value: number }): string {
         return `
             <div class="detail-right-cluster">
-                <div class="traditional-seal">${sealChar}</div>
+                <div class="moon-box-top">
+                    <div class="moon-svg-wrap">
+                        ${this.renderMoonSvg(moon.value)}
+                    </div>
+                    <span class="moon-label-top">${moon.name}</span>
+                </div>
             </div>`;
     }
 
@@ -258,16 +268,12 @@ export class PanelRenderers {
 
     private renderCultureSection(
         pentad: { name: string; meaning: string; index: number },
-        moon: { name: string; phase: number; value: number },
     ): string {
-        // Pentad Logic: Name First (Header), Meaning Second (Body)
-        // e.g. Row 1: "三候  魚上冰"
-        // e.g. Row 2: "東風解凍..."
         const pentadLabel = ["", "初候", "二候", "三候"][pentad.index] || "候";
 
         return `
             <div class="detail-culture-section">
-                <div class="culture-left">
+                <div class="culture-left full-width">
                      <div class="pentad-display">
                         <div class="pentad-header-row">
                             <span class="pentad-tag-box">${pentadLabel}</span>
@@ -275,12 +281,6 @@ export class PanelRenderers {
                         </div>
                         <div class="pentad-content-text">${pentad.meaning}</div>
                      </div>
-                </div>
-                <div class="culture-right">
-                    <div class="moon-display">
-                        ${this.renderMoonSvg(moon.value)}
-                        <span class="moon-name">${moon.name}</span>
-                    </div>
                 </div>
             </div>`;
     }
