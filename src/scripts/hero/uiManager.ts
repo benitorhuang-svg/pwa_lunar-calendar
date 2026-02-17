@@ -19,7 +19,6 @@ export class HeroUIManager {
         return this.layoutManager.dayBtn?.classList.contains("active") ?? false;
     }
     private galleryManager: HeroGalleryManager;
-    private heroBgContainer: HTMLElement | null = null;
     private layoutManager: HeroLayoutManager;
     private modeUIManager: HeroModeUIManager;
     private toastContainer: HTMLElement | null = null;
@@ -60,14 +59,31 @@ export class HeroUIManager {
             }
 
             if (isArtwork) {
+                // Artwork Mode -> Zen Mode (Enter Fullscreen)
                 window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "zen" } }));
+                this.toggleFullscreen(true);
                 return;
             }
 
+            // Zen Mode -> Artwork Mode (Exit Fullscreen)
             window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
+            this.toggleFullscreen(false);
         };
 
         document.addEventListener("click", handler, true);
+
+        // Sync mode if user exits fullscreen via system (e.g., ESC key)
+        document.addEventListener("fullscreenchange", () => {
+            const isImmersion = document.body.classList.contains("immersion-mode");
+            const isArtwork = document.body.classList.contains("mode-artwork");
+
+            // If we're in Zen mode but no longer fullscreen, return to Artwork
+            if (isImmersion && !isArtwork && !document.fullscreenElement) {
+                window.dispatchEvent(
+                    new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
+                );
+            }
+        });
     }
 
     // --- 事件綁定 (Event Binding) ---
@@ -198,7 +214,6 @@ export class HeroUIManager {
         this.galleryManager.init();
         this.modeUIManager.init();
 
-        this.heroBgContainer = document.getElementById("heroBgContainer");
         this.zenGestureHint = document.getElementById("zenGestureHint");
         this.toastContainer = document.getElementById("toastContainer");
         this.faqOverlay = document.getElementById("faqPanelOverlay");
@@ -410,6 +425,22 @@ export class HeroUIManager {
             setTimeout(() => {
                 this.zenGestureHint?.classList.remove("show");
             }, 4600);
+        }
+    }
+
+    private toggleFullscreen(enable: boolean): void {
+        if (enable) {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch((err) => {
+                    console.warn(`Fullscreen request failed: ${err.message}`);
+                });
+            }
+        } else {
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch((err) => {
+                    console.warn(`Fullscreen exit failed: ${err.message}`);
+                });
+            }
         }
     }
 }
