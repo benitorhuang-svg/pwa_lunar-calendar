@@ -344,11 +344,19 @@ function getSolarTerm(date: Date): null | string {
     return val !== undefined ? val : null;
 }
 
+import { PENTADS } from "./pentads";
+
 /**
  * 取得日期所處的節氣區間
- * @returns {{ current: string, next: string, daysToNext: number }}
+ * @returns {{ current: string, next: string, daysToNext: number, termIndex: number, daysSince: number }}
  */
-function getSolarTermPeriod(date: Date): { current: string; daysToNext: number; next: string } {
+function getSolarTermPeriod(date: Date): {
+    current: string;
+    daysToNext: number;
+    next: string;
+    termIndex: number;
+    daysSince: number;
+} {
     const y = date.getFullYear();
     const { termList } = buildTermCache(y);
     const prevList = buildTermCache(y - 1).termList;
@@ -362,7 +370,7 @@ function getSolarTermPeriod(date: Date): { current: string; daysToNext: number; 
     ];
 
     let currentTerm = all[0];
-    if (!currentTerm) return { current: "", daysToNext: 0, next: "" };
+    if (!currentTerm) return { current: "", daysToNext: 0, next: "", termIndex: 0, daysSince: 0 };
 
     for (let i = 0; i < all.length; i++) {
         const t = all[i];
@@ -372,10 +380,18 @@ function getSolarTermPeriod(date: Date): { current: string; daysToNext: number; 
             currentTerm = t;
         } else {
             const daysToNext = Math.ceil((tDate.getTime() - date.getTime()) / 86400000);
-            return { current: currentTerm.name, daysToNext, next: t.name };
+            const daysSince = Math.floor((date.getTime() - new Date(currentTerm.year!, currentTerm.month - 1, currentTerm.day).getTime()) / 86400000);
+            return {
+                current: currentTerm.name,
+                daysToNext,
+                next: t.name,
+                termIndex: currentTerm.index,
+                daysSince
+            };
         }
     }
-    return { current: currentTerm.name, daysToNext: 0, next: "" };
+    // Should not happen if all covers range, but fallback
+    return { current: currentTerm.name, daysToNext: 0, next: "", termIndex: currentTerm.index, daysSince: 0 };
 }
 
 /* ====================================================
@@ -797,6 +813,61 @@ export class Lunar {
     }
 
     /**
+     * 取得詳細節氣區間（含七十二候計算用數據）
+     */
+    getSolarTermPeriod() {
+        return getSolarTermPeriod(this._date);
+    }
+
+    /**
+     * 取得當日物候 (七十二候)
+     * @returns {{ name: string, meaning: string, index: number }} index: 1=初候, 2=次候, 3=末候
+     */
+    getPentad(): { name: string, meaning: string, index: number } {
+        const { termIndex, daysSince } = getSolarTermPeriod(this._date);
+        // 每候 5 天。最後一候可能大於 5 天。
+        let pentadIndex = Math.floor(daysSince / 5);
+        if (pentadIndex > 2) pentadIndex = 2; // 確保不超出 3 候
+
+        const termPentads = PENTADS[termIndex];
+        // Fallback safety
+        if (!termPentads) {
+            return { name: "", meaning: "", index: 1 };
+        }
+
+        const data = termPentads[pentadIndex];
+        return {
+            name: data?.name || "",
+            meaning: data?.meaning || "",
+            index: pentadIndex + 1
+        };
+    }
+
+    /**
+     * 取得月相資訊
+     * @returns {{ name: string, phase: number, value: number }} value: 0.0-1.0
+     */
+    getMoonPhase(): { name: string, phase: number, value: number } {
+        const d = this._lunarDay;
+        // 簡單月相名稱映射
+        let name = "殘月";
+        if (d === 1) name = "朔";
+        else if (d === 15) name = "滿月";
+        else if (d === 30) name = "晦";
+        else if (d >= 2 && d <= 6) name = "峨眉月";
+        else if (d >= 7 && d <= 8) name = "上弦月";
+        else if (d >= 9 && d <= 14) name = "盈凸月";
+        else if (d >= 16 && d <= 22) name = "虧凸月";
+        else if (d >= 23 && d <= 24) name = "下弦月";
+
+        // Approximated phase value (0 = New, 0.5 = Full, 1 = Next New)
+        // 29.53 days per cycle
+        const value = (d - 1) / 29.53;
+
+        return { name, phase: d, value };
+    }
+
+    /**
      * 農曆日數字
      * @returns {number}
      */
@@ -867,15 +938,7 @@ export class Lunar {
         return getSolarFestival(this._date);
     }
 
-    /**
-     * 節氣區間（目前所處的節氣及距下一個節氣的天數）
-     * @returns {{ current: string, next: string, daysToNext: number }}
-     * @example Lunar.fromDate(new Date(2026, 1, 12)).getSolarTermPeriod()
-     * // { current: '立春', next: '雨水', daysToNext: 7 }
-     */
-    getSolarTermPeriod(): { current: string; daysToNext: number; next: string } {
-        return getSolarTermPeriod(this._date);
-    }
+
 
     /**
      * 天干地支年份

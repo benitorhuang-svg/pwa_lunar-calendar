@@ -11,7 +11,7 @@ export class PanelRenderers {
     private panelToday: HTMLElement | null = null;
     private panelYearMonth: HTMLElement | null = null;
 
-    constructor() {}
+    constructor() { }
 
     public init(): void {
         this.panelYearMonth = document.getElementById("panelYearMonth");
@@ -37,9 +37,10 @@ export class PanelRenderers {
         const luck = lunar.getComprehensiveLuck();
         const mansion = lunar.getMansion();
         const termPeriod = lunar.getSolarTermPeriod();
-        const yi = lunar.getDayYi();
-        const ji = lunar.getDayJi();
+
         const festival = lunar.getFestival() || lunar.getSolarFestival();
+        const pentad = lunar.getPentad();
+        const moon = lunar.getMoonPhase();
 
         // 假期資訊 (Holiday Info)
         const holidayInfo = this.holidayService.getHolidayInfo(
@@ -58,6 +59,8 @@ export class PanelRenderers {
             mansion: mansion.name,
             monthText,
             zodiac,
+            pentad,
+            moon
         });
 
         if (!ganzhi || !monthText || !dayText) {
@@ -70,18 +73,18 @@ export class PanelRenderers {
                 <div class="panel-main-content">
                     <div class="detail-top-section">
                         ${this.renderDateDisplay(
-                            date,
-                            monthText,
-                            dayText,
-                            jianchu,
-                            luck,
-                            festival,
-                            termPeriod?.current,
-                            holidayInfo?.isHoliday ? holidayInfo.description || "休假" : null,
-                        )}
+            date,
+            monthText,
+            dayText,
+            jianchu,
+            luck,
+            festival,
+            termPeriod,
+            holidayInfo?.isHoliday ? holidayInfo.description || "休假" : null,
+        )}
                         ${this.renderRightCluster(zodiac)}
                     </div>
-                    ${this.renderYijiSection(yi, ji)}
+                    ${this.renderCultureSection(pentad, moon)}
                 </div>
             </div>`;
 
@@ -94,6 +97,7 @@ export class PanelRenderers {
             );
         }, 0);
     }
+
 
     public renderYearMonthPanel(selectedYear: number, selectedMonth: number, today: Date): void {
         if (!this.panelYearMonth) return;
@@ -188,12 +192,10 @@ export class PanelRenderers {
         jianchu: string,
         luck: string,
         festival: null | string,
-        termName: null | string,
+        termPeriod: { current: string; next: string; daysToNext: number } | undefined,
         holidayDesc: null | string = null,
     ): string {
         const finalizedMonth = monthText.endsWith("月") ? monthText : monthText + "月";
-        // Filter out default "平吉" or similar from the date line
-        const displayTerm = termName && termName !== "平吉" ? termName : "";
 
         // Combine festival and holiday if both exist, or prioritize holiday description
         const holidayTag = holidayDesc
@@ -201,6 +203,23 @@ export class PanelRenderers {
             : "";
         const festivalTag =
             festival && festival !== holidayDesc ? `<span class="fest-tag">${festival}</span>` : "";
+
+        // Solar Term Flow Visualization (Mini Version for Header)
+        // Layout: 立春 --1 天--> 雨水
+        let termFlowHtml = "";
+        if (termPeriod && termPeriod.current) {
+            termFlowHtml = `
+                <div class="term-flow-mini">
+                    <span class="flow-node-mini highlight">${termPeriod.current}</span>
+                    <div class="flow-arrow-mini">
+                        <span class="flow-line-mini"></span>
+                        <span class="flow-tag-mini">${termPeriod.daysToNext} 天</span>
+                        <span class="flow-arrow-head-mini"></span>
+                    </div>
+                    <span class="flow-node-mini dim">${termPeriod.next}</span>
+                </div>
+            `;
+        }
 
         return `
             <div class="date-display">
@@ -210,8 +229,8 @@ export class PanelRenderers {
                 </div>
                 <div class="detail-sub-main">
                     <div class="lunar-info-row-1">
-                        ${displayTerm ? `<span class="term-tag">${displayTerm}</span>` : ""}
                         <span class="lunar-main">${finalizedMonth}.${dayText}</span>
+                        ${termFlowHtml}
                     </div>
                     <div class="lunar-info-row-2">
                         <span class="lucky-bar">${jianchu}日 · ${luck}</span>
@@ -237,33 +256,188 @@ export class PanelRenderers {
             </div>`;
     }
 
-    private renderYijiSection(yi: string[], ji: string[]): string {
-        const yiTags =
-            yi.length > 0
-                ? yi
-                      .slice(0, 5)
-                      .map((t) => `<span class="tag">${t}</span>`)
-                      .join("")
-                : '<span class="tag">諸事平吉</span>';
-
-        const jiTags =
-            ji.length > 0
-                ? ji
-                      .slice(0, 5)
-                      .map((t) => `<span class="tag">${t}</span>`)
-                      .join("")
-                : '<span class="tag">諸事不忌</span>';
+    private renderCultureSection(
+        pentad: { name: string; meaning: string; index: number },
+        moon: { name: string; phase: number; value: number },
+    ): string {
+        // Pentad Logic: Name First (Header), Meaning Second (Body)
+        // e.g. Row 1: "三候  魚上冰"
+        // e.g. Row 2: "東風解凍..."
+        const pentadLabel = ["", "初候", "二候", "三候"][pentad.index] || "候";
 
         return `
-            <div class="detail-yiji-section">
-                <div class="yiji-item">
-                    <span class="yiji-label yiji-label--good">宜</span>
-                    <div class="tag-container">${yiTags}</div>
+            <div class="detail-culture-section">
+                <div class="culture-left">
+                     <div class="pentad-display">
+                        <div class="pentad-header-row">
+                            <span class="pentad-tag-box">${pentadLabel}</span>
+                            <span class="pentad-name-title">${pentad.name}</span>
+                        </div>
+                        <div class="pentad-content-text">${pentad.meaning}</div>
+                     </div>
                 </div>
-                <div class="yiji-item">
-                    <span class="yiji-label yiji-label--bad">忌</span>
-                    <div class="tag-container">${jiTags}</div>
+                <div class="culture-right">
+                    <div class="moon-display">
+                        ${this.renderMoonSvg(moon.value)}
+                        <span class="moon-name">${moon.name}</span>
+                    </div>
                 </div>
             </div>`;
+    }
+
+    private renderMoonSvg(value: number): string {
+        const R = 28;
+        const C = 32;
+
+        // Phase Logic:
+        // New Moon (0) -> Full Moon (0.5) -> New Moon (1.0)
+        // Day 2 (approx 0.06) should be Waxing Crescent (Right side lit, very thin).
+
+        // Normalize phase to 0..1 for just the lighting percentage?
+        // Let's use standard astronomical definition logic for the path.
+
+
+        // value 0..0.5 is Waxing
+        // using Math.cos for the terminator projection
+        // angle goes from 0 to PI for waxing, PI to 2PI for waning
+
+        // Illumination factor (-1 to 1). -1=New, 1=Full.
+        // Actually simpler: 
+        // 0 (New) -> Terminator x = -R
+        // 0.25 (First Q) -> Terminator x = 0
+        // 0.5 (Full) -> Terminator x = R
+        // But we need to define the SHAPE.
+
+        // Waxing (0 < v < 0.5): Light on Right. 
+        // Outer arc: Right Semicircle.
+        // Inner arc: Ellipse from Top to Bottom.
+
+        let isWaxing = true;
+        if (value <= 0.5) {
+            isWaxing = true;
+        } else {
+            isWaxing = false;
+        }
+
+        // Calculate the "bulge" radius of the terminator ellipse.
+        // At value=0 (New), rX = -R (Matches outer circle left, result empty) - Wait.
+        // Let's stick to "Draw the Light".
+
+        // Radius of terminator X. 
+        // We use cos(angle) mapping. 
+        // 0 -> -R (Concave max)
+        // 0.25 -> 0 (Flat)
+        // 0.5 -> R (Convex max)
+
+        const terminatorX = -R * Math.cos(value * 2 * Math.PI);
+        const rX = Math.abs(terminatorX);
+
+        // Outer Arc: Always the semi-circle on the lit side.
+        // Waxing: Right side (1). Waning: Left side (0).
+        const outerSweep = isWaxing ? 1 : 0;
+
+        // Terminator Sweep:
+        // Needs careful logic.
+        // If Waxing (Right Lit):
+        //    Terminator starts Top, ends Bottom.
+        //    If Crescent (val < 0.25): Terminator curves Right (Sweep 0? No, standard arc sweep logic)
+        //    Let's visualize: 
+        //    Top(32,4) -> Bottom(32,60).
+        //    Right Semicircle (Outer): Sweep 1.
+        //    Terminator (Inner): Must go Bottom -> Top to close path?
+        //    Let's go Bottom(32,60) -> Top(32,4).
+
+        // Construct Path:
+        // Move to Top (32, 4)
+        // Arc to Bottom (32, 60) via Outer Side.
+        // Arc to Top (32, 4) via Terminator.
+
+        const startX = 32, startY = 4;
+        const endX = 32, endY = 60;
+
+        // Outer Arc (Top -> Bottom)
+        // Waxing (Right side lit) -> Sweep 1.
+        // Waning (Left side lit) -> Sweep 0.
+        const outerPath = `M ${startX} ${startY} A ${R} ${R} 0 0 ${outerSweep} ${endX} ${endY}`;
+
+        // Inner Arc (Bottom -> Top)
+        // We need to determine Sweep for the return trip.
+        // For Waxing Crescent (v=0.1): Terminator X is negative (Left of center).
+        // The curve should bulge to the Left (Concave relative to the right-lit shape).
+        // Going Bottom->Top. Bulge Left means Sweep 1 (Clockwise).
+
+        // For Waxing Gibbous (v=0.4): Terminator X is positive (Right of center).
+        // The curve bubbles out to Left of line? No, it surrounds center.
+        // Wait, at Full moon, terminator matches Left Semicircle.
+
+        // Let's rely on the sign of terminatorX.
+        // If terminatorX is negative (Concave), we want the arc to effectively pass through x = 32 + terminatorX.
+        // SVG Arc radii are positive.
+        // We select sweep based on phase.
+
+        let innerSweep = 0;
+        if (isWaxing) {
+            // Waxing: Outer is Right.
+            // Crescent: Inner needs to curve Left (into the shape). Bottom->Top, Curve Left = Sweep 0? 
+            // SVG coords: Y+ is down. Bottom(60) to Top(4). Vector is Up. Left of Vector is Minus X. 
+            // So curving towards center (Left) is Sweep 1.
+
+            if (value < 0.25) innerSweep = 0; // Crescent: Curve Match Outer edge direction roughly?
+            else innerSweep = 1; // Gibbous: Bulge outward
+        } else {
+            // Waning: Outer is Left.
+            // Gibbous (0.5-0.75): Bulge Right.
+            // Crescent (>0.75): Hollow Right.
+            if (value < 0.75) innerSweep = 0;
+            else innerSweep = 1;
+        }
+
+        const innerPath = `A ${rX} ${R} 0 0 ${innerSweep} ${startX} ${startY}`;
+        const pathD = `${outerPath} ${innerPath} Z`;
+
+        // Special case for exact New Moon to avoid artifacts or thin lines
+        if (value < 0.02 || value > 0.98) {
+            return `<svg viewBox="0 0 64 64" width="100%" height="100%" class="moon-svg">
+                <circle cx="${C}" cy="${C}" r="${R}" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+            </svg>`;
+        }
+
+        // Special case for Full Moon
+        if (value > 0.48 && value < 0.52) {
+            // Just a circle
+            return `<svg viewBox="0 0 64 64" width="100%" height="100%" class="moon-svg">
+                <defs>
+                    <radialGradient id="moonGrad" cx="40%" cy="40%" r="60%">
+                        <stop offset="0%" stop-color="#fff9e6"/>
+                        <stop offset="100%" stop-color="#d4af37"/>
+                    </radialGradient>
+                    <filter id="moonGlow"><feGaussianBlur stdDeviation="2.5" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                </defs>
+                <circle cx="${C}" cy="${C}" r="${R}" fill="url(#moonGrad)" filter="url(#moonGlow)"/>
+            </svg>`;
+        }
+
+        return `<svg viewBox="0 0 64 64" width="100%" height="100%" class="moon-svg">
+            <defs>
+                <radialGradient id="moonGrad" cx="40%" cy="40%" r="60%">
+                    <stop offset="0%" stop-color="#fff5c3"/>
+                    <stop offset="70%" stop-color="#d4af37"/>
+                    <stop offset="100%" stop-color="#b8860b"/>
+                </radialGradient>
+                <filter id="crater" x="0%" y="0%" width="100%" height="100%">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.10" numOctaves="3" result="noise"/>
+                    <feDiffuseLighting in="noise" lighting-color="#d4af37" surfaceScale="1">
+                        <feDistantLight azimuth="45" elevation="40"/>
+                    </feDiffuseLighting>
+                    <feComposite operator="in" in2="SourceGraphic"/>
+                    <feBlend in="SourceGraphic" mode="multiply"/>
+                </filter>
+            </defs>
+            <!-- Background (Dark Side) -->
+            <circle cx="${C}" cy="${C}" r="${R}" fill="#111" class="moon-shadow"/>
+            
+            <!-- Lit Part -->
+            <path d="${pathD}" fill="url(#moonGrad)" filter="url(#crater)" style="filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.5));"/>
+        </svg>`;
     }
 }

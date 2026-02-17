@@ -4,8 +4,7 @@
  * Handles touch and swipe gestures
  */
 export class HeroTouchHandler {
-    private readonly maxVerticalVariance = 50; // 允許的最大垂直偏移量 (Max allowed vertical variance)
-    private readonly minSwipeDistance = 50; // 觸發滑動的最小距離 (Min distance to trigger swipe)
+
     private touchStartX = 0; // 觸控起始 X 座標 (Touch start X coordinate)
     private touchStartY = 0; // 觸控起始 Y 座標 (Touch start Y coordinate)
 
@@ -39,13 +38,13 @@ export class HeroTouchHandler {
 
                 const diffX = touchEndX - this.touchStartX;
                 const diffY = touchEndY - this.touchStartY;
+                const absX = Math.abs(diffX);
+                const absY = Math.abs(diffY);
 
-                // 檢查是否為水平滑動
-                // Check if it's a horizontal swipe
-                if (
-                    Math.abs(diffX) > this.minSwipeDistance &&
-                    Math.abs(diffY) < this.maxVerticalVariance
-                ) {
+                // 優化滑動判定邏輯 (Optimized Swipe Detection)
+                // 1. 距離門檻降低至 30px (Lower threshold to 30px)
+                // 2. 只要橫向移動大於縱向移動即可 (Accept if X > Y movement)
+                if (absX > 30 && absX > absY) {
                     // 使用者互動時重置閒置計時
                     // Reset idle time on user interaction
                     this.onInteraction();

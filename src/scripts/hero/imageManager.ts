@@ -385,6 +385,10 @@ export class HeroImageManager {
     private setHeroBackground(url: string, transition: string): void {
         if (!this.heroBgContainer) return;
 
+        // Cleanup: Remove any items that are already fading out to prevent pile-up
+        const staleItems = this.heroBgContainer.querySelectorAll('.blur-out, .is-leaving-next, .is-leaving-prev');
+        staleItems.forEach(el => el.remove());
+
         const newItem = document.createElement("div");
         newItem.className = "hero-bg-item";
         newItem.style.backgroundImage = `url('${url}')`;
@@ -422,7 +426,7 @@ export class HeroImageManager {
                     currentItem.parentNode.removeChild(currentItem);
                 }
                 newItem.style.zIndex = "";
-            }, 1800); // Increased timeout to match longer slide transition
+            }, 800); // Reduced timeout to match CSS (0.7s) + buffer
         });
     }
 }

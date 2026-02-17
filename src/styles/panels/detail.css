@@ -360,32 +360,177 @@ select.panel-font-select option,
     cursor: help;
 }
 
-/* Yiji Section (Suitable/Unsuitable Activities) */
-.detail-yiji-section {
+/* Culture Section: Solar Terms & Moon Phase (Replaces Yiji) */
+.detail-culture-section {
     display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+    padding: 20px 24px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    /* Softer corners */
+    gap: 20px;
+    backdrop-filter: blur(10px);
+    /* Stronger blur for depth */
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+    flex: 1;
+    /* Take remaining space */
+}
+
+/* --- Mini Term Flow (Header) --- */
+.term-flow-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 14px;
+    font-size: 0.8rem;
+    font-family: var(--font-sans);
+    vertical-align: middle;
+    white-space: nowrap;
+    opacity: 0.9;
+}
+
+.flow-node-mini {
+    font-family: var(--font-serif);
+    color: var(--gold-accent);
+    line-height: 1;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.flow-node-mini.dim {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85em;
+}
+
+.flow-arrow-mini {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    width: 44px;
+    /* Compact */
+    height: 12px;
+}
+
+.flow-line-mini {
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.flow-tag-mini {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(60, 20, 20, 0.95);
+    padding: 0 4px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    color: #ffd700;
+    border: 0.5px solid rgba(255, 215, 0, 0.2);
+    line-height: 1.3;
+}
+
+.flow-arrow-head-mini {
+    width: 0;
+    height: 0;
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    border-left: 3px solid rgba(255, 255, 255, 0.2);
+    margin-left: -1px;
+}
+
+/* --- Redesigned Culture Section --- */
+
+/* Left Column: Pentad Story */
+.culture-left {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    /* Condensed gap */
-    padding-top: 20px;
-    /* Restored/Increased padding for separation from line */
-
-    /* Premium Gradient Separator Line */
-    border-top: none;
-    background-image: linear-gradient(90deg,
-            rgba(212, 175, 55, 0) 0%,
-            rgba(212, 175, 55, 0.4) 50%,
-            rgba(212, 175, 55, 0) 100%);
-    background-size: 100% 1px;
-    background-position: top center;
-    background-repeat: no-repeat;
-
-    margin-top: 25px;
-    /* Fixed spacing instead of auto */
-    /* Match theme accents */
-    width: 100%;
-    position: relative;
+    justify-content: center;
+    flex: 1;
+    gap: 6px;
 }
+
+/* Pentad Display */
+.pentad-display {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pentad-header-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.pentad-tag-box {
+    font-size: 0.8rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 0.5px solid rgba(255, 255, 255, 0.15);
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+
+.pentad-name-title {
+    font-family: var(--font-calligraphy);
+    font-size: 1.8rem;
+    /* Large impact */
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    line-height: 1;
+    letter-spacing: 0.05em;
+}
+
+.pentad-content-text {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.6;
+    text-align: justify;
+    padding-right: 12px;
+    font-weight: 300;
+    margin-top: 4px;
+}
+
+/* Right Column: Moon */
+.culture-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    padding-left: 20px;
+}
+
+.moon-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 80px;
+}
+
+.moon-svg {
+    width: 64px;
+    height: 64px;
+    display: block;
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.2));
+}
+
+.moon-name {
+    font-family: var(--font-calligraphy);
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0.1em;
+}
+
+/* Legacy Yiji classes removed */
 
 /* Red Seal Positioning */
 /* Red Seal Positioning */
@@ -408,34 +553,6 @@ select.panel-font-select option,
     transform: rotate(5deg);
     /* Artistic tilt */
     margin-top: 5px;
-}
-
-.yiji-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    /* Reduced from 18px */
-}
-
-.yiji-label {
-    font-family: var(--font-calligraphy);
-    font-size: 1.2rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    min-width: 25px;
-    text-align: center;
-    line-height: 1;
-    line-height: 1;
-    margin-top: 4px;
-}
-
-.yiji-label--good {
-    color: #d4af37;
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
-}
-
-.yiji-label--bad {
-    color: #ff6b6b;
 }
 
 .tag-container {
@@ -479,9 +596,9 @@ select.panel-font-select option,
         font-size: 0.9rem;
     }
 
+
     .tag-container {
         gap: 6px 8px;
-        /* Reduced */
     }
 
     .tag {
@@ -530,10 +647,23 @@ select.panel-font-select option,
         margin-top: 18px;
     }
 
-    .detail-yiji-section {
-        gap: 18px;
-        padding-top: 24px;
+    /* Adjusted for Culture Section */
+    .detail-culture-section {
         margin-top: 30px;
+        padding: 24px 30px;
+    }
+
+    .pentad-name-large {
+        font-size: 2.8rem;
+    }
+
+    .moon-display {
+        width: 100px;
+    }
+
+    .moon-svg {
+        width: 80px;
+        height: 80px;
     }
 
     .tag {
@@ -542,11 +672,6 @@ select.panel-font-select option,
 
     .tag-container {
         gap: 10px 14px;
-        /* Reduced from 14px 22px */
-    }
-
-    .yiji-label {
-        font-size: 1.3rem;
     }
 
     .traditional-seal {
