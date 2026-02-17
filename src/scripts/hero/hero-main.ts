@@ -21,7 +21,7 @@ const parallaxManager = new ParallaxManager();
 imageManager.init();
 musicPlayer.init();
 headerManager.init();
-idleManager.setupListeners();
+idleManager.setupInteractionListeners();
 
 parallaxManager.init();
 
@@ -42,5 +42,12 @@ eventHandlers.init();
     await imageManager.detectHeroImages(season);
 
     // Signal to resource loader that core logic AND first batch of images are ready
+    (window as any).__APP_LOGIC_READY__ = true;
     window.dispatchEvent(new CustomEvent("app-logic-ready"));
 })();
+
+// Listen for image preloading from manager to set global flag
+window.addEventListener("app-images-preloaded", () => {
+    (window as any).__APP_IMAGES_PRELOADED__ = true;
+});
+

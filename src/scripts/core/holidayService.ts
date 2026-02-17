@@ -50,6 +50,14 @@ export class HolidayService {
             // 使用 ruyut/TaiwanCalendar 提供之穩定 JSON 來源
             const url = `https://raw.githubusercontent.com/ruyut/TaiwanCalendar/master/data/${year}.json`;
             const response = await fetch(url);
+
+            if (response.status === 404) {
+                // Future years might not be available yet, this is expected
+                console.log(`[HolidayService] Holiday data for ${year} is not yet available (404).`);
+                this.loadedYears.add(year); // Mark as attempt to avoid repeated fetches
+                return;
+            }
+
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
             const data = await response.json() as HolidayInfo[];

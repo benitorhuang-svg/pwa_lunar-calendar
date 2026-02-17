@@ -117,6 +117,44 @@ body.initial-welcome .suspension-panel:not(#panelToday) {
     display: none !important;
 }
 
+/* 3. Artwork Mode Specific Adjustments */
+body.mode-artwork .hero-header .hero-info-strip,
+body.mode-artwork .hero-header .hero-calendar-btn {
+    display: none !important;
+}
+
+body.mode-artwork #btnYearMonth {
+    display: none !important;
+}
+
+/* T214/T215: Gallery Control Visibility */
+#galleryControlWrapper {
+    display: none;
+}
+
+body.mode-artwork:not(.initial-welcome) #galleryControlWrapper {
+    display: flex;
+}
+
+/* Gallery Empty Notice */
+#galleryEmptyNotice {
+    display: none;
+}
+
+body[data-gallery-empty="true"] #galleryEmptyNotice {
+    display: flex;
+}
+
+
+
+/* 5. Panel-driven HUD Visibility (CSS-driven visibility unification) */
+body[data-active-panel="today"] .hero-dock-wrapper,
+body[data-active-panel="today"] .hero-header,
+body[data-active-panel="yearMonth"] .hero-header:not(.mode-artwork .hero-header) {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
 /* Ensure Top Right Utility Controls (Music, Pen, etc) remain visible as requested */
 body.initial-welcome .music-control-wrapper {
     opacity: 1 !important;

@@ -154,7 +154,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                 console.log("[Loader] Update found after check, waiting worker ready.");
                 document.body.classList.add("is-updating");
                 if (loadingText) loadingText.textContent = "更新中...";
-                registration.waiting.postMessage({ type: "SKIP_WAITING" });
+                (registration.waiting as ServiceWorker).postMessage({ type: "SKIP_WAITING" });
                 navigator.serviceWorker.addEventListener(
                     "controllerchange",
                     () => {
@@ -297,7 +297,11 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     }
 
     // --- Main ---
-    window.addEventListener("app-logic-ready", () => markDone("scripts"));
+    if ((window as any).__APP_LOGIC_READY__) {
+        markDone("scripts");
+    } else {
+        window.addEventListener("app-logic-ready", () => markDone("scripts"));
+    }
 
     startAnimationLoop(); // Start visual loop early
 
@@ -312,6 +316,13 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
     // SW Update Check - Await after starting others to prevent blocking initial downloads
     await checkSWUpdate();
+
+    // Check for heroAll flag which might have been set by hero-main during image detection
+    if ((window as any).__APP_IMAGES_PRELOADED__) {
+        markDone("heroAll");
+    } else {
+        window.addEventListener("app-images-preloaded", () => markDone("heroAll"));
+    }
 
     // Safety timeout
     // Safety timeout

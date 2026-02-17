@@ -43,77 +43,27 @@ export class HeroModeUIManager {
 
     public updateArtworkModeUI(isArtwork: boolean, layoutManager: HeroLayoutManager): void {
         this.updateModeTheme(isArtwork);
-        const header = layoutManager.header;
-        const infoStrip = layoutManager.headerInfoStrip;
-        const toggleBtn = layoutManager.headerToggleBtn;
 
         if (isArtwork) {
             this.btnChangeImage?.classList.add("active");
-
-            // Hide YearMonth Button
-            if (layoutManager.yearMonthBtn) layoutManager.yearMonthBtn.style.display = "none";
 
             // Reset Active States
             layoutManager.removeActiveState(layoutManager.dayBtn);
             layoutManager.removeActiveState(layoutManager.yearMonthBtn);
 
-            // In Artwork Mode:
-            // 1. Hide Info Strip (Clean view)
-            // 2. Show Toggle Button (To allow exit to Calendar)
-            // 3. Keep Header container visible
-            if (infoStrip) {
-                infoStrip.style.opacity = "0";
-                infoStrip.style.pointerEvents = "none";
-            }
-            if (toggleBtn) {
-                toggleBtn.style.display = "none";
-            }
-            if (header) {
-                header.style.opacity = "1";
-                header.style.pointerEvents = "auto";
-            }
-
             this.galleryManager.setVisibility(true);
         } else {
             this.btnChangeImage?.classList.remove("active");
-
-            // In Calendar Mode:
-            // 1. Show Info Strip
-            // 2. Hide Toggle Button (User requested removal in Status 2)
-            // 3. Keep Header container visible
-            if (infoStrip) {
-                infoStrip.style.opacity = "1";
-                infoStrip.style.pointerEvents = "auto";
-            }
-            if (toggleBtn) {
-                toggleBtn.style.display = "none";
-            }
-            if (header) {
-                header.style.opacity = "1";
-                header.style.pointerEvents = "auto";
-            }
-
             this.galleryManager.setVisibility(false);
-
-            // Show YearMonth Button
-            if (layoutManager.yearMonthBtn) layoutManager.yearMonthBtn.style.display = "flex";
         }
     }
 
     public updateImmersionUI(active: boolean): void {
-        const iconCal = document.getElementById("iconCalendar");
-        const iconImm = document.getElementById("iconImmersion");
 
         if (active) {
             this.btnImmersion?.classList.add("active");
-            // Show Calendar Icon (to exit immersion), Hide Immersion Icon
-            if (iconCal) iconCal.style.display = "block";
-            if (iconImm) iconImm.style.display = "none";
         } else {
             this.btnImmersion?.classList.remove("active");
-            // Hide Calendar Icon, Show Immersion Icon (to enter immersion)
-            if (iconCal) iconCal.style.display = "none";
-            if (iconImm) iconImm.style.display = "block";
         }
     }
 

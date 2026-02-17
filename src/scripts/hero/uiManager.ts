@@ -52,6 +52,10 @@ export class HeroUIManager {
 
             const isImmersion = document.body.classList.contains("immersion-mode");
             const isArtwork = document.body.classList.contains("mode-artwork");
+            const isWelcome = document.body.classList.contains("initial-welcome");
+
+            // T213: Background Click Mode Guard
+            if (isWelcome) return;
 
             if (!isImmersion) {
                 window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
@@ -59,26 +63,27 @@ export class HeroUIManager {
             }
 
             if (isArtwork) {
-                // Artwork Mode -> Zen Mode (Enter Fullscreen)
+                // Artwork Mode -> Zen Mode (Lifecycle will handle Fullscreen)
                 window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "zen" } }));
-                this.toggleFullscreen(true);
                 return;
             }
 
-            // Zen Mode -> Artwork Mode (Exit Fullscreen)
+            // Zen Mode -> Artwork Mode (Lifecycle will handle Exit Fullscreen)
             window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
-            this.toggleFullscreen(false);
         };
 
         document.addEventListener("click", handler, true);
 
-        // Sync mode if user exits fullscreen via system (e.g., ESC key)
+        // T211: Sync mode if user exits fullscreen via system (e.g., ESC key) with Transition Lock Guard
         document.addEventListener("fullscreenchange", () => {
             const isImmersion = document.body.classList.contains("immersion-mode");
             const isArtwork = document.body.classList.contains("mode-artwork");
+            const isWelcome = document.body.classList.contains("initial-welcome");
 
             // If we're in Zen mode but no longer fullscreen, return to Artwork
-            if (isImmersion && !isArtwork && !document.fullscreenElement) {
+            if (isImmersion && !isArtwork && !isWelcome && !document.fullscreenElement) {
+                // Note: Transitioning state is checked in stateManager, 
+                // but we dispatch here. Orchestrator's queue will handle it if locked.
                 window.dispatchEvent(
                     new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
                 );
@@ -121,24 +126,7 @@ export class HeroUIManager {
         this.galleryManager.bindControls(callbacks);
     }
 
-    public bindHeaderToggle(callback: (e: MouseEvent) => void): void {
-        const btn = this.layoutManager.headerToggleBtn;
-        if (!btn) return;
 
-        // Desktop Click
-        btn.addEventListener("click", (e) => callback(e as MouseEvent));
-
-        // Mobile Touch (Prevent ghost clicks and delay)
-        btn.addEventListener(
-            "touchstart",
-            (e) => {
-                e.preventDefault(); // Stop mouse emulation
-                e.stopPropagation();
-                callback(e as unknown as MouseEvent);
-            },
-            { passive: false },
-        );
-    }
 
     public bindImmersionMode(resetIdle: () => void): void {
         const handler = (e: Event) => {
@@ -428,7 +416,7 @@ export class HeroUIManager {
         }
     }
 
-    private toggleFullscreen(enable: boolean): void {
+    public toggleFullscreen(enable: boolean): void {
         if (enable) {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch((err) => {

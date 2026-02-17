@@ -11,7 +11,6 @@ export class HeroGalleryManager {
     private btnGalleryMenu: HTMLElement | null = null;
     private btnMusicUrl: HTMLElement | null = null;
     private folderInput: HTMLInputElement | null = null;
-    private galleryControlWrapper: HTMLElement | null = null;
     private galleryEmptyNotice: HTMLElement | null = null;
     private galleryInput: HTMLInputElement | null = null;
     private gallerySubmenu: HTMLElement | null = null;
@@ -122,7 +121,7 @@ export class HeroGalleryManager {
             const files = (e.target as HTMLInputElement).files;
             if (files && files.length > 0) {
                 callbacks.onFileSelect(files);
-                if (this.galleryEmptyNotice) this.galleryEmptyNotice.style.display = "none";
+                document.body.removeAttribute("data-gallery-empty");
             }
         });
 
@@ -130,7 +129,7 @@ export class HeroGalleryManager {
             const files = (e.target as HTMLInputElement).files;
             if (files && files.length > 0) {
                 callbacks.onFileSelect(files);
-                if (this.galleryEmptyNotice) this.galleryEmptyNotice.style.display = "none";
+                document.body.removeAttribute("data-gallery-empty");
             }
         });
 
@@ -146,8 +145,8 @@ export class HeroGalleryManager {
                     // Hide notice if switching away from custom or if custom has images (logic handled by image manager response, but safe to hide first)
                     // Actually, if we switch to custom and it's empty, the event will fire again.
                     // If we switch to default/hybrid, we should hide it.
-                    if (mode !== "custom" && this.galleryEmptyNotice) {
-                        this.galleryEmptyNotice.style.display = "none";
+                    if (mode !== "custom") {
+                        document.body.removeAttribute("data-gallery-empty");
                     }
 
                     this.gallerySubmenu?.classList.remove("show");
@@ -158,7 +157,7 @@ export class HeroGalleryManager {
         // Listen for empty custom list event
         window.addEventListener("custom-list-empty", () => {
             if (this.galleryEmptyNotice) {
-                this.galleryEmptyNotice.style.display = "flex";
+                document.body.setAttribute("data-gallery-empty", "true");
                 // Auto open submenu if closed so user sees the valid options
                 if (!this.gallerySubmenu?.classList.contains("show")) {
                     this.gallerySubmenu?.classList.add("show");
@@ -215,7 +214,6 @@ export class HeroGalleryManager {
         this.galleryInput = document.getElementById("galleryInput") as HTMLInputElement;
         this.folderInput = document.getElementById("folderInput") as HTMLInputElement;
         this.submenuItems = document.querySelectorAll(".submenu-item[data-mode]");
-        this.galleryControlWrapper = document.getElementById("galleryControlWrapper");
     }
 
     public renderCustomStations(
@@ -282,8 +280,7 @@ export class HeroGalleryManager {
         });
     }
 
-    public setVisibility(visible: boolean): void {
-        const display = visible ? "flex" : "none";
-        if (this.galleryControlWrapper) this.galleryControlWrapper.style.display = display;
+    public setVisibility(_visible: boolean): void {
+        // No longer using style.display, handled by body class in global.css
     }
 }

@@ -364,7 +364,7 @@ export class HeroImageManager {
     private async preloadHeroImages(): Promise<void> {
         // Optimized: Only preload current season and default at startup to save mobile bandwidth
         // The rest can be loaded predictionally or on-demand
-        const highPriority = this.heroList.slice(0, 15); // Preload first 15 images immediately
+        const highPriority = this.heroList.slice(0, 5); // Preload first 5 images immediately (was 15)
 
         const preloadPromises = highPriority.map(async (src) => {
             if (this.heroCache[src]) return; // Already cached

@@ -5,8 +5,11 @@
 
 import type { Lunar } from "../core/lunar";
 import type { AppMode, AppState, ThemeName } from "../types";
+import { TRANSITION_CLASS_MAP, VALID_TRANSITIONS } from "./transitionTable";
 
 export class AppStateManager {
+    private isTransitioning: boolean = false;
+    private transitionQueue: AppMode[] = [];
     private activePanel: "today" | "yearMonth" | null;
     private mode: AppMode;
     private selectedDay: number;
@@ -22,6 +25,10 @@ export class AppStateManager {
         this.today = now;
         this.activePanel = null;
         this.mode = "welcome";
+
+        // Apply initial mode classes directly in constructor (synchronous)
+        // This avoids the "from === to" early return issue in the first setMode call
+        document.body.classList.add("initial-welcome", "immersion-mode");
     }
 
     public applyTheme(theme: ThemeName): void {
@@ -121,36 +128,79 @@ export class AppStateManager {
         return this.mode;
     }
 
-    public setMode(mode: AppMode): void {
-        this.mode = mode;
+    public setMode(to: AppMode): void {
+        const from = this.mode;
+        if (from === to) return;
 
-        document.body.classList.remove(
-            "initial-welcome",
-            "immersion-mode",
-            "mode-artwork",
-            "note-mode-active",
-        );
+        // T200: Illegal Transition Guard
+        const validTargets = VALID_TRANSITIONS[from];
+        if (!validTargets.includes(to)) {
+            console.warn(`[FSM] Invalid mode transition attempted: ${from} → ${to}`);
+            return;
+        }
 
-        // Also clear active panel on mode change if it's not a panel-friendly mode
-        // but usually we want to keep it or let orchestrator handle it.
-        // For safety, if moving to calendar, we might want to clear it, but let's be conservative.
+        // T201: Transition Lock & Queue
+        if (this.isTransitioning) {
+            console.log(`[FSM] Transition locked, queueing: ${to}`);
+            this.transitionQueue.push(to);
+            return;
+        }
 
-        switch (mode) {
-            case "welcome":
-                document.body.classList.add("initial-welcome", "immersion-mode");
-                break;
-            case "artwork":
-                document.body.classList.add("immersion-mode", "mode-artwork");
-                break;
-            case "zen":
-                document.body.classList.add("immersion-mode");
-                break;
-            case "note":
-                document.body.classList.add("note-mode-active");
-                break;
-            case "calendar":
-                break;
+        this.executeModeTransition(from, to);
+    }
+
+    private executeModeTransition(from: AppMode, to: AppMode): void {
+        this.isTransitioning = true;
+        this.mode = to;
+
+        // T205 & Finding 4: Clear active panel on non-panel-friendly modes
+        if (to === "artwork" || to === "zen" || to === "welcome") {
+            this.setActivePanel(null);
+        }
+
+        // T203: Get Swap Map
+        const transitionKey = `${from}->${to}`;
+        const swap = TRANSITION_CLASS_MAP[transitionKey];
+
+        if (!swap) {
+            console.error(`[FSM] No transition class map found for ${transitionKey}`);
+            this.isTransitioning = false;
+            this.processQueue();
+            return;
+        }
+
+        // T202 & PR1.5B: Atomic Class Swap in rAF
+        requestAnimationFrame(() => {
+            // "Add first, then remove" to avoid intermediate frame with no mode classes
+            if (swap.add.length > 0) {
+                document.body.classList.add(...swap.add);
+            }
+            if (swap.remove.length > 0) {
+                document.body.classList.remove(...swap.remove);
+            }
+
+            // T201: Release lock and process queue after DOM update
+            // We use another rAF or just bit of delay to ensure repaint started?
+            // Usually rAF is enough for the "perform transition" phase.
+            this.isTransitioning = false;
+            this.processQueue();
+        });
+    }
+
+    private processQueue(): void {
+        if (this.transitionQueue.length > 0) {
+            const nextMode = this.transitionQueue.shift()!;
+            console.log(`[FSM] Processing queued transition to: ${nextMode}`);
+            this.setMode(nextMode);
         }
     }
 
+    /**
+     * T216: 強制釋放轉移鎖 (Force Release Lock)
+     */
+    public forceReleaseLock(): void {
+        console.warn("[FSM] Force releasing transition lock");
+        this.isTransitioning = false;
+        this.processQueue();
+    }
 }

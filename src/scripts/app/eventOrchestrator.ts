@@ -46,31 +46,77 @@ export class AppEventOrchestrator {
     private async fetchHolidays(year: number): Promise<void> {
         if (this.lastFetchedYear === year) return;
         this.lastFetchedYear = year;
-        await this.holidayService.fetchYearData(year);
-        // 抓取的同時也抓前後一年備用 (Fetch surrounding years)
-        await Promise.all([
-            this.holidayService.fetchYearData(year - 1),
-            this.holidayService.fetchYearData(year + 1)
-        ]);
+
+        const systemYear = new Date().getFullYear();
+        const fetchTasks = [this.holidayService.fetchYearData(year)];
+
+        // 總是抓取前一年 (Always fetch previous year)
+        fetchTasks.push(this.holidayService.fetchYearData(year - 1));
+
+        // 只有當「下一年」早於或等於系統年份，或者已經是下半年時，才主動抓取下一年
+        // (Only proactive fetch next year if it's already released or late in the year)
+        const currentMonth = new Date().getMonth(); // 0-11
+        if (year < systemYear || (year === systemYear && currentMonth >= 5)) {
+            fetchTasks.push(this.holidayService.fetchYearData(year + 1));
+        }
+
+        await Promise.all(fetchTasks);
         this.updateState(); // 重新渲染以套用假期 (Re-render to apply)
     }
 
     /**
-     * 集中式模式轉換 (Centralized Mode Transition)
-     * 所有模式切換應通過此方法或 'transition-mode' 事件
+     * T204: 集中式模式轉換 (Centralized Mode Transition)
+     * 遵循四階段生命週期：beforeExit → beforeEnter → performTransition (atomic) → afterEnter
      */
-    public transitionMode(to: AppMode): void {
+    public async transitionMode(to: AppMode): Promise<void> {
         const from = this.state.getMode();
         if (from === to) return;
 
-        this.state.setMode(to);
+        try {
+            // 1. beforeExit(from)
+            this.dispatchModeLifecycle("before-exit-mode", from, to);
 
-        // 發送模式變更通知 (Dispatch mode-changed notification)
+            // 2. beforeEnter(to)
+            this.dispatchModeLifecycle("before-enter-mode", from, to);
+
+            // 3. performTransition (Atomic rAF in stateManager)
+            this.state.setMode(to);
+
+            // 4. afterEnter(to)
+            // Wait a frame to ensure DOM updated from setMode's rAF
+            requestAnimationFrame(() => {
+                this.dispatchModeLifecycle("after-enter-mode", from, to);
+
+                // 發送傳統模式變更通知 (Dispatch mode-changed for backward compatibility)
+                window.dispatchEvent(
+                    new CustomEvent<ModeChangedDetail>("mode-changed", {
+                        detail: { from, to },
+                    }),
+                );
+            });
+        } catch (error) {
+            // T216: 轉換錯誤恢復機制 (Error Recovery)
+            console.error(`[Orchestrator] Mode transition failed: ${from} → ${to}`, error);
+            this.forceRecovery("calendar");
+            this.state.forceReleaseLock(); // Ensure lock is released even on error
+        }
+    }
+
+    private dispatchModeLifecycle(eventName: string, from: AppMode, to: AppMode): void {
         window.dispatchEvent(
-            new CustomEvent<ModeChangedDetail>("mode-changed", {
+            new CustomEvent<ModeChangedDetail>(eventName, {
                 detail: { from, to },
             }),
         );
+    }
+
+    /**
+     * T216: 強制模式恢復 (Force Mode Recovery)
+     */
+    private forceRecovery(target: AppMode = "calendar"): void {
+        console.warn(`[Orchestrator] Forcing recovery to mode: ${target}`);
+        // Direct set to skip lifecycle and break loops
+        this.state.setMode(target);
     }
 
     public updateState(): void {
@@ -284,31 +330,8 @@ export class AppEventOrchestrator {
             this.checkAutoSlideshow();
         }) as EventListener);
 
-        // 切換網格 (Toggle Grid)
+        // T212: 切換網格 (Toggle Grid) - Now purely for UI visibility, no mode switching
         window.addEventListener("toggle-grid", () => {
-            const mode = this.state.getMode();
-
-            // Bottom day button now works as mode toggle:
-            // artwork/zen/welcome -> calendar
-            // calendar -> artwork
-            if (mode === "artwork" || mode === "zen" || mode === "welcome") {
-                window.dispatchEvent(
-                    new CustomEvent<{ to: AppMode }>("transition-mode", {
-                        detail: { to: "calendar" },
-                    }),
-                );
-                return;
-            }
-
-            if (mode === "calendar") {
-                window.dispatchEvent(
-                    new CustomEvent<{ to: AppMode }>("transition-mode", {
-                        detail: { to: "artwork" },
-                    }),
-                );
-                return;
-            }
-
             const calendarSection = document.getElementById("calendarSection");
             const isShowing = calendarSection?.classList.contains("show-grid") ?? false;
 

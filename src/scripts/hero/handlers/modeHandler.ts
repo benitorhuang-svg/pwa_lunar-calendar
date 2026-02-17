@@ -17,7 +17,7 @@ export class ModeHandler {
         private imageManager: HeroImageManager, // Needed for reset logic? Or just slideshowManager handles it.
         private slideshowManager: HeroSlideshowManager,
         private uiManager: HeroUIManager,
-    ) {}
+    ) { }
 
     public init(): void {
         this.setupEventListeners();
@@ -28,29 +28,34 @@ export class ModeHandler {
         // 歡迎畫面遮罩點擊 (Welcome Overlay)
         this.uiManager.bindWelcomeOverlay((e) => {
             e?.stopPropagation();
-            this.idleManager.reset();
+            this.idleManager.resetInteraction();
 
             // Welcome Overlay Click -> Go to Calendar Mode
             window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "calendar" } }));
         });
 
         // 沉浸模式手動切換 (Immersion Mode Toggle)
-        this.uiManager.bindImmersionMode(() => this.idleManager.reset());
+        this.uiManager.bindImmersionMode(() => this.idleManager.resetInteraction());
 
         // 更換圖片/映畫按鈕 (Change Image / Artwork Button)
-        this.uiManager.bindChangeImage(() => this.idleManager.reset());
+        this.uiManager.bindChangeImage(() => this.idleManager.resetInteraction());
 
         // Background Click
         this.uiManager.bindBackgroundClick();
     }
 
     private setupEventListeners(): void {
-        // Centralized mode side effects (single source of truth)
-        window.addEventListener("mode-changed", ((e: CustomEvent<ModeChangedDetail>) => {
-            this.applyModeSideEffects(e.detail.from, e.detail.to);
+        // T204: 1. beforeExit Stage
+        window.addEventListener("before-exit-mode", ((e: CustomEvent<ModeChangedDetail>) => {
+            this.beforeExit(e.detail.from);
         }) as EventListener);
 
-        // Artwork Idle Slide (New)
+        // T204: 4. afterEnter Stage (Replaces old mode-changed listener for lifecycle integration)
+        window.addEventListener("after-enter-mode", ((e: CustomEvent<ModeChangedDetail>) => {
+            this.afterEnter(e.detail.from, e.detail.to);
+        }) as EventListener);
+
+        // Artwork Idle Slide
         window.addEventListener("artwork-idle-slide", () => {
             this.imageManager.switchHero(1, true);
         });
@@ -60,8 +65,6 @@ export class ModeHandler {
             const { action, isArtwork } = e.detail;
 
             if (action === "start") {
-                this.idleManager.setArtworkMode(isArtwork === true);
-
                 const minImages = Math.max(
                     this.imageManager.specialHeroList.length,
                     this.imageManager.heroList.length,
@@ -69,7 +72,7 @@ export class ModeHandler {
 
                 if (isArtwork === true) {
                     this.uiManager.updateArtworkModeUI(true);
-                    this.idleManager.reset();
+                    this.idleManager.resetInteraction();
                     // In Artwork Mode, we rely on IdleManager (artwork-idle-slide)
                     this.slideshowManager.stop();
                 } else {
@@ -86,7 +89,6 @@ export class ModeHandler {
                     );
                 }
             } else if (action === "stop") {
-                this.idleManager.setArtworkMode(false);
                 this.slideshowManager.stop();
                 this.uiManager.updateArtworkModeUI(false);
             }
@@ -113,10 +115,24 @@ export class ModeHandler {
         }) as EventListener);
     }
 
-    private applyModeSideEffects(from: AppMode, to: AppMode): void {
+    private beforeExit(from: AppMode): void {
+        console.log(`[Lifecycle] before-exit-mode: ${from}`);
+        this.idleManager.deactivateAll();
+
+        if (from === "calendar") {
+            // Placeholder for calendar-specific cleanup if needed
+        }
+    }
+
+    private afterEnter(from: AppMode, to: AppMode): void {
+        console.log(`[Lifecycle] after-enter-mode: ${from} → ${to}`);
+
+        // 1. Activate timers for new mode
+        this.idleManager.activateForMode(to);
+
+        // 2. Handle specific mode entry side effects
         switch (to) {
             case "welcome":
-                this.idleManager.clear();
                 this.uiManager.updateImmersionUI(true);
                 window.dispatchEvent(
                     new CustomEvent<SlideshowControlDetail>("slideshow-control", {
@@ -124,8 +140,8 @@ export class ModeHandler {
                     }),
                 );
                 break;
+
             case "artwork":
-                this.idleManager.clear();
                 this.uiManager.updateImmersionUI(true);
                 window.dispatchEvent(
                     new CustomEvent<SlideshowControlDetail>("slideshow-control", {
@@ -137,10 +153,14 @@ export class ModeHandler {
                         detail: { showGrid: false },
                     }),
                 );
-                this.idleManager.reset();
+
+                // T210: Fullscreen Exit if coming from Zen
+                if (from === "zen") {
+                    this.uiManager.toggleFullscreen(false);
+                }
                 break;
+
             case "zen":
-                this.idleManager.clear();
                 this.uiManager.updateImmersionUI(true);
                 window.dispatchEvent(
                     new CustomEvent<SlideshowControlDetail>("slideshow-control", {
@@ -152,10 +172,15 @@ export class ModeHandler {
                         detail: { showGrid: false },
                     }),
                 );
+
+                // T210: Fullscreen Entry
+                this.uiManager.toggleFullscreen(true);
+
                 if (from === "artwork") {
                     this.uiManager.showZenHint();
                 }
                 break;
+
             case "calendar":
                 this.uiManager.updateImmersionUI(false);
                 window.dispatchEvent(
@@ -169,6 +194,7 @@ export class ModeHandler {
                     }),
                 );
                 break;
+
             case "note":
                 this.uiManager.updateImmersionUI(false);
                 break;

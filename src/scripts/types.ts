@@ -45,11 +45,36 @@ export interface RenderCalendarDetail {
     year: number;
 }
 
+// 農曆詳細資訊介面 (Lunar Detail interface)
+export interface LunarData {
+    getConstellation(): string;
+    getLunarDay(): number;
+    getLunarMonth(): number;
+    getLunarYear(): number;
+    getDayInChinese(): string;
+    getDayInGanZhi(): string;
+    getDayJi(): string[];
+    getDayLuck(): string;
+    getDayYi(): string[];
+    getFestival(): null | string;
+    getJianChu(): string;
+    getMansion(): { animal: string; luck: string; name: string };
+    getMansionName(): string;
+    getComprehensiveLuck(): string;
+    getJieQi(): null | string;
+    getMonthInChinese(): string;
+    getMonthInGanZhi(): string;
+    getSolarFestival(): null | string;
+    getSolarTermPeriod(): { current: string; daysToNext: number; next: string };
+    getYearInGanZhi(): string;
+    getYearShengXiao(): string;
+}
+
 // 渲染 Hero 事件 (Render Hero)
 export interface RenderHeroDetail {
     changeBg: boolean;
     date: Date | string;
-    lunar: any; // Using explicit Lunar type in specific files if possible, or any here to avoid circular dep
+    lunar: LunarData; // T209: Fixed 'any' usage
     transitionOverride?: string | undefined;
 }
 
@@ -58,6 +83,7 @@ export interface RenderPanelsDetail extends Partial<AppState> {
     date?: Date | string;
     theme?: ThemeName;
     type?: "today" | "yearMonth";
+    lunar?: LunarData;
 }
 
 // 請求更換 Hero 事件 (Request Hero Change)

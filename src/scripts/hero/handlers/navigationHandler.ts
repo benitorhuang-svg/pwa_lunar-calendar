@@ -14,17 +14,17 @@ export class NavigationHandler {
         private imageManager: HeroImageManager,
         private slideshowManager: HeroSlideshowManager,
         private uiManager: HeroUIManager,
-    ) {}
+    ) { }
 
     public handleNavigation(direction: number): void {
-        this.idleManager.reset();
+        this.idleManager.resetInteraction();
 
-        // 映畫模式下切換圖片 (Switch images in Artwork Mode)
         // 映畫模式下切換圖片 (Switch images in Artwork Mode OR Zen Mode)
-        // Check if body has immersion-mode class (Zen) or idleManager says artwork
+        // Check if body has immersion-mode class (Zen) or mode-artwork class
         const isImmersion = document.body.classList.contains("immersion-mode");
+        const isArtwork = document.body.classList.contains("mode-artwork");
 
-        if (this.idleManager.isArtwork || isImmersion) {
+        if (isArtwork || isImmersion) {
             this.imageManager.switchHero(direction, false, () =>
                 this.slideshowManager.reset(
                     (o, a) => this.imageManager.switchHero(o, a),
@@ -67,20 +67,6 @@ export class NavigationHandler {
             () => this.handleNavigation(1),
         );
 
-        // 綁定「切換視圖」按鈕 (Bind Header View Toggle)
-        this.uiManager.bindHeaderToggle((e) => {
-            e.stopPropagation();
-            this.idleManager.reset();
 
-            const isImmersion =
-                document.body.classList.contains("immersion-mode") ||
-                document.body.classList.contains("initial-welcome");
-
-            if (isImmersion) {
-                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "calendar" } }));
-            } else {
-                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
-            }
-        });
     }
 }

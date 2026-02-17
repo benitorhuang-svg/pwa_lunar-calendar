@@ -11,9 +11,7 @@ export class HeroLayoutManager {
     public get headerInfoStrip(): HTMLElement | null {
         return this.infoStrip;
     }
-    public get headerToggleBtn(): HTMLElement | null {
-        return this.btnHeaderToggle;
-    }
+
     public get installButton(): HTMLElement | null {
         return this.installBtn;
     }
@@ -26,7 +24,7 @@ export class HeroLayoutManager {
 
     private btnDay: HTMLElement | null = null;
 
-    private btnHeaderToggle: HTMLElement | null = null;
+
 
     private btnYearMonth: HTMLElement | null = null;
 
@@ -41,7 +39,7 @@ export class HeroLayoutManager {
     private welcomeOverlay: HTMLElement | null = null;
 
     public hideInstallButton(): void {
-        if (this.installBtn) this.installBtn.style.display = "none";
+        this.installBtn?.classList.add("hidden");
     }
 
     public init(): void {
@@ -50,7 +48,7 @@ export class HeroLayoutManager {
         this.welcomeOverlay = document.getElementById("welcomeInteractionOverlay");
         this.btnYearMonth = document.getElementById("btnYearMonth");
         this.btnDay = document.getElementById("btnDay");
-        this.btnHeaderToggle = document.getElementById("btnHeaderToggle");
+
         this.installBtn = document.getElementById("installBtn");
         this.infoStrip = document.getElementById("heroInfoStrip");
     }
@@ -59,37 +57,14 @@ export class HeroLayoutManager {
         element?.classList.remove("active");
     }
 
-    public setHeaderVisibility(visible: boolean): void {
-        if (this.heroHeader) {
-            this.heroHeader.style.opacity = visible ? "1" : "0";
-            this.heroHeader.style.pointerEvents = visible ? "auto" : "none";
-        }
-    }
-
-    public setYearMonthBtnVisibility(visible: boolean): void {
-        if (this.btnYearMonth) {
-            this.btnYearMonth.style.display = visible ? "flex" : "none";
-        }
-    }
-
     public showInstallButton(): void {
-        if (this.installBtn) this.installBtn.style.display = "block";
+        this.installBtn?.classList.remove("hidden");
     }
 
     public toggleGridView(show: boolean): void {
         if (show) {
-            if (this.heroDockWrapper) {
-                this.heroDockWrapper.classList.remove("hidden");
-                this.heroDockWrapper.style.opacity = "1";
-                this.heroDockWrapper.style.pointerEvents = "auto";
-            }
             // Reset active states for clarity
             if (this.btnYearMonth) this.btnYearMonth.classList.remove("active");
-
-            if (this.heroHeader) this.heroHeader.style.opacity = "1";
-
-            // Ensure year/month button is visible in grid view
-            if (this.btnYearMonth) this.btnYearMonth.style.display = "flex";
         } else {
             this.btnDay?.classList.remove("active");
         }
@@ -98,23 +73,11 @@ export class HeroLayoutManager {
     public updatePanelsForType(type?: "today" | "yearMonth"): void {
         if (type === "yearMonth") {
             if (this.btnYearMonth) {
-                this.btnYearMonth.style.display = "flex";
                 this.btnYearMonth.classList.add("active");
-            }
-            if (this.heroHeader) this.heroHeader.style.opacity = "1";
-            if (this.heroDockWrapper) {
-                this.heroDockWrapper.style.opacity = "1";
-                this.heroDockWrapper.style.pointerEvents = "auto";
             }
         } else if (type === "today") {
             if (this.btnYearMonth) {
-                this.btnYearMonth.style.display = "none";
                 this.btnYearMonth.classList.remove("active");
-            }
-            if (this.heroHeader) this.heroHeader.style.opacity = "0";
-            if (this.heroDockWrapper) {
-                this.heroDockWrapper.style.opacity = "0";
-                this.heroDockWrapper.style.pointerEvents = "none";
             }
         }
         this.btnDay?.classList.remove("active");
