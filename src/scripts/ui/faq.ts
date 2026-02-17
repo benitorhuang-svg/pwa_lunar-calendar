@@ -115,6 +115,10 @@ function renderFAQ(container: HTMLElement) {
     });
 
     container.appendChild(list);
+
+    // Default: expand all items (user requested "所有選項 一律最優選擇")
+    // Trigger expandAll action programmatically so aria attributes and visibility update
+    expandAll.click();
 }
 
 function init() {
