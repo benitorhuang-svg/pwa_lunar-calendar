@@ -12,9 +12,7 @@
 
     /* Layout constraints */
     display: flex;
-    /* Default to flex, direction usually column */
     flex-direction: column;
-    /* Fixed height to ensure perfect alignment between Calendar and Daily Panel */
     height: 68dvh !important;
     min-height: 0;
     max-height: none;
@@ -51,4 +49,19 @@
 .glass-card-template > * {
     position: relative;
     z-index: 1;
+}
+
+/* --- Glass Card Responsive Breakpoints --- */
+@media (min-width: 768px) {
+    .glass-card-template {
+        width: min(calc(100% - 64px), 600px) !important;
+        border-radius: 48px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .glass-card-template {
+        width: min(calc(100% - 80px), 680px) !important;
+        height: 72dvh !important;
+    }
 }

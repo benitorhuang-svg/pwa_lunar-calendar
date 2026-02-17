@@ -439,3 +439,138 @@ select.panel-font-select option,
 }
 
 /* Responsive Adjustments for Smaller Screens (Minimal overrides needed now due to clamp) */
+
+/* Small phones (< 360px) */
+@media (max-width: 360px) {
+    .panel-main-content {
+        padding: 18px 14px 22px 14px;
+    }
+
+    .detail-header {
+        font-size: 2rem;
+    }
+
+    .detail-sub-main {
+        font-size: 0.95rem;
+    }
+
+    .detail-lucky-pill {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .tag-container {
+        gap: 8px 12px;
+    }
+
+    .tag {
+        font-size: 0.85rem;
+    }
+
+    .traditional-seal {
+        width: 42px;
+        height: 42px;
+        font-size: 1.4rem;
+    }
+
+    .panel-side-accent {
+        width: 38px;
+    }
+
+    .vertical-text {
+        font-size: 0.95rem;
+        letter-spacing: 0.4em;
+    }
+}
+
+/* Tablet and above (768px+) */
+@media (min-width: 768px) {
+    .panel-main-content {
+        padding: 30px 28px 35px 28px;
+    }
+
+    .detail-header {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+
+    .detail-sub-main {
+        font-size: 1.25rem;
+        margin-top: 12px;
+    }
+
+    .detail-lucky-pill {
+        padding: 12px 28px;
+        font-size: 1.1rem;
+    }
+
+    .detail-mid-row {
+        gap: 24px;
+        margin-top: 18px;
+    }
+
+    .detail-yiji-section {
+        gap: 18px;
+        padding-top: 24px;
+        margin-top: 30px;
+    }
+
+    .tag {
+        font-size: 1.05rem;
+    }
+
+    .tag-container {
+        gap: 14px 22px;
+    }
+
+    .yiji-label {
+        font-size: 1.3rem;
+    }
+
+    .traditional-seal {
+        width: 58px;
+        height: 58px;
+        font-size: 2rem;
+    }
+
+    .solar-term {
+        font-size: 1.2rem;
+    }
+
+    .panel-side-accent {
+        width: 56px;
+    }
+
+    .vertical-text {
+        font-size: 1.3rem;
+        letter-spacing: 0.7em;
+    }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+    .panel-main-content {
+        padding: 35px 32px 40px 32px;
+    }
+
+    .detail-header {
+        font-size: 3.2rem;
+    }
+
+    .detail-sub-main {
+        font-size: 1.35rem;
+    }
+
+    .detail-lucky-pill {
+        padding: 14px 32px;
+        font-size: 1.15rem;
+    }
+
+    .panel-side-accent {
+        width: 60px;
+    }
+
+    .vertical-text {
+        font-size: 1.4rem;
+    }
+}

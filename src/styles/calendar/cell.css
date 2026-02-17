@@ -125,3 +125,34 @@
     position: absolute;
     bottom: 6px;
 }
+
+/* --- Cell Responsive Breakpoints --- */
+@media (min-width: 768px) {
+    .gregorian-num {
+        font-size: 1.3rem;
+    }
+
+    .lunar-text {
+        font-size: 0.7rem;
+    }
+
+    .day-cell.today {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .gregorian-num {
+        font-size: 1.45rem;
+    }
+
+    .lunar-text {
+        font-size: 0.75rem;
+    }
+
+    .day-cell.today {
+        width: 52px;
+        height: 52px;
+    }
+}

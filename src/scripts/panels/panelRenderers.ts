@@ -57,13 +57,13 @@ export class PanelRenderers {
 
         this.panelToday.innerHTML = `
             <div class="panel-detail-body">
-                ${this.renderSideAccent(ganzhi, monthText, dayText)}
+                ${this.renderSideAccent(ganzhi, monthGZ, dayGZ)}
                 <div class="panel-main-content">
                     <div class="detail-top-section">
-                        ${this.renderDateDisplay(date, ganzhi, monthGZ, dayGZ)}
+                        ${this.renderDateDisplay(date, monthText, dayText)}
                         ${this.renderRightCluster(zodiac, termPeriod)}
                     </div>
-                    ${this.renderMidRow(jianchu, luck, festival, mansion)}
+                    ${this.renderMidRow(jianchu, luck, festival)}
                     ${this.renderYijiSection(yi, ji)}
                 </div>
             </div>`;
@@ -164,22 +164,21 @@ export class PanelRenderers {
 
     // --- Sub-Renderers for Today Panel (Complex UI Decomposition) ---
 
-    private renderDateDisplay(date: Date, ganzhi: string, monthGZ: string, dayGZ: string): string {
+    private renderDateDisplay(date: Date, monthText: string, dayText: string): string {
         return `
             <div class="date-display">
                 <div class="detail-header">
                     ${date.getMonth() + 1}/${date.getDate()}
                     <span class="year-label">${date.getFullYear()}</span>
                 </div>
-                <div class="detail-sub-main">${ganzhi}年 · ${monthGZ}月 ${dayGZ}日</div>
+                <div class="detail-sub-main">${monthText}${dayText}</div>
             </div>`;
     }
 
-    private renderMidRow(jianchu: string, luck: string, festival: null | string, mansion: { animal: string; luck: string; name: string }): string {
+    private renderMidRow(jianchu: string, luck: string, festival: null | string): string {
         return `
             <div class="detail-mid-row">
                 <div class="detail-lucky-pill">${jianchu}日 · ${luck}</div>
-                <div class="detail-mansion-tag" title="${mansion.animal}">${mansion.name}宿</div>
                 ${festival ? `<div class="detail-festival-tag">${festival}</div>` : ""}
             </div>`;
     }
@@ -194,10 +193,10 @@ export class PanelRenderers {
             </div>`;
     }
 
-    private renderSideAccent(ganzhi: string, monthText: string, dayText: string): string {
+    private renderSideAccent(ganzhi: string, monthGZ: string, dayGZ: string): string {
         return `
             <div class="panel-side-accent">
-                <div class="vertical-text">${ganzhi}年 · ${monthText}月${dayText}</div>
+                <div class="vertical-text">${ganzhi}年 · ${monthGZ}月${dayGZ}日</div>
             </div>`;
     }
 

@@ -20,19 +20,16 @@ body {
     /* Dark backdrop for desktop */
 }
 
-/* The "Phone Screen" Container */
+/* App Container - Responsive */
 .app-container {
     position: relative;
     width: 100%;
     height: 100%;
-    max-width: var(--app-max-width, 500px);
+    max-width: var(--app-max-width, 100%);
     margin: 0 auto;
-    /* Center on desktop */
     overflow: hidden;
-    /* Clip content to "phone" boundaries */
     background-color: #000;
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-    /* Shadow for depth on desktop */
 }
 
 /* Example utility if needed globally */
@@ -142,7 +139,7 @@ body.initial-welcome .suspension-panel#panelToday {
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
     margin: 0 !important;
-    width: min(90%, var(--app-max-width, 500px)) !important;
+    width: min(90%, var(--app-max-width, 100%)) !important;
     filter: none;
     transition: opacity var(--duration-base) var(--ease-out-expo);
 }

@@ -152,3 +152,37 @@
     padding-top: 2px;
     height: auto;
 }
+
+/* --- Calendar Responsive Breakpoints --- */
+@media (min-width: 768px) {
+    .calendar-section {
+        padding: 30px 24px;
+    }
+
+    .title-main {
+        font-size: 1.7rem;
+    }
+
+    .week-header {
+        font-size: 0.95rem;
+        padding: 0 0 8px 0;
+    }
+
+    .days-grid {
+        grid-auto-rows: minmax(56px, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .calendar-section {
+        padding: 35px 30px;
+    }
+
+    .title-main {
+        font-size: 1.85rem;
+    }
+
+    .days-grid {
+        grid-auto-rows: minmax(64px, 1fr);
+    }
+}

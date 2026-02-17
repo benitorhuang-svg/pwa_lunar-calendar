@@ -147,15 +147,19 @@ _程式碼品質不是發生在測試階段，而是發生在每一次按下存�
 
 ## 6. 設計規範 (Design Guidelines)
 
-### 手機版面優先 (Mobile Portrait Layout First)
+### 響應式設計優先 (Responsive Design First)
 
-**本專案強制採用「手機版面設計樣式」(Mobile Portrait Layout)**，無論在何種裝置（桌面、平板、手機）上瀏覽，視覺呈現必須完全一致，且以直式手機介面為標準。
+**本專案採用「響應式設計」(Responsive Design)**，確保在不同裝置（手機、平板、桌面）上均能提供最佳視覺體驗。
 
 - **核心原則**：
-    - **單一佈局 (Single Layout)**：不針對桌面版製作額外的響應式寬度或橫向排列。所有介面元素應限制在手機寬度範圍內（建議 max-width: 500px）。
-    - **居中顯示 (Center Alignment)**：在寬螢幕裝置上，App 容器應水平居中，兩側留白或顯示背景，模擬手機 App 在桌面運行的效果。
-    - **直式排列 (Vertical Stack)**：內容區塊（如列表、卡片群組）應優先採用垂直堆疊，避免橫向多欄並排。
-    - **觸控友善 (Touch Friendly)**：所有互動元件（按鈕、選單項）的大小與間距必須符合觸控操作標準（最小點擊區域 44x44px）。
-    - **字體與間距 (Typography & Spacing)**：使用適合手持閱讀的字體大小與行距，避免因為螢幕變大而縮小文字比例。
+    - **斷點系統 (Breakpoints)**：
+        - **手機 (Mobile)**：預設樣式（< 768px），全寬佈局。
+        - **平板 (Tablet)**：`@media (min-width: 768px)`，`--app-max-width: 768px`。
+        - **桌面 (Desktop)**：`@media (min-width: 1024px)`，`--app-max-width: 1024px`。
+        - **寬螢幕 (Wide)**：`@media (min-width: 1440px)`，`--app-max-width: 1280px`。
+    - **居中顯示 (Center Alignment)**：在超出 `--app-max-width` 的螢幕上，App 容器水平居中，兩側顯示深色背景。
+    - **漸進增強 (Progressive Enhancement)**：以手機版面為基礎，透過 `min-width` 媒體查詢逐步增加大螢幕的排版優化（加大間距、字體、元件尺寸）。
+    - **觸控友善 (Touch Friendly)**：所有互動元件的大小與間距必須符合觸控操作標準（最小點擊區域 44x44px）。
+    - **字體與間距 (Typography & Spacing)**：使用 `clamp()` 與相對單位，確保文字與間距在不同螢幕尺寸上均保持適當比例。
 
-**違反此規範的設計（例如：桌面版橫向展開的 Grid、過小的滑鼠專用按鈕）將被視為不合規。**
+**違反此規範的設計（例如：寫死固定像素寬度、缺少斷點適配）將被視為不合規。**

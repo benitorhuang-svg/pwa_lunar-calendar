@@ -552,3 +552,11 @@ body:not(.mode-artwork) .group-image {
         transform: translateY(-10px) scale(0.95);
     }
 }
+
+/* --- Dock Responsive Breakpoints --- */
+@media (min-width: 768px) {
+    .gallery-submenu {
+        min-width: min(520px, 85vw);
+        width: min(94%, 600px);
+    }
+}

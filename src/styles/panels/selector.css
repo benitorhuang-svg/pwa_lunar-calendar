@@ -171,3 +171,32 @@
     /* Maintain circle fallback */
     color: #8b0000 !important;
 }
+
+/* --- Selector Responsive Breakpoints --- */
+@media (min-width: 768px) {
+    .panel-section-container {
+        padding: 30px 30px;
+    }
+
+    .panel-item {
+        height: 54px;
+    }
+
+    .month-num {
+        font-size: 1.35rem;
+    }
+
+    .panel-section-header {
+        font-size: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .panel-item {
+        height: 58px;
+    }
+
+    .month-num {
+        font-size: 1.45rem;
+    }
+}
