@@ -20,9 +20,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Give a small breathing room for other module scripts to finish initialization
     setTimeout(() => {
+        // 1. 先確定基礎狀態與主題 (Establish base state and theme first)
         orchestrator.updateState();
+
+        // 2. 隨即啟動歡迎流程 (Immediately start welcome sequence)
+        // 這樣在 Loading 結束（app-loaded）時，UI 已經是正確的「歡迎模式」佈局
+        // This ensures the UI is already in "Welcome Mode" layout when Loading ends.
+        if (!welcomeActivated) {
+            activateWelcome();
+            welcomeActivated = true;
+        }
+
         initWelcomeMode();
-    }, 200); // Increased from 100 to 200
+    }, 200);
 });
 
 /**
@@ -30,6 +40,7 @@ window.addEventListener("DOMContentLoaded", () => {
  * 啟動歡迎流程
  */
 function activateWelcome(): void {
+    console.log("[App] Activating welcome sequence...");
     // 一進場立刻進入「歡迎/沉浸」狀態（統一入口）
     window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "welcome" } }));
 
@@ -55,49 +66,16 @@ function activateWelcome(): void {
 
 /**
  * Initialize Welcome Mode logic
- * 負責歡迎模式初始化邏輯
+ * 負責歡迎模式初始化邏輯 (Kept for secondary event handling / safety)
  */
 function initWelcomeMode(): void {
-    const tryActivateWelcome = () => {
-        if (welcomeActivated) return true;
-        if (!document.body.classList.contains("loader-finished")) return false;
-
-        // Apply initial-welcome immediately to prevent HUD flash
-        if (!document.body.classList.contains("initial-welcome")) {
-            activateWelcome();
-        }
-
-        welcomeActivated = true;
-        return true;
-    };
-
-    const checkAndActivate = () => {
-        return tryActivateWelcome();
-    };
-
+    // Note: The primary activation now happens in the 200ms timeout above.
+    // This listener handles backup or late-loading scenarios.
     window.addEventListener("loader-finished", () => {
-        checkAndActivate();
+        if (!welcomeActivated) {
+            activateWelcome();
+            welcomeActivated = true;
+        }
     });
-
-    if (!checkAndActivate()) {
-        const observer = new MutationObserver((mutations) => {
-            for (const m of mutations) {
-                if (m.attributeName === "class" && checkAndActivate()) {
-                    observer.disconnect();
-                    break;
-                }
-            }
-        });
-        observer.observe(document.body, { attributes: true });
-    }
 }
 
-// 立即執行初始化邏輯 (Execute initialization logic immediately if loaded later)
-// Note: This call at the end handles cases where the script loads after DOMContentLoaded if using 'defer'
-// but we already have a listener above.
-// Actually, `initWelcomeMode()` call here is risky if DOM not ready.
-// Best to rely on the DOMContentLoaded handler above or check readyState.
-if (document.readyState === "complete" || document.readyState === "interactive") {
-    // If logic is idempotent or safe to check
-    // initWelcomeMode is safe because it checks .app-loaded
-}

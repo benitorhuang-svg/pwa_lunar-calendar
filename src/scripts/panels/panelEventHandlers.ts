@@ -23,13 +23,24 @@ export class PanelEventHandlers {
         this.setupEventListeners();
         this.setupClickHandlers();
 
-        // Check if we are already in welcome mode (race condition fix)
-        if (document.body.classList.contains("initial-welcome")) {
-            console.log("[Floater] Late init detected in welcome mode, rendering today panel.");
+        // 處理由於腳本載入順序導致的競爭條件 (Handle race conditions due to script loading order)
+        // Check if we are already in welcome mode or if a panel is already marked as active
+        const isActiveToday = document.body.getAttribute("data-active-panel") === "today";
+        const isInitialWelcome = document.body.classList.contains("initial-welcome");
+
+        if (isActiveToday || isInitialWelcome) {
+            console.log("[Floater] Late init or Active state detected, rendering today panel.");
             const today = new Date();
             this.renderers.renderTodayPanel(today.getFullYear(), today.getMonth(), today.getDate());
+
+            // If it's active but not shown yet (due to race), show it
+            if (isActiveToday && this.panelToday) {
+                this.panelToday.style.display = "flex";
+                this.panelToday.classList.add("bottom-panel");
+            }
         }
     }
+
 
     private setupClickHandlers(): void {
         const handleClosePanel = () => {

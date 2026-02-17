@@ -96,6 +96,13 @@ export class AppStateManager {
 
     public setActivePanel(panel: "today" | "yearMonth" | null): void {
         this.activePanel = panel;
+
+        // Reflect to body for cross-module synchronization and CSS targeting
+        if (panel) {
+            document.body.setAttribute("data-active-panel", panel);
+        } else {
+            document.body.removeAttribute("data-active-panel");
+        }
     }
 
     public setDay(day: number): void {
@@ -124,6 +131,10 @@ export class AppStateManager {
             "note-mode-active",
         );
 
+        // Also clear active panel on mode change if it's not a panel-friendly mode
+        // but usually we want to keep it or let orchestrator handle it.
+        // For safety, if moving to calendar, we might want to clear it, but let's be conservative.
+
         switch (mode) {
             case "welcome":
                 document.body.classList.add("initial-welcome", "immersion-mode");
@@ -141,4 +152,5 @@ export class AppStateManager {
                 break;
         }
     }
+
 }
