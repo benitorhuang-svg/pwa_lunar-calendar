@@ -118,14 +118,13 @@ export class HeroModeUIManager {
     }
 
     public updateModeTheme(isArtwork: boolean): void {
+        // body.mode-artwork is managed exclusively by stateManager.setMode()
         if (isArtwork) {
-            document.body.classList.add("mode-artwork");
             this.btnPrevHero?.classList.remove("group-calendar");
             this.btnPrevHero?.classList.add("group-image");
             this.btnNextHero?.classList.remove("group-calendar");
             this.btnNextHero?.classList.add("group-image");
         } else {
-            document.body.classList.remove("mode-artwork");
             this.btnPrevHero?.classList.remove("group-image");
             this.btnPrevHero?.classList.add("group-calendar");
             this.btnNextHero?.classList.remove("group-image");

@@ -4,7 +4,7 @@
  * Application controller responsible for initialization and welcome sequence
  */
 
-import type { RenderPanelsDetail, SlideshowControlDetail, ToggleGridViewDetail } from "../types";
+import type { RenderPanelsDetail, ToggleGridViewDetail } from "../types";
 
 import { AppEventOrchestrator } from "./eventOrchestrator";
 import { AppStateManager } from "./stateManager";
@@ -29,9 +29,8 @@ window.addEventListener("DOMContentLoaded", () => {
  * 啟動歡迎流程
  */
 function activateWelcome(): void {
-    // 一進場立刻進入「歡迎/沉浸」狀態
-    document.body.classList.add("initial-welcome");
-    window.dispatchEvent(new CustomEvent("welcome-mode", { detail: { active: true } }));
+    // 一進場立刻進入「歡迎/沉浸」狀態（統一入口）
+    window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "welcome" } }));
 
     stateManager.setActivePanel("today");
 
@@ -49,12 +48,6 @@ function activateWelcome(): void {
         }),
     );
 
-    window.dispatchEvent(
-        new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-            detail: { action: "start", isArtwork: false },
-        }),
-    );
-
     // Explicitly update state once more to ensure everything is in sync
     orchestrator.updateState();
 }
@@ -68,7 +61,6 @@ function initWelcomeMode(): void {
         if (document.body.classList.contains("app-loaded")) {
             // Apply initial-welcome immediately to prevent HUD flash
             if (!document.body.classList.contains("initial-welcome")) {
-                document.body.classList.add("initial-welcome");
                 activateWelcome();
             }
             return true;

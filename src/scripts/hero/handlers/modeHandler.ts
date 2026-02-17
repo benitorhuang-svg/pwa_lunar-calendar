@@ -1,7 +1,13 @@
 import type { HeroIdleManager } from "../idleManager";
 import type { HeroImageManager } from "../imageManager";
 import type { HeroSlideshowManager } from "../slideshowManager";
-import type { ClosePanelsDetail, SlideshowControlDetail, WelcomeModeDetail } from "../types";
+import type {
+    AppMode,
+    ClosePanelsDetail,
+    ModeChangedDetail,
+    SlideshowControlDetail,
+    WelcomeModeDetail,
+} from "../types";
 
 import { HeroUIManager } from "../uiManager";
 
@@ -25,12 +31,7 @@ export class ModeHandler {
             this.idleManager.reset();
 
             // Welcome Overlay Click -> Go to Calendar Mode
-            // 統一透過 welcome-mode 事件處理所有清理工作 (Remove initial-welcome, immersion-mode, show grid)
-            window.dispatchEvent(
-                new CustomEvent<WelcomeModeDetail>("welcome-mode", {
-                    detail: { active: false, targetMode: "calendar" },
-                }),
-            );
+            window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "calendar" } }));
         });
 
         // 沉浸模式手動切換 (Immersion Mode Toggle)
@@ -44,6 +45,11 @@ export class ModeHandler {
     }
 
     private setupEventListeners(): void {
+        // Centralized mode side effects (single source of truth)
+        window.addEventListener("mode-changed", ((e: CustomEvent<ModeChangedDetail>) => {
+            this.applyModeSideEffects(e.detail.from, e.detail.to);
+        }) as EventListener);
+
         // Artwork Idle Slide (New)
         window.addEventListener("artwork-idle-slide", () => {
             this.imageManager.switchHero(1, true);
@@ -54,14 +60,14 @@ export class ModeHandler {
             const { action, isArtwork } = e.detail;
 
             if (action === "start") {
-                this.idleManager.setArtworkMode(isArtwork !== false);
+                this.idleManager.setArtworkMode(isArtwork === true);
 
                 const minImages = Math.max(
                     this.imageManager.specialHeroList.length,
                     this.imageManager.heroList.length,
                 );
 
-                if (isArtwork !== false) {
+                if (isArtwork === true) {
                     this.uiManager.updateArtworkModeUI(true);
                     this.idleManager.reset();
                     // In Artwork Mode, we rely on IdleManager (artwork-idle-slide)
@@ -86,82 +92,86 @@ export class ModeHandler {
             }
         }) as EventListener);
 
-        // 歡迎模式/沉浸模式 (Welcome/Immersion Mode)
+        // Legacy bridge: welcome-mode -> transition-mode
         window.addEventListener("welcome-mode", ((e: CustomEvent<WelcomeModeDetail>) => {
             const { active, targetMode } = e.detail;
-            const wasArtwork = this.idleManager.isArtwork;
 
-            // 更新 UI 狀態 (按鈕圖示與樣式)
-            this.uiManager.updateImmersionUI(active);
-
+            let to: AppMode;
             if (active) {
-                document.body.classList.add("immersion-mode");
-                this.idleManager.clear();
-
-                // determine if we should enter Artwork mode or Zen mode
-                // if targetMode is 'zen', we explicitly want isArtwork=false
-                let targetIsArtwork = wasArtwork;
-                if (targetMode === "artwork") targetIsArtwork = true;
-                if (targetMode === "zen") targetIsArtwork = false;
-
-                // 進入沉浸模式時強制啟動幻燈片 (Force start slideshow in immersion mode)
-                window.dispatchEvent(
-                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                        detail: { action: "start", isArtwork: targetIsArtwork },
-                    }),
-                );
-
-                if (document.body.classList.contains("initial-welcome")) {
-                    this.idleManager.reset();
+                if (targetMode === "artwork") {
+                    to = "artwork";
+                } else if (targetMode === "zen") {
+                    to = "zen";
+                } else {
+                    to = document.body.classList.contains("initial-welcome") ? "welcome" : "zen";
                 }
             } else {
-                document.body.classList.remove("immersion-mode");
-                document.body.classList.remove("initial-welcome");
+                to = targetMode === "artwork" ? "artwork" : "calendar";
+            }
 
-                // 停止幻燈片播放 (Stop slideshow)
+            window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to } }));
+        }) as EventListener);
+    }
+
+    private applyModeSideEffects(from: AppMode, to: AppMode): void {
+        switch (to) {
+            case "welcome":
+                this.idleManager.clear();
+                this.uiManager.updateImmersionUI(true);
+                window.dispatchEvent(
+                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
+                        detail: { action: "start", isArtwork: false },
+                    }),
+                );
+                break;
+            case "artwork":
+                this.idleManager.clear();
+                this.uiManager.updateImmersionUI(true);
+                window.dispatchEvent(
+                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
+                        detail: { action: "start", isArtwork: true },
+                    }),
+                );
+                window.dispatchEvent(
+                    new CustomEvent<ClosePanelsDetail>("close-panels", {
+                        detail: { showGrid: false },
+                    }),
+                );
+                this.idleManager.reset();
+                break;
+            case "zen":
+                this.idleManager.clear();
+                this.uiManager.updateImmersionUI(true);
+                window.dispatchEvent(
+                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
+                        detail: { action: "start", isArtwork: false },
+                    }),
+                );
+                window.dispatchEvent(
+                    new CustomEvent<ClosePanelsDetail>("close-panels", {
+                        detail: { showGrid: false },
+                    }),
+                );
+                if (from === "artwork") {
+                    this.uiManager.showZenHint();
+                }
+                break;
+            case "calendar":
+                this.uiManager.updateImmersionUI(false);
                 window.dispatchEvent(
                     new CustomEvent<SlideshowControlDetail>("slideshow-control", {
                         detail: { action: "stop" },
                     }),
                 );
-
-                // 判斷是否強制切換至 Calendar 或 Artwork，否則執行喚醒邏輯
-                if (targetMode === "calendar") {
-                    // Explicitly switch to Calendar Mode
-                    this.uiManager.updateArtworkModeUI(false);
-                    window.dispatchEvent(
-                        new CustomEvent<ClosePanelsDetail>("close-panels", {
-                            detail: { showGrid: true },
-                        }),
-                    );
-                } else if (targetMode === "artwork") {
-                    // Explicitly switch to Artwork Mode (though usually active=true for this)
-                    this.uiManager.updateArtworkModeUI(true);
-                    window.dispatchEvent(
-                        new CustomEvent<ClosePanelsDetail>("close-panels", {
-                            detail: { showGrid: false },
-                        }),
-                    );
-                } else {
-                    // 喚醒時的還原行為 (Wakeup restoration - default behavior)
-                    if (wasArtwork) {
-                        // 正處於映畫模式：還原藝廊選單，不顯示日曆網格
-                        this.uiManager.updateArtworkModeUI(true);
-                        window.dispatchEvent(
-                            new CustomEvent<ClosePanelsDetail>("close-panels", {
-                                detail: { showGrid: false },
-                            }),
-                        );
-                    } else {
-                        // 正處於日曆模式：回到日曆網格封面
-                        window.dispatchEvent(
-                            new CustomEvent<ClosePanelsDetail>("close-panels", {
-                                detail: { showGrid: true },
-                            }),
-                        );
-                    }
-                }
-            }
-        }) as EventListener);
+                window.dispatchEvent(
+                    new CustomEvent<ClosePanelsDetail>("close-panels", {
+                        detail: { showGrid: true },
+                    }),
+                );
+                break;
+            case "note":
+                this.uiManager.updateImmersionUI(false);
+                break;
+        }
     }
 }

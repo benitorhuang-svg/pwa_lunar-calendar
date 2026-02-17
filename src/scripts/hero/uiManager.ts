@@ -1,8 +1,5 @@
 import type {
-    ClosePanelsDetail,
     RequestHeroChangeDetail,
-    SlideshowControlDetail,
-    WelcomeModeDetail,
 } from "./types";
 
 import { HeroGalleryManager } from "./galleryManager";
@@ -39,60 +36,38 @@ export class HeroUIManager {
     }
 
     public bindBackgroundClick(): void {
-        const handler = (e: Event) => {
-            // Check if we are interacting with a control that shouldn't trigger background click
+        const handler = (e: MouseEvent) => {
+            if (e.button !== 0) return;
+
+            const target = e.target as HTMLElement | null;
+            if (!target) return;
+
+            // Ignore interactive elements / overlays / panels
             if (
-                (e.target as HTMLElement).closest(
-                    "button, .hero-dock, .hero-gallery-submenu, .music-control-wrapper",
+                target.closest(
+                    "button, a, input, textarea, select, .hero-dock, .hero-gallery-submenu, .music-control-wrapper, .faq-panel, .faq-panel-overlay.active, .suspension-panel, .panel-back-overlay, #welcomeInteractionOverlay, .day-cell",
                 )
             ) {
                 return;
             }
 
-            e.stopPropagation();
-
             const isImmersion = document.body.classList.contains("immersion-mode");
             const isArtwork = document.body.classList.contains("mode-artwork");
 
             if (!isImmersion) {
-                // Status 2 (Calendar) -> Status 3 (Artwork)
-                window.dispatchEvent(
-                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                        detail: { action: "start", isArtwork: true },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent<ClosePanelsDetail>("close-panels", {
-                        detail: { showGrid: false },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent<WelcomeModeDetail>("welcome-mode", {
-                        detail: { active: true, targetMode: "artwork" },
-                    }),
-                );
-            } else {
-                if (isArtwork) {
-                    // Status 3 (Artwork) -> Status 4 (Zen)
-                    // We stay in immersion mode but disable Artwork UI
-                    window.dispatchEvent(
-                        new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                            detail: { action: "start", isArtwork: false },
-                        }),
-                    );
-                    this.showZenGestureHint();
-                } else {
-                    // Status 4 (Zen) -> Status 3 (Artwork)
-                    window.dispatchEvent(
-                        new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                            detail: { action: "start", isArtwork: true },
-                        }),
-                    );
-                }
+                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
+                return;
             }
+
+            if (isArtwork) {
+                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "zen" } }));
+                return;
+            }
+
+            window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
         };
 
-        this.heroBgContainer?.addEventListener("click", handler);
+        document.addEventListener("click", handler, true);
     }
 
     // --- 事件綁定 (Event Binding) ---
@@ -103,53 +78,15 @@ export class HeroUIManager {
             const isArtwork = document.body.classList.contains("mode-artwork");
 
             if (isArtwork) {
-                // Enter Zen Mode (Immersion with no UI)
-                // Stay in immersion mode but disable Artwork UI
-
-                // 1. Set internal state to "Not Artwork" (Zen)
-                window.dispatchEvent(
-                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                        detail: { action: "start", isArtwork: false },
-                    }),
-                );
-
-                this.showZenGestureHint();
-
-                // 2. IMPORTANT: Force 'immersion-mode' class to stay / be added
-                // Just in case 'slideshow-control' handler removed it or it was missing
-                document.body.classList.add("immersion-mode");
-
-                // 3. Ensure UI knows we are in immersion
-                window.dispatchEvent(
-                    new CustomEvent<WelcomeModeDetail>("welcome-mode", {
-                        detail: { active: true, targetMode: "zen" }, // Use "zen" or just rely on active: true
-                    }),
-                );
+                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "zen" } }));
             } else {
-                window.dispatchEvent(
-                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                        detail: { action: "start", isArtwork: true },
-                    }),
-                );
+                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
                 window.dispatchEvent(
                     new CustomEvent<RequestHeroChangeDetail>("request-hero-change", {
                         detail: {
                             changeBg: true,
                             transitionOverride: "slide-from-right",
                         },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent<ClosePanelsDetail>("close-panels", {
-                        detail: { showGrid: false },
-                    }),
-                );
-
-                // Ensure we are in immersion mode (Artwork is a type of immersion)
-                document.body.classList.add("immersion-mode");
-                window.dispatchEvent(
-                    new CustomEvent<WelcomeModeDetail>("welcome-mode", {
-                        detail: { active: true, targetMode: "artwork" },
                     }),
                 );
             }
@@ -196,29 +133,9 @@ export class HeroUIManager {
             const isImmersion = document.body.classList.contains("immersion-mode");
 
             if (isImmersion) {
-                // Immersion (Zen or Artwork) -> Calendar Mode
-                window.dispatchEvent(
-                    new CustomEvent<WelcomeModeDetail>("welcome-mode", {
-                        detail: { active: false, targetMode: "calendar" },
-                    }),
-                );
+                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "calendar" } }));
             } else {
-                // Calendar Mode -> Artwork Mode
-                window.dispatchEvent(
-                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                        detail: { action: "start", isArtwork: true },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent<ClosePanelsDetail>("close-panels", {
-                        detail: { showGrid: false },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent<WelcomeModeDetail>("welcome-mode", {
-                        detail: { active: true },
-                    }),
-                );
+                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
             }
         };
         const btn = this.modeUIManager.immersionBtn;
@@ -386,6 +303,10 @@ export class HeroUIManager {
     public updatePanelsForType(type?: "today" | "yearMonth"): void {
         this.layoutManager.updatePanelsForType(type);
         this.modeUIManager.changeImageBtn?.classList.remove("active");
+    }
+
+    public showZenHint(): void {
+        this.showZenGestureHint();
     }
 
     private bindFaqButton(): void {

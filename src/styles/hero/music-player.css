@@ -59,7 +59,15 @@ body.immersion-mode .immersion-toggle-btn .icon-calendar {
     display: block;
 }
 
+body.mode-artwork .immersion-toggle-btn .icon-calendar {
+    display: block;
+}
+
 body.immersion-mode .immersion-toggle-btn .icon-immersion {
+    display: none;
+}
+
+body.mode-artwork .immersion-toggle-btn .icon-immersion {
     display: none;
 }
 

@@ -2,11 +2,8 @@ import type { HeroIdleManager } from "../idleManager";
 import type { HeroImageManager } from "../imageManager";
 import type { HeroSlideshowManager } from "../slideshowManager";
 import type {
-    ClosePanelsDetail,
     NavigateMonthDetail,
     RenderHeroDetail,
-    SlideshowControlDetail,
-    WelcomeModeDetail,
 } from "../types";
 
 import { HeroUIManager } from "../uiManager";
@@ -80,35 +77,9 @@ export class NavigationHandler {
                 document.body.classList.contains("initial-welcome");
 
             if (isImmersion) {
-                // Go to Calendar Grid
-                window.dispatchEvent(
-                    new CustomEvent<WelcomeModeDetail>("welcome-mode", {
-                        detail: { active: false, targetMode: "calendar" },
-                    }),
-                );
-                document.body.classList.remove("initial-welcome");
-                window.dispatchEvent(
-                    new CustomEvent<ClosePanelsDetail>("close-panels", {
-                        detail: { showGrid: true },
-                    }),
-                );
+                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "calendar" } }));
             } else {
-                // Go to Immersion Mode (Artwork Mode)
-                window.dispatchEvent(
-                    new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                        detail: { action: "start", isArtwork: true },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent<ClosePanelsDetail>("close-panels", {
-                        detail: { showGrid: false },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent<WelcomeModeDetail>("welcome-mode", {
-                        detail: { active: true },
-                    }),
-                );
+                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
             }
         });
     }

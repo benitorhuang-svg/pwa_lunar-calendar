@@ -73,7 +73,7 @@ export class HeroIdleManager {
 
             // 強制確保進入沈浸模式 (Dispatch event to hide ALL UI)
             this.lastToggleTime = Date.now();
-            window.dispatchEvent(new CustomEvent("welcome-mode", { detail: { active: true } }));
+            window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "zen" } }));
         }, this.IDLE_TIMEOUT);
     }
     public setArtworkMode(value: boolean): void {

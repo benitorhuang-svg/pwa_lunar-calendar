@@ -128,7 +128,7 @@ export class AppEventOrchestrator {
         if (!activePanel && !isGrid) {
             window.dispatchEvent(
                 new CustomEvent<SlideshowControlDetail>("slideshow-control", {
-                    detail: { action: "start" },
+                    detail: { action: "start", isArtwork: false },
                 }),
             );
         } else {
@@ -265,11 +265,22 @@ export class AppEventOrchestrator {
         window.addEventListener("toggle-grid", () => {
             const mode = this.state.getMode();
 
-            // 如果正處於沈浸/歡迎模式，點擊日曆按鈕應視為「要求回歸日曆模式」
+            // Bottom day button now works as mode toggle:
+            // artwork/zen/welcome -> calendar
+            // calendar -> artwork
             if (mode === "artwork" || mode === "zen" || mode === "welcome") {
                 window.dispatchEvent(
-                    new CustomEvent("welcome-mode", {
-                        detail: { active: false, targetMode: "calendar" },
+                    new CustomEvent<{ to: AppMode }>("transition-mode", {
+                        detail: { to: "calendar" },
+                    }),
+                );
+                return;
+            }
+
+            if (mode === "calendar") {
+                window.dispatchEvent(
+                    new CustomEvent<{ to: AppMode }>("transition-mode", {
+                        detail: { to: "artwork" },
                     }),
                 );
                 return;

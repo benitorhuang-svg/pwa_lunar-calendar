@@ -33,7 +33,7 @@ export class PanelEventHandlers {
 
     private setupClickHandlers(): void {
         const handleClosePanel = () => {
-            window.dispatchEvent(new CustomEvent("welcome-mode", { detail: { active: false } }));
+            window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "calendar" } }));
             window.dispatchEvent(new CustomEvent("close-panels", { detail: { showGrid: true } }));
         };
 
