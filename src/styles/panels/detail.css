@@ -208,19 +208,31 @@ select.panel-font-select option,
 .detail-sub-main {
     font-family: var(--font-calligraphy);
     font-size: 1.1rem;
-    margin-top: 6px;
+    margin-top: 8px;
     display: flex;
-    align-items: center;
-    gap: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
     color: var(--cal-lunar-text);
 }
 
-.lunar-extra-info {
+.lunar-info-row-1 {
     display: flex;
     align-items: center;
     gap: 12px;
-    /* Reduced opacity/size for secondary info */
-    opacity: 0.85;
+}
+
+.lunar-info-row-2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.term-tag {
+    color: var(--gold-accent);
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
 }
 
 .lucky-bar {
@@ -237,6 +249,11 @@ select.panel-font-select option,
     font-weight: 600;
     font-size: 1rem;
     letter-spacing: 0.05em;
+}
+
+.lunar-main {
+    font-size: 1.15rem;
+    opacity: 0.9;
 }
 
 .detail-right-cluster {

@@ -133,8 +133,7 @@ export class CalendarRenderer {
         const displayMonth = mapMonth(lunarText.month);
         calendarTitle.innerHTML = `
             <div class="title-main">
-                <span class="lunar-ganzhi">${lunarText.ganzhi}年</span>
-                <span class="lunar-sep">·</span>
+                <span class="lunar-ganzhi">農曆</span>
                 <span class="lunar-month">${displayMonth}月</span>
             </div>
             <div class="title-sub" style="font-size: 0.9rem; opacity: 0.4; font-family: var(--font-serif-num); margin-left: 10px; font-weight: 300;">

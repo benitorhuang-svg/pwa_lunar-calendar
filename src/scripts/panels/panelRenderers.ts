@@ -60,8 +60,16 @@ export class PanelRenderers {
                 ${this.renderSideAccent(ganzhi, monthGZ, dayGZ)}
                 <div class="panel-main-content">
                     <div class="detail-top-section">
-                        ${this.renderDateDisplay(date, monthText, dayText, jianchu, luck, festival)}
-                        ${this.renderRightCluster(zodiac, termPeriod)}
+                        ${this.renderDateDisplay(
+            date,
+            monthText,
+            dayText,
+            jianchu,
+            luck,
+            festival,
+            termPeriod?.current,
+        )}
+                        ${this.renderRightCluster(zodiac)}
                     </div>
                     ${this.renderYijiSection(yi, ji)}
                 </div>
@@ -170,8 +178,12 @@ export class PanelRenderers {
         jianchu: string,
         luck: string,
         festival: string | null,
+        termName: string | null,
     ): string {
         const finalizedMonth = monthText.endsWith("月") ? monthText : monthText + "月";
+        // Filter out default "平吉" or similar from the date line
+        const displayTerm = termName && termName !== "平吉" ? termName : "";
+
         return `
             <div class="date-display">
                 <div class="detail-header">
@@ -179,8 +191,11 @@ export class PanelRenderers {
                     <span class="year-label">${date.getFullYear()}</span>
                 </div>
                 <div class="detail-sub-main">
-                    <span class="lunar-main">${finalizedMonth}.${dayText}</span>
-                    <div class="lunar-extra-info">
+                    <div class="lunar-info-row-1">
+                        ${displayTerm ? `<span class="term-tag">${displayTerm}</span>` : ""}
+                        <span class="lunar-main">${finalizedMonth}.${dayText}</span>
+                    </div>
+                    <div class="lunar-info-row-2">
                         <span class="lucky-bar">${jianchu}日 · ${luck}</span>
                         ${festival ? `<span class="fest-tag">${festival}</span>` : ""}
                     </div>
@@ -188,13 +203,11 @@ export class PanelRenderers {
             </div>`;
     }
 
-    private renderRightCluster(zodiac: string, termPeriod: any): string {
+    private renderRightCluster(zodiac: string): string {
         const sealChar = zodiac && zodiac.length > 0 ? zodiac.charAt(0) : "曆";
-        const termName = termPeriod?.current || "平吉";
         return `
             <div class="detail-right-cluster">
                 <div class="traditional-seal">${sealChar}</div>
-                <div class="solar-term">${termName}</div>
             </div>`;
     }
 
