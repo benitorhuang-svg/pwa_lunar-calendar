@@ -4,131 +4,193 @@
     left: 20px;
     /* Aligned with right margin */
     z-index: 2100;
-    pointer-events: none;
+    pointer-events: auto;
     transition: opacity var(--duration-base) var(--ease-out-expo);
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.hero-info-strip {
+/* Hero Function Group (Left) - Calendar Title */
+.hero-function-group {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 0;
-    padding: 6px 20px;
-    padding-bottom: 8px;
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: var(--glass-border);
-    border-radius: var(--radius-full);
-    color: var(--text-main);
-    font-family: var(--font-serif-num);
-    box-shadow: var(--shadow-lg);
-    pointer-events: auto;
-
-    /* Button Reset & Interactive */
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    position: relative;
-    transition: all 0.3s var(--ease-out-expo);
-    overflow: hidden;
-    /* For shine effects */
+    padding: 10px 0;
 }
 
-.today-date-row {
+.hero-function-group .calendar-title {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.hero-function-group .title-row-flat {
     display: flex;
     align-items: baseline;
+    gap: 12px;
+}
+
+.hero-function-group .lunar-group {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.hero-function-group .lunar-ganzhi {
+    font-size: 1.2rem;
+    font-family: var(--font-calligraphy);
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.05em;
+}
+
+.hero-function-group .lunar-month {
+    font-family: var(--font-calligraphy);
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.1em;
+}
+
+/* Hero Year/Month Selector (Top Left) */
+.hero-year-month-selector {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-family: var(--font-serif-num);
+}
+
+
+
+.hero-year-month-selector .calendar-label-btn {
+    background: rgba(10, 10, 10, 0.65);
+    /* Darker for better contrast */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    /* Subtle gold border */
+    color: rgba(255, 255, 255, 0.9);
+    padding: 8px 20px;
+    border-radius: 12px;
+    /* Soft rounding */
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
     gap: 6px;
-    line-height: 1.2;
+    min-width: 90px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-.today-action-row {
-    font-size: 0.75rem;
-    line-height: 1.4;
-    opacity: 0.7;
+.hero-year-month-selector .calendar-label-btn:hover {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: rgba(212, 175, 55, 0.6);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+.hero-year-month-selector .calendar-label-btn.active,
+.hero-year-month-selector .calendar-label-btn:active {
+    background: #d4af37;
+    border-color: #d4af37;
+    color: #000;
+    transform: scale(0.96);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+
+
+.hero-year-month-selector .header-year {
+    font-size: 1.4rem;
     font-weight: 500;
-    letter-spacing: 0.15em;
-    font-family: var(--font-serif-tw, serif);
-    transition: opacity 0.3s ease;
+    /* Slightly bolder for readability */
+    letter-spacing: 0.05em;
+    font-family: var(--font-serif-num);
 }
 
-.hero-info-strip:hover .today-action-row {
-    opacity: 1;
-    color: var(--color-accent, #d4af37);
+.hero-year-month-selector .header-month {
+    font-size: 1.4rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    font-family: var(--font-serif-num);
 }
 
-.hero-info-strip:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-1px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.hero-info-strip:active {
-    transform: translateY(1px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.underline-indicator {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg,
-            transparent 10%,
-            rgba(212, 175, 55, 0.4) 50%,
-            transparent 90%);
+.hero-year-month-selector .unit {
+    font-size: 0.9rem;
+    font-family: var(--font-calligraphy);
     opacity: 0.6;
-    transition: all 0.4s ease;
+    font-weight: 400;
+    margin-left: 2px;
+    color: var(--gold-accent);
+    /* Make unit gold by default for style */
 }
 
-.hero-info-strip:hover .underline-indicator {
-    opacity: 1;
-    height: 3px;
-    background: linear-gradient(90deg,
-            transparent 0%,
-            #d4af37 50%,
-            transparent 100%);
-    box-shadow: 0 -2px 8px rgba(212, 175, 55, 0.4);
+/* Remove separator as buttons are distinct enough */
+.hero-year-month-selector .header-sep {
+    display: none;
 }
 
-#infoYear {
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: var(--ls-wide);
-    color: var(--text-muted);
+
+.hero-year-month-selector .header-sep {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 300;
+    align-self: center;
+    margin: 0 2px;
 }
 
-#infoMonth,
-#infoDay {
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: var(--ls-tight);
-    color: var(--ink-black);
+.hero-function-group .header-sep {
+    font-size: 1.1rem;
+    margin: 0 4px;
+    opacity: 0.5;
+    font-weight: 300;
+}
+
+.hero-function-group .calendar-label-btn {
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.hero-function-group .calendar-label-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--gold-accent);
+}
+
+.selector-box:active {
+    transform: scale(0.95);
+}
+
+
+/* Ensure inner spans don't block clicks or styling */
+.selector-box span {
+    pointer-events: none;
+}
+
+
+/* Reset inner text spans */
+#infoYear,
+#infoMonth {
+    font: inherit;
+    color: inherit;
+    pointer-events: none;
 }
 
 .info-sep {
-    opacity: 0.25;
+    opacity: 0.2;
     font-family: var(--font-serif-num);
     font-weight: 300;
-    margin: 0 4px;
-}
-
-.info-sep:first-of-type {
-    margin-right: 8px;
-    margin-left: 6px;
-    font-size: 0.9rem;
-}
-
-.info-sep:last-of-type {
-    margin: 0 6px;
-    font-size: 1.1rem;
-    opacity: 0.2;
+    margin: 0 10px;
+    font-size: 1.2rem;
 }
 
 .label {
@@ -159,6 +221,11 @@
     pointer-events: auto;
     position: relative;
     overflow: hidden;
+}
+
+/* Hide Year/Month Selector in Artwork Mode (Only show in Calendar Mode) */
+body.mode-artwork .hero-year-month-selector {
+    display: none !important;
 }
 
 .nav-box:hover {

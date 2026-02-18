@@ -145,18 +145,28 @@ export class CalendarRenderer {
             );
         }
 
-        calendarTitle.innerHTML = `
-            <div class="title-row-flat">
+        // 1. Render Lunar Info in Calendar Card
+        if (calendarTitle) {
+            calendarTitle.innerHTML = `
                 <div class="lunar-group">
                     <span class="lunar-ganzhi">${ganzhi}</span>
                     <span class="lunar-month">${displayMonth}月</span>
                 </div>
-                <div class="greg-group-selectors" id="calendarGregGroup">
-                    <button id="labelCalendarYear" class="calendar-label-btn" data-type="year" type="button">${year}</button>
-                    <span class="select-sep">.</span>
-                    <button id="labelCalendarMonth" class="calendar-label-btn" data-type="month" type="button">${(month + 1).toString().padStart(2, "0")}</button>
-                </div>
-            </div>
-        `;
+            `;
+        }
+
+        // 2. Render Gregorian Selector in Hero Header (Top Left)
+        const heroSelector = document.getElementById("heroYearMonthSelector");
+        if (heroSelector) {
+            heroSelector.innerHTML = `
+                <button class="calendar-label-btn" data-type="year" aria-label="選擇年份">
+                    <span class="header-year">${year}</span><span class="unit">年</span>
+                </button>
+                <div class="header-sep"></div>
+                <button class="calendar-label-btn" data-type="month" aria-label="選擇月份">
+                    <span class="header-month">${(month + 1).toString().padStart(2, "0")}</span><span class="unit">月</span>
+                </button>
+            `;
+        }
     }
 }

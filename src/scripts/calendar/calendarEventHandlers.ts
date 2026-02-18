@@ -181,6 +181,10 @@ export class CalendarEventHandlers {
                     }
                 }
                 e.stopPropagation();
+            } else if (target.closest(".calendar-today-btn")) {
+                // Return to Today from Card
+                console.log("[Calendar] Card Back to Today clicked");
+                window.dispatchEvent(new CustomEvent("go-to-today"));
             } else {
                 const popup = document.getElementById("quickSelectorPopup");
                 if (popup && !popup.classList.contains("hidden")) {

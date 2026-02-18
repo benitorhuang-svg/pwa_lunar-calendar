@@ -4,17 +4,12 @@ import "../../styles/hero/header.css";
 
 <!-- Dynamic Header: Only the Info Strip remains for a clean magazine look -->
 <header class="hero-header">
-    <button class="hero-info-strip" id="heroInfoStrip" title="回到今日" aria-label="回到今日">
-        <div class="today-date-row">
-            <span id="infoYear"></span><span class="label">年</span>
-            <span class="info-sep">|</span>
-            <span id="infoMonth"></span><span class="label">月</span>
-            <span class="info-sep">/</span>
-            <span id="infoDay"></span><span class="label">日</span>
-        </div>
-        <div class="today-action-row">回到今日</div>
-        <span class="underline-indicator"></span>
-    </button>
+    <div class="hero-function-group">
+        <div id="heroYearMonthSelector" class="hero-year-month-selector"></div>
+    </div>
+
+    <!-- Quick Selector Popup (Global context) -->
+    <div id="quickSelectorPopup" class="quick-selector-popup hidden"></div>
 
     <!-- Slideshow Settings (Top-left) -->
     <div class="slideshow-settings">
