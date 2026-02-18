@@ -98,13 +98,10 @@
 }
 
 #infoYear {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 500;
     letter-spacing: var(--ls-wide);
     color: var(--text-muted);
-    margin-right: 8px;
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
-    padding-right: 8px;
 }
 
 #infoMonth,
@@ -115,10 +112,23 @@
     color: var(--ink-black);
 }
 
-.info-dot {
-    opacity: 0.3;
+.info-sep {
+    opacity: 0.25;
+    font-family: var(--font-serif-num);
+    font-weight: 300;
+    margin: 0 4px;
+}
+
+.info-sep:first-of-type {
+    margin-right: 8px;
+    margin-left: 6px;
+    font-size: 0.9rem;
+}
+
+.info-sep:last-of-type {
+    margin: 0 6px;
     font-size: 1.1rem;
-    margin: 0 2px;
+    opacity: 0.2;
 }
 
 .label {

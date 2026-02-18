@@ -4,7 +4,8 @@
     /* Specific Logic */
     justify-content: flex-start;
     justify-content: flex-start;
-    padding: 25px 16px;
+    padding: 15px 16px 25px;
+    /* Added more top breathing room */
 
     z-index: 1500;
 
@@ -16,9 +17,7 @@
     transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
     pointer-events: none;
     position: absolute;
-    /* Changed from fixed/relative to absolute */
-    top: 60px;
-    /* Adjust top padding */
+    /* Removed fixed top to avoid stretching mess; position is now controlled by template bottom */
     left: 0;
     right: 0;
     width: 100%;
@@ -41,41 +40,71 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
+    /* Increased for more separation from grid */
     /* Increased for more top breathing room */
-    position: relative;
-    pointer-events: auto;
     width: 100%;
+    padding: 0 10px;
+    /* Side padding to keep content away from card edges */
 }
 
 .calendar-title {
     display: flex;
-    align-items: baseline;
-    /* Align by text baseline for better harmony */
-    gap: 15px;
-    position: relative;
-    padding: 0 10px;
-}
-
-.title-main {
-    font-family: var(--font-calligraphy);
-    font-size: 1.5rem;
-    color: var(--cal-header-text);
-    letter-spacing: 0.15em;
-    display: flex;
     align-items: center;
-    gap: 6px;
+    width: 100%;
+    position: relative;
+    padding: 0 5px;
 }
 
-.title-sub {
+.title-row-flat {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.lunar-group {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+}
+
+.greg-group {
+    display: flex;
+    align-items: baseline;
+    opacity: 0.45;
+}
+
+
+.lunar-prefix {
+    font-size: 1.4rem;
+    font-family: var(--font-calligraphy);
+    color: var(--cal-header-text);
+    opacity: 0.85;
+}
+
+.lunar-ganzhi {
+    font-size: 2rem;
+    font-family: var(--font-calligraphy);
+    color: var(--cal-header-text);
+    opacity: 0.9;
+    letter-spacing: 0.05em;
+}
+
+.lunar-month {
+    font-family: var(--font-calligraphy);
+    font-size: 2.2rem;
+    color: var(--cal-header-text);
+    letter-spacing: 0.1em;
+    line-height: normal;
+}
+
+.greg-date {
     font-family: var(--font-serif-num);
-    font-size: 0.95rem;
+    font-size: 1.5rem;
     color: var(--cal-text);
-    opacity: 0.35;
     font-weight: 300;
     letter-spacing: 0.05em;
-    display: flex;
-    align-items: center;
 }
 
 /* Matching Ink Wash from Selector */
@@ -115,11 +144,15 @@
     opacity: 1;
 }
 
+.nav-center-group {
+    width: 100%;
+    flex: 1;
+}
+
 .title-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 20px;
+    justify-content: space-between;
     width: 100%;
     position: relative;
 }
@@ -148,41 +181,58 @@
     flex: 1;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    grid-auto-rows: minmax(48px, 1fr);
-    padding-top: 2px;
+    grid-auto-rows: 1fr;
+    padding: 2px 0;
+    /* More side breathing room inside grid */
     height: auto;
 }
 
 /* --- Calendar Responsive Breakpoints --- */
 @media (min-width: 768px) {
     .calendar-section {
-        padding: 30px 24px;
+        padding: 50px 24px 30px;
     }
 
     .title-main {
-        font-size: 1.7rem;
+        font-size: 2.2rem;
     }
 
     .week-header {
-        font-size: 0.95rem;
-        padding: 0 0 8px 0;
+        font-size: 1rem;
+        padding: 0 0 10px 0;
     }
 
     .days-grid {
-        grid-auto-rows: minmax(56px, 1fr);
+        grid-auto-rows: minmax(60px, 1fr);
+        /* Much taller cells for green box look */
+        gap: 4px;
     }
 }
 
 @media (min-width: 1024px) {
     .calendar-section {
-        padding: 35px 30px;
+        padding: 65px 32px 40px;
     }
 
     .title-main {
-        font-size: 1.85rem;
+        gap: 15px;
+    }
+
+    .lunar-month {
+        font-size: 2.4rem;
+    }
+
+    .lunar-prefix {
+        font-size: 2rem;
+    }
+
+    .title-sub {
+        font-size: 1.1rem;
     }
 
     .days-grid {
-        grid-auto-rows: minmax(64px, 1fr);
+        grid-auto-rows: minmax(70px, 1fr);
+        /* Tall, grand cells */
+        gap: 3px;
     }
 }

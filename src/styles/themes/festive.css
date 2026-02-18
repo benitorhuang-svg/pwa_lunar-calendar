@@ -23,11 +23,21 @@
 
     /* Typography - Ivory on Red */
     --cal-text: #fffaf0;
-    /* Floral White */
+    --cal-text-muted: rgba(255, 255, 255, 0.6);
     --cal-lunar-text: #ffe4b5;
-    /* Moccasin */
     --cal-header-text: #ffd700;
-    /* Gold */
+    --cal-accent: #ffd700;
+
+    /* Term Flow & Contrast Extensions */
+    --cal-term-color: #ffd700;
+    --cal-border-subtle: rgba(255, 215, 0, 0.25);
+    /* Golden line */
+    --cal-card-bg: rgba(0, 0, 0, 0.25);
+    --cal-card-border: rgba(255, 215, 0, 0.15);
+    --cal-card-text: #fffaf0;
+    --cal-card-text-muted: #ffe4b5;
+    --cal-card-accent: rgba(255, 215, 0, 0.15);
+    --cal-card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 
     /* Interactive Elements - Pure Gold */
     --cal-nav-bg: rgba(255, 215, 0, 0.12);
@@ -37,8 +47,6 @@
     /* Gold Ingot */
     --cal-today-text: #8b0000;
     /* Deep Red Text */
-
-    --cal-term-color: #ffd700;
 
     /* Panel Specifics */
     --panel-accent: #ffd700;

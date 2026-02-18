@@ -134,11 +134,15 @@ export class CalendarRenderer {
         const ganzhi = lunarText.ganzhi ? `${lunarText.ganzhi}年` : ""; // Ensure 'Year' suffix
 
         calendarTitle.innerHTML = `
-            <div class="title-main">
-                <span class="lunar-label">農曆${ganzhi} ${displayMonth}月</span>
-            </div>
-            <div class="title-sub" style="font-size: 0.95rem; opacity: 0.5; font-family: var(--font-serif-num); margin-left: 12px; font-weight: 300; letter-spacing: 0.05em;">
-                <span class="greg-date">${year}.${(month + 1).toString().padStart(2, "0")}</span>
+            <div class="title-row-flat">
+                <div class="lunar-group">
+                    <span class="lunar-prefix">農曆</span>
+                    <span class="lunar-ganzhi">${ganzhi}</span>
+                    <span class="lunar-month">${displayMonth}月</span>
+                </div>
+                <div class="greg-group">
+                    <span class="greg-date">${year}.${(month + 1).toString().padStart(2, "0")}</span>
+                </div>
             </div>
         `;
     }

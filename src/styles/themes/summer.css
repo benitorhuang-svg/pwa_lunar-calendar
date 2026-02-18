@@ -22,9 +22,22 @@
     /* Typography - Deep Abyss & Steel Blue (Enhanced Contrast) */
     --cal-text: #002244;
     /* Near Black Blue */
+    --cal-text-muted: #4a6a8a;
     --cal-lunar-text: #004d6d;
     /* Dark Teal */
     --cal-header-text: #002244;
+    --cal-accent: #003366;
+
+    /* Term Flow & Contrast Extensions */
+    --cal-term-color: #005f99;
+    --cal-border-subtle: rgba(0, 34, 68, 0.15);
+    /* Dark blue tint line */
+    --cal-card-bg: rgba(0, 34, 68, 0.04);
+    --cal-card-border: rgba(0, 34, 68, 0.08);
+    --cal-card-text: #002244;
+    --cal-card-text-muted: #555;
+    --cal-card-accent: rgba(0, 0, 0, 0.05);
+    --cal-card-shadow: none;
 
     /* Hero Overrides */
     --hero-text-color: #003355;
@@ -34,13 +47,11 @@
     --panel-item-bg: rgba(0, 100, 150, 0.05);
     /* Very light blue tint */
     --panel-border: rgba(135, 206, 250, 0.3);
-    --panel-divider: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(135, 206, 250, 0.3) 20%,
-        rgba(135, 206, 250, 0.3) 80%,
-        transparent 100%
-    );
+    --panel-divider: linear-gradient(90deg,
+            transparent 0%,
+            rgba(135, 206, 250, 0.3) 20%,
+            rgba(135, 206, 250, 0.3) 80%,
+            transparent 100%);
 
     /* Interactive Elements - Ocean Gems */
     --cal-nav-bg: rgba(0, 119, 190, 0.08);
@@ -50,8 +61,6 @@
     --cal-today-bg: linear-gradient(135deg, #48cae4 0%, #0077b6 100%);
     --cal-today-text: #ffffff;
 
-    --cal-term-color: #ad1457;
-    /* 更深洋紅，提高與淡藍背景的對比 (Deep Magenta) */
     --cal-festival-red: #c2185b;
     /* 節慶紅 */
 

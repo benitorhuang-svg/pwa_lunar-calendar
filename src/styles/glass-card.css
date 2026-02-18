@@ -3,19 +3,27 @@
 
 .glass-card-template {
     position: absolute;
-    bottom: 100px !important;
+    bottom: 85px !important;
+    /* Lifted slightly to show full grid */
     top: auto !important;
     left: 0 !important;
     right: 0 !important;
     margin: 0 auto !important;
-    width: min(calc(100% - 32px), 468px) !important;
+    width: min(calc(100% - 32px), 440px) !important;
+    /* Slightly wider for mobile/v1 */
+    /* Balanced width for presence without being overwhelming */
 
     /* Layout constraints */
     display: flex;
     flex-direction: column;
-    height: 68dvh !important;
-    min-height: 0;
-    max-height: none;
+    height: auto !important;
+    min-height: 380px;
+    max-height: 68dvh;
+    /* Slightly increased based on reference */
+    /* Reduced from 75dvh to avoid feeling "too high" */
+    /* Safety limit to avoid header overlap */
+    padding-bottom: 10px;
+    /* Safe space for last row */
 
     /* Appearance */
     /* Frosted White Style (魔砂白) */
@@ -46,7 +54,7 @@
 }
 
 /* Ensure content is above noise */
-.glass-card-template > * {
+.glass-card-template>* {
     position: relative;
     z-index: 1;
 }
@@ -54,14 +62,20 @@
 /* --- Glass Card Responsive Breakpoints --- */
 @media (min-width: 768px) {
     .glass-card-template {
-        width: min(calc(100% - 64px), 600px) !important;
-        border-radius: 48px;
+        width: min(calc(100% - 48px), 760px) !important;
+        border-radius: 56px;
+        padding: 10px;
     }
 }
 
 @media (min-width: 1024px) {
     .glass-card-template {
-        width: min(calc(100% - 80px), 680px) !important;
-        height: 72dvh !important;
+        width: min(calc(100% - 120px), 820px) !important;
+        /* Expanded width for green box look */
+        max-height: 72dvh;
+        /* Increased back slightly for better proportionality */
+        bottom: 80px !important;
+        /* Lowered to fit more height */
+        padding: 15px;
     }
 }

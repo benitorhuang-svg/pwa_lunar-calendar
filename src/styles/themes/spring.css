@@ -21,9 +21,25 @@
     /* Typography - Deep Moss & Sage (Enhanced Contrast) */
     --cal-text: #051a0d;
     /* Dark Forest Green */
+    --cal-text-muted: #556b2f;
+    /* Olive Drab */
     --cal-lunar-text: #1b3818;
     /* Deep Sage */
     --cal-header-text: #051a0d;
+    --cal-accent: #8b4513;
+    /* Saddle Brown for bracket contrast */
+
+    /* Term Flow & Contrast Extensions */
+    --cal-term-color: #006400;
+    /* Dark Green */
+    --cal-border-subtle: rgba(0, 60, 20, 0.15);
+    /* Dark green tint line */
+    --cal-card-bg: rgba(0, 60, 20, 0.04);
+    --cal-card-border: rgba(0, 60, 20, 0.08);
+    --cal-card-text: #051a0d;
+    --cal-card-text-muted: #555;
+    --cal-card-accent: rgba(0, 0, 0, 0.05);
+    --cal-card-shadow: none;
 
     /* Hero Overrides */
     --hero-text-color: #0a2414;
@@ -33,13 +49,11 @@
     --panel-item-bg: linear-gradient(to right, rgba(0, 50, 20, 0.03), rgba(0, 50, 20, 0.06));
     --panel-border: rgba(189, 154, 122, 0.2);
     /* Subtle Gold border */
-    --panel-divider: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(189, 154, 122, 0.3) 20%,
-        rgba(189, 154, 122, 0.3) 80%,
-        transparent 100%
-    );
+    --panel-divider: linear-gradient(90deg,
+            transparent 0%,
+            rgba(189, 154, 122, 0.3) 20%,
+            rgba(189, 154, 122, 0.3) 80%,
+            transparent 100%);
 
     /* Interactive Elements - Blossoms */
     --cal-nav-bg: rgba(34, 139, 34, 0.08);
@@ -49,8 +63,6 @@
     --cal-today-bg: linear-gradient(135deg, #ff9aa2 0%, #ff6f61 100%);
     --cal-today-text: #ffffff;
 
-    --cal-term-color: #0d4511;
-    /* 極深綠色，確保在淡綠背景下清晰 (Darkened for clarity) */
     --cal-festival-red: #c62828;
     /* 深紅 */
 
