@@ -39,6 +39,9 @@
     margin-bottom: 20px;
     width: 100%;
     padding: 0 10px;
+    position: relative;
+    z-index: 2000;
+    /* Ensure header and popups are above grid */
 }
 
 .calendar-title {
@@ -91,12 +94,110 @@
     line-height: normal;
 }
 
-.greg-date {
+.greg-group-selectors {
+    display: flex;
+    align-items: center;
+    gap: 0;
     font-family: var(--font-serif-num);
-    font-size: 1.5rem;
     color: var(--cal-text);
+    opacity: 0.8;
+}
+
+.calendar-label-btn {
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: 1.5rem;
     font-weight: 300;
-    letter-spacing: 0.05em;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    user-select: none;
+    position: relative;
+    z-index: 10;
+}
+
+.calendar-label-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--cal-accent, var(--gold-accent));
+}
+
+.quick-selector-popup {
+    position: absolute;
+    top: 45px;
+    right: 5px;
+    min-width: 220px;
+    /* Force absolute opacity */
+    background: #9e0a0a !important;
+    background-color: #9e0a0a !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    opacity: 1 !important;
+
+    border: 1.5px solid #D4AF37;
+    /* Solid Gold Edge */
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+    z-index: 9000;
+    pointer-events: auto !important;
+    animation: quickPopIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes quickPopIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.quick-grid {
+    display: grid;
+    gap: 8px;
+}
+
+.quick-grid-year {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.quick-grid-month {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.quick-item {
+    background: transparent;
+    border: none;
+    color: var(--cal-text);
+    font-family: var(--font-serif-num);
+    font-size: 1rem;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.quick-item:hover {
+    background: var(--gold-accent);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+}
+
+.select-sep {
+    font-size: 1.5rem;
+    padding: 0 2px;
+    opacity: 0.4;
+}
+
+.quick-selector-popup.hidden {
+    display: none;
 }
 
 /* Matching Ink Wash from Selector */

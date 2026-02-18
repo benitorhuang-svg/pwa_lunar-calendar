@@ -31,6 +31,7 @@ export class CalendarEventHandlers {
         this.setupSwipeHandler();
         this.setupTodayButton();
         this.setupGlobalListeners();
+        this.setupQuickSelector();
     }
 
     private setupClickHandler(): void {
@@ -155,5 +156,71 @@ export class CalendarEventHandlers {
                 window.dispatchEvent(new CustomEvent("go-to-today"));
             });
         }
+    }
+
+    private setupQuickSelector(): void {
+        document.addEventListener("click", (e) => {
+            const target = e.target as HTMLElement;
+            const labelBtn = target.closest(".calendar-label-btn") as HTMLElement;
+
+            if (labelBtn) {
+                const type = labelBtn.dataset.type as "year" | "month";
+                const popup = document.getElementById("quickSelectorPopup");
+                if (popup) {
+                    const isSameType = !popup.classList.contains("hidden") && popup.dataset.activeType === type;
+
+                    if (isSameType) {
+                        // Toggle OFF
+                        popup.classList.add("hidden");
+                        popup.dataset.activeType = "";
+                    } else {
+                        // Show or Switch Type
+                        this.renderQuickGrid(type, popup);
+                        popup.classList.remove("hidden");
+                        popup.dataset.activeType = type;
+                    }
+                }
+                e.stopPropagation();
+            } else {
+                const popup = document.getElementById("quickSelectorPopup");
+                if (popup && !popup.classList.contains("hidden")) {
+                    if (!target.closest("#quickSelectorPopup")) {
+                        popup.classList.add("hidden");
+                        popup.dataset.activeType = "";
+                    }
+                }
+            }
+        });
+    }
+
+    private renderQuickGrid(type: "year" | "month", container: HTMLElement): void {
+        container.innerHTML = "";
+        const grid = document.createElement("div");
+        grid.className = `quick-grid quick-grid-${type}`;
+
+        if (type === "year") {
+            for (let y = 2022; y <= 2031; y++) {
+                const item = document.createElement("button");
+                item.className = "quick-item";
+                item.textContent = y.toString();
+                item.onclick = () => {
+                    window.dispatchEvent(new CustomEvent("year-selected", { detail: y }));
+                    container.classList.add("hidden");
+                };
+                grid.appendChild(item);
+            }
+        } else {
+            for (let m = 0; m < 12; m++) {
+                const item = document.createElement("button");
+                item.className = "quick-item";
+                item.textContent = (m + 1).toString().padStart(2, "0");
+                item.onclick = () => {
+                    window.dispatchEvent(new CustomEvent("month-selected", { detail: m }));
+                    container.classList.add("hidden");
+                };
+                grid.appendChild(item);
+            }
+        }
+        container.appendChild(grid);
     }
 }

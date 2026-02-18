@@ -1,12 +1,12 @@
 import type { HeroIdleManager } from "../idleManager";
-import type { RenderPanelsDetail, ToggleGridViewDetail, TogglePanelDetail } from "../types";
+import type { RenderPanelsDetail, ToggleGridViewDetail } from "../types";
 import type { HeroUIManager } from "../uiManager";
 
 export class PanelUIHandler {
     constructor(
         private uiManager: HeroUIManager,
         private idleManager: HeroIdleManager,
-    ) {}
+    ) { }
 
     public init(): void {
         this.bindEvents();
@@ -37,13 +37,6 @@ export class PanelUIHandler {
             }
         });
 
-        // 切換年月面板按鈕 (Toggle Year/Month Button)
-        this.uiManager.bindToggleYearMonth(() => {
-            this.idleManager.resetInteraction();
-            window.dispatchEvent(
-                new CustomEvent<TogglePanelDetail>("toggle-panel", { detail: "yearMonth" }),
-            );
-        });
     }
 
     private bindEvents(): void {

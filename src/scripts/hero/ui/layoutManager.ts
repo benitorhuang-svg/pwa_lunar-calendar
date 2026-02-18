@@ -18,13 +18,9 @@ export class HeroLayoutManager {
     public get overlay(): HTMLElement | null {
         return this.welcomeOverlay;
     }
-    public get yearMonthBtn(): HTMLElement | null {
-        return this.btnYearMonth;
-    }
 
     private btnDay: HTMLElement | null = null;
 
-    private btnYearMonth: HTMLElement | null = null;
 
     private heroDockWrapper: HTMLElement | null = null;
 
@@ -44,7 +40,6 @@ export class HeroLayoutManager {
         this.heroDockWrapper = document.querySelector(".hero-dock-wrapper");
         this.heroHeader = document.querySelector(".hero-header");
         this.welcomeOverlay = document.getElementById("welcomeInteractionOverlay");
-        this.btnYearMonth = document.getElementById("btnYearMonth");
         this.btnDay = document.getElementById("btnDay");
 
         this.installBtn = document.getElementById("installBtn");
@@ -60,24 +55,13 @@ export class HeroLayoutManager {
     }
 
     public toggleGridView(show: boolean): void {
-        if (show) {
-            // Reset active states for clarity
-            if (this.btnYearMonth) this.btnYearMonth.classList.remove("active");
-        } else {
+        if (!show) {
             this.btnDay?.classList.remove("active");
         }
     }
 
-    public updatePanelsForType(type?: "today" | "yearMonth"): void {
-        if (type === "yearMonth") {
-            if (this.btnYearMonth) {
-                this.btnYearMonth.classList.add("active");
-            }
-        } else if (type === "today") {
-            if (this.btnYearMonth) {
-                this.btnYearMonth.classList.remove("active");
-            }
-        }
+    public updatePanelsForType(_type?: "today" | "yearMonth"): void {
+        // Active state management for panels
         this.btnDay?.classList.remove("active");
     }
 }

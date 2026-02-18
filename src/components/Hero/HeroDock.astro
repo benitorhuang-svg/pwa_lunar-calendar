@@ -62,29 +62,8 @@ const defaultAudio = `${baseUrl}/assets/audio/ambient.mp3`.replace(/\/+/g, "/");
             <span>映畫</span>
         </button>
 
-        <!-- 中間動態按鈕：年月 或 藝廊 (Middle Dynamic Slot) -->
+        <!-- 中間動態按鈕：藝廊管理 (Middle Dynamic Slot) -->
         <div class="middle-control-slot">
-            <!-- 年月按鈕 (圖示 - Clock Icon) -->
-            <button
-                aria-label="選擇年/月"
-                class="dock-item main-btn group-calendar"
-                id="btnYearMonth"
-                type="button"
-            >
-                <svg
-                    fill="none"
-                    height="24"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    ><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"
-                    ></polyline></svg
-                >
-            </button>
-
             <!-- 藝廊管理 (僅在映畫模式顯示) -->
             <div class="gallery-control-wrapper group-image" id="galleryControlWrapper">
                 <button

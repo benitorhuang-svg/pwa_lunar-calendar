@@ -42,7 +42,7 @@ export class HeroUIManager {
             // Ignore interactive elements / overlays / panels
             if (
                 target.closest(
-                    "button, a, input, textarea, select, .hero-dock, .hero-gallery-submenu, .music-control-wrapper, .faq-panel, .faq-panel-overlay.active, .suspension-panel, .panel-back-overlay, #welcomeInteractionOverlay, .day-cell",
+                    "button, a, input, textarea, select, .hero-dock, .hero-gallery-submenu, .music-control-wrapper, .faq-panel, .faq-panel-overlay.active, .suspension-panel, .panel-back-overlay, #welcomeInteractionOverlay, .day-cell, #quickSelectorPopup",
                 )
             ) {
                 return;
@@ -180,12 +180,6 @@ export class HeroUIManager {
         });
     }
 
-    public bindToggleYearMonth(callback: () => void): void {
-        this.layoutManager.yearMonthBtn?.addEventListener("click", (e) => {
-            e.stopPropagation();
-            callback();
-        });
-    }
 
     public bindWelcomeOverlay(callback: (e: MouseEvent) => void): void {
         const overlay = this.layoutManager.overlay;
@@ -215,7 +209,6 @@ export class HeroUIManager {
     }
 
     public hidePanelActiveStates(): void {
-        this.layoutManager.removeActiveState(this.layoutManager.yearMonthBtn);
         this.layoutManager.removeActiveState(this.layoutManager.dayBtn);
         this.layoutManager.removeActiveState(this.modeUIManager.changeImageBtn);
     }
@@ -346,8 +339,8 @@ export class HeroUIManager {
         this.modeUIManager.updateModeTheme(isArtwork);
     }
 
-    public updatePanelsForType(type?: "today" | "yearMonth"): void {
-        this.layoutManager.updatePanelsForType(type);
+    public updatePanelsForType(_type?: "today" | "yearMonth"): void {
+        this.layoutManager.updatePanelsForType(_type);
         this.modeUIManager.changeImageBtn?.classList.remove("active");
     }
 

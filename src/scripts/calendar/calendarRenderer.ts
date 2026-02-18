@@ -133,15 +133,28 @@ export class CalendarRenderer {
         const displayMonth = mapMonth(lunarText.month);
         const ganzhi = lunarText.ganzhi ? `${lunarText.ganzhi}年` : ""; // Ensure 'Year' suffix
 
+        const yearOptions = [];
+        for (let y = 2022; y <= 2031; y++) {
+            yearOptions.push(`<option value="${y}" ${y === year ? "selected" : ""}>${y}</option>`);
+        }
+
+        const monthOptions = [];
+        for (let m = 0; m < 12; m++) {
+            monthOptions.push(
+                `<option value="${m}" ${m === month ? "selected" : ""}>${(m + 1).toString().padStart(2, "0")}</option>`,
+            );
+        }
+
         calendarTitle.innerHTML = `
             <div class="title-row-flat">
                 <div class="lunar-group">
-                    <span class="lunar-prefix">農曆</span>
                     <span class="lunar-ganzhi">${ganzhi}</span>
                     <span class="lunar-month">${displayMonth}月</span>
                 </div>
-                <div class="greg-group">
-                    <span class="greg-date">${year}.${(month + 1).toString().padStart(2, "0")}</span>
+                <div class="greg-group-selectors" id="calendarGregGroup">
+                    <button id="labelCalendarYear" class="calendar-label-btn" data-type="year" type="button">${year}</button>
+                    <span class="select-sep">.</span>
+                    <button id="labelCalendarMonth" class="calendar-label-btn" data-type="month" type="button">${(month + 1).toString().padStart(2, "0")}</button>
                 </div>
             </div>
         `;
