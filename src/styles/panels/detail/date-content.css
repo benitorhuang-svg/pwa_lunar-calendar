@@ -1,0 +1,223 @@
+/* --- 主要內容區 (Main Content) - 日期與資訊 --- */
+/* 頂部資訊區容器 - 包含左側日期資訊與右側月相 */
+.detail-top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    /* Reduced margin (from 15px) */
+}
+
+/* 日期顯示容器 */
+.date-display {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 日誌細節文字排版 (手機版核心資訊區) */
+.detail-sub-main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    /* Vertical gap between the 4 lines - 調整各行間距 */
+    margin-top: 5px;
+}
+
+/* 第一行：西元日期與年份 (如：2/18 2026) */
+.today-date-row {
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+    margin-bottom: 4px;
+}
+
+.today-full-date {
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: var(--font-serif-num);
+    line-height: 0.8;
+    color: var(--cal-text);
+}
+
+.today-year-small {
+    font-size: 1.15rem;
+    opacity: 0.5;
+    font-family: var(--font-serif-num);
+    font-weight: 300;
+    color: var(--cal-text);
+}
+
+/* 第二行：農曆日期與節日 (如：正月.初二 春節) */
+.lunar-info-row-1 {
+    display: flex;
+    align-items: baseline;
+    /* Align Festival and Date */
+    gap: 12px;
+    font-family: var(--font-calligraphy);
+    color: var(--cal-lunar-text);
+    margin-top: 4px;
+}
+
+.zodiac-bracket {
+    color: var(--cal-accent, var(--gold-accent));
+    font-size: 1.4rem;
+    font-weight: 500;
+    opacity: 0.95;
+    font-family: var(--font-calligraphy);
+}
+
+.lunar-main {
+    font-size: 1.4rem;
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+    font-family: var(--font-calligraphy);
+}
+
+/* 第三行：節氣流動與建除 (如：雨水 [1天] -> 驚蟄) */
+.lunar-term-row {
+    display: flex;
+    margin-top: 2px;
+    font-family: var(--font-calligraphy);
+}
+
+.lunar-info-row-2 {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 5px;
+    font-family: var(--font-calligraphy);
+}
+
+.jianchu-badge {
+    font-size: 1.15rem;
+    letter-spacing: 0.1em;
+    color: var(--cal-lunar-text);
+    font-family: var(--font-calligraphy);
+    opacity: 0.9;
+    margin-left: 12px;
+    /* Add spacing from Term Flow */
+}
+
+.festival-tag-mini {
+    color: #ff6b6b;
+    font-weight: 600;
+    font-size: 1.2rem;
+    letter-spacing: 0.12em;
+    font-family: var(--font-calligraphy);
+    text-shadow: 0 0 10px rgba(255, 107, 107, 0.2);
+}
+
+.fest-tag {
+    color: #ff6b6b;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+}
+
+.holiday-highlight {
+    color: #ff5252;
+    /* More vibrant red for official holidays */
+    background: rgba(255, 82, 82, 0.08);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 0.5px solid rgba(255, 82, 82, 0.2);
+}
+
+.detail-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    font-size: 1.15rem;
+    color: var(--cal-lunar-text);
+    margin-bottom: 25px;
+    font-family: var(--font-calligraphy);
+}
+
+.lunar-gz-tags {
+    display: flex;
+    gap: 12px;
+    opacity: 0.85;
+}
+
+.solar-term {
+    color: #d4af37;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    font-size: 1.1rem;
+    text-align: right;
+}
+
+/* Year Label Style */
+.year-label {
+    font-size: 0.45em;
+    opacity: 0.6;
+    margin-left: 12px;
+    font-weight: 300;
+    vertical-align: middle;
+}
+
+/* Mid Row Obsolete */
+.detail-mid-row,
+.detail-header,
+/* Replaced by today-date-row */
+.traditional-seal,
+.detail-lucky-pill,
+.detail-festival-tag {
+    display: none;
+}
+
+.detail-mansion-tag {
+    font-family: var(--font-calligraphy);
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.05);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 14px;
+    border-radius: 50px;
+    letter-spacing: 0.1em;
+    cursor: help;
+}
+
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    /* Reduced from 12px 18px */
+    flex: 1;
+    justify-content: flex-start;
+}
+
+.tag {
+    font-family: var(--font-sans);
+    /* Better readability for tags */
+    font-size: 0.95rem;
+    font-weight: 300;
+    opacity: 0.85;
+    letter-spacing: 0.05em;
+    color: var(--cal-text);
+    white-space: nowrap;
+}
+
+/* Red Seal Positioning */
+.traditional-seal {
+    width: 52px;
+    height: 52px;
+    background: #c62828;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-calligraphy);
+    font-size: 1.8rem;
+    color: #fff;
+    border-radius: 10px;
+    box-shadow:
+        0 6px 15px rgba(198, 40, 40, 0.3),
+        inset 0 0 10px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    transform: rotate(5deg);
+    /* Artistic tilt */
+    margin-top: 5px;
+}

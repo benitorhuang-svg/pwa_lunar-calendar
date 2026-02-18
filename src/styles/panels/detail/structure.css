@@ -1,0 +1,26 @@
+/* Today Panel Layout Structure - 今日詳情面板佈局結構 (主要容器) */
+#panelToday {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Ensure rounded corners clip content */
+}
+
+/* 面板主體內容容器 - 包裹左側金線區與右側主要資訊 */
+.panel-detail-body {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* 右側大區塊，包含日期、月亮、七十二候 */
+.panel-main-content {
+    flex: 1;
+    /* Fixed padding for consistent card feel */
+    padding: 25px 22px 30px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* Center content vertically if space permits */
+}

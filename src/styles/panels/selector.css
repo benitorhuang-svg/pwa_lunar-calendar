@@ -1,12 +1,18 @@
 #panelYearMonth.bottom-panel {
     cursor: auto;
-    padding-bottom: 10px;
     /* Reduced redundant padding */
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    /* Enable scroll if content overflows */
-    -webkit-overflow-scrolling: touch;
+    height: 100%;
+    /* Ensure it fills the card height */
+    overflow: hidden;
+    /* FORCE NO SCROLLING */
+    /* Enable touch scrolling only as a last resort fallback, but we aim for no scroll */
+}
+
+#panelYearMonth.bottom-panel::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
 }
 
 .panel-grid {
@@ -26,10 +32,13 @@
 }
 
 .panel-section-container {
-    padding: 20px 25px 30px 25px;
+    padding: 10px 25px 10px 25px;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    justify-content: space-evenly;
+    /* Average distribution of Year and Month blocks */
+    gap: 10px;
 }
 
 .panel-section-header {
@@ -117,6 +126,7 @@
 }
 
 @keyframes goldAuraPulse {
+
     0%,
     100% {
         transform: translate(-50%, -50%) scale(1);
@@ -144,12 +154,10 @@
 /* Divider between Year and Month */
 .panel-section-divider {
     height: 1px;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(212, 175, 55, 0.15) 50%,
-        transparent 100%
-    );
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(212, 175, 55, 0.15) 50%,
+            transparent 100%);
     margin: 8px 0;
     width: 100%;
 }
@@ -177,6 +185,60 @@
 }
 
 /* --- Selector Responsive Breakpoints --- */
+
+/* Mobile Optimization: Ensure everything fits and is evenly distributed without scrolling */
+@media (max-height: 600px) {
+    #panelYearMonth.bottom-panel {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-section-container {
+        padding: 5px 20px 15px 20px !important;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly !important;
+        /* Forces even distribution on small screens */
+        gap: 0 !important;
+    }
+
+    .panel-section-header {
+        font-size: 1.1rem;
+        margin-bottom: 5px !important;
+    }
+
+    .panel-grid {
+        gap: 6px 6px !important;
+    }
+
+    .panel-item {
+        height: 36px !important;
+        /* Slightly larger than 32px for better touch, still fits if distributed */
+        font-size: 0.95rem !important;
+    }
+
+    .panel-item.selected::before {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .panel-section-divider {
+        margin: 5px 0 !important;
+        opacity: 0.1;
+    }
+
+    .month-num {
+        font-size: 1.1rem !important;
+    }
+
+    .month-label {
+        font-size: 0.8rem !important;
+        margin-top: 2px !important;
+    }
+}
+
 @media (min-width: 768px) {
     .panel-section-container {
         padding: 30px 30px;

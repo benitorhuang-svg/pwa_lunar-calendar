@@ -69,16 +69,13 @@ export class PanelRenderers {
 
         this.panelToday.innerHTML = `
             <div class="panel-detail-body">
-                ${this.renderSideAccent(ganzhi, monthGZ, dayGZ)}
+                ${this.renderSideAccent(ganzhi, monthGZ, dayGZ, zodiac)}
                 <div class="panel-main-content">
                     <div class="detail-top-section">
                         ${this.renderDateDisplay(
             date,
             monthText,
             dayText,
-            zodiac,
-            jianchu,
-            luck,
             festival,
             termPeriod,
             holidayInfo?.isHoliday ? holidayInfo.description || "休假" : null,
@@ -190,9 +187,6 @@ export class PanelRenderers {
         date: Date,
         monthText: string,
         dayText: string,
-        zodiac: string,
-        jianchu: string,
-        luck: string,
         festival: null | string,
         termPeriod: { current: string; next: string; daysToNext: number } | undefined,
         holidayDesc: null | string = null,
@@ -228,21 +222,15 @@ export class PanelRenderers {
                     <span class="today-year-small">${date.getFullYear()}</span>
                 </div>
                 
-                <!-- Line 2: (Zodiac) Lunar Date -->
+                <!-- Line 2: Lunar Date + Festival -->
                 <div class="lunar-info-row-1">
-                    <span class="zodiac-bracket">(${zodiac})</span>
                     <span class="lunar-main">${finalizedMonth}.${dayText}</span>
+                    ${festivalHtml}
                 </div>
 
-                <!-- Line 3: Solar Term Flow -->
+                <!-- Line 3: Solar Term Flow + Jianchu -->
                 <div class="lunar-term-row">
                     ${termFlowHtml}
-                </div>
-
-                <!-- Line 4: Jianchu & Festival -->
-                <div class="lunar-info-row-2">
-                   <div class="jianchu-badge">${jianchu} · ${luck}</div>
-                   ${festivalHtml}
                 </div>
             </div>`;
     }
@@ -259,10 +247,13 @@ export class PanelRenderers {
             </div>`;
     }
 
-    private renderSideAccent(ganzhi: string, monthGZ: string, dayGZ: string): string {
+    private renderSideAccent(ganzhi: string, monthGZ: string, dayGZ: string, zodiac: string): string {
         return `
             <div class="panel-side-accent">
-                <div class="vertical-text">${ganzhi}年 · ${monthGZ}月${dayGZ}日</div>
+                <div class="vertical-text">
+                    <span class="side-zodiac">${zodiac}</span>
+                    <span class="side-ganzhi">${ganzhi}年 · ${monthGZ}月${dayGZ}日</span>
+                </div>
             </div>`;
     }
 

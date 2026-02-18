@@ -1,0 +1,61 @@
+/* --- 左側金線裝飾區 (Side Accent) --- */
+/* 手機版排版核心：控制左側垂直文字與寬度 */
+.panel-side-accent {
+    width: 48px;
+    /* Slightly narrower for elegance */
+    background: linear-gradient(to bottom, var(--cal-border), rgba(212, 175, 55, 0.05));
+    display: flex;
+    align-items: flex-start;
+    /* Align text to top */
+    justify-content: center;
+    /* Center horizontally */
+    padding-top: 35px;
+    /* Add spacing from top edge */
+    border-right: 0.5px solid rgba(212, 175, 55, 0.1);
+    flex-shrink: 0;
+    border-bottom-left-radius: inherit;
+    /* Fix: match card corner */
+    border-top-left-radius: inherit;
+    /* Support top-left as well */
+}
+
+/* 垂直文字容器 - 控制整體垂直排列方向 */
+.vertical-text {
+    writing-mode: vertical-rl;
+    /* 文字直排 */
+    text-orientation: mixed;
+    font-family: var(--font-calligraphy);
+    font-size: 1.15rem;
+    letter-spacing: 0.6em;
+    /* Posh spacing */
+    color: var(--cal-lunar-text);
+    opacity: 0.85;
+    white-space: nowrap;
+    display: flex;
+    /* Default flex-direction: row behaves as Top-to-Bottom in vertical-rl */
+    /* Removed flex-direction: column to fix layout */
+    align-items: center;
+    gap: 8px;
+    /* Gap between Zodiac and Ganzhi */
+}
+
+/* 生肖樣式 (如：馬) - 位於垂直文字最上方 */
+.side-zodiac {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--cal-accent, var(--gold-accent));
+}
+
+/* 生肖與年份間的分隔符 (目前隱藏) */
+.side-spacer {
+    font-size: 0.8rem;
+    opacity: 0.4;
+    margin: 4px 0;
+}
+
+/* 干支年份樣式 (如：丙午年...) */
+.side-ganzhi {
+    font-size: 1.15rem;
+    opacity: 0.7;
+    letter-spacing: 0.3em;
+}

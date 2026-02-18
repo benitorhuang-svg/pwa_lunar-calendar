@@ -1,0 +1,79 @@
+/* --- 文化與七十二候區塊 (Culture Section) --- */
+/* 手機版下方的大方塊：顯示三候與解說 */
+.detail-culture-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    /* 控制與上方節氣資訊的間距 */
+    padding: 15px 24px 24px 24px;
+    /* padding: 上15px 右24px 下24px 左24px (已改為頂部對齊，不需要大數值下邊距) */
+    background: var(--cal-card-bg, rgba(0, 0, 0, 0.2));
+    border: 1px solid var(--cal-card-border, rgba(255, 255, 255, 0.08));
+    border-radius: 16px;
+    gap: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+/* --- 文化內容排版細節 --- */
+
+/* 左側文字欄 */
+.culture-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* 改為 flex-start 讓文字自然靠上對齊，不用靠 padding 推擠 */
+    flex: 1;
+    gap: 6px;
+}
+
+.culture-left.full-width {
+    padding-right: 0;
+}
+
+/* 七十二候顯示區 */
+.pentad-display {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* 標題與標籤行 (如：三候 魚上冰) */
+.pentad-header-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.pentad-tag-box {
+    font-size: 0.8rem;
+    background: var(--cal-card-accent, rgba(255, 255, 255, 0.1));
+    border: 0.5px solid var(--cal-card-border, rgba(255, 255, 255, 0.15));
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--cal-card-text-muted, rgba(255, 255, 255, 0.7));
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+
+.pentad-name-title {
+    font-family: var(--font-calligraphy);
+    font-size: 1.8rem;
+    /* Large impact */
+    color: var(--cal-card-text, #fff);
+    text-shadow: var(--cal-card-shadow, 0 2px 8px rgba(0, 0, 0, 0.5));
+    line-height: 1;
+    letter-spacing: 0.05em;
+}
+
+/* 候語解釋文字 (如：東風解凍...) */
+.pentad-content-text {
+    font-size: 1rem;
+    color: var(--cal-card-text, rgba(255, 255, 255, 0.85));
+    line-height: 1.6;
+    text-align: justify;
+    padding-right: 12px;
+    font-weight: 300;
+    margin-top: 4px;
+}

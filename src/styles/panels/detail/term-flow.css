@@ -1,0 +1,66 @@
+/* --- 節氣流動條 (Mini Term Flow) --- */
+/* 顯示：立春 [1天] -> 雨水 */
+.term-flow-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 14px;
+    font-size: 0.8rem;
+    font-family: var(--font-sans);
+    vertical-align: middle;
+    white-space: nowrap;
+    opacity: 0.9;
+}
+
+.flow-node-mini {
+    font-family: var(--font-calligraphy);
+    color: var(--cal-term-color, var(--gold-accent));
+    line-height: 1;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.flow-node-mini.dim {
+    color: var(--cal-text-muted, rgba(255, 255, 255, 0.4));
+    font-size: 1.1rem;
+}
+
+.flow-arrow-mini {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    width: 44px;
+    height: 12px;
+}
+
+.flow-line-mini {
+    flex: 1;
+    height: 1.5px;
+    /* Slightly thicker for visibility */
+    background: var(--cal-border-subtle, rgba(255, 255, 255, 0.2));
+}
+
+.flow-arrow-head-mini {
+    width: 0;
+    height: 0;
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    border-left: 3px solid var(--cal-border-subtle, rgba(255, 255, 255, 0.4));
+    margin-left: -1px;
+}
+
+.flow-tag-mini {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--cal-accent, #333);
+    padding: 0 5px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-family: var(--font-serif-num);
+    color: #444;
+    font-weight: 700;
+    line-height: 1.3;
+    z-index: 2;
+}
