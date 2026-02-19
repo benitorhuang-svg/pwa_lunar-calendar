@@ -59,6 +59,35 @@ export class PanelEventHandlers {
                 }
                 handleClosePanel();
             };
+
+            // 手機滑動功能 (Mobile Swipe Functionality)
+            let touchStartX = 0;
+            let touchStartY = 0;
+
+            this.panelToday.addEventListener("touchstart", (e) => {
+                if (!e.changedTouches || e.changedTouches.length === 0) return;
+                touchStartX = e.changedTouches[0].clientX;
+                touchStartY = e.changedTouches[0].clientY;
+            }, { passive: true });
+
+            this.panelToday.addEventListener("touchend", (e) => {
+                if (!e.changedTouches || e.changedTouches.length === 0) return;
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaX = touchEndX - touchStartX;
+                const deltaY = touchEndY - touchStartY;
+
+                // 只有當水平滑動遠大於垂直滑動時才動作 (Only trigger if horizontal swipe is dominant)
+                if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5 && Math.abs(deltaX) > 40) {
+                    if (deltaX > 0) {
+                        // 右滑 -> 前一天 (Swipe Right -> Prev Day)
+                        window.dispatchEvent(new CustomEvent("navigate-day", { detail: -1 }));
+                    } else {
+                        // 左滑 -> 下一天 (Swipe Left -> Next Day)
+                        window.dispatchEvent(new CustomEvent("navigate-day", { detail: 1 }));
+                    }
+                }
+            }, { passive: true });
         }
 
         // Global Click Listener

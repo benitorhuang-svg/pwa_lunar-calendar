@@ -265,6 +265,13 @@ export class AppEventOrchestrator {
                 }),
             );
         });
+
+        // 導航日期 (Navigate Day, payload is number)
+        window.addEventListener("navigate-day", ((e: CustomEvent<number>) => {
+            const dir = e.detail;
+            this.state.navigateDay(dir);
+            this.updateState();
+        }) as EventListener);
     }
 
     private setupPanelEvents(): void {

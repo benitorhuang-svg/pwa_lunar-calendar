@@ -104,6 +104,20 @@ export class AppStateManager {
         this.selectedDay = this.today.getDate();
     }
 
+    public navigateDay(direction: number): void {
+        const daysInMonth = new Date(this.selectedYear, this.selectedMonth + 1, 0).getDate();
+        this.selectedDay += direction;
+
+        if (this.selectedDay > daysInMonth) {
+            this.navigateMonth(1);
+            this.selectedDay = 1;
+        } else if (this.selectedDay < 1) {
+            this.navigateMonth(-1);
+            const prevMonthDays = new Date(this.selectedYear, this.selectedMonth + 1, 0).getDate();
+            this.selectedDay = prevMonthDays;
+        }
+    }
+
     public navigateMonth(direction: number): void {
         this.selectedMonth += direction;
         if (this.selectedMonth > 11) {
