@@ -302,26 +302,26 @@ export class PanelRenderers {
         if (poem.author.includes("《")) {
             const parts = poem.author.split("《");
             displayName = parts[0]?.trim() || "";
-            displayTitle = "《" + parts[1];
+            const titlePart = parts[1] || "";
+            displayTitle = titlePart.replace("》", "").trim();
         } else {
-            // Case where its just a name like "歐陽修"
             displayName = poem.author;
-            displayTitle = ""; // No title, don't show fallback "詩選" twice
+            displayTitle = "";
         }
 
         return `
             <div class="detail-culture-section">
                 <div class="culture-left full-width">
                      <div class="pentad-display">
-                        <div class="pentad-header-row" style="display: flex; align-items: center; width: 100%; overflow: hidden;">
-                            <span class="pentad-tag-box" style="background:rgba(212,175,85,0.15); color:var(--cal-accent); border:1px solid rgba(212,175,85,0.3); flex-shrink: 0;">詩選</span>
-                            ${displayTitle ? `<span class="pentad-name-title" style="flex: 1; min-width: 0; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: 10px;">${displayTitle}</span>` : ""}
+                        <div class="pentad-header-row" style="display: flex; align-items: baseline; width: 100%; flex-wrap: wrap; gap: 8px;">
+                            <span class="pentad-tag-box" style="background:rgba(212,175,85,0.15); color:var(--cal-accent); border:1px solid rgba(212,175,85,0.3); flex-shrink: 0; margin-bottom: 4px;">詩選</span>
+                            ${displayTitle ? `<span class="pentad-name-title" style="flex: 1; min-width: 150px; font-size: 1.25rem; line-height: 1.2; color: var(--cal-accent); text-shadow: none;">${displayTitle}</span>` : ""}
                         </div>
-                        <div class="pentad-content-text" style="word-break: keep-all; line-height: 1.1;">
+                        <div class="pentad-content-text" style="word-break: keep-all; line-height: 1.2; margin-top: 10px;">
                             ${formattedContent}
                         </div>
                         <div class="poem-author-line">
-                           — ${poem.dynasty && poem.dynasty !== displayName ? poem.dynasty + "。" : ""}${displayName || ""}
+                           — ${poem.dynasty && poem.dynasty !== displayName ? poem.dynasty + " · " : ""}${displayName || ""}
                         </div>
                      </div>
                 </div>
