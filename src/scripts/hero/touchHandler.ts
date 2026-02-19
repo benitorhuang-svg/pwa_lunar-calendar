@@ -11,12 +11,21 @@ export class HeroTouchHandler {
         private onSwipeLeft: () => void, // 向左滑動回呼 (Callback for left swipe)
         private onSwipeRight: () => void, // 向右滑動回呼 (Callback for right swipe)
         private onInteraction: () => void, // 互動事件回呼 (Callback for general interaction)
-    ) {}
+    ) { }
 
     public init(): void {
         window.addEventListener(
             "touchstart",
             (e: TouchEvent) => {
+                // 如果觸控目標是懸浮面板 (如每日詳情)，則忽略背景滑動
+                // If touch target is within a suspension panel (e.g., daily detail), ignore background swipe
+                const target = e.target as HTMLElement;
+                if (target.closest(".suspension-panel") || target.closest("#panelToday")) {
+                    this.touchStartX = 0;
+                    this.touchStartY = 0;
+                    return;
+                }
+
                 const touch = e.changedTouches[0];
                 if (touch) {
                     this.touchStartX = touch.clientX;
@@ -29,11 +38,19 @@ export class HeroTouchHandler {
         window.addEventListener(
             "touchend",
             (e: TouchEvent) => {
+                const target = e.target as HTMLElement;
+                if (target.closest(".suspension-panel") || target.closest("#panelToday")) {
+                    return;
+                }
+
                 const touch = e.changedTouches[0];
                 if (!touch) return;
 
                 const touchEndX = touch.clientX;
                 const touchEndY = touch.clientY;
+
+                // 如果 StartX 未設置 (被 touchstart 擋下)，則略過
+                if (this.touchStartX === 0 && this.touchStartY === 0) return;
 
                 const diffX = touchEndX - this.touchStartX;
                 const diffY = touchEndY - this.touchStartY;
