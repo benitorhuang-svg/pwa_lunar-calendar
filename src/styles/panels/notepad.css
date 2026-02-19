@@ -1,0 +1,668 @@
+/* Note Pad Overlay */
+.note-pad-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    width: 90%;
+    max-width: 500px;
+    height: 60vh;
+    background: rgba(15, 15, 20, 0.95);
+    backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+    z-index: 5000;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    color: #fff;
+    visibility: hidden;
+}
+
+.note-pad-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+    visibility: visible;
+}
+
+.note-pad-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.note-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    z-index: 100;
+}
+
+.note-pad-title {
+    font-size: 1.2rem;
+    font-family: var(--font-serif);
+    color: var(--cal-accent);
+}
+
+.note-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.note-action-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.note-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.note-pad-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Date Picker Styling */
+.note-date-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: fit-content;
+    /* Ensure wrapper can be clicked if needed */
+    cursor: pointer;
+}
+
+.note-date-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.note-date-display {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 6px 12px;
+    border-radius: 8px;
+    color: var(--cal-accent);
+    /* Gold color */
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.note-date-wrapper:hover .note-date-display {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
+.note-date-wrapper:active .note-date-display {
+    transform: scale(0.98);
+}
+
+/* Custom Date Picker */
+.custom-date-picker {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    width: 280px;
+    background: rgba(20, 20, 25, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    padding: 16px;
+    z-index: 2000;
+    /* Ensure it's above other elements */
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    visibility: hidden;
+}
+
+.custom-date-picker.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    visibility: visible;
+}
+
+.picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.picker-current-month {
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.picker-nav-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.picker-nav-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.picker-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 8px;
+    font-family: var(--font-serif);
+}
+
+.picker-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    row-gap: 4px;
+}
+
+.picker-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.15s;
+    user-select: none;
+}
+
+.picker-day:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.picker-day.today {
+    color: var(--cal-accent);
+    font-weight: bold;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.picker-day.selected {
+    background: var(--cal-accent);
+    color: #000;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    border: none;
+    font-weight: 600;
+}
+
+.picker-day.other-month {
+    color: rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+    /* Can enable if implementing month switch on click */
+}
+
+.note-pad-textarea {
+    flex: 1;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    color: #fff;
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: none;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.note-pad-textarea:focus {
+    border-color: var(--cal-accent);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Mobile Back Overlay */
+.note-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 4999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+    visibility: hidden;
+}
+
+/* View Switching */
+.note-view-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    /* Important for scrolling */
+}
+
+.note-view-container.hidden {
+    display: none;
+}
+
+/* Note List */
+.note-list-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+    /* Space for scrollbar */
+}
+
+/* Custom Scrollbar */
+.note-list-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.note-list-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.note-list-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.note-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.note-list-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.note-item-date {
+    font-family: var(--font-serif);
+    color: var(--cal-accent);
+    font-size: 1rem;
+    min-width: 120px;
+}
+
+.note-item-preview {
+    flex: 1;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 16px;
+    text-align: right;
+}
+
+/* Delete Button */
+.note-item-delete {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    padding: 8px;
+    margin-left: 12px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    /* Hidden by default or subtle */
+}
+
+.note-list-item:hover .note-item-delete,
+.note-item-delete:focus {
+    opacity: 1;
+}
+
+.note-item-delete:hover {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff6b6b;
+}
+
+.note-list-empty {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-family: var(--font-serif);
+    margin-top: 40px;
+}
+
+/* Editor Toolbar */
+.note-editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.note-editor-toolbar .danger {
+    margin-left: auto;
+}
+
+.note-tool-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.note-tool-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.note-tool-btn.danger:hover {
+    background: rgba(255, 80, 80, 0.15);
+    color: #ff6b6b;
+    border-color: rgba(255, 80, 80, 0.3);
+}
+
+/* Character Count */
+.note-char-count {
+    text-align: right;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.3);
+    padding: 6px 4px 0;
+    font-family: var(--font-serif);
+}
+
+/* Search Bar */
+.note-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    transition: border-color 0.2s;
+}
+
+.note-search-bar:focus-within {
+    border-color: var(--cal-accent);
+    color: var(--cal-accent);
+}
+
+.note-search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 0.9rem;
+    font-family: inherit;
+}
+
+.note-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* Note List Info */
+.note-list-info {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.3);
+    margin-bottom: 10px;
+    font-family: var(--font-serif);
+}
+
+/* Note Dot on Calendar Picker */
+.picker-day {
+    position: relative;
+}
+
+.picker-day .note-dot {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--cal-accent);
+    border-radius: 50%;
+    opacity: 0.7;
+}
+
+.picker-day.selected .note-dot {
+    background: #000;
+}
+
+/* Tag Bar */
+.note-tag-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    padding: 8px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    margin-top: 8px;
+}
+
+.note-current-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.note-tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #000;
+    cursor: default;
+    transition: all 0.15s;
+    user-select: none;
+}
+
+.note-tag-pill .tag-remove {
+    cursor: pointer;
+    opacity: 0.5;
+    font-size: 0.85rem;
+    line-height: 1;
+    transition: opacity 0.15s;
+}
+
+.note-tag-pill .tag-remove:hover {
+    opacity: 1;
+}
+
+.note-tag-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.note-tag-preset-btn {
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+
+.note-tag-preset-btn:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.note-tag-preset-btn.active {
+    display: none;
+    /* Hide preset if already applied */
+}
+
+.note-tag-custom {
+    flex: 0 0 auto;
+}
+
+.note-tag-input {
+    width: 80px;
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    outline: none;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.note-tag-input:focus {
+    border-color: var(--cal-accent);
+    color: #fff;
+    width: 100px;
+}
+
+.note-tag-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* Tag Filter (List View) */
+.note-tag-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.tag-filter-btn {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+
+.tag-filter-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.tag-filter-btn.active {
+    background: var(--cal-accent);
+    color: #000;
+    border-color: var(--cal-accent);
+    font-weight: 600;
+}
+
+/* Pin Button Active State */
+.note-tool-btn.pinned {
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--cal-accent);
+    border-color: rgba(212, 175, 55, 0.3);
+}
+
+.note-tool-btn.pinned svg {
+    fill: var(--cal-accent);
+}
+
+/* Pin indicator in list */
+.note-item-pin {
+    color: var(--cal-accent);
+    font-size: 0.85rem;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+/* Tags in list items */
+.note-item-tags {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.note-item-tag {
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: #000;
+}
+
+/* Overlay integration handled via shared .panel-back-overlay in JS */
+.panel-back-overlay.note-mode {
+    display: block;
+    z-index: 4999;
+}

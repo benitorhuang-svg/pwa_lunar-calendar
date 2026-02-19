@@ -1,127 +1,110 @@
-/* 記事區塊 - 位於面板頂部，包含輸入框與導出按鈕 */
+/* Main Note Styles */
 .panel-note-section {
     width: 100%;
-    /* Reduced height for header-only mode */
-    height: 60px;
-    padding: 0 24px;
-    /* Redesigned Background: Subtle Gradient + Inner Shadow for Premium Log Entry Feel */
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.1) 100%);
-    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.15);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 1rem;
+    /* Reduced from 1.5rem */
+    padding: 0 4px;
+    /* Minimal side padding */
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    flex-shrink: 0;
-    transition: background 0.3s ease;
+    animation: fadeIn 0.5s ease-out;
 }
 
-.panel-note-section:active,
-.panel-note-section:focus-within {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.2) 100%);
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.panel-note-title {
+.note-header {
     font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 10px;
-    font-family: var(--font-serif);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    letter-spacing: 0.05em;
     font-weight: 500;
+    color: var(--cal-text-secondary);
+    /* Text color check: Gold/White? */
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-serif);
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 4px;
 }
 
-/* Redesigned interactive title */
-.panel-note-title.clickable-title {
-    cursor: pointer;
-    transition:
-        color 0.2s,
-        transform 0.2s;
-    user-select: none;
-}
-
-.panel-note-title.clickable-title:hover {
-    color: var(--cal-text);
-    transform: translateX(4px);
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
-}
-
-.export-group select {
-    background: transparent;
+.note-input {
+    width: 100%;
+    min-height: 80px;
+    /* Reduced min-height */
+    background: rgba(255, 255, 255, 0.1);
+    /* More visible background */
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    color: inherit;
-    font-size: 0.75rem;
-    padding: 2px 6px;
-    cursor: pointer;
+    /* Clearer border */
+    border-radius: 8px;
+    padding: 12px;
+    color: #fff;
+    /* Enforce white text */
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    resize: none;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+
+
+    /* Scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.note-input:focus {
     outline: none;
-    transition: all 0.2s;
-    /* Remove default arrow in some browsers for custom look if needed, but keeping simple for now */
-    -webkit-appearance: none;
-    appearance: none;
-    text-align: center;
-    width: 28px;
-    /* Fixed width for just the arrow/icon */
+    background: rgba(255, 255, 255, 0.08);
+    /* Slightly lighter on focus */
+    border-color: var(--cal-accent);
+    /* Gold color */
+    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Add custom arrow indicator or content centered */
-.export-group::after {
-    content: "⇩";
-    /* Or generic download icon */
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.7);
-    display: none;
-    /* Since we use value inside select, hide this or use it? the select has "⇩" as selected option text. */
+.note-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.9rem;
+    font-style: italic;
 }
 
-/* Enhanced Option Styling */
-select.panel-font-select option,
-.export-group select option {
-    background: #222;
-    color: #fff;
-    padding: 8px;
+/* Timeline View Extension (Placeholder for future expansion) */
+.note-timeline-btn {
+    font-size: 0.8rem;
+    color: var(--cal-accent);
+    cursor: pointer;
+    background: none;
+    border: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    padding: 0;
 }
 
-.export-group select:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.6);
+.note-timeline-btn:hover {
+    opacity: 1;
+    text-decoration: underline;
 }
 
-.export-group select:focus {
-    background: rgba(255, 255, 255, 0.25);
-    color: #fff;
+/* Webkit Scrollbar for Chrome/Safari */
+.note-input::-webkit-scrollbar {
+    width: 6px;
 }
 
-/* Original input hidden/removed, placeholder styles legacy */
-.panel-note-input {
-    display: none;
-    /* Hide if element still exists or for safety */
+.note-input::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-.panel-note-input::placeholder {
-    display: none;
-}
-
-/* Font Variants */
-.panel-note-input.font-serif {
-    font-family: "Playfair Display", serif;
-}
-
-.panel-note-input.font-sans {
-    font-family: var(--font-sans);
-    font-weight: 300;
-}
-
-.panel-note-input.font-calligraphy {
-    font-family: var(--font-calligraphy);
-}
-
-.panel-note-input.font-hand {
-    font-family: var(--font-hand, cursive);
-    /* Fallback */
+.note-input::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
 }

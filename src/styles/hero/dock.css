@@ -103,6 +103,10 @@
     /* 橫向顯示 */
 }
 
+/* Specific styling for Note Button to match main buttons but icon only or text? */
+/* Let's make it icon only for now to fit in the middle slot, or text if space allows */
+/* Given request: "Middle between Artwork and Date" -> Let's try icon style to keep clean */
+
 .dock-item:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #fff;
@@ -136,6 +140,16 @@ body:not(.mode-artwork) #btnDay {
     border: 1px solid rgba(212, 175, 55, 0.25);
     border-radius: 16px;
     box-shadow: 0 0 20px rgba(212, 175, 55, 0.08);
+}
+
+/* Note Button Styling in Calendar Mode */
+body:not(.mode-artwork) #btnNote {
+    color: rgba(212, 175, 55, 0.7);
+}
+
+body:not(.mode-artwork) #btnNote:hover {
+    color: #e5c07b;
+    background: rgba(212, 175, 55, 0.1);
 }
 
 /* Dim 'Artwork' in Calendar mode to emphasize 'Calendar' Group */
@@ -181,6 +195,17 @@ body.mode-artwork #btnChangeImage {
     box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
     font-weight: 600;
 }
+
+/* Note Button in Artwork Mode */
+body.mode-artwork #btnNote {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body.mode-artwork #btnNote:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
 
 /* Dim 'Calendar' in Artwork mode to emphasize 'Artwork' Group */
 body.mode-artwork #btnDay {

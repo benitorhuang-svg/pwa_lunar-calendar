@@ -51,12 +51,7 @@ export class PanelEventHandlers {
 
         if (this.panelBackOverlay) this.panelBackOverlay.onclick = handleClosePanel;
         if (this.panelToday) {
-            this.panelToday.onclick = (e) => {
-                // 如果點擊的是筆記區域 (包含標題或輸入框)，不要關閉面板
-                // If clicking inside the note section (including title or input), do not close the panel
-                if ((e.target as HTMLElement).closest(".panel-note-section")) {
-                    return;
-                }
+            this.panelToday.onclick = () => {
                 handleClosePanel();
             };
 
@@ -165,5 +160,8 @@ export class PanelEventHandlers {
                 console.error("Welcome Panel Init Error", err);
             }
         });
+
+        // Note Input Binding (Re-added)
+
     }
 }

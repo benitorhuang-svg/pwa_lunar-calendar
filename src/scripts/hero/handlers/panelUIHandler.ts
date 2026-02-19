@@ -6,7 +6,7 @@ export class PanelUIHandler {
     constructor(
         private uiManager: HeroUIManager,
         private idleManager: HeroIdleManager,
-    ) {}
+    ) { }
 
     public init(): void {
         this.bindEvents();
@@ -36,6 +36,15 @@ export class PanelUIHandler {
                 );
             }
         });
+
+        // 綁定筆記按鈕 (Bind Note Button)
+        const btnNote = document.getElementById("btnNote");
+        if (btnNote) {
+            btnNote.addEventListener("click", () => {
+                this.idleManager.resetInteraction();
+                window.dispatchEvent(new CustomEvent("open-notepad"));
+            });
+        }
     }
 
     private bindEvents(): void {
@@ -54,32 +63,6 @@ export class PanelUIHandler {
             this.uiManager.hidePanelActiveStates();
         });
 
-        // 打開筆記本 (Open NotePad)
-        window.addEventListener("open-notepad", ((_e: CustomEvent) => {
-            const overlay = document.getElementById("notePadOverlay");
-            if (overlay) {
-                overlay.classList.add("active");
-                document.body.classList.add("note-mode-active");
 
-                // Hide other panels
-                window.dispatchEvent(new CustomEvent("hide-panels"));
-            }
-        }) as EventListener);
-
-        // 綁定筆記本關閉按鈕 (Bind NotePad Close)
-        const btnCloseNote = document.getElementById("btnNoteClose");
-        if (btnCloseNote) {
-            btnCloseNote.addEventListener("click", () => {
-                const overlay = document.getElementById("notePadOverlay");
-                if (overlay) {
-                    overlay.classList.remove("active");
-                    document.body.classList.remove("note-mode-active");
-
-                    // Re-open Today Panel? Or just go back to nothing?
-                    // Currently default to just close.
-                    window.dispatchEvent(new CustomEvent("toggle-panel", { detail: "today" }));
-                }
-            });
-        }
     }
 }

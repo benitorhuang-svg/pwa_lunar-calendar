@@ -76,6 +76,7 @@ export class PanelRenderers {
                         ${this.renderRightCluster(moon)}
                     </div>
                     ${this.renderCultureContent(pentad, poem, date)}
+
                 </div>
             </div>`;
 
@@ -432,4 +433,6 @@ export class PanelRenderers {
             <path d="${pathD}" fill="url(#moonGrad)" filter="url(#crater)" style="filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.5));"/>
         </svg>`;
     }
+
+
 }
