@@ -69,14 +69,25 @@
     let seasonClass: string;
 
     // Season Logic (Lunar-Aligned)
-    if (month >= 2 && month <= 4) {
+    // Season Logic (Lunar-Aligned)
+    // 1. Festive (Lunar New Year) - Feb
+    if (month === 2) {
+        seasonClass = "theme-festive";
+    }
+    // 2. Spring - Mar, Apr, May
+    else if (month >= 3 && month <= 5) {
         seasonClass = "theme-spring";
-    } else if (month >= 5 && month <= 7) {
+    }
+    // 3. Summer - Jun, Jul, Aug
+    else if (month >= 6 && month <= 8) {
         seasonClass = "theme-summer";
-    } else if (month >= 8 && month <= 10) {
+    }
+    // 4. Autumn - Sep, Oct, Nov
+    else if (month >= 9 && month <= 11) {
         seasonClass = "theme-autumn";
-    } else {
-        // Winter: Nov, Dec, Jan
+    }
+    // 5. Winter - Dec, Jan
+    else {
         seasonClass = "theme-winter";
     }
 

@@ -5,13 +5,15 @@
 
 import { HolidayService } from "../core/holidayService";
 import { Lunar } from "../core/lunar";
+import { POEMS } from "../../data/poems/index";
+import type { Poem } from "../../data/poems/types";
 
 export class PanelRenderers {
     private holidayService = HolidayService.getInstance();
     private panelToday: HTMLElement | null = null;
     private panelYearMonth: HTMLElement | null = null;
 
-    constructor() {}
+    constructor() { }
 
     public init(): void {
         this.panelYearMonth = document.getElementById("panelYearMonth");
@@ -50,22 +52,13 @@ export class PanelRenderers {
         );
 
         console.log("[Floater] Rendering today panel for:", date.toDateString());
-        console.log("[Floater] Lunar Data:", {
-            dayText,
-            festival,
-            ganzhi,
-            jianchu,
-            luck,
-            mansion: mansion.name,
-            monthText,
-            zodiac,
-            pentad,
-            moon,
-        });
 
         if (!ganzhi || !monthText || !dayText) {
             console.warn("[Floater] Critical lunar data missing, showing basic date info.");
         }
+
+        // Gets a poem based on season/term
+        const poem = this.getDailyPoem(date, termPeriod?.current);
 
         this.panelToday.innerHTML = `
             <div class="panel-detail-body">
@@ -73,16 +66,16 @@ export class PanelRenderers {
                 <div class="panel-main-content">
                     <div class="detail-top-section">
                         ${this.renderDateDisplay(
-                            date,
-                            monthText,
-                            dayText,
-                            festival,
-                            termPeriod,
-                            holidayInfo?.isHoliday ? holidayInfo.description || "休假" : null,
-                        )}
+            date,
+            monthText,
+            dayText,
+            festival,
+            termPeriod,
+            holidayInfo?.isHoliday ? holidayInfo.description || "休假" : null,
+        )}
                         ${this.renderRightCluster(moon)}
                     </div>
-                    ${this.renderCultureSection(pentad)}
+                    ${this.renderCultureContent(pentad, poem, date)}
                 </div>
             </div>`;
 
@@ -195,8 +188,8 @@ export class PanelRenderers {
         const festivalHtml = festival
             ? `<div class="festival-tag-mini">${festival}</div>`
             : holidayDesc
-              ? `<div class="festival-tag-mini">${holidayDesc}</div>`
-              : "";
+                ? `<div class="festival-tag-mini">${holidayDesc}</div>`
+                : "";
 
         let termFlowHtml = "";
         if (termPeriod) {
@@ -261,9 +254,29 @@ export class PanelRenderers {
             </div>`;
     }
 
-    private renderCultureSection(pentad: { name: string; meaning: string; index: number }): string {
-        const pentadLabel = ["", "初候", "二候", "三候"][pentad.index] || "候";
+    // --- Merged Culture Content Logic ---
+    private renderCultureContent(
+        pentad: { name: string; meaning: string; index: number },
+        poem: Poem,
+        date: Date
+    ): string {
+        // Logic: Show Pentad only on specific days (e.g. 1st, 6th, 11th, 16th, 21st, 26th) 
+        // which roughly corresponds to the start of a new Pentad (5-day period).
+        // Or simply: date.getDate() % 5 === 1.
+        // Today (2/19) -> 19 % 5 = 4. So it will show Poem.
+        // Yesterday (2/18) -> 18 % 5 = 3. Poem.
+        // 2/16 -> 16 % 5 = 1. Pentad.
+        const showPentad = (date.getDate() % 5 === 1) || (date.getDate() === 1);
 
+        if (showPentad) {
+            return this.renderPentadCard(pentad);
+        } else {
+            return this.renderPoemCard(poem);
+        }
+    }
+
+    private renderPentadCard(pentad: { name: string; meaning: string; index: number }): string {
+        const pentadLabel = ["", "初候", "二候", "三候"][pentad.index] || "候";
         return `
             <div class="detail-culture-section">
                 <div class="culture-left full-width">
@@ -278,31 +291,66 @@ export class PanelRenderers {
             </div>`;
     }
 
+    private renderPoemCard(poem: Poem): string {
+        return `
+            <div class="detail-culture-section">
+                <div class="culture-left full-width">
+                     <div class="pentad-display">
+                        <div class="pentad-header-row">
+                            <span class="pentad-tag-box" style="background:rgba(212,175,85,0.15); color:var(--cal-accent); border:1px solid rgba(212,175,85,0.3)">詩選</span>
+                            <span class="pentad-name-title" style="font-size:1.1rem">${poem.author}</span>
+                        </div>
+                        <div class="pentad-content-text" style="
+                            font-size:1.4rem; 
+                            line-height:1.6; 
+                            text-align:center; 
+                            padding: 12px 0;
+                            font-family: var(--font-calligraphy);
+                            letter-spacing: 0.05em;
+                        ">
+                            「${poem.content}」
+                        </div>
+                        <div style="text-align:right; font-size:0.9rem; opacity:0.6; margin-top:4px; font-family:var(--font-serif)">
+                           — ${poem.dynasty || ""}
+                        </div>
+                     </div>
+                </div>
+            </div>`;
+    }
+
+    // --- Daily Poem Logic ---
+    private getDailyPoem(date: Date, term?: string): Poem {
+        // 1. Try to find poems matching the specific solar term
+        if (term) {
+            const termPoems = POEMS.filter((p) => p.term === term);
+            if (termPoems.length > 0) {
+                const dayHash = date.getDate();
+                return termPoems[dayHash % termPoems.length]!;
+            }
+        }
+
+        // 2. Fallback to season
+        const month = date.getMonth() + 1;
+        let season: "spring" | "summer" | "autumn" | "winter" = "spring";
+
+        if (month >= 3 && month <= 5) season = "spring";
+        else if (month >= 6 && month <= 8) season = "summer";
+        else if (month >= 9 && month <= 11) season = "autumn";
+        else season = "winter";
+
+        const seasonPoems = POEMS.filter((p) => p.season === season);
+        const candidates = seasonPoems.length > 0 ? seasonPoems : POEMS;
+
+        // 3. Random pick consistent for the day
+        const dayHash = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
+        const index = dayHash % candidates.length;
+
+        return candidates[index]!;
+    }
+
     private renderMoonSvg(value: number): string {
         const R = 28;
         const C = 32;
-
-        // Phase Logic:
-        // New Moon (0) -> Full Moon (0.5) -> New Moon (1.0)
-        // Day 2 (approx 0.06) should be Waxing Crescent (Right side lit, very thin).
-
-        // Normalize phase to 0..1 for just the lighting percentage?
-        // Let's use standard astronomical definition logic for the path.
-
-        // value 0..0.5 is Waxing
-        // using Math.cos for the terminator projection
-        // angle goes from 0 to PI for waxing, PI to 2PI for waning
-
-        // Illumination factor (-1 to 1). -1=New, 1=Full.
-        // Actually simpler:
-        // 0 (New) -> Terminator x = -R
-        // 0.25 (First Q) -> Terminator x = 0
-        // 0.5 (Full) -> Terminator x = R
-        // But we need to define the SHAPE.
-
-        // Waxing (0 < v < 0.5): Light on Right.
-        // Outer arc: Right Semicircle.
-        // Inner arc: Ellipse from Top to Bottom.
 
         let isWaxing = true;
         if (value <= 0.5) {
@@ -311,78 +359,23 @@ export class PanelRenderers {
             isWaxing = false;
         }
 
-        // Calculate the "bulge" radius of the terminator ellipse.
-        // At value=0 (New), rX = -R (Matches outer circle left, result empty) - Wait.
-        // Let's stick to "Draw the Light".
-
-        // Radius of terminator X.
-        // We use cos(angle) mapping.
-        // 0 -> -R (Concave max)
-        // 0.25 -> 0 (Flat)
-        // 0.5 -> R (Convex max)
-
         const terminatorX = -R * Math.cos(value * 2 * Math.PI);
         const rX = Math.abs(terminatorX);
-
-        // Outer Arc: Always the semi-circle on the lit side.
-        // Waxing: Right side (1). Waning: Left side (0).
         const outerSweep = isWaxing ? 1 : 0;
-
-        // Terminator Sweep:
-        // Needs careful logic.
-        // If Waxing (Right Lit):
-        //    Terminator starts Top, ends Bottom.
-        //    If Crescent (val < 0.25): Terminator curves Right (Sweep 0? No, standard arc sweep logic)
-        //    Let's visualize:
-        //    Top(32,4) -> Bottom(32,60).
-        //    Right Semicircle (Outer): Sweep 1.
-        //    Terminator (Inner): Must go Bottom -> Top to close path?
-        //    Let's go Bottom(32,60) -> Top(32,4).
-
-        // Construct Path:
-        // Move to Top (32, 4)
-        // Arc to Bottom (32, 60) via Outer Side.
-        // Arc to Top (32, 4) via Terminator.
 
         const startX = 32,
             startY = 4;
         const endX = 32,
             endY = 60;
 
-        // Outer Arc (Top -> Bottom)
-        // Waxing (Right side lit) -> Sweep 1.
-        // Waning (Left side lit) -> Sweep 0.
         const outerPath = `M ${startX} ${startY} A ${R} ${R} 0 0 ${outerSweep} ${endX} ${endY}`;
-
-        // Inner Arc (Bottom -> Top)
-        // We need to determine Sweep for the return trip.
-        // For Waxing Crescent (v=0.1): Terminator X is negative (Left of center).
-        // The curve should bulge to the Left (Concave relative to the right-lit shape).
-        // Going Bottom->Top. Bulge Left means Sweep 1 (Clockwise).
-
-        // For Waxing Gibbous (v=0.4): Terminator X is positive (Right of center).
-        // The curve bubbles out to Left of line? No, it surrounds center.
-        // Wait, at Full moon, terminator matches Left Semicircle.
-
-        // Let's rely on the sign of terminatorX.
-        // If terminatorX is negative (Concave), we want the arc to effectively pass through x = 32 + terminatorX.
-        // SVG Arc radii are positive.
-        // We select sweep based on phase.
 
         let innerSweep = 0;
         if (isWaxing) {
-            // Waxing: Outer is Right.
-            // Crescent: Inner needs to curve Left (into the shape). Bottom->Top, Curve Left = Sweep 0?
-            // SVG coords: Y+ is down. Bottom(60) to Top(4). Vector is Up. Left of Vector is Minus X.
-            // So curving towards center (Left) is Sweep 1.
-
             if (value < 0.25)
-                innerSweep = 0; // Crescent: Curve Match Outer edge direction roughly?
-            else innerSweep = 1; // Gibbous: Bulge outward
+                innerSweep = 0;
+            else innerSweep = 1;
         } else {
-            // Waning: Outer is Left.
-            // Gibbous (0.5-0.75): Bulge Right.
-            // Crescent (>0.75): Hollow Right.
             if (value < 0.75) innerSweep = 0;
             else innerSweep = 1;
         }
@@ -390,16 +383,13 @@ export class PanelRenderers {
         const innerPath = `A ${rX} ${R} 0 0 ${innerSweep} ${startX} ${startY}`;
         const pathD = `${outerPath} ${innerPath} Z`;
 
-        // Special case for exact New Moon to avoid artifacts or thin lines
         if (value < 0.02 || value > 0.98) {
             return `<svg viewBox="0 0 64 64" width="100%" height="100%" class="moon-svg">
                 <circle cx="${C}" cy="${C}" r="${R}" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
             </svg>`;
         }
 
-        // Special case for Full Moon
         if (value > 0.48 && value < 0.52) {
-            // Just a circle
             return `<svg viewBox="0 0 64 64" width="100%" height="100%" class="moon-svg">
                 <defs>
                     <radialGradient id="moonGrad" cx="40%" cy="40%" r="60%">
@@ -428,10 +418,7 @@ export class PanelRenderers {
                     <feBlend in="SourceGraphic" mode="multiply"/>
                 </filter>
             </defs>
-            <!-- Background (Dark Side) -->
             <circle cx="${C}" cy="${C}" r="${R}" fill="#111" class="moon-shadow"/>
-            
-            <!-- Lit Part -->
             <path d="${pathD}" fill="url(#moonGrad)" filter="url(#crater)" style="filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.5));"/>
         </svg>`;
     }
