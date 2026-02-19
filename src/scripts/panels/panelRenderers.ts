@@ -306,7 +306,7 @@ export class PanelRenderers {
         } else {
             // Case where its just a name like "歐陽修"
             displayName = poem.author;
-            displayTitle = "詩選"; // Fallback display when no title
+            displayTitle = ""; // No title, don't show fallback "詩選" twice
         }
 
         return `
@@ -315,13 +315,13 @@ export class PanelRenderers {
                      <div class="pentad-display">
                         <div class="pentad-header-row" style="display: flex; align-items: center; width: 100%; overflow: hidden;">
                             <span class="pentad-tag-box" style="background:rgba(212,175,85,0.15); color:var(--cal-accent); border:1px solid rgba(212,175,85,0.3); flex-shrink: 0;">詩選</span>
-                            <span class="pentad-name-title" style="flex: 1; min-width: 0; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: 10px;">${displayTitle}</span>
+                            ${displayTitle ? `<span class="pentad-name-title" style="flex: 1; min-width: 0; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: 10px;">${displayTitle}</span>` : ""}
                         </div>
                         <div class="pentad-content-text" style="word-break: keep-all; line-height: 1.1;">
                             ${formattedContent}
                         </div>
                         <div class="poem-author-line">
-                           — ${poem.dynasty || ""}${displayName ? "。" + displayName : ""}
+                           — ${poem.dynasty && poem.dynasty !== displayName ? poem.dynasty + "。" : ""}${displayName || ""}
                         </div>
                      </div>
                 </div>
