@@ -13,6 +13,38 @@
     justify-content: flex-start;
 }
 
+/* Responsive: Short Screens (Landscape/Small Laptops) */
+@media (max-height: 660px) {
+    .music-control-wrapper {
+        top: 10px;
+        /* Tighter to top */
+        gap: 8px;
+    }
+
+    .music-toggle-btn,
+    .immersion-toggle-btn,
+    .faq-toggle-btn {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Responsive: Extra Small Screens (Mobile Portrait) */
+@media (max-width: 475px) {
+    .music-control-wrapper {
+        right: 12px;
+        /* Tighter to edge */
+        gap: 8px;
+    }
+
+    .music-toggle-btn,
+    .immersion-toggle-btn,
+    .faq-toggle-btn {
+        width: 38px;
+        height: 38px;
+    }
+}
+
 .music-toggle-btn,
 .immersion-toggle-btn,
 .faq-toggle-btn {
@@ -115,6 +147,7 @@ body.mode-artwork .music-toggle-btn.playing {
 }
 
 @keyframes musicPulseCalendar {
+
     0%,
     100% {
         transform: scale(1);
@@ -128,6 +161,7 @@ body.mode-artwork .music-toggle-btn.playing {
 }
 
 @keyframes musicPulseArtwork {
+
     0%,
     100% {
         transform: scale(1);

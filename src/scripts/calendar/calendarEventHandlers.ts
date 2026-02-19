@@ -202,10 +202,19 @@ export class CalendarEventHandlers {
         const grid = document.createElement("div");
         grid.className = `quick-grid quick-grid-${type}`;
 
+        // Get current values from DOM to highlight active state
+        const currentYearStr = document.querySelector(".header-year")?.textContent || "";
+        const currentMonthStr = document.querySelector(".header-month")?.textContent || "";
+
+        const currentYear = parseInt(currentYearStr);
+        const currentMonth = parseInt(currentMonthStr) - 1; // DOM is 1-based, logic is 0-based
+
         if (type === "year") {
             for (let y = 2022; y <= 2031; y++) {
                 const item = document.createElement("button");
                 item.className = "quick-item";
+                if (y === currentYear) item.classList.add("active");
+
                 item.textContent = y.toString();
                 item.onclick = () => {
                     window.dispatchEvent(new CustomEvent("year-selected", { detail: y }));
@@ -217,6 +226,8 @@ export class CalendarEventHandlers {
             for (let m = 0; m < 12; m++) {
                 const item = document.createElement("button");
                 item.className = "quick-item";
+                if (m === currentMonth) item.classList.add("active");
+
                 item.textContent = (m + 1).toString().padStart(2, "0");
                 item.onclick = () => {
                     window.dispatchEvent(new CustomEvent("month-selected", { detail: m }));

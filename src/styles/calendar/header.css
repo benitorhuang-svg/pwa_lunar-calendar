@@ -1,0 +1,276 @@
+/* Calendar Header */
+.calendar-section .nav-group-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    width: 100%;
+    padding: 0 4px;
+    flex-shrink: 0;
+    /* Prevent header from shrinking */
+    position: relative;
+    z-index: 2000;
+}
+
+.calendar-title {
+    display: flex;
+    align-items: center;
+    width: auto;
+    /* Changed from 100% to auto to fit inline */
+    position: relative;
+    padding: 0;
+    /* Removed padding to save space */
+    white-space: nowrap;
+}
+
+.title-row-flat {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    /* Changed from space-between */
+    gap: 20px;
+    /* Added gap */
+    width: auto;
+    /* Changed from 100% */
+}
+
+.title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    gap: 16px;
+    /* Reduced Gap */
+    flex-wrap: nowrap;
+    /* Force single line */
+}
+
+.lunar-group {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    /* Reduced gap */
+    white-space: nowrap;
+}
+
+.greg-group {
+    display: flex;
+    align-items: baseline;
+    opacity: 0.45;
+}
+
+.lunar-prefix {
+    font-size: 1.2rem;
+    /* Reduced from 1.4rem */
+    font-family: var(--font-calligraphy);
+    color: var(--cal-header-text);
+    opacity: 0.85;
+}
+
+.lunar-ganzhi {
+    font-size: 1.5rem;
+    /* Reduced from 2rem to fit header */
+    font-family: var(--font-calligraphy);
+    color: var(--cal-header-text);
+    opacity: 0.9;
+    letter-spacing: 0.05em;
+}
+
+.lunar-month {
+    font-family: var(--font-calligraphy);
+    font-size: 1.6rem;
+    /* Reduced from 2.2rem */
+    color: var(--cal-header-text);
+    letter-spacing: 0.1em;
+    line-height: normal;
+}
+
+.greg-group-selectors {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-family: var(--font-serif-num);
+    color: var(--cal-text);
+    opacity: 0.8;
+}
+
+.calendar-label-btn {
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: 1.5rem;
+    font-weight: 300;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    user-select: none;
+    position: relative;
+    z-index: 10;
+}
+
+.calendar-label-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--cal-accent, var(--gold-accent));
+}
+
+.calendar-today-action {
+    display: flex;
+    align-items: center;
+}
+
+.calendar-today-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    color: var(--cal-text);
+    font-family: var(--font-calligraphy);
+    font-size: 1.1rem;
+    padding: 6px 20px;
+    /* Optimized padding */
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+}
+
+.calendar-today-btn:hover {
+    background: var(--gold-accent);
+    color: #fff;
+    border-color: var(--gold-accent);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+/* Calendar Header Dates (Top Right) */
+.calendar-header-dates {
+    display: flex;
+    align-items: baseline;
+    font-family: var(--font-serif-num);
+    color: var(--cal-header-text);
+    opacity: 0.9;
+    line-height: 1;
+}
+
+.header-year {
+    font-size: 1.5rem;
+    /* Reduced from 2.2rem */
+    font-weight: 300;
+    letter-spacing: 0.05em;
+}
+
+.header-month {
+    font-size: 1.5rem;
+    /* Reduced from 2.2rem */
+    font-weight: 500;
+    letter-spacing: 0.05em;
+}
+
+.header-sep {
+    font-size: 1.2rem;
+    /* Reduced from 1.8rem */
+    margin: 0 6px;
+    opacity: 0.5;
+    font-weight: 300;
+}
+
+/* Matching Ink Wash from Selector - now in hero header */
+.hero-function-group .calendar-title::before {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 160px;
+    height: 15px;
+    background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.08) 0%, transparent 80%);
+    z-index: -1;
+}
+
+.lunar-sep {
+    font-family: var(--font-serif-num);
+    font-size: 1.2rem;
+    opacity: 0.3;
+}
+
+.lunar-day {
+    font-weight: 500;
+    /* opacity: 1; */
+}
+
+/* Fix: previously this was .lunar-day opacity:1, keeping it */
+
+.nav-center-group {
+    width: 100%;
+    flex: 1;
+}
+
+.calendar-section .btn-today-quick {
+    margin: 0;
+}
+
+/* Responsive (Header specific) */
+
+@media (max-width: 475px) {
+    .lunar-ganzhi {
+        font-size: 1.3rem;
+    }
+
+    .lunar-month {
+        font-size: 1.4rem;
+    }
+
+    .calendar-today-btn {
+        font-size: 0.95rem;
+        padding: 6px 14px;
+        letter-spacing: 0.05em;
+    }
+
+    .title-row {
+        gap: 10px;
+    }
+
+    .lunar-group {
+        gap: 8px;
+    }
+}
+
+@media (max-height: 600px) {
+    .calendar-section .nav-group-right {
+        margin-bottom: 5px;
+    }
+
+    .lunar-month {
+        font-size: 1.8rem;
+        /* Scale down title */
+    }
+
+    .lunar-ganzhi {
+        font-size: 1.6rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .title-main {
+        font-size: 2.2rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .title-main {
+        gap: 15px;
+    }
+
+    .lunar-month {
+        font-size: 2.4rem;
+    }
+
+    .lunar-prefix {
+        font-size: 2rem;
+    }
+
+    .title-sub {
+        font-size: 1.1rem;
+    }
+}

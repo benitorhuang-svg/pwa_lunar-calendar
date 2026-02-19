@@ -1,5 +1,7 @@
 @import "./calendar-themes.css";
-@import "./calendar/layout.css";
+@import "./calendar/section.css";
+@import "./calendar/header.css";
+@import "./calendar/selector.css";
 @import "./calendar/navigation.css";
 @import "./calendar/cell.css";
 

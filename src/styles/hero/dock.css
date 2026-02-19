@@ -8,6 +8,37 @@
     transform: translateX(-50%);
     z-index: 2000;
     transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    /* Origin center bottom for scaling */
+    transform-origin: center bottom;
+}
+
+/* Responsive: Short Screens (Landscape/Laptop) - Prevent covering grid */
+@media (max-height: 660px) {
+    .hero-dock-wrapper {
+        bottom: 10px;
+        transform: translateX(-50%) scale(0.9);
+    }
+}
+
+/* Responsive: Extra Small Screens (Mobile) - Compact */
+@media (max-width: 475px) {
+    .hero-dock-wrapper {
+        bottom: 16px;
+        width: 95%;
+        /* Ensure it doesn't overflow horizontally */
+        display: flex;
+        justify-content: center;
+    }
+
+    .hero-dock {
+        padding: 6px 14px;
+        gap: 8px;
+    }
+
+    .dock-item {
+        width: 40px;
+        height: 40px;
+    }
 }
 
 .hero-dock-wrapper.hidden {

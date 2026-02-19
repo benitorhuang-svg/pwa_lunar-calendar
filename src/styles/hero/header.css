@@ -61,14 +61,14 @@
 
 
 .hero-year-month-selector .calendar-label-btn {
-    background: rgba(10, 10, 10, 0.65);
+    background: rgba(10, 10, 10, 0.95);
     /* Darker for better contrast */
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(212, 175, 55, 0.25);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.5);
     /* Subtle gold border */
-    color: rgba(255, 255, 255, 0.9);
-    padding: 8px 20px;
+    color: #ffffff;
+    padding: 8px 24px;
     border-radius: 12px;
     /* Soft rounding */
     cursor: pointer;
@@ -76,18 +76,18 @@
     display: flex;
     align-items: baseline;
     justify-content: center;
-    gap: 6px;
-    min-width: 90px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    gap: 8px;
+    min-width: 100px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
 }
 
 .hero-year-month-selector .calendar-label-btn:hover {
-    background: rgba(212, 175, 55, 0.15);
-    border-color: rgba(212, 175, 55, 0.6);
+    background: rgba(212, 175, 55, 0.2);
+    border-color: rgba(212, 175, 55, 0.7);
     color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
 }
 
 .hero-year-month-selector .calendar-label-btn.active,
@@ -102,27 +102,30 @@
 
 
 .hero-year-month-selector .header-year {
-    font-size: 1.4rem;
-    font-weight: 500;
-    /* Slightly bolder for readability */
+    font-size: 1.5rem;
+    font-weight: 700;
+    /* Bolder for readability */
     letter-spacing: 0.05em;
     font-family: var(--font-serif-num);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
 }
 
 .hero-year-month-selector .header-month {
     font-size: 1.4rem;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.05em;
     font-family: var(--font-serif-num);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .hero-year-month-selector .unit {
     font-size: 0.9rem;
     font-family: var(--font-calligraphy);
-    opacity: 0.6;
-    font-weight: 400;
+    opacity: 0.9;
+    font-weight: 500;
     margin-left: 2px;
     color: var(--gold-accent);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     /* Make unit gold by default for style */
 }
 

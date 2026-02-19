@@ -97,9 +97,10 @@ export class CalendarRenderer {
         // 後續填白 (下個月)
         // Trailing padding (Next Month)
         const totalCells = startDay + lastDay.getDate();
-        // 確保至少顯示 5 行 (35格) 或 6 行 (42格)
-        // Ensure at least 35 or 42 cells to fill the grid
-        const targetCells = totalCells <= 35 ? 35 : 42;
+        // 動態計算所需的行數 (4, 5, 或 6 行)
+        // Dynamically calculate required rows (4, 5, or 6 rows)
+        // 這樣可以避免強制 6 行導致的過多下個月日期，也不會強制 5 行導致 Feb 2026 (4行) 出現空白
+        const targetCells = Math.ceil(totalCells / 7) * 7;
         const trailingDays = targetCells - totalCells;
 
         for (let day = 1; day <= trailingDays; day++) {
