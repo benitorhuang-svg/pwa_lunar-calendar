@@ -65,17 +65,17 @@ export class PanelEventHandlers {
             let touchStartY = 0;
 
             this.panelToday.addEventListener("touchstart", (e) => {
-                if (!e.changedTouches || e.changedTouches.length === 0) return;
-                touchStartX = e.changedTouches[0].clientX;
-                touchStartY = e.changedTouches[0].clientY;
+                const touch = e.changedTouches?.[0];
+                if (!touch) return;
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
             }, { passive: true });
 
             this.panelToday.addEventListener("touchend", (e) => {
-                if (!e.changedTouches || e.changedTouches.length === 0) return;
-                const touchEndX = e.changedTouches[0].clientX;
-                const touchEndY = e.changedTouches[0].clientY;
-                const deltaX = touchEndX - touchStartX;
-                const deltaY = touchEndY - touchStartY;
+                const touch = e.changedTouches?.[0];
+                if (!touch) return;
+                const deltaX = touch.clientX - touchStartX;
+                const deltaY = touch.clientY - touchStartY;
 
                 // 只有當水平滑動遠大於垂直滑動時才動作 (Only trigger if horizontal swipe is dominant)
                 if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5 && Math.abs(deltaX) > 40) {

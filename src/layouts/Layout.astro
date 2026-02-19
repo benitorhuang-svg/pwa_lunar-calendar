@@ -47,8 +47,14 @@ import { pwaInfo } from "virtual:pwa-info";
         <link href="https://fonts.googleapis.com" rel="preconnect" />
         <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
 
+        <!-- Preload Google Fonts CSS for faster font loading on mobile -->
         <link
-            href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Zhi+Mang+Xing&family=Ma+Shan+Zheng&display=swap"
+            rel="preload"
+            as="style"
+            href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Zhi+Mang+Xing&family=Ma+Shan+Zheng&display=block"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Zhi+Mang+Xing&family=Ma+Shan+Zheng&display=block"
             rel="stylesheet"
         />
         <slot name="head" />

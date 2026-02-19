@@ -22,7 +22,6 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
     // --- Configuration ---
     const MIN_LOADING_TIME = 2000; // ms
-    const RELOAD_SAFETY_TIMEOUT = 6000; // ms
 
     // --- Progress Tracking ---
     type ProgressKey = "audio" | "fonts" | "heroAll" | "heroFirst" | "scripts" | "update";
@@ -192,102 +191,73 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     async function checkSWandSync(): Promise<void> {
         markActive("update");
 
-        // Dev mode or no SW support
+        // 1. 環境檢查 (Environment Check)
         if (import.meta.env.DEV || !("serviceWorker" in navigator)) {
-            console.log("[Loader] Skipping SW check (Dev/NoSupport)");
+            console.log("[Loader] Skipping SW sync (Dev/NoSupport)");
             markDone("update");
             return;
         }
 
         try {
-            // Listen for controller change (The standard Reload signal)
+            // 2. 監聽控制器變更 (Reload trigger)
             let isReloading = false;
             navigator.serviceWorker.addEventListener("controllerchange", () => {
                 if (isReloading) return;
                 isReloading = true;
-                console.log("[Loader] ★ Controller Changed -> Reloading");
-                setLoadingStatus("版本同步完成，重整中...");
+                console.log("[Loader] ★ Version Sync -> Reloading");
+                setLoadingStatus("發現新版本，同步並重整中...");
                 document.body.classList.add("is-updating");
                 window.location.reload();
             });
 
-            // Get Registration
-            // We wait a tiny bit to ensure the injected registration script ran
-            await new Promise((r) => setTimeout(r, 100)); // 100ms buffer
-            const reg = await navigator.serviceWorker.getRegistration();
+            // 3. 獲取當前註冊狀態 (Get Registration)
+            // 稍微等待以確保瀏覽器已處理底層註冊
+            const reg = await Promise.race([
+                navigator.serviceWorker.getRegistration(),
+                new Promise<undefined>((resolve) => setTimeout(resolve, 2000)) // 2秒逾時
+            ]);
 
             if (!reg) {
-                // First Visit Scenario: Wait for registration
-                console.log("[Loader] No registration found, waiting for first install...");
-                await waitForFirstInstall();
-            } else {
-                // Update Scenario
-                setLoadingStatus("檢查更新...");
-
-                // 1. Manually trigger update check
-                try {
-                    await reg.update();
-                } catch (e) {
-                    console.warn("[Loader] Update check failed (Offline?)");
-                }
-
-                // 2. Check for waiting worker (Downloaded but stuck)
-                if (reg.waiting) {
-                    console.log("[Loader] Found waiting worker -> Skip Waiting");
-                    document.body.classList.add("is-updating");
-                    reg.waiting.postMessage({ type: "SKIP_WAITING" });
-                    // Wait for controllerchange reload...
-                    // Add safety break
-                    await new Promise((r) => setTimeout(r, RELOAD_SAFETY_TIMEOUT));
-                    // If we are here, reload timed out, but let's just proceed to avoid bricking
-                    if (!isReloading) {
-                        console.warn("[Loader] Reload timeout from Waiting state. Proceeding.");
-                        markDone("update");
-                    }
-                    return;
-                }
-
-                // 3. Check for installing worker (Downloading now)
-                if (reg.installing) {
-                    console.log("[Loader] Found installing worker. Monitoring...");
-                    document.body.classList.add("is-updating");
-                    await monitorWorker(reg.installing);
-                    // If it activates effectively, controllerchange fires -> reload
-                    // If not (e.g. redundant), we proceed.
-                } else {
-                    // 4. No updates found
-                    console.log("[Loader] No active updates.");
-                    setLoadingStatus("農民曆同步完成");
-                    markDone("update");
-                }
-            }
-        } catch (error) {
-            console.error("[Loader] SW Error:", error);
-            // Fail safe
-            markDone("update");
-        }
-    }
-
-    async function waitForFirstInstall(): Promise<void> {
-        // Wait up to 5 seconds for registration
-        const maxWait = 5000;
-        const start = Date.now();
-
-        while (Date.now() - start < maxWait) {
-            const reg = await navigator.serviceWorker.getRegistration();
-            if (reg) {
-                if (reg.installing) await monitorWorker(reg.installing);
-                else if (reg.waiting) await monitorWorker(reg.waiting);
-                else if (reg.active) {
-                    // Already active
-                }
+                console.log("[Loader] No active registration found or timeout.");
                 markDone("update");
                 return;
             }
-            await new Promise((r) => setTimeout(r, 200));
+
+            // 4. 檢查更新 (Check for Updates)
+            setLoadingStatus("檢查更新...");
+
+            // 如果已有等待中的更新，直接處理
+            if (reg.waiting) {
+                console.log("[Loader] Update found (Waiting) -> Activating");
+                document.body.classList.add("is-updating");
+                reg.waiting.postMessage({ type: "SKIP_WAITING" });
+                return;
+            }
+
+            // 如果正在安裝，進行監控
+            if (reg.installing) {
+                console.log("[Loader] Update found (Installing) -> Monitoring");
+                document.body.classList.add("is-updating");
+                await monitorWorker(reg.installing);
+                return;
+            }
+
+            try {
+                await reg.update();
+                // 如果沒有新更新 (reg.update 不一定回傳 boolean，需視狀態而定)
+                if (!reg.installing && !reg.waiting) {
+                    console.log("[Loader] Current version is up to date.");
+                    markDone("update");
+                }
+            } catch (e) {
+                console.warn("[Loader] Manual update check failed, assuming up-to-date.");
+                markDone("update");
+            }
+
+        } catch (error) {
+            console.error("[Loader] SW Sync Error:", error);
+            markDone("update");
         }
-        console.warn("[Loader] First install wait timed out.");
-        markDone("update");
     }
 
     // --- Other Loaders ---
@@ -303,13 +273,64 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
     function checkFonts() {
         markActive("fonts");
-        if (document.fonts && document.fonts.status === "loaded") {
+
+        // 明確列出必須載入的關鍵字體 (Explicitly list critical fonts that must load)
+        const criticalFonts = [
+            { family: "Ma Shan Zheng", weight: "400" },    // 詩詞內文
+            { family: "Zhi Mang Xing", weight: "400" },    // 書法標題
+            { family: "Noto Serif TC", weight: "400" },     // 主要UI字體
+        ];
+
+        // 使用 document.fonts.check() 逐一確認每個字體是否已載入
+        const checkAllFonts = (): boolean => {
+            return criticalFonts.every(f => {
+                try {
+                    return document.fonts.check(`${f.weight} 16px "${f.family}"`);
+                } catch {
+                    return false;
+                }
+            });
+        };
+
+        // 如果已經全部載入（快取命中），立即完成
+        if (checkAllFonts()) {
+            console.log("[Loader] Fonts already cached and ready");
             markDone("fonts");
-        } else {
-            document.fonts.ready.then(() => markDone("fonts"));
-            // Fallback
-            setTimeout(() => markDone("fonts"), 3000);
+            return;
         }
+
+        // 等待 document.fonts.ready 後再次確認
+        document.fonts.ready.then(() => {
+            if (checkAllFonts()) {
+                console.log("[Loader] All critical fonts loaded via fonts.ready");
+                markDone("fonts");
+            } else {
+                // fonts.ready 觸發但關鍵字體仍未載入 → 用輪詢等待
+                console.warn("[Loader] fonts.ready fired but critical fonts still missing, polling...");
+                pollFonts();
+            }
+        });
+
+        // 輪詢機制：每 500ms 檢查一次，最多等 8 秒
+        let pollCount = 0;
+        const MAX_POLLS = 16; // 16 × 500ms = 8 seconds
+        function pollFonts(): void {
+            const interval = setInterval(() => {
+                pollCount++;
+                if (checkAllFonts()) {
+                    clearInterval(interval);
+                    console.log(`[Loader] Critical fonts loaded after ${pollCount * 500}ms polling`);
+                    markDone("fonts");
+                } else if (pollCount >= MAX_POLLS) {
+                    clearInterval(interval);
+                    console.warn("[Loader] ⚠️ Font loading timeout (8s). Proceeding with fallback fonts.");
+                    markDone("fonts");
+                }
+            }, 500);
+        }
+
+        // 啟動初始輪詢（與 fonts.ready 競爭，先完成的贏）
+        pollFonts();
     }
 
     function preloadAssets() {
