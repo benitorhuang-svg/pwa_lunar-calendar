@@ -2,8 +2,8 @@
 #panelToday {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    /* Ensure rounded corners clip content */
+    max-height: 85dvh;
+    /* Balanced height for better content visibility */
 }
 
 /* 面板主體內容容器 - 包裹左側金線區與右側主要資訊 */
@@ -11,16 +11,21 @@
     display: flex;
     flex-direction: row;
     flex: 1;
-    overflow: hidden;
+    overflow: visible;
+    /* Changed from hidden to avoid clipping long content */
 }
 
 /* 右側大區塊，包含日期、月亮、七十二候 */
 .panel-main-content {
     flex: 1;
     /* Fixed padding for consistent card feel */
-    padding: 25px 22px 30px 22px;
+    padding: 25px 22px 20px 22px;
+    /* Further reduced for a tighter, more cohesive look */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    /* Center content vertically if space permits */
+    overflow-y: auto;
+    /* Allow scrolling if content is too tall */
+    -webkit-overflow-scrolling: touch;
+    max-height: 100%;
 }

@@ -35,9 +35,9 @@ export class PanelRenderers {
         const zodiac = lunar.getYearShengXiao();
         const dayGZ = lunar.getDayInGanZhi();
         const monthGZ = lunar.getMonthInGanZhi();
-        const jianchu = lunar.getJianChu();
-        const luck = lunar.getComprehensiveLuck();
-        const mansion = lunar.getMansion();
+        // const jianchu = lunar.getJianChu();
+        // const luck = lunar.getComprehensiveLuck();
+        // const mansion = lunar.getMansion();
         const termPeriod = lunar.getSolarTermPeriod();
 
         const festival = lunar.getFestival() || lunar.getSolarFestival();
@@ -285,33 +285,43 @@ export class PanelRenderers {
                             <span class="pentad-tag-box">${pentadLabel}</span>
                             <span class="pentad-name-title">${pentad.name}</span>
                         </div>
-                        <div class="pentad-content-text">${pentad.meaning}</div>
+                        <div class="pentad-meaning-text">${pentad.meaning}</div>
                      </div>
                 </div>
             </div>`;
     }
 
     private renderPoemCard(poem: Poem): string {
+        // Process content to break only after full periods with a semantic class
+        const formattedContent = poem.content.replace(/。/g, '。<span class="poem-sentence-break"></span>');
+
+        // Split author field into Name and Title if possible (e.g. "虞集《聽雨》")
+        let displayTitle = "";
+        let displayName = poem.author;
+
+        if (poem.author.includes("《")) {
+            const parts = poem.author.split("《");
+            displayName = parts[0]?.trim() || "";
+            displayTitle = "《" + parts[1];
+        } else {
+            // Case where its just a name like "歐陽修"
+            displayName = poem.author;
+            displayTitle = "詩選"; // Fallback display when no title
+        }
+
         return `
             <div class="detail-culture-section">
                 <div class="culture-left full-width">
                      <div class="pentad-display">
-                        <div class="pentad-header-row">
-                            <span class="pentad-tag-box" style="background:rgba(212,175,85,0.15); color:var(--cal-accent); border:1px solid rgba(212,175,85,0.3)">詩選</span>
-                            <span class="pentad-name-title" style="font-size:1.1rem">${poem.author}</span>
+                        <div class="pentad-header-row" style="display: flex; align-items: center; width: 100%; overflow: hidden;">
+                            <span class="pentad-tag-box" style="background:rgba(212,175,85,0.15); color:var(--cal-accent); border:1px solid rgba(212,175,85,0.3); flex-shrink: 0;">詩選</span>
+                            <span class="pentad-name-title" style="flex: 1; min-width: 0; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: 10px;">${displayTitle}</span>
                         </div>
-                        <div class="pentad-content-text" style="
-                            font-size:1.4rem; 
-                            line-height:1.6; 
-                            text-align:center; 
-                            padding: 12px 0;
-                            font-family: var(--font-calligraphy);
-                            letter-spacing: 0.05em;
-                        ">
-                            「${poem.content}」
+                        <div class="pentad-content-text" style="word-break: keep-all; line-height: 1.1;">
+                            ${formattedContent}
                         </div>
-                        <div style="text-align:right; font-size:0.9rem; opacity:0.6; margin-top:4px; font-family:var(--font-serif)">
-                           — ${poem.dynasty || ""}
+                        <div class="poem-author-line">
+                           — ${poem.dynasty || ""}${displayName ? "。" + displayName : ""}
                         </div>
                      </div>
                 </div>

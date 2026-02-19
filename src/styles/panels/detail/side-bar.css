@@ -13,9 +13,9 @@
     /* Add spacing from top edge */
     border-right: 0.5px solid rgba(212, 175, 55, 0.1);
     flex-shrink: 0;
-    border-bottom-left-radius: inherit;
-    /* Fix: match card corner */
-    border-top-left-radius: inherit;
+    border-bottom-left-radius: 48px;
+    /* Explicitly match standard card corner */
+    border-top-left-radius: 48px;
     /* Support top-left as well */
 }
 

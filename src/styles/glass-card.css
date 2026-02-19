@@ -18,12 +18,10 @@
     flex-direction: column;
     height: auto !important;
     min-height: 380px;
-    max-height: 68dvh;
-    /* Slightly increased based on reference */
-    /* Reduced from 75dvh to avoid feeling "too high" */
-    /* Safety limit to avoid header overlap */
-    padding-bottom: 10px;
-    /* Safe space for last row */
+    max-height: 75dvh;
+    /* Increased to accommodate long cultural content and avoid clipping */
+    padding-bottom: 20px;
+    /* Standardized bottom safe zone */
 
     /* Appearance */
     /* Frosted White Style (魔砂白) */
@@ -72,11 +70,11 @@
     .glass-card-template {
         width: min(calc(100% - 120px), 640px) !important;
         /* Expanded width for green box look */
-        max-height: 85dvh;
-        /* Further increased to prevent clipping */
+        max-height: 80dvh;
+        /* Adjusted downward to prevent top-overflow on shorter desktop screens */
         bottom: 90px !important;
         /* Lowered to fit more height */
-        padding: 20px 20px 40px;
-        /* Increased bottom padding more for safety */
+        padding: 20px 20px 25px;
+        /* Balanced bottom padding for desktop */
     }
 }

@@ -47,100 +47,19 @@
 /* Tablet and above (768px+) */
 @media (min-width: 768px) {
     .panel-main-content {
-        padding: 30px 28px 35px 28px;
-    }
-
-    .detail-header {
-        font-size: 3rem;
-        margin-bottom: 10px;
-    }
-
-    .detail-sub-main {
-        font-size: 1.25rem;
-        margin-top: 12px;
-    }
-
-    .detail-lucky-pill {
-        padding: 12px 28px;
-        font-size: 1.1rem;
-    }
-
-    .detail-mid-row {
-        gap: 24px;
-        margin-top: 18px;
+        padding: 30px 28px 30px 28px;
     }
 
     /* Adjusted for Culture Section */
     .detail-culture-section {
-        margin-top: 30px;
-        padding: 24px 30px;
-    }
-
-    .pentad-name-large {
-        font-size: 2.8rem;
-    }
-
-    .moon-display {
-        width: 100px;
-    }
-
-    .moon-svg {
-        width: 80px;
-        height: 80px;
-    }
-
-    .tag {
-        font-size: 1.05rem;
-    }
-
-    .tag-container {
-        gap: 10px 14px;
-    }
-
-    .traditional-seal {
-        width: 58px;
-        height: 58px;
-        font-size: 2rem;
-    }
-
-    .solar-term {
-        font-size: 1.2rem;
-    }
-
-    .panel-side-accent {
-        width: 56px;
-    }
-
-    .vertical-text {
-        font-size: 1.3rem;
-        letter-spacing: 0.7em;
+        margin-top: 25px;
+        padding: 24px 30px 15px;
     }
 }
 
 /* Desktop (1024px+) */
 @media (min-width: 1024px) {
     .panel-main-content {
-        padding: 35px 32px 40px 32px;
-    }
-
-    .detail-header {
-        font-size: 3.2rem;
-    }
-
-    .detail-sub-main {
-        font-size: 1.35rem;
-    }
-
-    .detail-lucky-pill {
-        padding: 14px 32px;
-        font-size: 1.15rem;
-    }
-
-    .panel-side-accent {
-        width: 60px;
-    }
-
-    .vertical-text {
-        font-size: 1.4rem;
+        padding: 35px 32px 35px 32px;
     }
 }
