@@ -7,5 +7,5 @@ export const AUDIO_MANIFEST = [
     "ambient.mp3",
     "danyvin-journey.mp3",
     "danyvin.mp3",
-    "soundgallerydt-chinese-asian-music-175674.mp3"
+    "soundgallerydt-chinese-asian-music-175674.mp3",
 ];

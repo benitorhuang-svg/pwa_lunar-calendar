@@ -147,7 +147,6 @@ body.mode-artwork .music-toggle-btn.playing {
 }
 
 @keyframes musicPulseCalendar {
-
     0%,
     100% {
         transform: scale(1);
@@ -161,7 +160,6 @@ body.mode-artwork .music-toggle-btn.playing {
 }
 
 @keyframes musicPulseArtwork {
-
     0%,
     100% {
         transform: scale(1);

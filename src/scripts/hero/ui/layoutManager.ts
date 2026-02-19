@@ -21,7 +21,6 @@ export class HeroLayoutManager {
 
     private btnDay: HTMLElement | null = null;
 
-
     private heroDockWrapper: HTMLElement | null = null;
 
     private heroHeader: HTMLElement | null = null;

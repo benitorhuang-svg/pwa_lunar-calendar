@@ -13,9 +13,7 @@
 
     /* Shadows - Deep Void */
     --cal-shadow:
-        0 30px 60px rgba(0, 0, 0, 0.6),
-        /* Heavy Shadow */
-        0 1px 1px rgba(255, 255, 255, 0.1);
+        0 30px 60px rgba(0, 0, 0, 0.6), /* Heavy Shadow */ 0 1px 1px rgba(255, 255, 255, 0.1);
     /* Top Rim Light */
 
     --cal-shadow-glow: 0 35px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 255, 255, 0.05);

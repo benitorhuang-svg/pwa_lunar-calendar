@@ -126,7 +126,6 @@
 }
 
 @keyframes goldAuraPulse {
-
     0%,
     100% {
         transform: translate(-50%, -50%) scale(1);
@@ -154,10 +153,12 @@
 /* Divider between Year and Month */
 .panel-section-divider {
     height: 1px;
-    background: linear-gradient(90deg,
-            transparent 0%,
-            rgba(212, 175, 55, 0.15) 50%,
-            transparent 100%);
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(212, 175, 55, 0.15) 50%,
+        transparent 100%
+    );
     margin: 8px 0;
     width: 100%;
 }

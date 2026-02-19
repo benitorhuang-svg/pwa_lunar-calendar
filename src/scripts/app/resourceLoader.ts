@@ -28,12 +28,12 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
     type ProgressKey = "audio" | "fonts" | "heroAll" | "heroFirst" | "scripts" | "update";
 
     const progress: Record<ProgressKey, boolean> = {
-        audio: false,      // 10%
-        fonts: false,      // 15%
-        heroAll: false,    // 15%
-        heroFirst: false,  // 25%
-        scripts: false,    // 15%
-        update: false,     // 20%
+        audio: false, // 10%
+        fonts: false, // 15%
+        heroAll: false, // 15%
+        heroFirst: false, // 25%
+        scripts: false, // 15%
+        update: false, // 20%
     };
 
     const weights: Record<ProgressKey, number> = {
@@ -166,7 +166,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                     case "installed":
                         setLoadingStatus("下載完成，準備安裝...");
                         // Standard: Skip Waiting to activate immediately
-                        worker.postMessage({ type: 'SKIP_WAITING' });
+                        worker.postMessage({ type: "SKIP_WAITING" });
                         break;
                     case "activating":
                         setLoadingStatus("更新中...");
@@ -213,7 +213,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
             // Get Registration
             // We wait a tiny bit to ensure the injected registration script ran
-            await new Promise(r => setTimeout(r, 100)); // 100ms buffer
+            await new Promise((r) => setTimeout(r, 100)); // 100ms buffer
             const reg = await navigator.serviceWorker.getRegistration();
 
             if (!reg) {
@@ -235,10 +235,10 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                 if (reg.waiting) {
                     console.log("[Loader] Found waiting worker -> Skip Waiting");
                     document.body.classList.add("is-updating");
-                    reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    reg.waiting.postMessage({ type: "SKIP_WAITING" });
                     // Wait for controllerchange reload...
                     // Add safety break
-                    await new Promise(r => setTimeout(r, RELOAD_SAFETY_TIMEOUT));
+                    await new Promise((r) => setTimeout(r, RELOAD_SAFETY_TIMEOUT));
                     // If we are here, reload timed out, but let's just proceed to avoid bricking
                     if (!isReloading) {
                         console.warn("[Loader] Reload timeout from Waiting state. Proceeding.");
@@ -284,12 +284,11 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                 markDone("update");
                 return;
             }
-            await new Promise(r => setTimeout(r, 200));
+            await new Promise((r) => setTimeout(r, 200));
         }
         console.warn("[Loader] First install wait timed out.");
         markDone("update");
     }
-
 
     // --- Other Loaders ---
 
@@ -338,14 +337,14 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
         // We rely on window event from Main App or load first image manually
 
         // 1. Manually load first image (for speed)
-        // Note: In real app, we need the exact filename. 
+        // Note: In real app, we need the exact filename.
         // Assuming we can get it or just rely on main app event for 'heroAll'.
-        // For 'heroFirst', we will just mark it done when we get 'heroFirstLoaded' or 
-        // rely on a quick check. 
+        // For 'heroFirst', we will just mark it done when we get 'heroFirstLoaded' or
+        // rely on a quick check.
 
-        // Revised Strategy: 
-        // Since we don't want to duplicate the manifest logic here drastically, 
-        // we will rely on the app logic to signal us for assets, OR 
+        // Revised Strategy:
+        // Since we don't want to duplicate the manifest logic here drastically,
+        // we will rely on the app logic to signal us for assets, OR
         // we use the existing global event.
 
         // Since user wants "Optimized Code", let's keep the Manifest logic but clean.
@@ -389,7 +388,7 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
 
     try {
         console.log("[Loader] 🚀 Init");
-        console.log(`[Loader] Environment: ${import.meta.env.DEV ? 'DEV' : 'PROD'}`);
+        console.log(`[Loader] Environment: ${import.meta.env.DEV ? "DEV" : "PROD"}`);
 
         // Start Animation Loop
         startAnimationLoop();
@@ -416,10 +415,8 @@ import { GALLERY_MANIFEST } from "../generated/galleryManifest";
                 revealApp();
             }
         }, 10000);
-
     } catch (e) {
         console.error("Critical Loader Error", e);
         revealApp();
     }
-
 })();

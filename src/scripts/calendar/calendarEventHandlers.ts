@@ -167,7 +167,8 @@ export class CalendarEventHandlers {
                 const type = labelBtn.dataset.type as "year" | "month";
                 const popup = document.getElementById("quickSelectorPopup");
                 if (popup) {
-                    const isSameType = !popup.classList.contains("hidden") && popup.dataset.activeType === type;
+                    const isSameType =
+                        !popup.classList.contains("hidden") && popup.dataset.activeType === type;
 
                     if (isSameType) {
                         // Toggle OFF

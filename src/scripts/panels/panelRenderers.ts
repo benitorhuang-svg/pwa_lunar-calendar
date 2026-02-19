@@ -11,7 +11,7 @@ export class PanelRenderers {
     private panelToday: HTMLElement | null = null;
     private panelYearMonth: HTMLElement | null = null;
 
-    constructor() { }
+    constructor() {}
 
     public init(): void {
         this.panelYearMonth = document.getElementById("panelYearMonth");
@@ -60,7 +60,7 @@ export class PanelRenderers {
             monthText,
             zodiac,
             pentad,
-            moon
+            moon,
         });
 
         if (!ganzhi || !monthText || !dayText) {
@@ -73,13 +73,13 @@ export class PanelRenderers {
                 <div class="panel-main-content">
                     <div class="detail-top-section">
                         ${this.renderDateDisplay(
-            date,
-            monthText,
-            dayText,
-            festival,
-            termPeriod,
-            holidayInfo?.isHoliday ? holidayInfo.description || "休假" : null,
-        )}
+                            date,
+                            monthText,
+                            dayText,
+                            festival,
+                            termPeriod,
+                            holidayInfo?.isHoliday ? holidayInfo.description || "休假" : null,
+                        )}
                         ${this.renderRightCluster(moon)}
                     </div>
                     ${this.renderCultureSection(pentad)}
@@ -95,7 +95,6 @@ export class PanelRenderers {
             );
         }, 0);
     }
-
 
     public renderYearMonthPanel(selectedYear: number, selectedMonth: number, today: Date): void {
         if (!this.panelYearMonth) return;
@@ -196,8 +195,8 @@ export class PanelRenderers {
         const festivalHtml = festival
             ? `<div class="festival-tag-mini">${festival}</div>`
             : holidayDesc
-                ? `<div class="festival-tag-mini">${holidayDesc}</div>`
-                : "";
+              ? `<div class="festival-tag-mini">${holidayDesc}</div>`
+              : "";
 
         let termFlowHtml = "";
         if (termPeriod) {
@@ -247,7 +246,12 @@ export class PanelRenderers {
             </div>`;
     }
 
-    private renderSideAccent(ganzhi: string, monthGZ: string, dayGZ: string, zodiac: string): string {
+    private renderSideAccent(
+        ganzhi: string,
+        monthGZ: string,
+        dayGZ: string,
+        zodiac: string,
+    ): string {
         return `
             <div class="panel-side-accent">
                 <div class="vertical-text">
@@ -257,9 +261,7 @@ export class PanelRenderers {
             </div>`;
     }
 
-    private renderCultureSection(
-        pentad: { name: string; meaning: string; index: number },
-    ): string {
+    private renderCultureSection(pentad: { name: string; meaning: string; index: number }): string {
         const pentadLabel = ["", "初候", "二候", "三候"][pentad.index] || "候";
 
         return `
@@ -287,19 +289,18 @@ export class PanelRenderers {
         // Normalize phase to 0..1 for just the lighting percentage?
         // Let's use standard astronomical definition logic for the path.
 
-
         // value 0..0.5 is Waxing
         // using Math.cos for the terminator projection
         // angle goes from 0 to PI for waxing, PI to 2PI for waning
 
         // Illumination factor (-1 to 1). -1=New, 1=Full.
-        // Actually simpler: 
+        // Actually simpler:
         // 0 (New) -> Terminator x = -R
         // 0.25 (First Q) -> Terminator x = 0
         // 0.5 (Full) -> Terminator x = R
         // But we need to define the SHAPE.
 
-        // Waxing (0 < v < 0.5): Light on Right. 
+        // Waxing (0 < v < 0.5): Light on Right.
         // Outer arc: Right Semicircle.
         // Inner arc: Ellipse from Top to Bottom.
 
@@ -314,8 +315,8 @@ export class PanelRenderers {
         // At value=0 (New), rX = -R (Matches outer circle left, result empty) - Wait.
         // Let's stick to "Draw the Light".
 
-        // Radius of terminator X. 
-        // We use cos(angle) mapping. 
+        // Radius of terminator X.
+        // We use cos(angle) mapping.
         // 0 -> -R (Concave max)
         // 0.25 -> 0 (Flat)
         // 0.5 -> R (Convex max)
@@ -332,7 +333,7 @@ export class PanelRenderers {
         // If Waxing (Right Lit):
         //    Terminator starts Top, ends Bottom.
         //    If Crescent (val < 0.25): Terminator curves Right (Sweep 0? No, standard arc sweep logic)
-        //    Let's visualize: 
+        //    Let's visualize:
         //    Top(32,4) -> Bottom(32,60).
         //    Right Semicircle (Outer): Sweep 1.
         //    Terminator (Inner): Must go Bottom -> Top to close path?
@@ -343,8 +344,10 @@ export class PanelRenderers {
         // Arc to Bottom (32, 60) via Outer Side.
         // Arc to Top (32, 4) via Terminator.
 
-        const startX = 32, startY = 4;
-        const endX = 32, endY = 60;
+        const startX = 32,
+            startY = 4;
+        const endX = 32,
+            endY = 60;
 
         // Outer Arc (Top -> Bottom)
         // Waxing (Right side lit) -> Sweep 1.
@@ -369,11 +372,12 @@ export class PanelRenderers {
         let innerSweep = 0;
         if (isWaxing) {
             // Waxing: Outer is Right.
-            // Crescent: Inner needs to curve Left (into the shape). Bottom->Top, Curve Left = Sweep 0? 
-            // SVG coords: Y+ is down. Bottom(60) to Top(4). Vector is Up. Left of Vector is Minus X. 
+            // Crescent: Inner needs to curve Left (into the shape). Bottom->Top, Curve Left = Sweep 0?
+            // SVG coords: Y+ is down. Bottom(60) to Top(4). Vector is Up. Left of Vector is Minus X.
             // So curving towards center (Left) is Sweep 1.
 
-            if (value < 0.25) innerSweep = 0; // Crescent: Curve Match Outer edge direction roughly?
+            if (value < 0.25)
+                innerSweep = 0; // Crescent: Curve Match Outer edge direction roughly?
             else innerSweep = 1; // Gibbous: Bulge outward
         } else {
             // Waning: Outer is Left.

@@ -6,7 +6,7 @@ export class PanelUIHandler {
     constructor(
         private uiManager: HeroUIManager,
         private idleManager: HeroIdleManager,
-    ) { }
+    ) {}
 
     public init(): void {
         this.bindEvents();
@@ -36,7 +36,6 @@ export class PanelUIHandler {
                 );
             }
         });
-
     }
 
     private bindEvents(): void {

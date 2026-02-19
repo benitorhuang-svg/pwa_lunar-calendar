@@ -10,7 +10,9 @@
     /* Subtle border */
     border-radius: 20px;
     /* Softer, modern radius */
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.6),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 
     /* Override CSS variables locally */
     --cal-text: rgba(255, 255, 255, 0.9);
@@ -169,7 +171,7 @@
 
 /* Add a connector line concept */
 .faq-answer::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 33px;
     /* Center of icon column */

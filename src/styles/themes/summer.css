@@ -47,11 +47,13 @@
     --panel-item-bg: rgba(0, 100, 150, 0.05);
     /* Very light blue tint */
     --panel-border: rgba(135, 206, 250, 0.3);
-    --panel-divider: linear-gradient(90deg,
-            transparent 0%,
-            rgba(135, 206, 250, 0.3) 20%,
-            rgba(135, 206, 250, 0.3) 80%,
-            transparent 100%);
+    --panel-divider: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(135, 206, 250, 0.3) 20%,
+        rgba(135, 206, 250, 0.3) 80%,
+        transparent 100%
+    );
 
     /* Interactive Elements - Ocean Gems */
     --cal-nav-bg: rgba(0, 119, 190, 0.08);

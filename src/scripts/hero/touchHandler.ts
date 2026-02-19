@@ -4,7 +4,6 @@
  * Handles touch and swipe gestures
  */
 export class HeroTouchHandler {
-
     private touchStartX = 0; // 觸控起始 X 座標 (Touch start X coordinate)
     private touchStartY = 0; // 觸控起始 Y 座標 (Touch start Y coordinate)
 
@@ -12,7 +11,7 @@ export class HeroTouchHandler {
         private onSwipeLeft: () => void, // 向左滑動回呼 (Callback for left swipe)
         private onSwipeRight: () => void, // 向右滑動回呼 (Callback for right swipe)
         private onInteraction: () => void, // 互動事件回呼 (Callback for general interaction)
-    ) { }
+    ) {}
 
     public init(): void {
         window.addEventListener(

@@ -25,6 +25,23 @@ import { pwaInfo } from "virtual:pwa-info";
             rel="apple-touch-icon"
         />
 
+        <!-- SEO / Open Graph -->
+        <meta
+            name="description"
+            content="傳統智慧・現代應用 - 數位農民曆 PWA。查詢每日宜忌、節氣流轉與月相盈虧。"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="農民曆 PWA - 數位與傳統的完美結合" />
+        <meta
+            property="og:description"
+            content="查詢每日宜忌、節氣流轉與月相盈虧。體驗如宣紙般的溫潤質感與現代科技的便利。"
+        />
+        <meta
+            property="og:image"
+            content={`${import.meta.env.BASE_URL}/assets/icons/icon-512.png`.replace(/\/+/g, "/")}
+        />
+        <meta property="og:site_name" content="農民曆 PWA" />
+
         <!-- Core Logic Libraries (Synchronous Load) -->
 
         <link href="https://fonts.googleapis.com" rel="preconnect" />

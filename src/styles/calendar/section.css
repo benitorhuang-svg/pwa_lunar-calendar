@@ -103,16 +103,27 @@
 
 @media (min-width: 1024px) {
     .calendar-section {
-        padding: 65px 32px 40px;
-    }
-
-    .days-grid {
-        grid-auto-rows: minmax(75px, 1fr);
-        /* Restored minmax */
-        gap: 8px;
+        /* Reset padding but keep horizontal spacing */
+        padding: 40px 32px 40px;
+        /* Increased bottom padding further */
+        /* Force height to match parent template */
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     .week-header {
+        margin-top: 10px;
         gap: 8px;
+    }
+
+    .days-grid {
+        /* Let it grow to fill available space */
+        flex: 1;
+        height: auto;
+        /* Use minmax to ensure content isn't squashed too much */
+        grid-auto-rows: minmax(min(60px, 10dvh), 1fr);
+        gap: 8px;
+        align-content: stretch;
     }
 }

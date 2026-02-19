@@ -72,10 +72,11 @@
     .glass-card-template {
         width: min(calc(100% - 120px), 640px) !important;
         /* Expanded width for green box look */
-        max-height: 72dvh;
-        /* Increased back slightly for better proportionality */
-        bottom: 80px !important;
+        max-height: 85dvh;
+        /* Further increased to prevent clipping */
+        bottom: 90px !important;
         /* Lowered to fit more height */
-        padding: 15px;
+        padding: 20px 20px 40px;
+        /* Increased bottom padding more for safety */
     }
 }

@@ -180,7 +180,6 @@ export class HeroUIManager {
         });
     }
 
-
     public bindWelcomeOverlay(callback: (e: MouseEvent) => void): void {
         const overlay = this.layoutManager.overlay;
         overlay?.addEventListener("click", (e) => callback(e));

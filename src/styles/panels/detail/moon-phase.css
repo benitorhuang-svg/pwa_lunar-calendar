@@ -25,6 +25,12 @@
     color: var(--cal-lunar-text);
     letter-spacing: 0.15em;
     opacity: 0.8;
+    margin-top: 18px !important;
+    /* Force separation */
+    display: block !important;
+    position: relative;
+    z-index: 99;
+    /* Ensure it's above other elements if needed */
 }
 
 .share-card-btn {

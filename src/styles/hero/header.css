@@ -58,7 +58,16 @@
     font-family: var(--font-serif-num);
 }
 
-
+/* Desktop-specific vertical layout */
+@media (min-width: 1024px) {
+    .hero-year-month-selector {
+        flex-direction: column !important;
+        /* Force vertical stack */
+        align-items: flex-start;
+        transform: translateY(20px);
+        /* Push slightly down */
+    }
+}
 
 .hero-year-month-selector .calendar-label-btn {
     background: rgba(10, 10, 10, 0.95);
@@ -99,8 +108,6 @@
     box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
 }
 
-
-
 .hero-year-month-selector .header-year {
     font-size: 1.5rem;
     font-weight: 700;
@@ -133,7 +140,6 @@
 .hero-year-month-selector .header-sep {
     display: none;
 }
-
 
 .hero-year-month-selector .header-sep {
     font-size: 1.2rem;
@@ -173,12 +179,10 @@
     transform: scale(0.95);
 }
 
-
 /* Ensure inner spans don't block clicks or styling */
 .selector-box span {
     pointer-events: none;
 }
-
 
 /* Reset inner text spans */
 #infoYear,

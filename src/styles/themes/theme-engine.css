@@ -37,7 +37,6 @@
 
 /* Breathing Animation - The Soul of the Calendar */
 @keyframes breathe-glow {
-
     0%,
     100% {
         box-shadow: var(--cal-shadow);

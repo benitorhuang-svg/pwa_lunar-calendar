@@ -141,4 +141,4 @@ if (document.readyState === "loading") {
     init();
 }
 
-export { };
+export {};

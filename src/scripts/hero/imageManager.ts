@@ -386,8 +386,10 @@ export class HeroImageManager {
         if (!this.heroBgContainer) return;
 
         // Cleanup: Remove any items that are already fading out to prevent pile-up
-        const staleItems = this.heroBgContainer.querySelectorAll('.blur-out, .is-leaving-next, .is-leaving-prev');
-        staleItems.forEach(el => el.remove());
+        const staleItems = this.heroBgContainer.querySelectorAll(
+            ".blur-out, .is-leaving-next, .is-leaving-prev",
+        );
+        staleItems.forEach((el) => el.remove());
 
         const newItem = document.createElement("div");
         newItem.className = "hero-bg-item";

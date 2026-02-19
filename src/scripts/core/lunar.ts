@@ -380,18 +380,28 @@ function getSolarTermPeriod(date: Date): {
             currentTerm = t;
         } else {
             const daysToNext = Math.ceil((tDate.getTime() - date.getTime()) / 86400000);
-            const daysSince = Math.floor((date.getTime() - new Date(currentTerm.year!, currentTerm.month - 1, currentTerm.day).getTime()) / 86400000);
+            const daysSince = Math.floor(
+                (date.getTime() -
+                    new Date(currentTerm.year!, currentTerm.month - 1, currentTerm.day).getTime()) /
+                    86400000,
+            );
             return {
                 current: currentTerm.name,
                 daysToNext,
                 next: t.name,
                 termIndex: currentTerm.index,
-                daysSince
+                daysSince,
             };
         }
     }
     // Should not happen if all covers range, but fallback
-    return { current: currentTerm.name, daysToNext: 0, next: "", termIndex: currentTerm.index, daysSince: 0 };
+    return {
+        current: currentTerm.name,
+        daysToNext: 0,
+        next: "",
+        termIndex: currentTerm.index,
+        daysSince: 0,
+    };
 }
 
 /* ====================================================
@@ -823,7 +833,7 @@ export class Lunar {
      * 取得當日物候 (七十二候)
      * @returns {{ name: string, meaning: string, index: number }} index: 1=初候, 2=次候, 3=末候
      */
-    getPentad(): { name: string, meaning: string, index: number } {
+    getPentad(): { name: string; meaning: string; index: number } {
         const { termIndex, daysSince } = getSolarTermPeriod(this._date);
         // 每候 5 天。最後一候可能大於 5 天。
         let pentadIndex = Math.floor(daysSince / 5);
@@ -839,7 +849,7 @@ export class Lunar {
         return {
             name: data?.name || "",
             meaning: data?.meaning || "",
-            index: pentadIndex + 1
+            index: pentadIndex + 1,
         };
     }
 
@@ -847,7 +857,7 @@ export class Lunar {
      * 取得月相資訊
      * @returns {{ name: string, phase: number, value: number }} value: 0.0-1.0
      */
-    getMoonPhase(): { name: string, phase: number, value: number } {
+    getMoonPhase(): { name: string; phase: number; value: number } {
         const d = this._lunarDay;
         // 簡單月相名稱映射
         let name = "殘月";
@@ -937,8 +947,6 @@ export class Lunar {
     getSolarFestival(): null | string {
         return getSolarFestival(this._date);
     }
-
-
 
     /**
      * 天干地支年份
