@@ -1,4 +1,4 @@
-/* Today Panel Layout Structure - 今日詳情面板佈局結構 (主要容器) */
+﻿/* Today Panel Layout Structure - 隞閰單??Ｘ雿?蝯? (銝餉?摰孵) */
 #panelToday {
     display: flex;
     flex-direction: column;
@@ -6,7 +6,7 @@
     /* Balanced height for better content visibility */
 }
 
-/* 面板主體內容容器 - 包裹左側金線區與右側主要資訊 */
+/* ?Ｘ銝駁??批捆摰孵 - ?ㄨ撌血?????港蜓閬?閮?*/
 .panel-detail-body {
     display: flex;
     flex-direction: row;
@@ -15,7 +15,7 @@
     /* Changed from hidden to avoid clipping long content */
 }
 
-/* 右側大區塊，包含日期、月亮、七十二候 */
+/* ?喳憭批?憛???交???鈭柴?????*/
 .panel-main-content {
     flex: 1;
     /* Fixed padding for consistent card feel */

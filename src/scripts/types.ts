@@ -123,12 +123,14 @@ export type TogglePanelDetail = string | { force?: "close" | "open"; type: "toda
 
 // 更新日曆標題事件 (Update Calendar Title)
 export interface UpdateCalendarTitleDetail {
-    day: number;
+    date: Date;
     lunarText: {
         day: string;
         ganzhi: string;
         month: string;
     };
+    festival: string | null;
+    termPeriod?: { current: string; next: string; daysToNext: number };
     month: number;
     year: number;
 }

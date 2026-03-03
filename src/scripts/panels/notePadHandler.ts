@@ -279,6 +279,12 @@ export class NotePadHandler {
             }
             this.showEditorView();
             this.openNotePad();
+            const btnNote = document.getElementById("btnNote");
+            if (btnNote) btnNote.classList.add("active");
+        }) as EventListener);
+
+        window.addEventListener("close-notepad", (() => {
+            this.closeNotePad();
         }) as EventListener);
 
         // Today panel rendered
@@ -679,6 +685,9 @@ export class NotePadHandler {
     }
 
     private closeNotePad(): void {
+        const btnNote = document.getElementById("btnNote");
+        if (btnNote) btnNote.classList.remove("active");
+
         this.closeCustomPicker();
         if (this.notePadOverlay) {
             this.notePadOverlay.classList.remove("active");

@@ -54,15 +54,16 @@
 }
 
 .lunar-text {
-    font-size: 0.6rem;
+    font-family: var(--font-calligraphy);
+    font-size: 0.65rem;
+    /* Slightly larger for better readability with calligraphy */
     color: var(--cal-lunar-text);
-    margin-top: -3px;
-    /* 緊貼數字 */
+    margin-top: -2px;
     font-weight: 500;
-    opacity: 0.5;
+    opacity: 0.7;
+    /* Increased opacity */
     letter-spacing: 0.05em;
     transform: translate(4px, 1px);
-    /* 往右下微移，形成對角排版節奏 */
     backface-visibility: hidden;
     transform-style: preserve-3d;
 }

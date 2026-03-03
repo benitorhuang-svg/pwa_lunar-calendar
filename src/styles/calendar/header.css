@@ -1,276 +1,220 @@
-/* Calendar Header */
-.calendar-section .nav-group-right {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    width: 100%;
-    padding: 0 4px;
-    flex-shrink: 0;
-    /* Prevent header from shrinking */
-    position: relative;
-    z-index: 2000;
-}
+/* 
+   Calendar Header - Atomic Traditional Premium 
+   Unifies typography, contrast, and interactive states.
+*/
 
-.calendar-title {
-    display: flex;
-    align-items: center;
-    width: auto;
-    /* Changed from 100% to auto to fit inline */
+.calendar-nav-arrows {
+    width: 100%;
     position: relative;
     padding: 0;
-    /* Removed padding to save space */
-    white-space: nowrap;
+    margin-bottom: 2px;
+    z-index: 50;
+    font-family: var(--font-calligraphy);
 }
 
-.title-row-flat {
+.header-atom-wrapper {
     display: flex;
-    align-items: baseline;
-    justify-content: flex-start;
-    /* Changed from space-between */
-    gap: 20px;
-    /* Added gap */
-    width: auto;
-    /* Changed from 100% */
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 44px;
+    /* Slightly shorter */
+    padding: 0 10px;
+    /* Reduced side padding */
 }
 
-.title-row {
+/* --- Atoms: Navigation Arrows --- */
+.nav-arrow-btn {
+    background: rgba(0, 0, 0, 0.05);
+    /* Light mode default */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-premium);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    position: relative;
-    gap: 16px;
-    /* Reduced Gap */
-    flex-wrap: nowrap;
-    /* Force single line */
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
 }
 
-.lunar-group {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    /* Reduced gap */
-    white-space: nowrap;
+.nav-arrow-btn:hover {
+    background: var(--gold-accent, #d4af37) !important;
+    color: #fff !important;
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px var(--gold-glow);
 }
 
-.greg-group {
-    display: flex;
-    align-items: baseline;
-    opacity: 0.45;
-}
-
-.lunar-prefix {
-    font-size: 1.2rem;
-    /* Reduced from 1.4rem */
-    font-family: var(--font-calligraphy);
-    color: var(--cal-header-text);
-    opacity: 0.85;
-}
-
-.lunar-ganzhi {
-    font-size: 1.5rem;
-    /* Reduced from 2rem to fit header */
-    font-family: var(--font-calligraphy);
-    color: var(--cal-header-text);
-    opacity: 0.9;
-    letter-spacing: 0.05em;
-}
-
-.lunar-month {
-    font-family: var(--font-calligraphy);
-    font-size: 1.6rem;
-    /* Reduced from 2.2rem */
-    color: var(--cal-header-text);
-    letter-spacing: 0.1em;
-    line-height: normal;
-}
-
-.greg-group-selectors {
+/* --- Molecules: Header Text Group --- */
+.calendar-header-simple {
     display: flex;
     align-items: center;
-    gap: 0;
-    font-family: var(--font-serif-num);
-    color: var(--cal-text);
-    opacity: 0.8;
+    justify-content: center;
+    gap: 6px;
+    /* Reduced gap */
+    white-space: nowrap;
+    flex: 1;
+    margin: 0 4px;
 }
 
+/* Selector Button Atom */
 .calendar-label-btn {
-    background: transparent;
-    border: none;
-    color: inherit;
-    font-family: inherit;
-    font-size: 1.5rem;
-    font-weight: 300;
+    background: rgba(0, 0, 0, 0.04);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #1a1a1a;
+    padding: 3px 8px;
+    /* More compact */
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
     cursor: pointer;
-    padding: 2px 8px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    user-select: none;
-    position: relative;
-    z-index: 10;
+    transition: all 0.3s var(--ease-premium);
 }
 
 .calendar-label-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--cal-accent, var(--gold-accent));
+    background: rgba(0, 0, 0, 0.08);
+    border-color: var(--gold-accent, #d4af37);
+    transform: translateY(-1px);
 }
 
-.calendar-today-action {
-    display: flex;
-    align-items: center;
+.calendar-header-simple .header-year,
+.calendar-header-simple .header-month {
+    font-family: var(--font-serif-num);
+    font-size: 1.35rem;
+    /* Slightly smaller */
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: inherit;
 }
 
-.calendar-today-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    color: var(--cal-text);
+.calendar-header-simple .unit {
     font-family: var(--font-calligraphy);
-    font-size: 1.1rem;
-    padding: 6px 20px;
-    /* Optimized padding */
-    border-radius: 20px;
+    font-size: 0.85rem;
+    opacity: 0.8;
+    color: inherit;
+}
+
+.calendar-header-simple .header-lunar {
+    font-family: var(--font-calligraphy);
+    font-size: 1.35rem;
+    /* Slightly smaller */
+    color: var(--cal-lunar-text, #8b0000);
+    margin: 0 4px;
+    letter-spacing: 0.08em;
+}
+
+/* Today Button Atom */
+.calendar-today-btn {
+    background: rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    color: #2c2c2c;
+    padding: 3px 12px;
+    border-radius: 18px;
+    font-family: var(--font-calligraphy);
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.2s ease;
-    letter-spacing: 0.1em;
-    white-space: nowrap;
+    transition: all 0.3s var(--ease-premium);
+    font-weight: 500;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4);
+    margin-left: 2px;
 }
 
 .calendar-today-btn:hover {
-    background: var(--gold-accent);
-    color: #fff;
-    border-color: var(--gold-accent);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    background: var(--gold-accent, #d4af37) !important;
+    color: #000 !important;
+    border-color: #fff !important;
+    box-shadow: 0 4px 15px var(--gold-glow);
 }
 
-/* Calendar Header Dates (Top Right) */
-.calendar-header-dates {
-    display: flex;
-    align-items: baseline;
-    font-family: var(--font-serif-num);
-    color: var(--cal-header-text);
-    opacity: 0.9;
-    line-height: 1;
+/* =========================================
+   THEME EVOLUTION: Dark & Intense Themes
+   (Red/Brown/Dark Backgrounds)
+   ========================================= */
+
+[class*="theme-autumn"],
+[class*="theme-festive"],
+[class*="theme-winter"],
+[class*="theme-dark"] {
+    /* Set shared visibility variables */
+    --header-btn-bg: rgba(255, 255, 255, 0.12);
+    --header-btn-border: rgba(255, 255, 255, 0.35);
+    /* Solid Gilded Edge */
+    --header-text: #ffffff;
+    --header-accent: var(--gold-accent, #ffd700);
 }
 
-.header-year {
-    font-size: 1.5rem;
-    /* Reduced from 2.2rem */
-    font-weight: 300;
-    letter-spacing: 0.05em;
+/* Apply Dark Theme Styles */
+[class*="theme-autumn"] .header-atom-wrapper,
+[class*="theme-festive"] .header-atom-wrapper,
+[class*="theme-winter"] .header-atom-wrapper,
+[class*="theme-dark"] .header-atom-wrapper {
+    color: var(--header-text);
 }
 
-.header-month {
-    font-size: 1.5rem;
-    /* Reduced from 2.2rem */
+/* Nav Box Clear Contrast */
+[class*="theme-autumn"] .nav-arrow-btn,
+[class*="theme-festive"] .nav-arrow-btn,
+[class*="theme-winter"] .nav-arrow-btn,
+[class*="theme-dark"] .nav-arrow-btn {
+    background: var(--header-btn-bg) !important;
+    border-color: var(--header-btn-border) !important;
+    color: var(--header-text) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Label Buttons Clear Contrast */
+[class*="theme-autumn"] .calendar-label-btn,
+[class*="theme-festive"] .calendar-label-btn,
+[class*="theme-winter"] .calendar-label-btn,
+[class*="theme-dark"] .calendar-label-btn {
+    background: var(--header-btn-bg) !important;
+    border: 1px solid var(--header-btn-border) !important;
+    color: var(--header-text) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Lunar Text Protection */
+[class*="theme-autumn"] .header-lunar,
+[class*="theme-festive"] .header-lunar,
+[class*="theme-winter"] .header-lunar,
+[class*="theme-dark"] .header-lunar {
+    color: var(--header-accent) !important;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
     font-weight: 500;
-    letter-spacing: 0.05em;
 }
 
-.header-sep {
-    font-size: 1.2rem;
-    /* Reduced from 1.8rem */
-    margin: 0 6px;
-    opacity: 0.5;
-    font-weight: 300;
+/* Today Button Ultra Visibility */
+[class*="theme-autumn"] .calendar-today-btn,
+[class*="theme-festive"] .calendar-today-btn,
+[class*="theme-winter"] .calendar-today-btn,
+[class*="theme-dark"] .calendar-today-btn {
+    background: var(--header-accent) !important;
+    color: #000000 !important;
+    /* Force black on gold for readability */
+    border: 1.5px solid #ffffff !important;
+    font-weight: 800 !important;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    text-shadow: none !important;
 }
 
-/* Matching Ink Wash from Selector - now in hero header */
-.hero-function-group .calendar-title::before {
-    content: "";
-    position: absolute;
-    bottom: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 160px;
-    height: 15px;
-    background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.08) 0%, transparent 80%);
-    z-index: -1;
-}
-
-.lunar-sep {
-    font-family: var(--font-serif-num);
-    font-size: 1.2rem;
-    opacity: 0.3;
-}
-
-.lunar-day {
-    font-weight: 500;
-    /* opacity: 1; */
-}
-
-/* Fix: previously this was .lunar-day opacity:1, keeping it */
-
-.nav-center-group {
-    width: 100%;
-    flex: 1;
-}
-
-.calendar-section .btn-today-quick {
-    margin: 0;
-}
-
-/* Responsive (Header specific) */
-
-@media (max-width: 475px) {
-    .lunar-ganzhi {
-        font-size: 1.3rem;
-    }
-
-    .lunar-month {
-        font-size: 1.4rem;
-    }
-
-    .calendar-today-btn {
-        font-size: 0.95rem;
-        padding: 6px 14px;
-        letter-spacing: 0.05em;
-    }
-
-    .title-row {
-        gap: 10px;
-    }
-
-    .lunar-group {
-        gap: 8px;
-    }
-}
-
-@media (max-height: 600px) {
-    .calendar-section .nav-group-right {
-        margin-bottom: 5px;
-    }
-
-    .lunar-month {
-        font-size: 1.8rem;
-        /* Scale down title */
-    }
-
-    .lunar-ganzhi {
-        font-size: 1.6rem;
-    }
-}
-
-@media (min-width: 768px) {
-    .title-main {
-        font-size: 2.2rem;
-    }
-}
-
-@media (min-width: 1024px) {
-    .title-main {
-        gap: 15px;
-    }
-
-    .lunar-month {
-        font-size: 2.4rem;
-    }
-
-    .lunar-prefix {
-        font-size: 2rem;
-    }
-
-    .title-sub {
-        font-size: 1.1rem;
-    }
+/* Force specific children white in Dark Themes */
+[class*="theme-autumn"] .header-year,
+[class*="theme-autumn"] .header-month,
+[class*="theme-autumn"] .unit,
+[class*="theme-festive"] .header-year,
+[class*="theme-festive"] .header-month,
+[class*="theme-festive"] .unit,
+[class*="theme-winter"] .header-year,
+[class*="theme-winter"] .header-month,
+[class*="theme-winter"] .unit,
+[class*="theme-dark"] .header-year,
+[class*="theme-dark"] .header-month,
+[class*="theme-dark"] .unit {
+    color: #ffffff !important;
 }

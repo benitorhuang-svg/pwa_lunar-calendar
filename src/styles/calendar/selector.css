@@ -1,23 +1,18 @@
-/* Quick Selector Popup */
 .quick-selector-popup {
     position: fixed;
-    top: 80px;
-    left: 20px;
-    min-width: 220px;
-    /* Force absolute opacity */
-    background: rgba(20, 20, 25, 0.85) !important;
-    backdrop-filter: blur(25px) !important;
-    -webkit-backdrop-filter: blur(25px) !important;
-    opacity: 1 !important;
-
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    /* Solid Gold Edge */
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow:
-        0 25px 60px rgba(0, 0, 0, 0.5),
-        0 10px 20px rgba(0, 0, 0, 0.3);
-    z-index: 9000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 280px;
+    background: rgba(25, 25, 30, 0.9) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    z-index: 10000;
+    /* Ensure it stays above everything */
     pointer-events: auto !important;
     animation: quickPopIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }

@@ -1,0 +1,82 @@
+/* --- Organisms: Self-contained functional blocks --- */
+
+/* from date-content */
+.detail-top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.detail-sub-main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* from moon-phase */
+.detail-right-cluster {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+/* from side-bar */
+.panel-side-accent {
+    width: 48px;
+    background: linear-gradient(to bottom, var(--cal-border), rgba(212, 175, 55, 0.05));
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 35px;
+    border-right: 0.5px solid rgba(212, 175, 55, 0.1);
+    flex-shrink: 0;
+    border-bottom-left-radius: 48px;
+    border-top-left-radius: 48px;
+}
+
+/* from culture-card */
+.detail-culture-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 16px 20px 4px 20px;
+    background: var(--cal-card-bg, rgba(0, 0, 0, 0.2));
+    border: 1px solid var(--cal-card-border, rgba(255, 255, 255, 0.08));
+    border-radius: 16px;
+    gap: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+    flex: 0 0 auto;
+    min-height: 100px;
+}
+
+.culture-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex: 1;
+    gap: 6px;
+}
+
+.culture-left.full-width {
+    padding-right: 0;
+}
+
+@media (max-height: 550px) {
+    .detail-culture-section {
+        margin-top: 10px !important;
+        padding: 10px 20px 10px 15px !important;
+        min-height: auto !important;
+        gap: 10px !important;
+        border-radius: 16px 16px 16px 20px !important;
+        /* Match large radius of side-accent bottom-left */
+    }
+
+    .detail-top-section {
+        margin-bottom: 8px !important;
+    }
+}

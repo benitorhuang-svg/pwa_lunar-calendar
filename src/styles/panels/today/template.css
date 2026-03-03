@@ -1,0 +1,28 @@
+/* --- Templates: Main grids, wrappers, layouts --- */
+
+#panelToday,
+#panelYearMonth {
+    display: flex;
+    flex-direction: column;
+    max-height: 85dvh;
+    padding: 0 !important;
+    /* CRITICAL: Override glass-card-template padding to let children hit edges */
+}
+
+.panel-detail-body {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    overflow: visible;
+}
+
+.panel-main-content {
+    flex: 1;
+    padding: 25px 60px 20px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 100%;
+}

@@ -1,14 +1,11 @@
 ---
-
+/**
+ * Calendar Header Component
+ * Contains the Year/Month selectors and Navigation Arrows
+ * Structure is now managed via Atoms for Atomic Design consistency
+ */
 ---
 
-<div class="nav-group-right">
-    <div class="nav-center-group">
-        <div class="title-row">
-            <div id="calendarTitle" class="calendar-title"></div>
-            <button class="calendar-today-btn" id="btnTodayQuick" aria-label="回到今日"
-                >回到今日</button
-            >
-        </div>
-    </div>
+<div class="calendar-nav-arrows" id="calendarHeaderRoot">
+    <div id="calendarTitle" class="calendar-title-container"></div>
 </div>

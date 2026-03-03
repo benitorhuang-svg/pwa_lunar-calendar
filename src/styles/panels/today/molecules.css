@@ -1,0 +1,87 @@
+/* --- Molecules: Combined Elements and Rows --- */
+
+/* from date-content */
+.today-date-row {
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+    margin-bottom: 4px;
+}
+
+.lunar-info-row-1 {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-family: var(--font-calligraphy);
+    color: var(--cal-lunar-text);
+    margin-top: 4px;
+}
+
+.lunar-term-row {
+    display: flex;
+    margin-top: 2px;
+    font-family: var(--font-calligraphy);
+}
+
+/* from moon-phase */
+.moon-box-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 60px;
+}
+
+.moon-svg-wrap {
+    width: 60px;
+    height: 60px;
+}
+
+/* from term-flow */
+.term-flow-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 14px;
+    font-size: 0.8rem;
+    font-family: var(--font-sans);
+    vertical-align: middle;
+    white-space: nowrap;
+    opacity: 0.9;
+}
+
+.flow-arrow-mini {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    width: 44px;
+    height: 12px;
+}
+
+/* from side-bar */
+.vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-family: var(--font-calligraphy);
+    font-size: 1.15rem;
+    letter-spacing: 0.6em;
+    color: var(--cal-lunar-text);
+    opacity: 0.85;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* from culture-card */
+.pentad-display {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pentad-header-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}

@@ -6,22 +6,16 @@
     display: flex;
     flex-direction: column;
     /* Ensure flex layout for natural height filling */
-    padding: 15px 16px 25px;
+    padding: 2px 16px 10px;
     z-index: 1500;
 
-    /* Animation State */
-    transform: translateY(40px);
+    /* Transition Animation */
     opacity: 0;
     visibility: hidden;
-    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
     pointer-events: none;
-    position: absolute;
-    /* Removed fixed top to avoid stretching mess; position is now controlled by template bottom */
-    left: 0;
-    right: 0;
-    width: 100%;
-    /* Keep height auto to respect content spacing */
-    height: auto;
+
+    /* Center and Dimensions are now inherited from .glass-card-template */
 }
 
 /* Digital Noise Overlay Removed */
@@ -30,7 +24,6 @@
 }
 
 .calendar-section.show-grid {
-    transform: translateY(0);
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -41,7 +34,7 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    padding: 3% 0.1% 0.1% 0.1%;
+    padding: 4px 0 2px 0;
     font-size: 0.85rem;
     color: var(--cal-header-text);
     font-family: var(--font-calligraphy);
@@ -52,21 +45,19 @@
     margin-bottom: 1px;
     flex-shrink: 0;
     /* Header should not shrink */
-    gap: 6px;
+    gap: 4px;
 }
 
 .days-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    /* Reverting to standard flow */
-    grid-auto-rows: minmax(40px, 1fr);
-    /* Ensure rows stretch to fill space if card is tall */
+    grid-auto-rows: minmax(32px, 1fr);
     flex: 1;
-    padding: 4px 0;
+    padding: 2px 0;
     height: auto;
     align-content: stretch;
-    /* Stretch rows to fill vertical space */
-    gap: 6px;
+    gap: 4px;
+    /* Reduced to absolute minimum for stability */
 }
 
 /* --- Calendar Responsive Breakpoints (Section/Grid) --- */

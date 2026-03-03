@@ -14,7 +14,6 @@ import type {
 
 export class CalendarEventHandlers {
     private calendarSection: HTMLElement | null = null;
-    private grid: HTMLElement | null = null;
     private longPressFired = false;
     private renderer: CalendarRenderer;
     private readonly SWIPE_THRESHOLD_PX = 50;
@@ -24,7 +23,6 @@ export class CalendarEventHandlers {
     }
 
     public init(): void {
-        this.grid = document.getElementById("calendarGrid");
         this.calendarSection = document.getElementById("calendarSection");
 
         this.setupClickHandler();
@@ -32,11 +30,11 @@ export class CalendarEventHandlers {
         this.setupTodayButton();
         this.setupGlobalListeners();
         this.setupQuickSelector();
+        this.setupCalendarNavigation();
     }
 
     private setupClickHandler(): void {
-        if (!this.grid) return;
-        this.grid.addEventListener("click", (e) => {
+        document.addEventListener("click", (e) => {
             const target = e.target as HTMLElement;
             // 尋找最近的日期單元格 (Find closest day cell)
             const cell = target.closest(".day-cell") as HTMLElement | null;
@@ -55,8 +53,9 @@ export class CalendarEventHandlers {
             const month = parseInt(cell.dataset.month || "0");
 
             // 視覺回饋 (Visual Feedback)
-            if (this.grid) {
-                this.grid
+            const grid = document.getElementById("calendarGrid");
+            if (grid) {
+                grid
                     .querySelectorAll(".day-cell")
                     .forEach((c) => c.classList.remove("selected"));
             }
@@ -118,29 +117,36 @@ export class CalendarEventHandlers {
     }
 
     private setupSwipeHandler(): void {
-        if (!this.calendarSection) return;
-        let touchStartX = 0;
+        const section = document.getElementById("calendarSection");
+        if (!section) return;
 
-        this.calendarSection.addEventListener(
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        section.addEventListener(
             "touchstart",
             (e) => {
                 const touch = e.changedTouches[0];
-                if (touch) touchStartX = touch.screenX;
+                if (!touch) return;
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
             },
             { passive: true },
         );
 
-        this.calendarSection.addEventListener(
+        section.addEventListener(
             "touchend",
             (e) => {
                 const touch = e.changedTouches[0];
                 if (!touch) return;
-                const diff = touch.screenX - touchStartX;
-                if (Math.abs(diff) > this.SWIPE_THRESHOLD_PX) {
-                    // 發送導航月份事件 (Dispatch navigate month event)
+                const deltaX = touch.clientX - touchStartX;
+                const deltaY = touch.clientY - touchStartY;
+
+                // 檢查是否為水平滑動 (Check if swipe is horizontal)
+                if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5 && Math.abs(deltaX) > this.SWIPE_THRESHOLD_PX) {
                     window.dispatchEvent(
                         new CustomEvent<NavigateMonthDetail>("navigate-month", {
-                            detail: diff > 0 ? -1 : 1, // 向右滑上一月，向左滑下一月 (Right: Prev, Left: Next)
+                            detail: deltaX > 0 ? -1 : 1,
                         }),
                     );
                 }
@@ -149,13 +155,32 @@ export class CalendarEventHandlers {
         );
     }
 
+    private setupCalendarNavigation(): void {
+        document.addEventListener("click", (e) => {
+            const target = e.target as HTMLElement;
+            if (target.closest("#btnCalendarPrev")) {
+                window.dispatchEvent(
+                    new CustomEvent<NavigateMonthDetail>("navigate-month", {
+                        detail: -1,
+                    }),
+                );
+            } else if (target.closest("#btnCalendarNext")) {
+                window.dispatchEvent(
+                    new CustomEvent<NavigateMonthDetail>("navigate-month", {
+                        detail: 1,
+                    }),
+                );
+            }
+        });
+    }
+
     private setupTodayButton(): void {
-        const btnTodayQuick = document.getElementById("btnTodayQuick");
-        if (btnTodayQuick) {
-            btnTodayQuick.addEventListener("click", () => {
+        document.addEventListener("click", (e) => {
+            const target = e.target as HTMLElement;
+            if (target.id === "btnTodayQuick" || target.closest("#btnTodayQuick")) {
                 window.dispatchEvent(new CustomEvent("go-to-today"));
-            });
-        }
+            }
+        });
     }
 
     private setupQuickSelector(): void {

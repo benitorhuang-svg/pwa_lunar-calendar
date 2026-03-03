@@ -1,0 +1,80 @@
+﻿/* Unified Glass Card Template */
+/* 璅??交?銵函??芋??(Standard Calendar Glass Card Template) */
+
+.glass-card-template {
+    position: absolute;
+    bottom: 85px !important;
+    /* Lifted slightly to show full grid */
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 auto !important;
+    width: min(calc(100% - 32px), 440px) !important;
+    /* Slightly wider for mobile/v1 */
+    /* Balanced width for presence without being overwhelming */
+
+    /* Layout constraints */
+    display: flex;
+    flex-direction: column;
+    height: auto !important;
+    min-height: 380px;
+    max-height: 75dvh;
+    /* Increased to accommodate long cultural content and avoid clipping */
+    padding-bottom: 20px;
+    /* Standardized bottom safe zone */
+
+    /* Appearance */
+    /* Frosted White Style (擳??? */
+    background: var(--cal-bg);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+
+    border-radius: 48px;
+    border: 1px solid var(--cal-border);
+
+    box-shadow:
+        0 40px 120px rgba(0, 0, 0, 0.18),
+        inset 0 0 100px rgba(255, 255, 255, 0.1);
+
+    color: var(--cal-text);
+    overflow: hidden;
+
+    /* Common Transition Defaults (Subclasses may override) */
+    transform-origin: bottom center;
+    /* Ensure no residual centering transform */
+    transform: none;
+    will-change: transform, opacity;
+}
+
+/* Digital Noise Overlay Removed */
+.glass-card-template::before {
+    display: none;
+}
+
+/* Ensure content is above noise */
+.glass-card-template>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* --- Glass Card Responsive Breakpoints --- */
+@media (min-width: 768px) {
+    .glass-card-template {
+        width: min(calc(100% - 48px), 760px) !important;
+        border-radius: 56px;
+        padding: 10px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .glass-card-template {
+        width: min(calc(100% - 120px), 640px) !important;
+        /* Expanded width for green box look */
+        max-height: 80dvh;
+        /* Adjusted downward to prevent top-overflow on shorter desktop screens */
+        bottom: 90px !important;
+        /* Lowered to fit more height */
+        padding: 20px 20px 25px;
+        /* Balanced bottom padding for desktop */
+    }
+}

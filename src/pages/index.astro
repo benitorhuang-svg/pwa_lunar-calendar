@@ -2,6 +2,7 @@
 import CalendarBoard from "../components/Calendar/CalendarBoard.astro";
 import HeroSection from "../components/Hero/HeroSection.astro";
 import FloatingPanels from "../components/Panels/FloatingPanels.astro";
+import OrientationReminder from "../components/OrientationReminder.astro";
 import Layout from "../layouts/Layout.astro";
 import "../styles/splash.css";
 const baseUrl = import.meta.env.BASE_URL;
@@ -53,6 +54,8 @@ const bgUrl = `${baseUrl}/assets/gallery/winter/2.webp`.replace(/\/+/g, "/");
         <FloatingPanels />
         <CalendarBoard />
     </div>
+
+    <OrientationReminder />
 
     <script src="../scripts/app/resourceLoader.ts"></script>
     <script src="../scripts/app/appController.ts"></script>

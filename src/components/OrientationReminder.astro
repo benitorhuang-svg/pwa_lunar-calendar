@@ -1,0 +1,109 @@
+---
+/**
+ * Orientation Reminder Component
+ * Shows a full-screen overlay when the device is in portrait mode on small screens.
+ */
+---
+
+<div id="orientationReminder" class="orientation-reminder">
+    <div class="reminder-content">
+        <div class="rotate-icon">
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                <path d="M12 2a10 10 0 0 1 10 10"></path>
+                <polyline points="22 7 22 12 17 12"></polyline>
+            </svg>
+        </div>
+        <h2>請將手機橫放</h2>
+        <p>農民曆提供較佳的橫式視覺體驗</p>
+    </div>
+</div>
+
+<style>
+    .orientation-reminder {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 15, 20, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        z-index: 200000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        text-align: center;
+        padding: 40px;
+    }
+
+    /* Only show on mobile portrait */
+    @media (max-width: 1023px) and (orientation: portrait) {
+        .orientation-reminder {
+            display: flex;
+        }
+    }
+
+    .reminder-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .rotate-icon {
+        width: 80px;
+        height: 80px;
+        color: var(--gold-accent, #d4af37);
+        animation: rotateDevice 2s ease-in-out infinite;
+    }
+
+    h2 {
+        font-family: var(--font-serif);
+        font-size: 1.8rem;
+        margin: 0;
+        letter-spacing: 0.1em;
+        color: var(--gold-accent);
+    }
+
+    p {
+        font-size: 1rem;
+        opacity: 0.7;
+        margin: 0;
+        max-width: 200px;
+        line-height: 1.6;
+    }
+
+    @keyframes rotateDevice {
+        0%,
+        10% {
+            transform: rotate(0deg);
+        }
+        40%,
+        60% {
+            transform: rotate(-90deg);
+        }
+        90%,
+        100% {
+            transform: rotate(0deg);
+        }
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+</style>

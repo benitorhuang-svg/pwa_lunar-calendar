@@ -148,9 +148,11 @@ body[data-gallery-empty="true"] #galleryEmptyNotice {
 /* 5. Panel-driven HUD Visibility (CSS-driven visibility unification) */
 body[data-active-panel="today"] .hero-dock-wrapper,
 body[data-active-panel="today"] .hero-header,
-body[data-active-panel="yearMonth"] .hero-header:not(.mode-artwork .hero-header) {
+body[data-active-panel="yearMonth"] .hero-header:not(.mode-artwork .hero-header),
+body:has(#calendarSection.show-grid) .hero-header {
     opacity: 0 !important;
     pointer-events: none !important;
+    visibility: hidden !important;
 }
 
 /* Ensure Top Right Utility Controls (Music, Pen, etc) remain visible as requested */
@@ -164,20 +166,28 @@ body.initial-welcome .music-control-wrapper {
 }
 
 /* Stable centering for Today Card in Welcome Screen */
-body.initial-welcome .suspension-panel#panelToday {
+/* Center and Style Today Panel (Standard for both Welcome and Calendar selection) */
+/* Today Panel State Control (Centering/Dimensions inherited from .glass-card-template) */
+.suspension-panel#panelToday {
+    display: none;
+    /* Controlled by JS display: flex */
+    opacity: 0;
+    visibility: hidden;
+    z-index: 10000 !important;
+    transition: opacity var(--duration-base) var(--ease-out-expo), transform var(--duration-base) var(--ease-out-expo);
+}
+
+body.initial-welcome .suspension-panel#panelToday,
+body[data-active-panel="today"] .suspension-panel#panelToday {
     display: flex !important;
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
-    z-index: 10000 !important;
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    margin: 0 !important;
-    width: min(90%, var(--app-max-width, 100%)) !important;
-    filter: none;
-    transition: opacity var(--duration-base) var(--ease-out-expo);
+}
+
+.suspension-panel#panelToday .panel-main-content {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
 }
 
 @keyframes welcomeCardSlideEntrance {

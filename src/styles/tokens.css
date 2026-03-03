@@ -119,26 +119,27 @@ body {
     box-shadow: var(--shadow-xl);
 }
 
-/* --- Responsive Breakpoints --- */
-/* Mobile (default): full width */
-/* Tablet: 768px+ */
-@media (min-width: 768px) {
+/* --- Responsive Breakpoints (Wide vs Short) --- */
+/* Short Layout: Mobile Landscape (Typically height < 500px) */
+@media (max-height: 500px) {
     :root {
-        --app-max-width: 768px;
+        --app-max-width: 100%;
+        --safe-top: 10px;
     }
 }
 
-/* Desktop: 1024px+ */
+/* Wide Layout: Desktop (Typically 1024px+) */
 @media (min-width: 1024px) {
     :root {
-        --app-max-width: 1024px;
+        --app-max-width: 1440px;
+        /* Supporting wide desktop */
     }
 }
 
-/* Wide Desktop: 1440px+ */
-@media (min-width: 1440px) {
+/* Ultra Wide */
+@media (min-width: 1600px) {
     :root {
-        --app-max-width: 1280px;
+        --app-max-width: 1600px;
     }
 }
 

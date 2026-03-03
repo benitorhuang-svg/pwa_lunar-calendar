@@ -1,26 +1,20 @@
 /* Detail Panels (Suitable / Unsuitable Activities) */
-/* This file now aggregates smaller, focused CSS files for better maintainability - 此檔案現在整合較小的 CSS 檔案以利維護 */
+/* This file now aggregates atomic CSS files for better maintainability */
 
-/* 1. 結構佈局 */
-@import "./detail/structure.css";
+/* 1. 原子化基礎 (Atoms) */
+@import "./today/atoms.css";
 
-/* 2. 左側金線裝飾區 */
-@import "./detail/side-bar.css";
+/* 2. 組成型元素 (Molecules) */
+@import "./today/molecules.css";
 
-/* 3. 記事區塊 (頂部) */
-@import "./detail/note-header.css";
+/* 3. 大型獨立區塊 (Organisms) */
+@import "./today/organisms.css";
 
-/* 4. 主要日期內容 (西元、農曆) */
-@import "./detail/date-content.css";
+/* 4. 排版與佈局 (Templates) */
+@import "./today/template.css";
 
-/* 5. 節氣流動條 */
-@import "./detail/term-flow.css";
+/* 5. 記事區塊 (Legacy Header) */
+@import "./today/note-header.css";
 
-/* 6. 月相顯示 */
-@import "./detail/moon-phase.css";
-
-/* 7. 文化七十二候卡片 (底部) */
-@import "./detail/culture-card.css";
-
-/* 8. 響應式調整 (必須在最後) */
-@import "./detail/media-queries.css";
+/* 6. 響應式調整 (必須在最後) */
+@import "./today/media-queries.css";

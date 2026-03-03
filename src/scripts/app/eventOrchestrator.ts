@@ -124,12 +124,14 @@ export class AppEventOrchestrator {
         window.dispatchEvent(
             new CustomEvent<UpdateCalendarTitleDetail>("update-calendar-title", {
                 detail: {
-                    day: state.selectedDay,
+                    date,
                     lunarText: {
                         day: lunar.getDayInChinese(),
                         ganzhi: lunar.getYearInGanZhi(),
                         month: lunar.getMonthInChinese(),
                     },
+                    festival: lunar.getFestival() || lunar.getSolarFestival(),
+                    termPeriod: lunar.getSolarTermPeriod(),
                     month: state.selectedMonth,
                     year: state.selectedYear,
                 },

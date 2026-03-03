@@ -1,5 +1,5 @@
-/* --- 文化與七十二候區塊 (Culture Section) --- */
-/* 手機版下方的大方塊：顯示三候與解說 */
+﻿/* --- ????????憛?(Culture Section) --- */
+/* ?????寧?憭扳憛?憿舐內銝?閫?牧 */
 .detail-culture-section {
     display: flex;
     justify-content: space-between;
@@ -19,14 +19,14 @@
     /* Ensure a minimum presence */
 }
 
-/* --- 文化內容排版細節 --- */
+/* --- ???批捆??蝝啁? --- */
 
-/* 左側文字欄 */
+/* 撌血??甈?*/
 .culture-left {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    /* 改為 flex-start 讓文字自然靠上對齊，不用靠 padding 推擠 */
+    /* ?寧 flex-start 霈?摮?園?銝?朣?銝??padding ?冽? */
     flex: 1;
     gap: 6px;
 }
@@ -35,14 +35,14 @@
     padding-right: 0;
 }
 
-/* 七十二候顯示區 */
+/* 銝?鈭＊蝷箏? */
 .pentad-display {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-/* 標題與標籤行 (如：三候 魚上冰) */
+/* 璅???蝐方? (憒?銝?擳??? */
 .pentad-header-row {
     display: flex;
     align-items: baseline;
@@ -70,7 +70,7 @@
     letter-spacing: 0.05em;
 }
 
-/* 七十二候與詩選內容文字 (Content Text) */
+/* 銝?鈭?閰拚?批捆?? (Content Text) */
 .pentad-content-text {
     font-size: 1.35rem;
     /* Reduced from 1.5rem to fit sentences better */
@@ -109,7 +109,7 @@
     }
 }
 
-/* 詩選朝代與作者資訊 (Poem Dynasty/Author) */
+/* 閰拚?誨????閮?(Poem Dynasty/Author) */
 .poem-author-line {
     text-align: right;
     font-size: 0.9rem;
@@ -128,7 +128,7 @@
     }
 }
 
-/* 候語解釋文字 (Legacy pentad fallback) */
+/* ??閫???? (Legacy pentad fallback) */
 .pentad-meaning-text {
     font-size: 1rem;
     color: var(--cal-card-text, rgba(255, 255, 255, 0.85));

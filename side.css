@@ -1,5 +1,5 @@
-/* --- 左側金線裝飾區 (Side Accent) --- */
-/* 手機版排版核心：控制左側垂直文字與寬度 */
+﻿/* --- 撌血??鋆ˇ? (Side Accent) --- */
+/* ?????敹??批撌血????祝摨?*/
 .panel-side-accent {
     width: 48px;
     /* Slightly narrower for elegance */
@@ -19,10 +19,10 @@
     /* Support top-left as well */
 }
 
-/* 垂直文字容器 - 控制整體垂直排列方向 */
+/* ???摰孵 - ?批?湧?????孵? */
 .vertical-text {
     writing-mode: vertical-rl;
-    /* 文字直排 */
+    /* ???湔? */
     text-orientation: mixed;
     font-family: var(--font-calligraphy);
     font-size: 1.15rem;
@@ -39,21 +39,21 @@
     /* Gap between Zodiac and Ganzhi */
 }
 
-/* 生肖樣式 (如：馬) - 位於垂直文字最上方 */
+/* ??璅?? (憒?擐? - 雿????銝 */
 .side-zodiac {
     font-size: 1.4rem;
     font-weight: 500;
     color: var(--cal-accent, var(--gold-accent));
 }
 
-/* 生肖與年份間的分隔符 (目前隱藏) */
+/* ???僑隞賡????泵 (?桀??梯?) */
 .side-spacer {
     font-size: 0.8rem;
     opacity: 0.4;
     margin: 4px 0;
 }
 
-/* 干支年份樣式 (如：丙午年...) */
+/* 撟脫撟港遢璅?? (憒?銝?撟?..) */
 .side-ganzhi {
     font-size: 1.15rem;
     opacity: 0.7;

@@ -1,50 +1,158 @@
 ---
 import "../../styles/hero/music-player.css";
+import HeroGallerySubmenu from "./HeroGallerySubmenu.astro";
+
+/**
+ * Music Player & Utility Controls
+ * Consolidated vertical dock for all system utilities
+ *
+ * Order (requested):
+ * 1. FAQ
+ * 2. Calendar / Image Toggle
+ * 3. Music Player
+ * 4. Diary / Note
+ * 5. Source Settings (Gallery)
+ * 6. Immersion Mode
+ */
+const defaultAudio = import.meta.env.BASE_URL + "assets/audio/ambient.mp3";
 ---
 
-<!-- Music Player & Utility Controls -->
 <div class="music-control-wrapper">
-    <!-- 1. Music Toggle (Rightmost in display due to row-reverse) -->
+    <!-- 1. FAQ (First) -->
     <button
-        aria-label="播放背景音樂"
-        class="music-toggle-btn"
-        id="btnMusic"
-        title="播放音樂"
+        aria-label="常見問題"
+        class="utility-btn faq-toggle-btn"
+        id="btnFaq"
+        title="說明"
         type="button"
     >
         <svg
             fill="none"
             height="20"
             stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
             stroke-width="2"
             viewBox="0 0 24 24"
             width="20"
-            ><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle
-                cx="18"
-                cy="16"
-                r="3"></circle>
+        >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" x2="12.01" y1="17" y2="17"></line>
+        </svg>
+    </button>
+
+    <!-- 2. Calendar / Artwork Toggle -->
+    <div class="mode-toggles-group">
+        <button
+            aria-label="日曆模式"
+            class="utility-btn mode-btn-calendar"
+            id="btnDay"
+            title="查看日曆"
+            type="button"
+        >
+            <svg
+                fill="none"
+                height="20"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="20"
+            >
+                <rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect>
+                <line x1="16" x2="16" y1="2" y2="6"></line>
+                <line x1="8" x2="8" y1="2" y2="6"></line>
+                <line x1="3" x2="21" y1="10" y2="10"></line>
+            </svg>
+        </button>
+
+        <button
+            aria-label="映畫模式"
+            class="utility-btn mode-btn-artwork"
+            id="btnChangeImage"
+            title="映畫模式"
+            type="button"
+        >
+            <svg
+                fill="none"
+                height="20"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="20"
+            >
+                <rect height="18" rx="2" ry="2" width="18" x="3" y="3"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+        </button>
+    </div>
+
+    <!-- 3. Music Control -->
+    <button
+        aria-label="背景音樂"
+        class="utility-btn music-toggle-btn"
+        id="btnMusic"
+        title="音樂開關"
+        type="button"
+    >
+        <svg
+            fill="none"
+            height="20"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="20"
+        >
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
             <line class="mute-line" x1="1" x2="23" y1="23" y2="1"></line>
         </svg>
     </button>
 
-    <!-- 2. Immersion Mode Toggle (Middle in display) -->
-    <button
-        aria-label="切換沉浸模式"
-        class="immersion-toggle-btn"
-        id="btnImmersion"
-        title="沉浸模式"
-        type="button"
-    >
-        <!-- Icon 1: Focus/Frame-style (Show when in Calendar view) -->
+    <!-- 4. Diary / Note -->
+    <button id="btnNote" class="utility-btn note-btn" title="記事本" type="button">
         <svg
-            class="icon-immersion"
             fill="none"
             height="20"
             stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="20"
+        >
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+    </button>
+
+    <!-- 5. Settings (Source Setup) -->
+    <div class="gallery-control-wrapper" id="galleryControlWrapper">
+        <button
+            aria-label="系統設置"
+            class="utility-btn settings-btn"
+            id="btnGalleryMenu"
+            title="背景與音樂設置"
+            type="button"
+        >
+            <svg
+                fill="none"
+                height="20"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="20"
+            >
+                <path d="M12 20v-6M9 20v-10M15 20v-2M18 20v-8M21 20V4M6 20v-4M3 20v-2"></path>
+            </svg>
+        </button>
+        <HeroGallerySubmenu defaultAudio={defaultAudio} />
+    </div>
+
+    <!-- 6. Immersion Mode -->
+    <button id="btnImmersion" class="utility-btn immersion-btn" title="沉浸模式" type="button">
+        <svg
+            fill="none"
+            height="20"
+            stroke="currentColor"
             stroke-width="2"
             viewBox="0 0 24 24"
             width="20"
@@ -54,48 +162,6 @@ import "../../styles/hero/music-player.css";
             <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
             <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
             <circle cx="12" cy="12" r="1.5"></circle>
-        </svg>
-
-        <!-- Icon 2: Calendar-style (Show when in Immersion view) -->
-        <svg
-            class="icon-calendar"
-            fill="none"
-            height="20"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="20"
-        >
-            <rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect>
-            <line x1="16" x2="16" y1="2" y2="6"></line>
-            <line x1="8" x2="8" y1="2" y2="6"></line>
-            <line x1="3" x2="21" y1="10" y2="10"></line>
-        </svg>
-    </button>
-
-    <!-- 3. FAQ Button (Leftmost in display due to row-reverse) -->
-    <button
-        aria-label="常見問題"
-        class="faq-toggle-btn"
-        id="btnFaq"
-        title="常見問題 FAQ"
-        type="button"
-    >
-        <svg
-            fill="none"
-            height="20"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="20"
-        >
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-            <line x1="12" x2="12.01" y1="17" y2="17"></line>
         </svg>
     </button>
 

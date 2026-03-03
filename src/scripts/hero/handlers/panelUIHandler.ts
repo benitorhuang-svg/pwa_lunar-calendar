@@ -42,7 +42,16 @@ export class PanelUIHandler {
         if (btnNote) {
             btnNote.addEventListener("click", () => {
                 this.idleManager.resetInteraction();
-                window.dispatchEvent(new CustomEvent("open-notepad"));
+                const notePadOverlay = document.getElementById("notePadOverlay");
+                const isActive = notePadOverlay?.classList.contains("active");
+
+                if (isActive) {
+                    window.dispatchEvent(new CustomEvent("close-notepad"));
+                    btnNote.classList.remove("active");
+                } else {
+                    window.dispatchEvent(new CustomEvent("open-notepad"));
+                    btnNote.classList.add("active");
+                }
             });
         }
     }
