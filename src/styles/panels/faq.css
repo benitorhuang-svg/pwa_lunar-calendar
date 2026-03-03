@@ -1,88 +1,86 @@
-/* FAQ Panel Premium Redesign */
+/* FAQ Panel - Digital Premium Redesign */
 
-/* 1. Container - Deep Glassmorphism */
 #panelFAQ {
-    /* Force dark theme for FAQ panel regardless of app mode */
-    background: rgba(12, 12, 14, 0.92) !important;
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    /* Subtle border */
-    border-radius: 20px;
-    /* Softer, modern radius */
+    /* Base Glassmorphism */
+    background: rgba(15, 15, 20, 0.85) !important;
+    backdrop-filter: blur(40px) saturate(160%) contrast(110%);
+    -webkit-backdrop-filter: blur(40px) saturate(160%) contrast(110%);
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 24px;
     box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.6),
+        0 40px 100px rgba(0, 0, 0, 0.6),
         inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 
-    /* Override CSS variables locally */
-    --cal-text: rgba(255, 255, 255, 0.9);
-    --cal-header-text: #ffffff;
-    --gold-accent: #d4af37;
-    --gold-dim: rgba(212, 175, 55, 0.5);
-    --item-bg: rgba(255, 255, 255, 0.03);
-    --item-bg-hover: rgba(255, 255, 255, 0.06);
+    /* Variables for Consistency */
+    --faq-accent: #d4af37;
+    --faq-text-main: rgba(255, 255, 255, 0.95);
+    --faq-text-dim: rgba(255, 255, 255, 0.6);
+    --faq-item-bg: rgba(255, 255, 255, 0.04);
+    --faq-item-hover: rgba(255, 255, 255, 0.08);
 
-    color: var(--cal-text);
+    color: var(--faq-text-main);
     overflow: hidden;
-    /* Ensure content respects radius */
+    transition: transform var(--duration-base) var(--ease-out-expo), opacity var(--duration-base) var(--ease-out-expo);
 }
 
-/* 2. Header */
+/* Header Section */
 .faq-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 24px 28px;
+    padding: 28px 32px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), transparent);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.02), transparent);
 }
 
 .faq-title {
     font-family: var(--font-calligraphy);
-    font-size: 1.4rem;
-    color: var(--gold-accent);
-    letter-spacing: 0.1em;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    font-size: 1.6rem;
+    color: var(--faq-accent);
+    letter-spacing: 0.12em;
+    margin: 0;
+    text-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
 }
 
 .faq-controls {
     display: flex;
-    gap: 10px;
+    gap: 12px;
 }
 
 .faq-control-btn {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.7);
-    padding: 6px 12px;
-    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 8px 16px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 500;
     cursor: pointer;
-    font-size: 0.85rem;
-    font-family: var(--font-sans);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    letter-spacing: 0.05em;
 }
 
 .faq-control-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.3);
+    background: var(--faq-accent);
+    color: #000;
+    border-color: var(--faq-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
 }
 
-/* 3. List */
+/* List Area */
 .faq-list {
-    padding: 24px 28px 32px 28px;
+    padding: 24px 32px 40px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    /* Increased gap */
-    max-height: 70vh;
-    /* Scrollable area */
+    gap: 18px;
+    max-height: 65vh;
     overflow-y: auto;
 }
 
-/* Scrollbar refinement */
+/* Custom Scrollbar */
 .faq-list::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
 }
 
 .faq-list::-webkit-scrollbar-track {
@@ -91,130 +89,121 @@
 
 .faq-list::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.15);
-    border-radius: 3px;
+    border-radius: 10px;
 }
 
-/* 4. Items */
+/* Items */
 .faq-item {
-    background: var(--item-bg);
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: var(--faq-item-bg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .faq-item:hover {
-    background: var(--item-bg-hover);
-    border-color: rgba(212, 175, 55, 0.15);
-    /* Gold hint on hover */
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: var(--faq-item-hover);
+    border-color: rgba(212, 175, 55, 0.2);
+    transform: translateX(4px);
 }
 
-/* Question Header */
 .faq-question {
     width: 100%;
-    text-align: left;
-    padding: 16px 20px;
+    padding: 20px 24px;
     background: transparent;
-    color: #fff;
-    border: 0;
-    font-family: var(--font-serif);
+    border: none;
     display: flex;
-    gap: 16px;
     align-items: center;
+    gap: 20px;
     cursor: pointer;
-    position: relative;
-    user-select: none;
+    text-align: left;
+    color: #fff;
 }
 
-/* Q Mark Icon - Refined */
 .faq-q-mark {
+    min-width: 32px;
+    height: 32px;
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 28px;
-    /* Fixed enclosure */
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-
-    /* Hollow gold style */
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--gold-dim);
-    color: var(--gold-accent);
-
     font-family: var(--font-serif-num);
-    font-weight: 700;
+    color: var(--faq-accent);
     font-size: 0.9rem;
-    padding-top: 2px;
-    /* Visual balance */
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.05);
+    font-weight: 700;
 }
 
 .faq-q-text {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
     font-weight: 500;
-    font-size: 1.05rem;
-    opacity: 0.95;
-    letter-spacing: 0.02em;
     line-height: 1.4;
+    letter-spacing: 0.02em;
 }
 
-/* Answer Body */
 .faq-answer {
-    padding: 0 24px 24px 64px;
-    /* Indent to align with text, skip icon */
-    color: rgba(255, 255, 255, 0.7);
-    background: transparent;
-    position: relative;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    padding: 0 24px 0 76px;
+    opacity: 0;
 }
 
-/* Add a connector line concept */
-.faq-answer::before {
-    content: "";
-    position: absolute;
-    left: 33px;
-    /* Center of icon column */
-    top: 0;
-    bottom: 24px;
-    width: 2px;
-    background: rgba(255, 255, 255, 0.05);
+.faq-item.active .faq-answer {
+    max-height: 500px;
+    padding-bottom: 24px;
+    opacity: 1;
 }
 
 .faq-a-inner {
     font-family: var(--font-sans);
-    line-height: 1.7;
-    /* Breathable reading */
-    font-weight: 300;
+    line-height: 1.8;
+    color: var(--faq-text-dim);
     font-size: 0.95rem;
+    position: relative;
+    padding-left: 20px;
 }
 
-/* Responsive Tweaks */
-@media (max-width: 480px) {
-    .faq-header {
-        padding: 18px 20px;
-    }
+.faq-a-inner::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--faq-accent), transparent);
+    opacity: 0.3;
+}
 
-    .faq-list {
-        padding: 16px 20px 24px 20px;
-        gap: 12px;
-    }
+/* Mobile-optimized defaults for consistency across all platforms */
+#panelFAQ {
+    width: 92% !important;
+    border-radius: 20px;
+}
 
-    .faq-question {
-        padding: 14px 16px;
-        gap: 12px;
-    }
+.faq-header {
+    padding: 20px 24px;
+}
 
-    .faq-q-text {
-        font-size: 1rem;
-    }
+.faq-title {
+    font-size: 1.35rem;
+}
 
-    .faq-answer {
-        padding: 0 16px 20px 56px;
-    }
+.faq-list {
+    padding: 16px 20px 30px;
+    gap: 14px;
+}
 
-    .faq-answer::before {
-        left: 29px;
-        /* adjust for padding change */
-    }
+.faq-question {
+    padding: 16px;
+    gap: 14px;
+}
+
+.faq-q-text {
+    font-size: 1rem;
+}
+
+.faq-answer {
+    padding-left: 62px;
 }

@@ -34,7 +34,8 @@ export class HeroModeUIManager {
     }
 
     public init(): void {
-        this.btnChangeImage = document.getElementById("btnChangeImage");
+        // btnChangeImage is intentionally null - toggle logic is handled by panelUIHandler via btnDay
+        this.btnChangeImage = null;
         this.btnImmersion = document.getElementById("btnImmersion");
         this.btnPrevHero = document.getElementById("btnPrevHero");
         this.btnNextHero = document.getElementById("btnNextHero");
@@ -49,7 +50,6 @@ export class HeroModeUIManager {
 
             // Reset Active States
             layoutManager.removeActiveState(layoutManager.dayBtn);
-            layoutManager.removeActiveState(layoutManager.yearMonthBtn);
 
             this.galleryManager.setVisibility(true);
         } else {

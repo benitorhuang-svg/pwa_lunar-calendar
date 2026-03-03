@@ -16,7 +16,7 @@ export const VALID_TRANSITIONS: Record<AppMode, AppMode[]> = {
     artwork: ["calendar", "zen"],
     calendar: ["artwork", "note"],
     note: ["calendar"],
-    welcome: ["calendar", "zen"],
+    welcome: ["calendar", "zen", "artwork"],
     zen: ["artwork"],
 };
 
@@ -51,6 +51,10 @@ export const TRANSITION_CLASS_MAP: Record<string, TransitionClassSwap> = {
     },
     "welcome->zen": {
         add: [],
+        remove: ["initial-welcome"],
+    },
+    "welcome->artwork": {
+        add: ["mode-artwork"],
         remove: ["initial-welcome"],
     },
     "zen->artwork": {

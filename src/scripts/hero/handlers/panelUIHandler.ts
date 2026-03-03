@@ -1,6 +1,7 @@
 import type { HeroIdleManager } from "../idleManager";
 import type { RenderPanelsDetail, ToggleGridViewDetail } from "../types";
 import type { HeroUIManager } from "../uiManager";
+import { uiToggleManager } from "../../app/uiToggleManager";
 
 export class PanelUIHandler {
     constructor(
@@ -17,20 +18,19 @@ export class PanelUIHandler {
         this.uiManager.bindToggleGrid(() => {
             this.idleManager.resetInteraction();
 
-            // T212: Mode-switching logic moved to button handler layer
-            const isImmersion = document.body.classList.contains("immersion-mode");
-            const isWelcome = document.body.classList.contains("initial-welcome");
+            const isArtwork = document.body.classList.contains("mode-artwork");
 
-            if (isImmersion || isWelcome) {
-                // immersion/artwork/zen/welcome -> calendar
+            // Default mode is Artwork (映畫模式)
+            // Welcome: click -> go to Artwork (default)
+            // Artwork: click -> go to Calendar
+            // Calendar: click -> go to Artwork
+            if (isArtwork) {
+                // Artwork -> Calendar (Monthly Grid)
                 window.dispatchEvent(
                     new CustomEvent("transition-mode", { detail: { to: "calendar" } }),
                 );
             } else {
-                // calendar -> artwork (or toggle grid if preferred, but usually this button is mode toggle)
-                // If we want it to toggle grid in calendar mode:
-                // window.dispatchEvent(new CustomEvent("toggle-grid"));
-                // But current user flow says it switches to Artwork.
+                // Welcome or Calendar -> Artwork (Photos)
                 window.dispatchEvent(
                     new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
                 );
@@ -39,19 +39,38 @@ export class PanelUIHandler {
 
         // 綁定筆記按鈕 (Bind Note Button)
         const btnNote = document.getElementById("btnNote");
-        if (btnNote) {
-            btnNote.addEventListener("click", () => {
-                this.idleManager.resetInteraction();
-                const notePadOverlay = document.getElementById("notePadOverlay");
-                const isActive = notePadOverlay?.classList.contains("active");
+        const notePadOverlay = document.getElementById("notePadOverlay");
+        const panelToday = document.getElementById("panelToday");
 
-                if (isActive) {
+        if (btnNote) {
+            // Register Notepad with UIToggleManager
+            uiToggleManager.register({
+                close: () => {
                     window.dispatchEvent(new CustomEvent("close-notepad"));
                     btnNote.classList.remove("active");
-                } else {
+                    if (panelToday) {
+                        panelToday.style.opacity = "";
+                        panelToday.style.pointerEvents = "";
+                    }
+                },
+                id: "notepad",
+                open: () => {
+                    // Ensure we leave calendar mode (hide grid) when opening a panel
+                    window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
+
+                    if (panelToday) {
+                        panelToday.style.opacity = "0";
+                        panelToday.style.pointerEvents = "none";
+                    }
                     window.dispatchEvent(new CustomEvent("open-notepad"));
                     btnNote.classList.add("active");
-                }
+                },
+            });
+
+            btnNote.addEventListener("click", () => {
+                this.idleManager.resetInteraction();
+                const isActive = notePadOverlay?.classList.contains("active") ?? false;
+                uiToggleManager.toggle("notepad", isActive);
             });
         }
     }

@@ -11,6 +11,50 @@
     justify-content: flex-start;
 }
 
+@media (min-width: 1024px) {
+    .music-control-wrapper {
+        right: calc(55% - (var(--mobile-ui-width, 420px) / 2) + 12px) !important;
+    }
+}
+
+/* Flex Order for items to allow reordering in specific modes */
+.music-control-wrapper>* {
+    order: 10;
+}
+
+#btnFaq {
+    order: 1;
+}
+
+.mode-toggles-group {
+    order: 2;
+}
+
+.music-toggle-btn {
+    order: 3;
+}
+
+.note-btn {
+    order: 4;
+}
+
+.gallery-control-wrapper {
+    order: 5;
+}
+
+.immersion-btn {
+    order: 6;
+}
+
+/* Reorder in Artwork Mode: Immersion moves UP (above Gallery) */
+body.mode-artwork .immersion-btn {
+    order: 5;
+}
+
+body.mode-artwork .gallery-control-wrapper {
+    order: 6;
+}
+
 .mode-toggles-group {
     padding: 0;
     display: flex;
@@ -45,61 +89,64 @@
 }
 
 /* Active Highlight for different modes */
-body:not(.mode-artwork) #btnDay {
+body:not(.mode-artwork):not(.initial-welcome) #btnDay {
     background: rgba(212, 175, 55, 0.2);
     color: var(--gold-accent);
     border-color: rgba(212, 175, 55, 0.4);
 }
 
-body.mode-artwork #btnChangeImage {
-    background: rgba(255, 255, 255, 0.9);
-    color: #000;
+/* Swap icons based on mode */
+
+/* === 2nd Button: btnDay - Show DESTINATION icon === */
+/* Welcome Mode -> show Artwork icon (destination = artwork) */
+body.initial-welcome #btnDay .icon-artwork {
+    display: block;
 }
 
-/* Note button highlight in calendar mode */
-body:not(.mode-artwork) #btnNote {
-    border-color: rgba(212, 175, 55, 0.3);
+body.initial-welcome #btnDay .icon-calendar {
+    display: none;
 }
 
-/* Immersion button highlight when active */
-body.immersion-mode #btnImmersion {
-    background: var(--gold-accent);
-    color: #000;
+/* Calendar Mode -> show Artwork icon (destination = artwork) */
+body:not(.mode-artwork):not(.initial-welcome) #btnDay .icon-artwork {
+    display: block;
 }
 
-/* Gallery Settings & Submenu Positioning */
+body:not(.mode-artwork):not(.initial-welcome) #btnDay .icon-calendar {
+    display: none;
+}
+
+/* Artwork Mode -> show Calendar icon (destination = calendar) */
+body.mode-artwork #btnDay .icon-artwork {
+    display: none;
+}
+
+body.mode-artwork #btnDay .icon-calendar {
+    display: block;
+}
+
+/* === 5th Button: btnImmersion - Show DESTINATION icon === */
+/* Non-fullscreen: show "enter fullscreen" icon */
+#btnImmersion .icon-fullscreen {
+    display: block;
+}
+
+#btnImmersion .icon-exit-fullscreen {
+    display: none;
+}
+
+/* Fullscreen Active: show "exit fullscreen" icon */
+body.fullscreen-active #btnImmersion .icon-fullscreen {
+    display: none;
+}
+
+body.fullscreen-active #btnImmersion .icon-exit-fullscreen {
+    display: block;
+}
+
+/* Gallery Settings & Submenu Positioning (Moved to gallery-submenu.css) */
 .gallery-control-wrapper {
     position: relative;
-}
-
-.gallery-submenu {
-    position: absolute;
-    right: 54px;
-    top: 50%;
-    transform: translateY(-50%) translateX(20px);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-    pointer-events: none;
-}
-
-.gallery-submenu.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(-50%) translateX(0);
-    pointer-events: auto;
-}
-
-.submenu-main-container {
-    background: rgba(10, 10, 15, 0.95);
-    backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 20px;
-    display: flex;
-    gap: 20px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-    width: max-content;
 }
 
 /* Music Playing Animation */

@@ -44,7 +44,7 @@ export class PanelEventHandlers {
     private setupClickHandlers(): void {
         const handleClosePanel = () => {
             window.dispatchEvent(
-                new CustomEvent("transition-mode", { detail: { to: "calendar" } }),
+                new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
             );
             window.dispatchEvent(new CustomEvent("close-panels", { detail: { showGrid: true } }));
         };
@@ -52,7 +52,9 @@ export class PanelEventHandlers {
         if (this.panelBackOverlay) this.panelBackOverlay.onclick = handleClosePanel;
         if (this.panelToday) {
             this.panelToday.onclick = () => {
-                handleClosePanel();
+                window.dispatchEvent(
+                    new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
+                );
             };
 
             // 手機滑動功能 (Mobile Swipe Functionality)

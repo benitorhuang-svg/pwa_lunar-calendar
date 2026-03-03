@@ -128,18 +128,20 @@ body {
     }
 }
 
-/* Wide Layout: Desktop (Typically 1024px+) */
+/* Wide Layout: Desktop (Typically 1024px+) - Full Background, Mobile Content Area */
 @media (min-width: 1024px) {
     :root {
-        --app-max-width: 1440px;
-        /* Supporting wide desktop */
+        --app-max-width: 100%;
+        --mobile-ui-width: 420px;
+        /* Target width for UI components to feel like mobile */
     }
 }
 
 /* Ultra Wide */
 @media (min-width: 1600px) {
     :root {
-        --app-max-width: 1600px;
+        --app-max-width: 100%;
+        --mobile-ui-width: 420px;
     }
 }
 

@@ -67,7 +67,7 @@ body.immersion-mode:not(.initial-welcome) .hero-header,
 body.immersion-mode:not(.initial-welcome) .hero-dock-wrapper,
 body.immersion-mode:not(.initial-welcome) .music-control-wrapper,
 body.immersion-mode:not(.initial-welcome) #calendarSection,
-body.immersion-mode:not(.initial-welcome) .suspension-panel:not(#panelToday) {
+body.immersion-mode:not(.initial-welcome) .suspension-panel:not(#panelToday):not(.panel-force-show) {
     opacity: 0 !important;
     pointer-events: none !important;
     visibility: hidden !important;
@@ -110,11 +110,20 @@ body.immersion-mode:not(.initial-welcome) #panelToday {
 body.initial-welcome #calendarSection,
 body.initial-welcome .hero-dock-wrapper,
 body.initial-welcome .hero-header,
-body.initial-welcome .suspension-panel:not(#panelToday) {
+body.initial-welcome .suspension-panel:not(#panelToday):not(.panel-force-show) {
     opacity: 0 !important;
     pointer-events: none !important;
     visibility: hidden !important;
     display: none !important;
+}
+
+/* Force-show override for panels (e.g., FAQ) that need to appear in any mode */
+.suspension-panel.panel-force-show {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    z-index: 100002 !important;
 }
 
 /* 3. Artwork Mode Specific Adjustments */
@@ -127,12 +136,8 @@ body.mode-artwork #btnYearMonth {
     display: none !important;
 }
 
-/* T214/T215: Gallery Control Visibility */
+/* T214/T215: Gallery Control Visibility - Always visible as 5th icon */
 #galleryControlWrapper {
-    display: none;
-}
-
-body.mode-artwork:not(.initial-welcome) #galleryControlWrapper {
     display: flex;
 }
 
@@ -227,4 +232,30 @@ body,
         border-color 0.6s cubic-bezier(0.22, 1, 0.36, 1),
         fill 0.6s cubic-bezier(0.22, 1, 0.36, 1),
         stroke 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --- Premium Scrollbar Styling --- */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.2);
+    border-radius: 10px;
+    transition: background 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 175, 55, 0.4);
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 175, 55, 0.2) transparent;
 }

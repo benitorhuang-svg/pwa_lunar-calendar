@@ -10,77 +10,126 @@ const { defaultAudio } = Astro.props;
     <div class="submenu-main-container">
         <!-- Left: Image Management Side -->
         <div class="submenu-column image-column">
-            <button class="submenu-item active" data-mode="default" id="btnGalleryDefault">
-                <svg
-                    fill="none"
-                    height="14"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    width="14"
-                    ><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline
-                        points="9 22 9 12 15 12 15 22"></polyline></svg
+            <div class="column-title">圖片模式</div>
+            <div class="mode-grid">
+                <button
+                    class="mode-btn active"
+                    data-mode="default"
+                    id="btnGalleryDefault"
+                    title="預設圖片"
                 >
-                <span>預設圖片</span>
-            </button>
-            <button class="submenu-item" data-mode="custom" id="btnGalleryCustom">
-                <svg
-                    fill="none"
-                    height="14"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    width="14"
-                    ><rect height="18" rx="2" ry="2" width="18" x="3" y="3"></rect><circle
-                        cx="8.5"
-                        cy="8.5"
-                        r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg
-                >
-                <span>自選圖片</span>
-            </button>
+                    <svg
+                        fill="none"
+                        height="18"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="18"
+                    >
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span>預設</span>
+                </button>
+                <button class="mode-btn" data-mode="custom" id="btnGalleryCustom" title="自選圖片">
+                    <svg
+                        fill="none"
+                        height="18"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="18"
+                    >
+                        <rect height="18" rx="2" ry="2" width="18" x="3" y="3"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <span>自選</span>
+                </button>
+                <button class="mode-btn" data-mode="hybrid" id="btnGalleryHybrid" title="混合輪播">
+                    <svg
+                        fill="none"
+                        height="18"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="18"
+                    >
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                    <span>混合</span>
+                </button>
+            </div>
+
             <div class="gallery-empty-notice" id="galleryEmptyNotice" style="display: none;">
                 <span class="notice-icon">⚠️</span>
-                <span>尚無自選圖片，請先匯入</span>
+                <span>尚無自選圖片</span>
             </div>
-            <button class="submenu-item" data-mode="hybrid" id="btnGalleryHybrid">
-                <svg
-                    fill="none"
-                    height="14"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    width="14"
-                    ><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"
-                    ></path><path d="M2 12l10 5 10-5"></path></svg
-                >
-                <span>混合圖片輪播</span>
-            </button>
 
             <div class="column-divider"></div>
 
-            <button class="submenu-item" id="btnGalleryFitToggle">
-                <svg
-                    fill="none"
-                    height="14"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    width="14"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg
-                >
-                <span id="textGalleryFit">顯示完整圖片</span>
-            </button>
+            <div class="action-grid">
+                <button class="action-btn" id="btnGalleryFitToggle" title="切換顯示比例">
+                    <svg
+                        fill="none"
+                        height="16"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="16"
+                    >
+                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
+                    </svg>
+                    <span id="textGalleryFit">填滿</span>
+                </button>
+                <button class="action-btn" id="btnGalleryAdd" title="新增圖片">
+                    <svg
+                        fill="none"
+                        height="16"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="16"
+                    >
+                        <line x1="12" x2="12" y1="5" y2="19"></line>
+                        <line x1="5" x2="19" y1="12" y2="12"></line>
+                    </svg>
+                    <span>新增</span>
+                </button>
+                <button class="action-btn" id="btnGalleryAddFolder" title="匯入資料夾">
+                    <svg
+                        fill="none"
+                        height="16"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="16"
+                    >
+                        <path
+                            d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+                        ></path>
+                    </svg>
+                    <span>匯入</span>
+                </button>
+            </div>
 
             <div class="column-divider"></div>
 
-            <button class="submenu-item add-btn" id="btnGalleryAdd" title="新增圖片">
+            <button class="action-btn clear-btn" id="btnGalleryClear" title="清空自選圖片">
                 <svg
                     fill="none"
                     height="14"
@@ -90,42 +139,26 @@ const { defaultAudio } = Astro.props;
                     stroke-width="2"
                     viewBox="0 0 24 24"
                     width="14"
-                    ><line x1="12" x2="12" y1="5" y2="19"></line><line
-                        x1="5"
-                        x2="19"
-                        y1="12"
-                        y2="12"></line></svg
                 >
-                <span>新增圖片</span>
-            </button>
-            <button class="submenu-item add-btn" id="btnGalleryAddFolder" title="匯入圖片">
-                <svg
-                    fill="none"
-                    height="14"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    width="14"
-                    ><path
-                        d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
-                    ></path></svg
-                >
-                <span>匯入圖片</span>
+                    <path d="M3 6h18"></path>
+                    <path
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                    ></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                </svg>
+                <span>清除匯入圖片</span>
             </button>
         </div>
 
-        <!-- Vertical Divider in the middle -->
+        <!-- Vertical Divider -->
         <div class="vertical-column-divider"></div>
 
         <!-- Right: Music Navigation Side -->
         <div class="submenu-column music-column">
+            <div class="column-title">背景音樂</div>
             <div class="radio-section">
-                <button class="radio-item" data-url={defaultAudio}
-                    >預設背景音樂 (Default Ambient)</button
-                >
-                <div class="radio-header">
+                <button class="radio-item default-music" data-url={defaultAudio}>
                     <svg
                         fill="none"
                         height="14"
@@ -135,74 +168,72 @@ const { defaultAudio } = Astro.props;
                         stroke-width="2"
                         viewBox="0 0 24 24"
                         width="14"
-                        ><circle cx="12" cy="12" r="2"></circle><path
-                            d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.15 0a10 10 0 0 1 0-14.14"
-                        ></path></svg
                     >
-                    <span>線上療癒音樂 (Radio)</span>
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    </svg>
+                    <span>預設音樂 (Default)</span>
+                </button>
+
+                <div class="radio-header-mini">
+                    <svg
+                        fill="none"
+                        height="12"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="12"
+                    >
+                        <circle cx="12" cy="12" r="2"></circle>
+                        <path
+                            d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.15 0a10 10 0 0 1 0-14.14"
+                        ></path>
+                    </svg>
+                    <span>線上電台</span>
                 </div>
-                <div class="radio-presets">
+
+                <div class="radio-grid" id="radioGrid">
                     <div class="radio-row">
                         <button
-                            class="radio-item"
+                            class="radio-item-mini"
                             data-url="https://stream.klassikradio.de/relax/mp3-128/stream.mp3"
-                            >Klassik Radio Relax (Relax)</button
+                            >Klassik Relax</button
                         >
-                        <button aria-label="刪除此電台" class="radio-delete-btn">✕</button>
+                        <button aria-label="刪除" class="radio-del-small">✕</button>
                     </div>
                     <div class="radio-row">
                         <button
-                            class="radio-item"
+                            class="radio-item-mini"
                             data-url="https://ice1.somafm.com/thistle-128-mp3"
-                            >SomaFM (Thistle)</button
+                            >SomaFM Thistle</button
                         >
-                        <button aria-label="刪除此電台" class="radio-delete-btn">✕</button>
+                        <button aria-label="刪除" class="radio-del-small">✕</button>
                     </div>
                     <div class="radio-row">
                         <button
-                            class="radio-item"
+                            class="radio-item-mini"
                             data-url="https://vprclassical.streamguys1.com/vprclassical128.mp3"
-                            >streamguys (vprclassical)</button
+                            >VPR Classical</button
                         >
-                        <button aria-label="刪除此電台" class="radio-delete-btn">✕</button>
+                        <button aria-label="刪除" class="radio-del-small">✕</button>
                     </div>
                     <div class="radio-row">
                         <button
-                            class="radio-item"
+                            class="radio-item-mini"
                             data-url="https://edge22.streams.arabella.at/arabella-relax/stream/mp3"
-                            >Arabella Relax (streams)</button
+                            >Arabella Relax</button
                         >
-                        <button aria-label="刪除此電台" class="radio-delete-btn">✕</button>
+                        <button aria-label="刪除" class="radio-del-small">✕</button>
                     </div>
-                    <div class="radio-row">
-                        <button class="radio-item" id="btnMusicUrl">自訂電台網址...</button>
+                    <div class="radio-row custom-add-row">
+                        <button class="radio-item-mini add-custom" id="btnMusicUrl"
+                            >+ 自訂電台</button
+                        >
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="submenu-footer">
-        <button class="submenu-item" id="btnGalleryClear" style="color: rgba(255, 100, 100, 0.75);">
-            <svg
-                fill="none"
-                height="14"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="14"
-                ><path d="M3 6h18"></path><path
-                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                ></path><line x1="10" x2="10" y1="11" y2="17"></line><line
-                    x1="14"
-                    x2="14"
-                    y1="11"
-                    y2="17"></line></svg
-            >
-            <span>清除匯入圖片</span>
-        </button>
     </div>
 
     <!-- Hidden Inputs moved here for locality -->

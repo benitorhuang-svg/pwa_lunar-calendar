@@ -44,22 +44,25 @@
     }
 }
 
-/* Tablet and above (768px+) */
+/* Tablet and above (768px+) - Disabled to match mobile layout on desktop */
+/*
 @media (min-width: 768px) {
     .panel-main-content {
         padding: 30px 28px 30px 28px;
     }
 
-    /* Adjusted for Culture Section */
     .detail-culture-section {
         margin-top: 25px;
         padding: 24px 30px 15px;
     }
 }
+*/
 
-/* Desktop (1024px+) */
+/* Desktop (1024px+) - Disabled to match mobile layout on desktop */
+/*
 @media (min-width: 1024px) {
     .panel-main-content {
         padding: 35px 32px 35px 32px;
     }
 }
+*/

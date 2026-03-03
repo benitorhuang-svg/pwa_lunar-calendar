@@ -76,7 +76,7 @@ export class AppEventOrchestrator {
         } catch (error) {
             // T216: 轉換錯誤恢復機制 (Error Recovery)
             console.error(`[Orchestrator] Mode transition failed: ${from} → ${to}`, error);
-            this.forceRecovery("calendar");
+            this.forceRecovery("artwork");
             this.state.forceReleaseLock(); // Ensure lock is released even on error
         }
     }
@@ -205,7 +205,7 @@ export class AppEventOrchestrator {
     /**
      * T216: 強制模式恢復 (Force Mode Recovery)
      */
-    private forceRecovery(target: AppMode = "calendar"): void {
+    private forceRecovery(target: AppMode = "artwork"): void {
         console.warn(`[Orchestrator] Forcing recovery to mode: ${target}`);
         // Direct set to skip lifecycle and break loops
         this.state.setMode(target);

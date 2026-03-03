@@ -134,15 +134,13 @@
 
 /* =========================================
    THEME EVOLUTION: Dark & Intense Themes
-   (Red/Brown/Dark Backgrounds)
+   (Only for Festive Red and Pitch Dark backgrounds)
    ========================================= */
 
-[class*="theme-autumn"],
 [class*="theme-festive"],
-[class*="theme-winter"],
 [class*="theme-dark"] {
     /* Set shared visibility variables */
-    --header-btn-bg: rgba(255, 255, 255, 0.12);
+    --header-btn-bg: rgba(255, 255, 255, 0.15);
     --header-btn-border: rgba(255, 255, 255, 0.35);
     /* Solid Gilded Edge */
     --header-text: #ffffff;
@@ -150,17 +148,13 @@
 }
 
 /* Apply Dark Theme Styles */
-[class*="theme-autumn"] .header-atom-wrapper,
 [class*="theme-festive"] .header-atom-wrapper,
-[class*="theme-winter"] .header-atom-wrapper,
 [class*="theme-dark"] .header-atom-wrapper {
     color: var(--header-text);
 }
 
-/* Nav Box Clear Contrast */
-[class*="theme-autumn"] .nav-arrow-btn,
+/* Nav Box Clear Contrast - Dark Themes */
 [class*="theme-festive"] .nav-arrow-btn,
-[class*="theme-winter"] .nav-arrow-btn,
 [class*="theme-dark"] .nav-arrow-btn {
     background: var(--header-btn-bg) !important;
     border-color: var(--header-btn-border) !important;
@@ -168,10 +162,8 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Label Buttons Clear Contrast */
-[class*="theme-autumn"] .calendar-label-btn,
+/* Label Buttons Clear Contrast - Dark Themes */
 [class*="theme-festive"] .calendar-label-btn,
-[class*="theme-winter"] .calendar-label-btn,
 [class*="theme-dark"] .calendar-label-btn {
     background: var(--header-btn-bg) !important;
     border: 1px solid var(--header-btn-border) !important;
@@ -179,24 +171,19 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-/* Lunar Text Protection */
-[class*="theme-autumn"] .header-lunar,
+/* Lunar Text Protection - Dark Themes */
 [class*="theme-festive"] .header-lunar,
-[class*="theme-winter"] .header-lunar,
 [class*="theme-dark"] .header-lunar {
     color: var(--header-accent) !important;
     text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
     font-weight: 500;
 }
 
-/* Today Button Ultra Visibility */
-[class*="theme-autumn"] .calendar-today-btn,
+/* Today Button Ultra Visibility - Dark Themes */
 [class*="theme-festive"] .calendar-today-btn,
-[class*="theme-winter"] .calendar-today-btn,
 [class*="theme-dark"] .calendar-today-btn {
     background: var(--header-accent) !important;
     color: #000000 !important;
-    /* Force black on gold for readability */
     border: 1.5px solid #ffffff !important;
     font-weight: 800 !important;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
@@ -204,15 +191,9 @@
 }
 
 /* Force specific children white in Dark Themes */
-[class*="theme-autumn"] .header-year,
-[class*="theme-autumn"] .header-month,
-[class*="theme-autumn"] .unit,
 [class*="theme-festive"] .header-year,
 [class*="theme-festive"] .header-month,
 [class*="theme-festive"] .unit,
-[class*="theme-winter"] .header-year,
-[class*="theme-winter"] .header-month,
-[class*="theme-winter"] .unit,
 [class*="theme-dark"] .header-year,
 [class*="theme-dark"] .header-month,
 [class*="theme-dark"] .unit {

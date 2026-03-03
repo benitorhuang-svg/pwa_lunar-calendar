@@ -34,7 +34,8 @@
         inset 0 0 100px rgba(255, 255, 255, 0.1);
 
     color: var(--cal-text);
-    overflow: hidden;
+    overflow: hidden !important;
+    /* Force hide any horizontal spill */
 
     /* Common Transition Defaults */
     will-change: transform, opacity;
@@ -52,6 +53,8 @@
 }
 
 /* --- Glass Card Responsive Breakpoints --- */
+/* Tablet and Desktop layouts disabled to match mobile layout */
+/*
 @media (min-width: 768px) {
     .glass-card-template {
         width: min(calc(100% - 48px), 760px) !important;
@@ -59,6 +62,7 @@
         padding: 10px;
     }
 }
+*/
 
 @media (max-height: 550px) {
     .glass-card-template {
@@ -73,24 +77,23 @@
     }
 }
 
-/* 1. Wide Layout: Desktop */
+/* 1. Wide Layout: Desktop - Mobile-Island Mode */
 @media (min-width: 1024px) {
     .glass-card-template {
-        width: min(calc(100% - 160px), 800px) !important;
-        /* Wider for desktop */
-        max-height: 75dvh;
+        width: var(--mobile-ui-width, 420px) !important;
+        max-height: 80dvh !important;
+        /* Slightly taller to prevent text clipping */
         left: 45% !important;
-        /* Maintain Premium Gap */
+        /* Premium Gap */
         transform: translate(-50%, -50%) !important;
-        padding: 30px;
-        border-radius: 64px;
+        padding: 20px;
+        border-radius: 40px;
     }
 }
 
 /* Ultra Wide */
 @media (min-width: 1440px) {
     .glass-card-template {
-        width: 880px !important;
-        /* Lock width for centered premium feel */
+        width: var(--mobile-ui-width, 420px) !important;
     }
 }

@@ -49,6 +49,7 @@ function createFAQItem(id: number, q: string, a: string): HTMLElement {
     btn.addEventListener("click", () => {
         const expanded = btn.getAttribute("aria-expanded") === "true";
         btn.setAttribute("aria-expanded", String(!expanded));
+        item.classList.toggle("active", !expanded);
         panel.hidden = expanded;
     });
 
@@ -95,6 +96,7 @@ function renderFAQ(container: HTMLElement) {
         container.querySelectorAll(".faq-item").forEach((it) => {
             const q = it.querySelector(".faq-question") as HTMLElement;
             const a = it.querySelector(".faq-answer") as HTMLElement;
+            it.classList.add("active");
             q.setAttribute("aria-expanded", "true");
             a.hidden = false;
         });
@@ -108,6 +110,7 @@ function renderFAQ(container: HTMLElement) {
         container.querySelectorAll(".faq-item").forEach((it) => {
             const q = it.querySelector(".faq-question") as HTMLElement;
             const a = it.querySelector(".faq-answer") as HTMLElement;
+            it.classList.remove("active");
             q.setAttribute("aria-expanded", "false");
             a.hidden = true;
         });
@@ -130,8 +133,7 @@ function renderFAQ(container: HTMLElement) {
 
     container.appendChild(list);
 
-    // Default: expand all items (user requested "所有選項 一律最優選擇")
-    // Trigger expandAll action programmatically so aria attributes and visibility update
+    // Default: expand all items (programmatically click for consistency)
     expandAll.click();
 }
 
@@ -141,4 +143,4 @@ if (document.readyState === "loading") {
     init();
 }
 
-export {};
+export { };

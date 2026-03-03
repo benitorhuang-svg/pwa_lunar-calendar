@@ -17,7 +17,7 @@ export class ModeHandler {
         private imageManager: HeroImageManager, // Needed for reset logic? Or just slideshowManager handles it.
         private slideshowManager: HeroSlideshowManager,
         private uiManager: HeroUIManager,
-    ) {}
+    ) { }
 
     public init(): void {
         this.setupEventListeners();
@@ -116,9 +116,9 @@ export class ModeHandler {
             e?.stopPropagation();
             this.idleManager.resetInteraction();
 
-            // Welcome Overlay Click -> Go to Calendar Mode
+            // Welcome Overlay Click -> Go to Artwork Mode
             window.dispatchEvent(
-                new CustomEvent("transition-mode", { detail: { to: "calendar" } }),
+                new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
             );
         });
 

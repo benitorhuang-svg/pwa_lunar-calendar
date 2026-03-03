@@ -11,6 +11,12 @@
     gap: 12px;
 }
 
+@media (min-width: 1024px) {
+    .hero-header {
+        left: calc(45% - (var(--mobile-ui-width, 420px) / 2) + 12px) !important;
+    }
+}
+
 /* Hero Function Group (Left) - Calendar Title */
 .hero-function-group {
     display: flex;
@@ -58,16 +64,16 @@
     font-family: var(--font-serif-num);
 }
 
-/* Desktop-specific vertical layout */
+/* Removed desktop-specific vertical layout to match mobile horizontal layout */
+/*
 @media (min-width: 1024px) {
     .hero-year-month-selector {
         flex-direction: column !important;
-        /* Force vertical stack */
         align-items: flex-start;
         transform: translateY(20px);
-        /* Push slightly down */
     }
 }
+*/
 
 .hero-year-month-selector .calendar-label-btn {
     background: rgba(10, 10, 10, 0.95);

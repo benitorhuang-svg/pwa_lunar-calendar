@@ -62,8 +62,9 @@
 .poem-couplet-line {
     display: block;
     margin-bottom: 12px;
-    white-space: nowrap;
-    /* Force 1st line to be on one line */
+    white-space: normal;
+    /* Allow wrapping to prevent horizontal scroll */
+    word-break: keep-all;
 }
 
 .poem-couplet-line:last-child {
@@ -189,9 +190,4 @@
     }
 }
 
-@media (min-width: 768px) {
-    .pentad-content-text {
-        font-size: 1.6rem;
-        padding: 24px 20px;
-    }
-}
+/* Removed desktop scaling to maintain mobile consistency */

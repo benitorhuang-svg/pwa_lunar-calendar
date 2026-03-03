@@ -3,6 +3,7 @@ import type { RequestHeroChangeDetail } from "./types";
 import { HeroGalleryManager } from "./galleryManager";
 import { HeroLayoutManager } from "./ui/layoutManager";
 import { HeroModeUIManager } from "./ui/modeUIManager";
+import { uiToggleManager } from "../app/uiToggleManager";
 
 /**
  * Hero UI Manager (Facade)
@@ -17,7 +18,6 @@ export class HeroUIManager {
         return this.layoutManager.dayBtn?.classList.contains("active") ?? false;
     }
     private btnFaq: HTMLElement | null = null;
-    private faqOverlay: HTMLElement | null = null;
     private galleryManager: HeroGalleryManager;
     private layoutManager: HeroLayoutManager;
 
@@ -84,10 +84,15 @@ export class HeroUIManager {
             const isArtwork = document.body.classList.contains("mode-artwork");
             const isWelcome = document.body.classList.contains("initial-welcome");
 
+            // Update icon states via body class
+            if (document.fullscreenElement) {
+                document.body.classList.add("fullscreen-active");
+            } else {
+                document.body.classList.remove("fullscreen-active");
+            }
+
             // If we're in Zen mode but no longer fullscreen, return to Artwork
             if (isImmersion && !isArtwork && !isWelcome && !document.fullscreenElement) {
-                // Note: Transitioning state is checked in stateManager,
-                // but we dispatch here. Orchestrator's queue will handle it if locked.
                 window.dispatchEvent(
                     new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
                 );
@@ -138,16 +143,19 @@ export class HeroUIManager {
             e.stopPropagation();
             resetIdle();
 
-            const isImmersion = document.body.classList.contains("immersion-mode");
+            const isZen =
+                !document.body.classList.contains("mode-artwork") &&
+                document.body.classList.contains("immersion-mode") &&
+                !document.body.classList.contains("initial-welcome");
 
-            if (isImmersion) {
-                window.dispatchEvent(
-                    new CustomEvent("transition-mode", { detail: { to: "calendar" } }),
-                );
-            } else {
+            if (isZen) {
+                // Currently in Fullscreen (Zen) -> go to Windowed Photos (Artwork)
                 window.dispatchEvent(
                     new CustomEvent("transition-mode", { detail: { to: "artwork" } }),
                 );
+            } else {
+                // Otherwise -> go to Fullscreen (Zen)
+                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "zen" } }));
             }
         };
         const btn = this.modeUIManager.immersionBtn;
@@ -219,7 +227,6 @@ export class HeroUIManager {
 
         this.zenGestureHint = document.getElementById("zenGestureHint");
         this.toastContainer = document.getElementById("toastContainer");
-        this.faqOverlay = document.getElementById("faqPanelOverlay");
         this.btnFaq = document.getElementById("btnFaq");
 
         this.bindGlobalActions();
@@ -344,55 +351,62 @@ export class HeroUIManager {
     }
 
     private bindFaqButton(): void {
-        const closeBtn = document.getElementById("btnFaqClose");
+        const panelFAQ = document.getElementById("panelFAQ");
+        const panelToday = document.getElementById("panelToday");
 
-        this.btnFaq?.addEventListener("click", () => {
-            if (this.faqOverlay) {
-                const isActive = this.faqOverlay.classList.contains("active");
-                if (isActive) {
-                    this.faqOverlay.classList.remove("active");
-                    this.btnFaq?.classList.remove("active");
-                } else {
-                    this.faqOverlay.classList.add("active");
-                    this.btnFaq?.classList.add("active");
-
-                    // Open first item by default if none are open
-                    const openItem = this.faqOverlay.querySelector(".faq-item.open");
-                    if (!openItem) {
-                        this.faqOverlay.querySelector(".faq-item")?.classList.add("open");
-                    }
-                }
+        const hideTodayCard = () => {
+            if (panelToday) {
+                panelToday.style.opacity = "0";
+                panelToday.style.pointerEvents = "none";
             }
+        };
+        const restoreTodayCard = () => {
+            if (panelToday) {
+                panelToday.style.opacity = "";
+                panelToday.style.pointerEvents = "";
+            }
+        };
+
+        // Register FAQ with UIToggleManager
+        uiToggleManager.register({
+            close: () => {
+                panelFAQ?.classList.remove("panel-force-show");
+                this.btnFaq?.classList.remove("active");
+                restoreTodayCard();
+            },
+            id: "faq",
+            open: () => {
+                // Ensure we leave calendar mode (hide grid) when opening a panel
+                window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to: "artwork" } }));
+
+                hideTodayCard();
+                panelFAQ?.classList.add("panel-force-show");
+                this.btnFaq?.classList.add("active");
+            },
+        });
+
+        this.btnFaq?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (!panelFAQ) return;
+
+            const isVisible = panelFAQ.classList.contains("panel-force-show");
+            uiToggleManager.toggle("faq", isVisible);
+
             this.hapticFeedback("light");
         });
 
-        closeBtn?.addEventListener("click", () => {
-            this.faqOverlay?.classList.remove("active");
-            this.btnFaq?.classList.remove("active");
+        // Close FAQ when clicking its background area
+        panelFAQ?.addEventListener("click", (e) => {
+            if (e.target === panelFAQ) {
+                uiToggleManager.toggle("faq", true);
+            }
         });
 
-        // Accordion functionality for FAQ items
-        const faqItems = this.faqOverlay?.querySelectorAll(".faq-item");
-        faqItems?.forEach((item) => {
-            const question = item.querySelector(".faq-question");
-            question?.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const isOpen = item.classList.contains("open");
-                // Close all others
-                faqItems.forEach((i) => i.classList.remove("open"));
-                // Toggle current
-                if (!isOpen) {
-                    item.classList.add("open");
-                }
-                this.hapticFeedback("light");
-            });
-        });
-
-        // Close on overlay background click
-        this.faqOverlay?.addEventListener("click", (e) => {
-            if (e.target === this.faqOverlay) {
-                this.faqOverlay?.classList.remove("active");
-                this.btnFaq?.classList.remove("active");
+        // Close panels when entering modes that shouldn't have them
+        window.addEventListener("transition-mode", (e: any) => {
+            const toMode = e.detail?.to;
+            if (toMode === "calendar" || toMode === "zen" || toMode === "welcome") {
+                uiToggleManager.closeAll();
             }
         });
     }

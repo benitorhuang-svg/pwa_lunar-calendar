@@ -135,7 +135,8 @@
     bottom: 6px;
 }
 
-/* --- Cell Responsive Breakpoints --- */
+/* Tablet and Desktop scaling disabled to match mobile layout */
+/*
 @media (min-width: 768px) {
     .gregorian-num {
         font-size: 1.3rem;
@@ -165,3 +166,4 @@
         height: 52px;
     }
 }
+*/

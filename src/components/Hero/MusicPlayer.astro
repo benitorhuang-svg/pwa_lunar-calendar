@@ -1,18 +1,18 @@
 ---
 import "../../styles/hero/music-player.css";
+import "../../styles/hero/gallery-submenu.css";
 import HeroGallerySubmenu from "./HeroGallerySubmenu.astro";
 
 /**
  * Music Player & Utility Controls
  * Consolidated vertical dock for all system utilities
  *
- * Order (requested):
+ * Order:
  * 1. FAQ
- * 2. Calendar / Image Toggle
+ * 2. Calendar / Artwork Toggle
  * 3. Music Player
  * 4. Diary / Note
- * 5. Source Settings (Gallery)
- * 6. Immersion Mode
+ * 5. Source Settings (Gallery) - 資料來源設定
  */
 const defaultAudio = import.meta.env.BASE_URL + "assets/audio/ambient.mp3";
 ---
@@ -43,13 +43,27 @@ const defaultAudio = import.meta.env.BASE_URL + "assets/audio/ambient.mp3";
     <!-- 2. Calendar / Artwork Toggle -->
     <div class="mode-toggles-group">
         <button
-            aria-label="日曆模式"
+            aria-label="日曆/映畫模式"
             class="utility-btn mode-btn-calendar"
             id="btnDay"
-            title="查看日曆"
+            title="切換模式"
             type="button"
         >
             <svg
+                class="icon-artwork"
+                fill="none"
+                height="20"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="20"
+            >
+                <rect height="18" rx="2" ry="2" width="18" x="3" y="3"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <svg
+                class="icon-calendar"
                 fill="none"
                 height="20"
                 stroke="currentColor"
@@ -61,27 +75,6 @@ const defaultAudio = import.meta.env.BASE_URL + "assets/audio/ambient.mp3";
                 <line x1="16" x2="16" y1="2" y2="6"></line>
                 <line x1="8" x2="8" y1="2" y2="6"></line>
                 <line x1="3" x2="21" y1="10" y2="10"></line>
-            </svg>
-        </button>
-
-        <button
-            aria-label="映畫模式"
-            class="utility-btn mode-btn-artwork"
-            id="btnChangeImage"
-            title="映畫模式"
-            type="button"
-        >
-            <svg
-                fill="none"
-                height="20"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                width="20"
-            >
-                <rect height="18" rx="2" ry="2" width="18" x="3" y="3"></rect>
-                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                <polyline points="21 15 16 10 5 21"></polyline>
             </svg>
         </button>
     </div>
@@ -146,24 +139,6 @@ const defaultAudio = import.meta.env.BASE_URL + "assets/audio/ambient.mp3";
         </button>
         <HeroGallerySubmenu defaultAudio={defaultAudio} />
     </div>
-
-    <!-- 6. Immersion Mode -->
-    <button id="btnImmersion" class="utility-btn immersion-btn" title="沉浸模式" type="button">
-        <svg
-            fill="none"
-            height="20"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="20"
-        >
-            <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
-            <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
-            <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
-            <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
-            <circle cx="12" cy="12" r="1.5"></circle>
-        </svg>
-    </button>
 
     <audio id="bgMusic" loop preload="none">
         <source src={import.meta.env.BASE_URL + "assets/audio/ambient.mp3"} type="audio/mpeg" />
