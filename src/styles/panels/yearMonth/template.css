@@ -1,0 +1,13 @@
+/* --- Template: Global Structure --- */
+
+#panelYearMonth.bottom-panel {
+    cursor: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+#panelYearMonth.bottom-panel::-webkit-scrollbar {
+    display: none;
+}

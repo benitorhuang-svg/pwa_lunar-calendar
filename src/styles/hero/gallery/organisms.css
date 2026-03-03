@@ -1,0 +1,15 @@
+/* --- Organisms: Self-contained functional blocks --- */
+
+.submenu-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all 0.4s ease;
+}
+
+.image-column,
+.music-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}

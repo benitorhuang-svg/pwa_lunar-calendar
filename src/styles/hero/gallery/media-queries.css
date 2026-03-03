@@ -1,0 +1,125 @@
+/* --- Responsive & Desktop Layout Scaling --- */
+
+/* --- Responsive: Horizontal Layout (Desktop & Short screens) --- */
+/* 1. Large Screen Desktop */
+@media (min-width: 1024px) and (min-height: 551px) {
+    .gallery-submenu {
+        right: 88px;
+        top: 50%;
+        transform: translateY(-50%) translateX(0);
+    }
+
+    .submenu-main-container {
+        flex-direction: row;
+        width: 680px;
+        padding: 32px;
+        gap: 32px;
+        align-items: stretch;
+    }
+
+    .submenu-column {
+        flex: 1;
+        gap: 20px;
+    }
+
+    .vertical-column-divider {
+        width: 1px;
+        height: auto;
+        background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1), transparent);
+        margin: 0;
+    }
+
+    .column-title {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+
+    .mode-btn {
+        padding: 16px 0;
+    }
+
+    .radio-item.default-music {
+        padding: 14px 20px;
+    }
+}
+
+/* 2. Short Layout (Landscape / Zen View) */
+@media (max-height: 550px) and (min-width: 600px) {
+    .gallery-submenu {
+        right: 68px;
+        /* Slightly closer to dock */
+        top: 0;
+        transform: translateY(-35%);
+        /* Significant upward shift to avoid bottom cropping */
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+
+    .submenu-main-container {
+        flex-direction: row;
+        width: min(90vw, 640px);
+        padding: 16px 24px;
+        /* Reduced padding */
+        gap: 20px;
+        /* Reduced gap */
+        align-items: stretch;
+    }
+
+    .submenu-column {
+        flex: 1;
+        gap: 12px;
+        /* Reduced gap */
+    }
+
+    .column-title {
+        font-size: 0.75rem;
+        margin-bottom: 4px;
+    }
+
+    .mode-btn {
+        padding: 8px 0;
+        /* Compact buttons */
+        gap: 4px;
+    }
+
+    .mode-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .action-btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    .radio-item.default-music {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+
+    .radio-item-mini {
+        padding: 6px 10px;
+        font-size: 0.7rem;
+    }
+
+    .vertical-column-divider {
+        width: 1px;
+        height: auto;
+        background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1), transparent);
+        margin: 0;
+    }
+}
+
+/* --- Mobile Portrait --- */
+@media (max-width: 600px) and (min-height: 551px) {
+    .gallery-submenu {
+        right: 50px;
+        top: auto;
+        bottom: 70px;
+        transform: translateY(20px);
+    }
+
+    .gallery-submenu.show {
+        transform: translateY(0);
+    }
+}

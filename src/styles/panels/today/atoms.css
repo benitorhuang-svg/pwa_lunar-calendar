@@ -162,32 +162,3 @@
     line-height: 1.3;
     z-index: 2;
 }
-
-/* Responsive adjustments for atoms */
-@media (max-width: 400px) {
-    .pentad-content-text {
-        font-size: 1.15rem;
-        line-height: 1.5;
-        padding: 10px 5px;
-        letter-spacing: 0.05em;
-    }
-}
-
-/* Short Screens: Reduce text vertical footprint */
-@media (max-height: 550px) {
-    .pentad-content-text {
-        font-size: 1.15rem !important;
-        padding: 4px 10px !important;
-        line-height: 1.3 !important;
-    }
-
-    .poem-couplet-line {
-        margin-bottom: 7px !important;
-    }
-
-    .pentad-name-title {
-        font-size: 1.4rem !important;
-    }
-}
-
-/* Removed desktop scaling to maintain mobile consistency */

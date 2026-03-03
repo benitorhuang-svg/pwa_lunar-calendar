@@ -1,0 +1,100 @@
+/* --- Atoms: Grid Items, Headers, Indicators --- */
+
+.panel-section-header {
+    font-family: var(--font-calligraphy);
+    font-size: 1.4rem;
+    color: var(--cal-header-text);
+    margin-bottom: 8px;
+    letter-spacing: 0.2em;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+}
+
+.panel-section-header::before {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: -10px;
+    width: 60px;
+    height: 12px;
+    background: radial-gradient(ellipse at center, rgba(139, 0, 0, 0.05) 0%, transparent 80%);
+    z-index: -1;
+}
+
+.panel-section-header::after {
+    content: "";
+    flex: 1;
+    height: 0.5px;
+    background: linear-gradient(to right, rgba(212, 175, 55, 0.25), transparent);
+}
+
+.panel-item {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    height: 48px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--cal-text) !important;
+    transition: all 0.4s var(--ease-out-expo);
+    font-family: var(--font-serif-num);
+    position: relative;
+    opacity: 0.65;
+}
+
+.panel-item:hover {
+    opacity: 1;
+    transform: translateY(-3px);
+}
+
+.panel-item.selected {
+    opacity: 1;
+    color: #fff !important;
+    font-weight: 600;
+}
+
+.panel-item.selected::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.95) 0%, rgba(184, 134, 11, 1) 100%);
+    border-radius: 50%;
+    z-index: -1;
+    box-shadow: 0 8px 25px rgba(184, 134, 11, 0.4);
+}
+
+.panel-item.today:not(.selected)::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    width: 4px;
+    height: 4px;
+    background: var(--primary-red, #c41e3a);
+    border-radius: 50%;
+}
+
+.month-num {
+    font-family: var(--font-serif-num);
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.month-label {
+    font-family: var(--font-calligraphy);
+    font-size: 0.9rem;
+    margin-top: 4px;
+    opacity: 0.85;
+}

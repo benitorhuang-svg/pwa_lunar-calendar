@@ -1,0 +1,25 @@
+/* --- Molecules: Combined Elements and Grids --- */
+
+.panel-grid {
+    display: grid;
+    gap: 15px 8px;
+    padding: 0 15px;
+}
+
+.panel-grid-year {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.panel-grid-month {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.panel-section-divider {
+    height: 1px;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(212, 175, 55, 0.15) 50%,
+            transparent 100%);
+    margin: 8px 0;
+    width: 100%;
+}

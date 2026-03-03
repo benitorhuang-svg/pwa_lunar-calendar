@@ -77,23 +77,27 @@
     }
 }
 
-/* 1. Wide Layout: Desktop - Mobile-Island Mode */
+/* 1. Wide Layout: Desktop - Premium Landscape Mode */
 @media (min-width: 1024px) {
     .glass-card-template {
-        width: var(--mobile-ui-width, 420px) !important;
+        width: min(90%, 920px) !important;
+        /* Enlarge to a comfortable landscape width */
+        min-height: 480px !important;
         max-height: 80dvh !important;
-        /* Slightly taller to prevent text clipping */
-        left: 45% !important;
-        /* Premium Gap */
+        left: 48% !important;
+        /* Balanced visual center */
         transform: translate(-50%, -50%) !important;
-        padding: 20px;
-        border-radius: 40px;
+        padding: 0;
+        /* Template handles own padding */
+        border-radius: 64px;
+        /* More pronounced curves for larger scale */
     }
 }
 
 /* Ultra Wide */
 @media (min-width: 1440px) {
     .glass-card-template {
-        width: var(--mobile-ui-width, 420px) !important;
+        width: 1000px !important;
+        min-height: 520px !important;
     }
 }

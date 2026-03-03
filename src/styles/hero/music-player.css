@@ -13,7 +13,25 @@
 
 @media (min-width: 1024px) {
     .music-control-wrapper {
-        right: calc(55% - (var(--mobile-ui-width, 420px) / 2) + 12px) !important;
+        top: calc(50% - 225px) !important;
+        /* Align near the top of the enlarged card */
+        transform: none !important;
+        /* Remove vertical centering to match template flow */
+        right: calc(52% - 460px - 32px) !important;
+        /* Increase gap for premium breathing room */
+    }
+}
+
+@media (min-width: 1440px) {
+    .music-control-wrapper {
+        top: calc(50% - 245px) !important;
+        right: calc(52% - 500px - 40px) !important;
+    }
+}
+
+@media (max-width: 1023px) and (min-width: 769px) {
+    .music-control-wrapper {
+        right: 16px !important;
     }
 }
 
