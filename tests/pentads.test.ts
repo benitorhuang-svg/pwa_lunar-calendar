@@ -40,12 +40,12 @@ describe("七十二候 (PENTADS)", () => {
     });
 
     it("小寒的第一候應為「雁北鄉」", () => {
-        expect(PENTADS[0][0].name).toBe("雁北鄉");
+        expect(PENTADS[0]![0]!.name).toBe("雁北鄉");
     });
 
     it("冬至（最後一個節氣）應有完整候資料", () => {
-        const lastGroup = PENTADS[23];
+        const lastGroup = PENTADS[23]!;
         expect(lastGroup.length).toBe(3);
-        expect(lastGroup[0].name).toBeTruthy();
+        expect(lastGroup[0]!.name).toBeTruthy();
     });
 });

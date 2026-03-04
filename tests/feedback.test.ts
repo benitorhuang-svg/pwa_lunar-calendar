@@ -10,7 +10,6 @@ describe("hapticFeedback", () => {
     it("如果瀏覽器不支援 vibrate，應靜默處理", () => {
         // happy-dom 預設沒有 vibrate
         const original = navigator.vibrate;
-        // @ts-expect-error - removing vibrate for test
         delete (navigator as any).vibrate;
         expect(() => hapticFeedback("light")).not.toThrow();
         if (original) (navigator as any).vibrate = original;
