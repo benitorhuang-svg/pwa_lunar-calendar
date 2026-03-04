@@ -1,0 +1,7 @@
+/* --- Media Queries: Responsive Overrides --- */
+
+@media (min-width: 1024px) {
+    .hero-header {
+        left: calc(45% - (var(--mobile-ui-width, 420px) / 2) + 12px) !important;
+    }
+}

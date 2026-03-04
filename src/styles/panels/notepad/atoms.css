@@ -1,0 +1,193 @@
+/* --- Atoms: Basic Elements, Buttons, Inputs, Tags --- */
+
+/* Action Button (Circle Icon) */
+.note-action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.note-action-btn:hover {
+    background: var(--gold-accent, #d4af37);
+    color: #000;
+    border-color: var(--gold-accent, #d4af37);
+    transform: translateY(-2px);
+}
+
+/* Title */
+.note-pad-title {
+    font-family: var(--font-calligraphy);
+    font-size: 1.5rem;
+    color: var(--gold-accent, #d4af37);
+    letter-spacing: 0.1em;
+    margin: 0;
+    text-shadow: 0 4px 12px rgba(var(--gold-accent-rgb), 0.2);
+}
+
+/* Date Display Badge */
+.note-date-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(var(--gold-accent-rgb), 0.1);
+    border: 1px solid rgba(var(--gold-accent-rgb), 0.3);
+    padding: 6px 14px;
+    border-radius: 40px;
+    color: var(--gold-accent, #d4af37);
+    font-family: var(--font-serif-num);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.note-date-wrapper:hover .note-date-display {
+    background: rgba(var(--gold-accent-rgb), 0.2);
+    transform: translateY(-1px);
+}
+
+/* Tool Button (Pill) */
+.note-tool-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.85);
+    padding: 8px 12px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.02em;
+}
+
+.note-tool-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.note-tool-btn.danger {
+    margin-left: auto;
+    color: rgba(255, 100, 100, 0.8);
+}
+
+.note-tool-btn.danger:hover {
+    background: rgba(255, 50, 50, 0.15);
+    color: #ff5050;
+    border-color: rgba(255, 50, 50, 0.3);
+}
+
+.note-tool-btn span {
+    display: inline-block;
+    padding-left: 2px;
+}
+
+/* Tag Pill */
+.note-tag-pill {
+    background: var(--gold-accent, #d4af37);
+    color: #000;
+    padding: 4px 12px;
+    border-radius: 40px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tag-remove {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.tag-remove:hover {
+    opacity: 1;
+}
+
+/* Tag Preset Button */
+.note-tag-preset-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 4px 12px;
+    border-radius: 40px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.note-tag-preset-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+/* Tag Input */
+.note-tag-input {
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    padding: 6px 16px;
+    border-radius: 40px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    outline: none;
+    width: 100px;
+    transition: all 0.3s ease;
+}
+
+.note-tag-input:focus {
+    border-style: solid;
+    border-color: var(--gold-accent, #d4af37);
+    width: 120px;
+}
+
+/* Character Count */
+.note-char-count {
+    padding-top: 10px;
+    text-align: right;
+    font-family: var(--font-serif-num);
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.note-pad-textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 0 4px;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    resize: none;
+    outline: none;
+    font-family: var(--font-sans);
+    transition: all 0.3s ease;
+}
+
+.note-pad-textarea:focus {
+    background: transparent;
+}
+
+.note-pad-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+}
+
+/* Search Input */
+.note-search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 0.95rem;
+}

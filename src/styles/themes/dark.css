@@ -28,7 +28,7 @@
     --cal-text-muted: #888;
     --cal-lunar-text: #a0a0a0;
     --cal-header-text: #ffffff;
-    --cal-accent: #d4af37;
+    --cal-accent: var(--gold-accent);
 
     /* Term Flow & Contrast Extensions */
     --cal-term-color: #e6e6fa;
@@ -42,7 +42,7 @@
 
     /* Interactive Elements - Gold/Platinum */
     --cal-nav-bg: rgba(255, 255, 255, 0.06);
-    --cal-nav-color: #d4af37;
+    --cal-nav-color: var(--gold-accent);
     /* Muted Gold */
 
     --cal-today-bg: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
@@ -50,8 +50,8 @@
     --cal-today-text: #1a1a1a;
 
     /* Panel Specifics */
-    --panel-accent: #d4af37;
-    --panel-side-bg: linear-gradient(to bottom, rgba(212, 175, 55, 0.08), transparent);
+    --panel-accent: var(--gold-accent);
+    --panel-side-bg: linear-gradient(to bottom, rgba(var(--gold-accent-rgb), 0.08), transparent);
 
     /* Glass Overrides */
     --glass-blur: blur(20px);

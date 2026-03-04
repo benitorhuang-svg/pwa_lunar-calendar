@@ -1,0 +1,97 @@
+/* --- Atoms: Basic Elements, Typography, Buttons --- */
+
+/* Year/Month Value Text */
+.hero-year-month-selector .header-year {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    font-family: var(--font-serif-num);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.hero-year-month-selector .header-month {
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    font-family: var(--font-serif-num);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Unit Label (年/月) */
+.hero-year-month-selector .unit {
+    font-size: 0.9rem;
+    font-family: var(--font-calligraphy);
+    opacity: 0.9;
+    font-weight: 500;
+    margin-left: 2px;
+    color: var(--gold-accent);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Lunar Ganzhi Text */
+.hero-function-group .lunar-ganzhi {
+    font-size: 1.2rem;
+    font-family: var(--font-calligraphy);
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.05em;
+}
+
+/* Lunar Month Text */
+.hero-function-group .lunar-month {
+    font-family: var(--font-calligraphy);
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.1em;
+}
+
+/* Separator */
+.hero-year-month-selector .header-sep {
+    display: none;
+}
+
+.hero-function-group .header-sep {
+    font-size: 1.1rem;
+    margin: 0 4px;
+    opacity: 0.5;
+    font-weight: 300;
+}
+
+/* Info Separator */
+.info-sep {
+    opacity: 0.2;
+    font-family: var(--font-serif-num);
+    font-weight: 300;
+    margin: 0 10px;
+    font-size: 1.2rem;
+}
+
+/* Label (hidden) */
+.label {
+    display: none;
+}
+
+/* Reset inner text spans */
+#infoYear,
+#infoMonth {
+    font: inherit;
+    color: inherit;
+    pointer-events: none;
+}
+
+/* Ensure inner spans don't block clicks */
+.selector-box span {
+    pointer-events: none;
+}
+
+.selector-box:active {
+    transform: scale(0.95);
+}
+
+/* Current Setting Label (Slideshow) */
+.current-setting-label {
+    font-family: var(--font-serif-num);
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.9;
+    letter-spacing: 0.05em;
+}

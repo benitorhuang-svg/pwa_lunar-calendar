@@ -1,0 +1,172 @@
+/* --- 1. Premium Loading Overlay Design --- */
+#loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: var(--app-max-width, 100%);
+    height: 100%;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.is-updating #loadingOverlay {
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: all !important;
+    display: flex !important;
+    transition: clip-path var(--duration-splash-clip) var(--ease-splash), opacity var(--duration-splash-fade) var(--ease-standard);
+    overflow: hidden;
+}
+
+#loadingOverlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--bgUrl);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.7;
+    filter: brightness(0.8);
+    transform: scale(1.1);
+    transition: transform var(--duration-splash-clip) var(--ease-splash);
+}
+
+body.app-loaded #loadingOverlay::before {
+    transform: scale(1);
+}
+
+body.app-loaded #loadingOverlay {
+    transform: translateX(-100%);
+    opacity: 1;
+    pointer-events: none;
+    transition: transform var(--duration-splash-clip) var(--ease-zen), filter var(--duration-splash-clip) var(--ease-zen);
+    filter: brightness(1.2);
+}
+
+#appContainer {
+    transition: opacity var(--duration-hero-entrance) var(--ease-out-expo);
+}
+
+body:not(.app-loaded) #appContainer {
+    opacity: 0;
+}
+
+body.app-loaded #appContainer {
+    opacity: 1;
+}
+
+.loading-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    text-align: center;
+    transform: translateY(-5vh);
+}
+
+.loading-text {
+    font-family: "Zhi Mang Xing", cursive;
+    font-size: 5rem;
+    letter-spacing: 1.8rem;
+    position: relative;
+    white-space: nowrap;
+    line-height: 1.2;
+    padding: 20px;
+    background: linear-gradient(to right,
+            #f0d060 var(--loading-progress, 0%),
+            rgba(255, 255, 255, 0.4) var(--loading-progress, 0%));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 25px rgba(var(--gold-accent-rgb), 0.4));
+    animation: loadingTextBreath 4s ease-in-out infinite;
+    transition: transform var(--duration-slow) var(--ease-out-expo), opacity var(--duration-slow) var(--ease-standard);
+}
+
+body.app-loaded .loading-text {
+    animation: none !important;
+    transform: translateX(-50px);
+    opacity: 0;
+}
+
+.loading-text::after {
+    display: none !important;
+}
+
+.loading-status-list {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    align-items: flex-start;
+    min-width: 160px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: statusListEntrance 0.8s ease-out 1s forwards;
+}
+
+body.app-loaded .loading-status-list {
+    opacity: 0 !important;
+    transition: opacity 0.3s ease;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-sans, "Inter", system-ui, sans-serif);
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.35);
+    transition: color 0.4s ease, transform 0.3s ease;
+}
+
+.status-item.done {
+    color: rgba(240, 208, 96, 0.85);
+}
+
+.status-item.done .status-icon {
+    transform: scale(1.1);
+}
+
+.status-item.active {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.status-icon {
+    font-size: 0.85rem;
+    width: 1.2em;
+    text-align: center;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.3s ease;
+}
+
+.status-label {
+    white-space: nowrap;
+}
+
+/* DEBUG CONSOLE (Temporary) */
+.debug-console {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: left;
+    padding: 10px;
+    pointer-events: none;
+    z-index: 99999;
+    font-family: monospace;
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow: hidden;
+    text-shadow: 0 1px 2px black;
+}

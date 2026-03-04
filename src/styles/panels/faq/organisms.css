@@ -1,0 +1,39 @@
+/* --- Organisms: Self-contained Functional Blocks --- */
+
+/* FAQ Item (Question + Answer combined) */
+.faq-item {
+    background: var(--faq-item-bg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.faq-item:hover {
+    background: var(--faq-item-hover);
+    border-color: rgba(var(--gold-accent-rgb), 0.2);
+    transform: translateX(4px);
+}
+
+/* FAQ List Container */
+.faq-list {
+    padding: 16px 20px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+/* Custom Scrollbar */
+.faq-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.faq-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.faq-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+}

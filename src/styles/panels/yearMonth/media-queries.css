@@ -70,7 +70,7 @@
         content: "";
         width: 1px;
         height: 60%;
-        background: linear-gradient(to bottom, transparent, rgba(212, 175, 55, 0.2), transparent);
+        background: linear-gradient(to bottom, transparent, rgba(var(--gold-accent-rgb), 0.2), transparent);
         position: absolute;
         left: 50%;
         top: 50%;

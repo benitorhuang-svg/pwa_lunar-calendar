@@ -13,7 +13,10 @@
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "format": "prettier --write .",
-        "prettify": "npm run lint:fix && npm run format"
+        "prettify": "npm run lint:fix && npm run format",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage"
     },
     "dependencies": {
         "@vite-pwa/astro": "^1.2.0",
@@ -31,9 +34,11 @@
         "eslint-plugin-astro": "^0.9.0",
         "eslint-plugin-perfectionist": "^5.5.0",
         "eslint-plugin-prettier": "^2.7.0",
+        "happy-dom": "^20.8.3",
         "prettier": "^3.8.1",
         "prettier-plugin-astro": "^0.14.1",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.14.0"
+        "typescript-eslint": "^8.14.0",
+        "vitest": "^4.0.18"
     }
 }

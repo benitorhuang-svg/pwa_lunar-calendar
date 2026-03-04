@@ -1,0 +1,14 @@
+/* --- Molecules: Combined Elements --- */
+
+/* Mode Toggles Group */
+.mode-toggles-group {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Gallery Control Wrapper */
+.gallery-control-wrapper {
+    position: relative;
+}

@@ -1,10 +1,10 @@
 /* --- Templates: Contextual Layouts --- */
 
 .gallery-submenu {
-    position: absolute;
+    position: fixed;
     right: 58px;
     top: -22%;
-    transform: translateY(-50%) translateX(20px);
+    transform: translateX(20px);
     opacity: 0;
     visibility: hidden;
     transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
@@ -16,7 +16,7 @@
 .gallery-submenu.show {
     opacity: 1;
     visibility: visible;
-    transform: translateY(-50%) translateX(0);
+    transform: translateX(0);
     pointer-events: auto;
 }
 

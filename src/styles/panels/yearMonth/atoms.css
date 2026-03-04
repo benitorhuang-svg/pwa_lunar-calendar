@@ -27,7 +27,7 @@
     content: "";
     flex: 1;
     height: 0.5px;
-    background: linear-gradient(to right, rgba(212, 175, 55, 0.25), transparent);
+    background: linear-gradient(to right, rgba(var(--gold-accent-rgb), 0.25), transparent);
 }
 
 .panel-item {
@@ -70,7 +70,7 @@
     width: 44px;
     height: 44px;
     transform: translate(-50%, -50%);
-    background: radial-gradient(circle, rgba(212, 175, 55, 0.95) 0%, rgba(184, 134, 11, 1) 100%);
+    background: radial-gradient(circle, rgba(var(--gold-accent-rgb), 0.95) 0%, rgba(184, 134, 11, 1) 100%);
     border-radius: 50%;
     z-index: -1;
     box-shadow: 0 8px 25px rgba(184, 134, 11, 0.4);

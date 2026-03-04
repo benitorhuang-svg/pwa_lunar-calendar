@@ -78,7 +78,6 @@ export class HeroEventHandlers {
         this.panelUIHandler = new PanelUIHandler(this.uiManager, this.idleManager);
         this.slideshowSettingsHandler = new SlideshowSettingsHandler(
             this.slideshowManager,
-            this.uiManager,
             this.idleManager,
         );
 

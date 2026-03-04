@@ -70,12 +70,26 @@ SDD_v1/
 
 ### 原始碼（Repository 根目錄）
 
+> [!IMPORTANT]
+> 本專案全面採用 **原子化設計 (Atomic Design)** 方法論拆分 CSS 與 TypeScript 模組。
+> 所有主要模組遵循 `atoms → molecules → organisms → template (→ media-queries)` 分層結構。
+> 原始大檔案已轉換為聚合器（CSS `@import`）或協調器（TS thin orchestrator）。
+
 ```text
 lunar-calendar/
 ├── astro.config.mjs                    # Astro + PWA 設定
 ├── tsconfig.json                       # TypeScript 設定（@/ → src/）
+├── vitest.config.ts                    # 🆕 Vitest 測試設定
 ├── package.json                        # 相依性與 npm scripts
 ├── eslint.config.js                    # ESLint 品質規範
+│
+├── tests/                              # 🆕 單元測試
+│   ├── setup.ts                        # 全域 setup（localStorage 清除）
+│   ├── transitionTable.test.ts         # FSM 轉換表完整性
+│   ├── noteManager.test.ts             # NoteManager CRUD/搜尋/匯出
+│   ├── stateManager.test.ts            # 狀態機/導航/主題決策
+│   ├── typedEvents.test.ts             # 型別事件工具函式
+│   └── faq.test.ts                     # FAQ 資料 + DOM 建構器
 │
 ├── public/
 │   ├── assets/
@@ -114,18 +128,25 @@ lunar-calendar/
 │   │
 │   ├── scripts/
 │   │   ├── types.ts                    # 全域型別定義 ⭐
-│   │   ├── SCRIPTS_ARCHITECTURE.md     # 腳本架構說明文件
-│   │   │
+│   │
 │   │   ├── app/                        # 應用層
 │   │   │   ├── appController.ts        # 初始化控制器
 │   │   │   ├── stateManager.ts         # 全域狀態管理
 │   │   │   ├── eventOrchestrator.ts    # 事件編排中心
+│   │   │   ├── uiToggleManager.ts      # UI 切換管理
+│   │   │   ├── transitionTable.ts      # 轉場表
 │   │   │   ├── updateManager.ts        # 更新管理
-│   │   │   └── resourceLoader.ts       # 資源加載器（進度條）
+│   │   │   ├── resourceLoader.ts       # 資源加載器（進度條）
+│   │   │   └── orchestrator/           # 🧬 事件編排子模組
+│   │   │       ├── navigationEvents.ts # 月份/日期導航事件
+│   │   │       ├── panelEvents.ts      # 面板開關/網格事件
+│   │   │       └── selectionEvents.ts  # 年/月/日選擇事件
 │   │   │
 │   │   ├── core/                       # 核心運算
 │   │   │   ├── lunar.ts                # 農曆計算引擎
+│   │   │   ├── NoteManager.ts          # 筆記資料管理（Singleton）
 │   │   │   ├── holidayService.ts       # 政府假日服務
+│   │   │   ├── typedEvents.ts          # 🆕 強型別事件工具函式
 │   │   │   └── appConfig.ts            # 應用設定
 │   │   │
 │   │   ├── hero/                       # 英雄區塊邏輯
@@ -143,60 +164,141 @@ lunar-calendar/
 │   │   │   ├── parallaxManager.ts      # 視差效果
 │   │   │   ├── touchHandler.ts         # 觸控手勢處理
 │   │   │   ├── pwaHandler.ts           # PWA 安裝處理
-│   │   │   └── types.ts                # Hero 區域專用型別
+│   │   │   ├── template.ts             # Hero 選擇器模板
+│   │   │   ├── types.ts                # Hero 區域專用型別
 │   │   │   ├── handlers/               # 子事件處理器
 │   │   │   │   ├── modeHandler.ts      # 模式轉換副作用
 │   │   │   │   └── navigationHandler.ts  # 導航事件處理
 │   │   │   └── ui/                     # UI 子管理器
+│   │   │       ├── layoutManager.ts    # 佈局管理
+│   │   │       └── modeUIManager.ts    # 模式 UI 管理
 │   │   │
 │   │   ├── calendar/                   # 日曆邏輯
 │   │   │   ├── calendar-board.ts       # 日曆初始化
 │   │   │   ├── calendarRenderer.ts     # 日曆渲染器
 │   │   │   ├── calendarCellBuilder.ts  # 日期格構建器
 │   │   │   ├── calendarEventHandlers.ts  # 日曆事件處理
-│   │   │   └── types.ts               # 日曆專用型別
+│   │   │   ├── organisms.ts            # 日曆網格組件 (Atomic)
+│   │   │   └── types.ts                # 日曆專用型別
 │   │   │
 │   │   ├── panels/                     # 面板邏輯
 │   │   │   ├── floating-panels.ts      # 面板初始化
-│   │   │   └── ...                     # Renderer/Handler
+│   │   │   ├── panelRenderers.ts       # 面板渲染（年月/今日）
+│   │   │   ├── panelEventHandlers.ts   # 面板開關/遮罩邏輯
+│   │   │   ├── notePadHandler.ts       # 📦 筆記協調器 (Template)
+│   │   │   │
+│   │   │   ├── notepad/                # 🧬 筆記原子化層
+│   │   │   │   ├── atoms.ts            # 標籤顏色、匯出、字數、釘選
+│   │   │   │   ├── molecules.ts        # 標籤列、預設/篩選初始化、日期選擇器
+│   │   │   │   ├── organisms.ts        # 清單渲染（搜尋/篩選）、視圖切換
+│   │   │   │   └── eventBindings.ts    # 🆕 事件綁定（從 Handler 提取）
+│   │   │   │
+│   │   │   ├── today/                  # 🧬 今日詳情原子化層
+│   │   │   │   ├── atoms.ts            # 標籤、月相 SVG、日期數字
+│   │   │   │   ├── molecules.ts        # 節氣流、農曆日期行、月相
+│   │   │   │   ├── organisms.ts        # 日期面板、文化卡片、物候/詩詞
+│   │   │   │   └── template.ts         # 今日面板模板（sidebar + content）
+│   │   │   │
+│   │   │   ├── yearMonth/              # 🧬 年月選擇原子化層
+│   │   │   │   └── organisms.ts        # 年份/月份網格選擇器
+│   │   │   │
+│   │   │   ├── faq/                    # 🆕🧬 FAQ 原子化層
+│   │   │   │   ├── atoms.ts            # FAQ 項目建構、展開/收合
+│   │   │   │   └── organisms.ts        # 完整 FAQ 面板渲染
+│   │   │   │
+│   │   │   └── common/                 # 🧬 共用原子化層
+│   │   │       ├── atoms.ts            # 🆕 hideTodayCard/restoreTodayCard
+│   │   │       ├── organisms.ts        # 側邊裝飾面板（干支、生肖）
+│   │   │       └── templates.ts        # AtomicPageLayout 統一佈局
 │   │   │
 │   │   ├── layout/
 │   │   │   └── layout-main.ts          # 全域佈局工具
 │   │   │
 │   │   ├── ui/                         # 通用 UI 工具
+│   │   │   └── faq.ts                  # FAQ 入口（委派至 panels/faq/）
 │   │   │
 │   │   └── generated/                  # 自動生成
 │   │       ├── audioManifest.ts        # 音訊檔案清單
 │   │       └── galleryManifest.ts      # 圖片檔案清單
 │   │
-│   ├── styles/
+│   ├── data/                           # 🆕 資料定義層
+│   │   └── faqData.ts                  # FAQ 問答資料
+│   │
+│   ├── styles/                         # 🎨 原子化設計 CSS
 │   │   ├── tokens.css                  # 設計變項（Design Tokens）
-│   │   ├── global.css                  # 全域樣式與模式可見性
-│   │   ├── hero.css                    # Hero 區塊基礎
-│   │   ├── calendar.css                # 日曆基礎
-│   │   ├── panels.css                  # 面板基礎
+│   │   ├── global.css                  # 📦 全域聚合器（import + reset）
+│   │   ├── mode-visibility.css         # 🆕 模式可見性規則（CSS-driven）
+│   │   ├── transitions.css             # 🆕 主題過渡 + 滾動條
+│   │   ├── hero.css                    # Hero 區塊聚合入口
+│   │   ├── calendar.css                # 日曆聚合入口
+│   │   ├── panels.css                  # 面板聚合入口
 │   │   ├── glass-card.css              # 玻璃擬態卡片
 │   │   ├── splash.css                  # 載入畫面
 │   │   ├── calendar-themes.css         # 主題入口
+│   │   │
 │   │   ├── hero/                       # Hero 細分樣式
-│   │   ├── calendar/                   # 日曆細分樣式
+│   │   │   ├── background.css          # 背景底圖
+│   │   │   ├── dock.css                # Legacy Dock (已停用)
+│   │   │   ├── welcome-overlay.css     # 歡迎遮罩層
+│   │   │   ├── header.css              # 📦 聚合器 → header/
+│   │   │   │   └── header/
+│   │   │   │       ├── atoms.css        # 年/月文字、單位標籤、分隔符
+│   │   │   │       ├── molecules.css    # 日曆按鈕、Nav Box、輪播按鈕
+│   │   │   │       ├── organisms.css    # 年月選擇器、功能群組、輪播設定
+│   │   │   │       ├── template.css     # Header 容器定位
+│   │   │   │       └── media-queries.css  # 桌面響應式
+│   │   │   ├── music-player.css        # 📦 聚合器 → music-player/
+│   │   │   │   └── music-player/
+│   │   │   │       ├── atoms.css        # 按鈕基底、播放動畫、靜音線
+│   │   │   │       ├── molecules.css    # 模式切換群組
+│   │   │   │       ├── organisms.css    # 圖示交換、Active 狀態、排序
+│   │   │   │       ├── template.css     # Dock 容器定位
+│   │   │   │       └── media-queries.css  # 多斷點響應式
+│   │   │   └── gallery-submenu.css     # 📦 聚合器 → gallery/
+│   │   │       └── gallery/
+│   │   │           ├── atoms.css        # 標題、按鈕
+│   │   │           ├── molecules.css    # 設定區塊
+│   │   │           ├── organisms.css    # 自足區塊
+│   │   │           ├── template.css     # 選單容器
+│   │   │           └── media-queries.css  # 響應式調整
+│   │   │
 │   │   ├── panels/                     # 面板細分樣式
-│   │   └── themes/                     # 7 種主題 CSS
+│   │   │   ├── faq.css                 # 📦 聚合器 → faq/
+│   │   │   │   └── faq/
+│   │   │   │       ├── atoms.css        # 標題、按鈕、問號徽章
+│   │   │   │       ├── molecules.css    # Header、問題行、摺疊答案
+│   │   │   │       ├── organisms.css    # FAQ 項目、可捲動列表
+│   │   │   │       └── template.css     # 面板容器、玻璃態
+│   │   │   ├── notepad.css             # 📦 聚合器 → notepad/
+│   │   │   │   └── notepad/
+│   │   │   │       ├── atoms.css        # 按鈕、標題、標籤、輸入框
+│   │   │   │       ├── molecules.css    # 工具列、搜尋列、標籤列
+│   │   │   │       ├── organisms.css    # Header/Body、清單視圖
+│   │   │   │       └── template.css     # Overlay 容器、動畫
+│   │   │   ├── detail.css              # 📦 聚合器 → today/
+│   │   │   │   └── today/              # 今日詳情原子化 CSS
+│   │   │   └── selector.css            # 📦 聚合器 → yearMonth/
+│   │   │       └── yearMonth/          # 年月選擇原子化 CSS
+│   │   │
+│   │   ├── calendar/                   # 日曆細分樣式
+│   │   └── themes/                     # 7 種季節主題 CSS
 │   │
-│   └── data/
-│       └── calendarQuotes.ts           # 日曆名言資料
+│   ├── data/
+│   │   ├── calendarQuotes.ts           # 日曆名言資料
+│   │   └── poems/                      # 詩詞資料庫（按季節分類）
+│   │
+│   └── SCRIPTS_ARCHITECTURE.md         # 腳本架構說明  (→ 附錄 A)
 │
 ├── scripts/                            # 建置腳本
 │   ├── generate_gallery_manifest.py    # 圖片清單生成
 │   ├── generate-gallery-manifest.js    # JS 版圖片清單
 │   └── generate-audio-manifest.js      # 音訊清單生成
 │
-├── SDD/                                # 原始設計文件
-│   ├── spec-context.md
-│   ├── tech_context.md
-│   ├── UI_FLOW_LOGIC.md
-│   ├── ui_ux_design_context.md
-│   └── 色系方案.md
+├── SDD_context/                        # 系統設計文件 (SDD)
+│   ├── constitution.md                 # 專案憲章
+│   ├── spec.md                         # 功能規格說明
+│   ├── plan.md                         # 本文件
+│   └── tasks.md                        # 任務清單
 │
 └── .agent/                             # AI 開發指引
     ├── CODING_STANDARDS.md
@@ -204,7 +306,12 @@ lunar-calendar/
     └── skills/premium-ui-design/SKILL.md
 ```
 
-**結構決策**：此為單一專案 Single-page PWA，原始碼位於 `src/`，靜態資源位於 `public/`，建置腳本位於根目錄 `scripts/`。邏輯按功能領域 (feature) 分目錄，非按技術層級。
+**結構決策**：
+
+- 此為單一專案 Single-page PWA，原始碼位於 `src/`，靜態資源位於 `public/`，建置腳本位於根目錄 `scripts/`。
+- 邏輯按功能領域 (feature) 分目錄，非按技術層級。
+- 所有主要模組皆遵循 **原子化設計 (Atomic Design)** 分層：`atoms → molecules → organisms → template → media-queries`。
+- CSS 大檔案已轉換為 **聚合器** (`@import` 引入子目錄)；TS 大檔案已轉換為 **薄協調器** (thin orchestrator)。
 
 ---
 
@@ -1446,3 +1553,176 @@ if (target.closest("button, a, input, textarea, select, .hero-dock, .hero-galler
 新增 UI 元件時容易遺漏加入排除清單，導致意外觸發模式切換。
 
 **優化方案**：在 handler 開頭加入模式守衛，並使用 `data-interactive` 屬性代替硬編碼 selector 清單。
+
+---
+
+## 附錄 A：腳本架構說明書 (SCRIPTS_ARCHITECTURE)
+
+> 以下內容同步自 `src/SCRIPTS_ARCHITECTURE.md`，為專案核心架構的權威參考。
+> **最後同步日期**：2026-03-04
+
+### A.1 專案概觀
+
+本專案是一個基於 **Astro** 框架構建的現代化農民曆 PWA (Progressive Web App)。
+核心設計理念採用 **模組化 TypeScript (Vanilla TS Modules)**，不依賴大型前端框架 (如 React/Vue) 的狀態管理庫，而是利用瀏覽器原生的 `CustomEvent` 實現組件間的解耦與通信，以確保極致的輕量化與效能。
+
+### A.2 資料架構與通信機制
+
+#### 核心狀態管理 (State Management)
+
+應用程式的狀態由 `AppStateManager` 統一維護，這是唯一的「狀態真理來源 (Single Source of Truth)」。
+
+- **數據類型**: 定義於 `src/scripts/types.ts` 中的 `AppState` 介面。
+- **時間狀態**：`selectedYear`, `selectedMonth`, `selectedDay`, `today` (系統當日)
+- **UI 狀態**：`activePanel` (當前開啟的面板: 'yearMonth' | 'today' | null)
+
+#### 事件驅動流程 (Event-Driven Architecture)
+
+系統採用「發布/訂閱」模式，透過 `window.dispatchEvent` 發送強類別指令 (`CustomEvent<PayloadType>`)，`AppEventOrchestrator` 負責協調。
+
+1.  **用戶觸發 (User Action)**：
+    - 點擊日曆 -> 發送 `date-selected` (Payload: `DateSelectedDetail`)
+    - 切換月份 -> 發送 `navigate-month` (Payload: `NavigateMonthDetail`)
+    - 控制面板 -> 發送 `toggle-panel`
+
+2.  **邏輯處理 (Logic Processing)**：
+    - `AppEventOrchestrator` 監聽事件。
+    - 調用 `AppStateManager` 更新數據模型。
+    - 計算必要的衍生數據 (如：農曆轉換、節氣判斷)。
+
+3.  **視圖更新 (View Rendering)**：
+    - 發送渲染事件 (如 `render-calendar`, `render-hero`)。
+    - 各個 UI 組件 (`Renderer`) 監聽並重繪 DOM。
+
+### A.3 目錄結構與檔案功能說明
+
+#### 📂 `src/scripts/` - 核心邏輯層
+
+負責所有的業務邏輯、狀態計算與 API 互動。
+
+##### `src/scripts/` (全域共用)
+
+- **`types.ts`**：**全域型別真理來源**。定義 `AppState`, `ThemeName` 以及所有跨模組事件 (`*Detail`) 的介面。所有模組應優先引用此檔案。
+
+##### `src/scripts/core/` (核心配置)
+
+- **`appConfig.ts`**：**應用配置**。負責處理全域環境變數 (如 `APP_BASE_URL`) 的導出，替代原有的 `window` 全域變數。
+- **`lunar.ts`**：**農曆核心引擎**。自建的農曆算法庫 (1900-2100)，提供公農曆轉換、節氣 (精確到分)、干支、宜忌、建除十二神、星座與節日判斷，不依賴外部龐大的一日一檔 JSON。
+- **`NoteManager.ts`**：**筆記資料管理**。Singleton 模式，封裝 localStorage 讀寫、標籤管理、釘選狀態、搜尋與匯出功能。
+
+##### `src/scripts/app/` (應用層)
+
+- **`appController.ts`**：**程式入口點**。負責初始化狀態管理器與事件協調器，並處理 Splash Screen 後的啟動流程。
+- **`stateManager.ts`**：**狀態管理**。封裝了年/月/日與主題 (`theme`) 的讀寫邏輯。
+- **`eventOrchestrator.ts`**：**事件總線**。整個 App 的神經中樞，負責監聽並派發事件，連接 Model 與 View。
+- **`uiToggleManager.ts`**：**UI 切換管理**。統一管理 FAQ、Gallery Submenu 等面板的開關互斥邏輯。
+- **`transitionTable.ts`**：**模式轉場表**。定義合法的模式轉換路徑與 body class 映射。
+- **`resourceLoader.ts`**：**資源載入**。負責 Splash Screen 的進度條邏輯，預載字體、Hero 圖片與 JSON 數據。
+
+##### `src/scripts/hero/` (主視覺層)
+
+- **`hero-main.ts`**：Hero 區域的入口腳本。
+- **`eventHandlers.ts`**：Hero 區域的核心控制器，協調 UI、觸控 (`TouchHandler`) 與 PWA (`PWAHandler`) 互動。
+- **`imageManager.ts`**：圖片偵測、切換、預載邏輯。
+- **`galleryManager.ts`**：藝廊選單、電台管理與圖片上傳邏輯。
+- **`galleryStorage.ts`**：封裝 IndexedDB，儲存/讀取使用者自訂背景圖片與音效。
+- **`musicPlayer.ts`**：背景音樂播放清單與播放狀態管理。
+- **`slideshowManager.ts`**：輪播計時器控制。
+- **`idleManager.ts`**：閒置偵測與自動模式切換。
+- **`uiManager.ts`**：Hero UI 管理 **Facade**，委派至：
+  - `ui/layoutManager.ts`：DOM 元素選取、安裝按鈕、網格切換
+  - `ui/modeUIManager.ts`：模式 UI 狀態、色系切換、藝廊可見性
+- **`headerManager.ts`**：頂部日期顯示與更新。
+- **`touchHandler.ts`**：滑動手勢偵測演算法。
+- **`pwaHandler.ts`**：PWA 安裝提示事件管理。
+- **`template.ts`**：Hero 選擇器模板。
+- **`handlers/modeHandler.ts`**：模式轉換副作用。
+- **`handlers/navigationHandler.ts`**：導航事件處理。
+- **`types.ts`**：Hero 專用型別。
+
+##### `src/scripts/calendar/` (日曆層)
+
+- **`calendar-board.ts`**：日曆區域入口腳本。
+- **`calendarRenderer.ts`**：清空並重繪日曆網格。
+- **`calendarCellBuilder.ts`**：建立單個日期 HTML（含農曆、節氣顏色）。
+- **`calendarEventHandlers.ts`**：日曆點擊、滑動切換月份事件。
+- **`organisms.ts`**：日曆網格組件 (Atomic Design)。
+- **`types.ts`**：日曆專用型別。
+
+##### `src/scripts/panels/` (面板層)
+
+- **`floating-panels.ts`**：面板區域入口腳本。
+- **`panelRenderers.ts`**：繪製「年/月選擇器」與「今日詳情卡片」。
+- **`panelEventHandlers.ts`**：面板開啟/關閉動畫與遮罩層邏輯。
+- **`notePadHandler.ts`**：📦 **筆記協調器 (Template)**——薄協調層，委派至原子化子模組。
+
+##### `src/scripts/panels/notepad/` (筆記原子化層)
+
+| 層級 | 檔案 | 職責 |
+|------|------|------|
+| Atoms | `atoms.ts` | 純工具函式：`getTagColor()`, `exportNotesToFile()`, `updateCharCount()`, `updatePinButton()` |
+| Molecules | `molecules.ts` | 標籤列渲染 `renderTagBar()`、預設標籤初始化、標籤篩選初始化、自訂日期選擇器 `renderCustomPicker()` |
+| Organisms | `organisms.ts` | 筆記清單渲染 `renderList()`（含搜尋/篩選）、編輯器/清單視圖切換 |
+
+##### `src/scripts/panels/today/` (今日詳情原子化層)
+
+| 層級 | 檔案 | 職責 |
+|------|------|------|
+| Atoms | `atoms.ts` | 基礎 UI 元件：標籤、月相 SVG、日期數字 |
+| Molecules | `molecules.ts` | 節氣流、農曆日期行、月相狀態 |
+| Organisms | `organisms.ts` | 日期面板、文化卡片、物候/詩詞切換 |
+| Template | `template.ts` | 今日面板模板（sidebar + content 組合） |
+
+##### `src/scripts/panels/common/` (共用原子化層)
+
+- **`organisms.ts`**：側邊裝飾面板（干支、生肖）。
+- **`templates.ts`**：統一面板佈局 (`AtomicPageLayout`)。
+
+##### `src/scripts/layout/` (佈局層)
+
+- **`layout-main.ts`**：全域通用腳本。包含自動為 Input 添加 name、依月份切換季節主題 class。
+
+##### `src/scripts/generated/` (自動生成層)
+
+- **`galleryManifest.ts`**：由腳本自動生成，列出所有預設背景圖片。
+- **`audioManifest.ts`**：由腳本自動生成，列出所有音訊檔案。
+
+### A.4 Astro 組件層
+
+負責 HTML 結構 (Structure)。
+
+- **Hero/**：背景、標題、Dock、藝廊子選單、音樂播放器、隨筆記錄、歡迎遮罩層。
+- **Calendar/**：日曆板塊、標題、網格容器。
+- **Panels/**：浮動面板容器。
+
+### A.5 樣式層 (CSS) — 原子化設計架構
+
+負責視覺表現 (Presentation)，採用 CSS Variables 實現主題切換。
+包含 `tokens.css` (設計系統), `themes/*.css` (季節變數), 以及各模組的獨立 CSS。
+所有主要模組皆遵循 **原子化設計 (Atomic Design)**，拆分為 `atoms → molecules → organisms → template → media-queries`。
+
+#### Hero 區塊樣式
+
+| 聚合器檔案 | 原子化子目錄 | 包含層級 |
+|-----------|-------------|----------|
+| `header.css` | `header/` | atoms, molecules, organisms, template, media-queries |
+| `music-player.css` | `music-player/` | atoms, molecules, organisms, template, media-queries |
+| `gallery-submenu.css` | `gallery/` | atoms, molecules, organisms, template, media-queries |
+
+- **`background.css`**：背景縮放動畫與首屏 Fallback。
+- **`dock.css`**：Legacy Dock (已停用)。
+- **`welcome-overlay.css`**：歡迎模式全域透明互動層。
+
+#### 面板區塊樣式
+
+| 聚合器檔案 | 原子化子目錄 | 包含層級 |
+|-----------|-------------|----------|
+| `faq.css` | `faq/` | atoms, molecules, organisms, template |
+| `notepad.css` | `notepad/` | atoms, molecules, organisms, template |
+| `detail.css` | `today/` | atoms, molecules, organisms, template, note-header, media-queries |
+| `selector.css` | `yearMonth/` | atoms, molecules, organisms, template, media-queries |
+
+### A.6 頁面入口
+
+- **`Layout.astro`**：HTML 骨架。
+- **`index.astro`**：首頁組合與資源載入器。

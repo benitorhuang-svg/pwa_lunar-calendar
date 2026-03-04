@@ -1,0 +1,14 @@
+/* --- Templates: Dock Container & Layout --- */
+
+/* Global Vertical Dock */
+.music-control-wrapper {
+    position: absolute;
+    top: var(--hero-control-top, 20px);
+    right: 20px;
+    z-index: 100001;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-start;
+}

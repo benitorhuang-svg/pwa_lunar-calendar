@@ -1,0 +1,95 @@
+/* --- Organisms: Mode-aware Icon Swapping & Active States --- */
+
+/* Active Highlight for Calendar Mode */
+body:not(.mode-artwork):not(.initial-welcome) #btnDay {
+    background: rgba(var(--gold-accent-rgb), 0.2);
+    color: var(--gold-accent);
+    border-color: rgba(var(--gold-accent-rgb), 0.4);
+}
+
+/* === btnDay: Show DESTINATION icon === */
+
+/* Welcome Mode -> show Artwork icon (destination = artwork) */
+body.initial-welcome #btnDay .icon-artwork {
+    display: block;
+}
+
+body.initial-welcome #btnDay .icon-calendar {
+    display: none;
+}
+
+/* Calendar Mode -> show Artwork icon (destination = artwork) */
+body:not(.mode-artwork):not(.initial-welcome) #btnDay .icon-artwork {
+    display: block;
+}
+
+body:not(.mode-artwork):not(.initial-welcome) #btnDay .icon-calendar {
+    display: none;
+}
+
+/* Artwork Mode -> show Calendar icon (destination = calendar) */
+body.mode-artwork #btnDay .icon-artwork {
+    display: none;
+}
+
+body.mode-artwork #btnDay .icon-calendar {
+    display: block;
+}
+
+/* === btnImmersion: Show DESTINATION icon === */
+
+/* Non-fullscreen: show "enter fullscreen" icon */
+#btnImmersion .icon-fullscreen {
+    display: block;
+}
+
+#btnImmersion .icon-exit-fullscreen {
+    display: none;
+}
+
+/* Fullscreen Active: show "exit fullscreen" icon */
+body.fullscreen-active #btnImmersion .icon-fullscreen {
+    display: none;
+}
+
+body.fullscreen-active #btnImmersion .icon-exit-fullscreen {
+    display: block;
+}
+
+/* Flex Order for Dock Items */
+.music-control-wrapper>* {
+    order: 10;
+}
+
+#btnFaq {
+    order: 1;
+}
+
+.mode-toggles-group {
+    order: 2;
+}
+
+.music-toggle-btn {
+    order: 3;
+}
+
+.note-btn {
+    order: 4;
+}
+
+.gallery-control-wrapper {
+    order: 5;
+}
+
+.immersion-btn {
+    order: 6;
+}
+
+/* Reorder in Artwork Mode: Immersion moves UP (above Gallery) */
+body.mode-artwork .immersion-btn {
+    order: 5;
+}
+
+body.mode-artwork .gallery-control-wrapper {
+    order: 6;
+}

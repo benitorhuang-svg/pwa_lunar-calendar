@@ -1,26 +1,29 @@
 /**
- * Application Event Orchestrator
+ * Application Event Orchestrator (Thin Coordinator)
  * 負責協調應用內各種事件 (Responsible for orchestrating various application events)
+ * 委派至 orchestrator/ 子模組
  */
 
 import type {
     AppMode,
-    ClosePanelsDetail,
-    DateSelectedDetail,
     ModeChangedDetail,
-    NavigateMonthDetail,
     RenderCalendarDetail,
     RenderHeroDetail,
     RenderPanelsDetail,
     RequestHeroChangeDetail,
     SlideshowControlDetail,
-    ToggleGridViewDetail,
     UpdateCalendarTitleDetail,
 } from "../types";
 import type { AppStateManager } from "./stateManager";
 
 import { HolidayService } from "../core/holidayService";
 import { Lunar } from "../core/lunar";
+import { onTypedEvent } from "../core/typedEvents";
+
+// Orchestrator sub-modules
+import { setupNavigationEvents } from "./orchestrator/navigationEvents";
+import { setupPanelEvents } from "./orchestrator/panelEvents";
+import { setupSelectionEvents } from "./orchestrator/selectionEvents";
 
 export class AppEventOrchestrator {
     private holidayService = HolidayService.getInstance();
@@ -32,9 +35,9 @@ export class AppEventOrchestrator {
     }
 
     public init(): void {
-        this.setupNavigationEvents();
-        this.setupPanelEvents();
-        this.setupSelectionEvents();
+        setupNavigationEvents(this.state, () => this.updateState());
+        setupPanelEvents(this.state, () => this.checkAutoSlideshow());
+        setupSelectionEvents(this.state, () => this.updateState());
         this.setupHeroEvents();
         this.setupModeTransitionEvents();
 
@@ -94,7 +97,6 @@ export class AppEventOrchestrator {
         this.state.applyTheme(theme);
 
         // 渲染面板 (Context Check)
-        // Render Panels if active
         if (state.activePanel) {
             window.dispatchEvent(
                 new CustomEvent<RenderPanelsDetail>("render-panels", {
@@ -191,15 +193,13 @@ export class AppEventOrchestrator {
         // 總是抓取前一年 (Always fetch previous year)
         fetchTasks.push(this.holidayService.fetchYearData(year - 1));
 
-        // 只有當「下一年」早於或等於系統年份，或者已經是下半年時，才主動抓取下一年
-        // (Only proactive fetch next year if it's already released or late in the year)
-        const currentMonth = new Date().getMonth(); // 0-11
+        const currentMonth = new Date().getMonth();
         if (year < systemYear || (year === systemYear && currentMonth >= 5)) {
             fetchTasks.push(this.holidayService.fetchYearData(year + 1));
         }
 
         await Promise.all(fetchTasks);
-        this.updateState(); // 重新渲染以套用假期 (Re-render to apply)
+        this.updateState();
     }
 
     /**
@@ -207,16 +207,12 @@ export class AppEventOrchestrator {
      */
     private forceRecovery(target: AppMode = "artwork"): void {
         console.warn(`[Orchestrator] Forcing recovery to mode: ${target}`);
-        // Direct set to skip lifecycle and break loops
         this.state.setMode(target);
     }
 
     private setupHeroEvents(): void {
-        // 監聽 Hero 更換請求 (Request Hero Change)
-        window.addEventListener("request-hero-change", ((
-            e: CustomEvent<RequestHeroChangeDetail>,
-        ) => {
-            const { changeBg, transitionOverride } = e.detail || {};
+        onTypedEvent<RequestHeroChangeDetail>("request-hero-change", (detail) => {
+            const { changeBg, transitionOverride } = detail || {};
             const state = this.state.getState();
             const date = new Date(state.selectedYear, state.selectedMonth, state.selectedDay);
             const lunar = Lunar.fromDate(date);
@@ -226,7 +222,7 @@ export class AppEventOrchestrator {
                     detail: { changeBg, date, lunar, transitionOverride },
                 }),
             );
-        }) as EventListener);
+        });
     }
 
     /**
@@ -234,201 +230,8 @@ export class AppEventOrchestrator {
      * 統一入口：外部通過 dispatch 'transition-mode' 事件觸發
      */
     private setupModeTransitionEvents(): void {
-        window.addEventListener("transition-mode", ((e: CustomEvent<{ to: AppMode }>) => {
-            this.transitionMode(e.detail.to);
-        }) as EventListener);
-    }
-
-    private setupNavigationEvents(): void {
-        // 導航月份 (Navigate Month, payload is number)
-        window.addEventListener("navigate-month", ((e: CustomEvent<NavigateMonthDetail>) => {
-            const dir = e.detail;
-            this.state.navigateMonth(dir);
-            this.updateState();
-        }) as EventListener);
-
-        // 回到今天 (Go to Today)
-        window.addEventListener("go-to-today", () => {
-            this.state.goToToday();
-            this.updateState();
-
-            this.state.setActivePanel("today");
-            window.dispatchEvent(
-                new CustomEvent<RenderPanelsDetail>("render-panels", {
-                    detail: {
-                        type: "today",
-                        ...this.state.getState(),
-                    },
-                }),
-            );
-            window.dispatchEvent(
-                new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
-                    detail: { show: false },
-                }),
-            );
+        onTypedEvent<{ to: AppMode }>("transition-mode", (detail) => {
+            this.transitionMode(detail.to);
         });
-
-        // 導航日期 (Navigate Day, payload is number)
-        window.addEventListener("navigate-day", ((e: CustomEvent<number>) => {
-            const dir = e.detail;
-            this.state.navigateDay(dir);
-            this.updateState();
-        }) as EventListener);
-    }
-
-    private setupPanelEvents(): void {
-        // 切換面板 (Toggle Panel)
-        window.addEventListener("toggle-panel", ((
-            e: CustomEvent<string | { force?: "close" | "open"; type: string }>,
-        ) => {
-            const detail = e.detail;
-            const type = (typeof detail === "string" ? detail : detail.type) as
-                | "today"
-                | "yearMonth";
-            const force = typeof detail === "object" ? detail.force : undefined;
-
-            const currentActive = this.state.getState().activePanel;
-            const isSamePanel = currentActive === type;
-
-            this.state.setActivePanel(null);
-            window.dispatchEvent(new CustomEvent("hide-panels"));
-
-            let shouldOpen = !isSamePanel;
-            if (force === "open") shouldOpen = true;
-            if (force === "close") shouldOpen = false;
-
-            if (!shouldOpen) {
-                // Close / Show Grid
-                window.dispatchEvent(
-                    new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
-                        detail: { show: true },
-                    }),
-                );
-            } else {
-                // Open Panel
-                this.state.setActivePanel(type);
-                window.dispatchEvent(
-                    new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
-                        detail: { show: false },
-                    }),
-                );
-                window.dispatchEvent(
-                    new CustomEvent<RenderPanelsDetail>("render-panels", {
-                        detail: {
-                            type,
-                            ...this.state.getState(),
-                        },
-                    }),
-                );
-            }
-            this.checkAutoSlideshow();
-        }) as EventListener);
-
-        // 關閉面板 (Close Panels)
-        window.addEventListener("close-panels", ((e: CustomEvent<ClosePanelsDetail>) => {
-            const { showGrid } = e.detail || {};
-            this.state.setActivePanel(null);
-            window.dispatchEvent(new CustomEvent("hide-panels"));
-            if (showGrid !== undefined) {
-                window.dispatchEvent(
-                    new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
-                        detail: { show: showGrid },
-                    }),
-                );
-            }
-            this.checkAutoSlideshow();
-        }) as EventListener);
-
-        // T212: 切換網格 (Toggle Grid) - Now purely for UI visibility, no mode switching
-        window.addEventListener("toggle-grid", () => {
-            const calendarSection = document.getElementById("calendarSection");
-            const isShowing = calendarSection?.classList.contains("show-grid") ?? false;
-
-            this.state.setActivePanel(null);
-            window.dispatchEvent(new CustomEvent("hide-panels"));
-
-            window.dispatchEvent(
-                new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
-                    detail: { show: !isShowing },
-                }),
-            );
-            this.checkAutoSlideshow();
-        });
-    }
-
-    private setupSelectionEvents(): void {
-        // 年份選擇 (Year Selected)
-        window.addEventListener("year-selected", ((e: CustomEvent<number>) => {
-            this.state.setYear(e.detail);
-            this.updateState();
-            window.dispatchEvent(
-                new CustomEvent<RenderPanelsDetail>("render-panels", {
-                    detail: {
-                        type: "yearMonth",
-                        ...this.state.getState(),
-                    },
-                }),
-            );
-        }) as EventListener);
-
-        // 月份選擇 (Month Selected)
-        window.addEventListener("month-selected", ((e: CustomEvent<number>) => {
-            this.state.setMonth(e.detail);
-
-            const state = this.state.getState();
-            // Date Safety
-            const daysInMonth = new Date(state.selectedYear, state.selectedMonth + 1, 0).getDate();
-            if (state.selectedDay > daysInMonth) {
-                this.state.setDay(daysInMonth);
-            }
-
-            this.updateState();
-
-            window.dispatchEvent(
-                new CustomEvent<ClosePanelsDetail>("close-panels", { detail: { showGrid: true } }),
-            );
-        }) as EventListener);
-
-        // 日期選擇 (Date Selected)
-        window.addEventListener("date-selected", ((e: CustomEvent<DateSelectedDetail>) => {
-            const { day, month, year } = e.detail;
-            const currentState = this.state.getState();
-
-            if (month !== currentState.selectedMonth || year !== currentState.selectedYear) {
-                this.state.setYear(year);
-                this.state.setMonth(month);
-                this.updateState();
-            }
-
-            this.state.setDay(day);
-
-            const updatedState = this.state.getState();
-            const date = new Date(
-                updatedState.selectedYear,
-                updatedState.selectedMonth,
-                updatedState.selectedDay,
-            );
-            const lunar = Lunar.fromDate(date);
-            window.dispatchEvent(
-                new CustomEvent<RenderHeroDetail>("render-hero", {
-                    detail: { changeBg: false, date, lunar },
-                }),
-            );
-
-            this.state.setActivePanel("today");
-            window.dispatchEvent(
-                new CustomEvent<ToggleGridViewDetail>("toggle-grid-view", {
-                    detail: { show: false },
-                }),
-            );
-            window.dispatchEvent(
-                new CustomEvent<RenderPanelsDetail>("render-panels", {
-                    detail: {
-                        type: "today",
-                        ...this.state.getState(),
-                    },
-                }),
-            );
-        }) as EventListener);
     }
 }

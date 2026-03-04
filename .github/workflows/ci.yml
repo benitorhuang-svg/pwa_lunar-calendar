@@ -1,0 +1,27 @@
+name: CI — Lint & Test
+
+on:
+    pull_request:
+        branches: [main]
+    push:
+        branches: [main]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: "npm"
+            - name: Install dependencies
+              run: npm install --legacy-peer-deps
+            - name: Type Check
+              run: npx tsc --noEmit --skipLibCheck
+            - name: Run tests
+              run: npx vitest run
+            - name: Build (validation)
+              run: npm run build

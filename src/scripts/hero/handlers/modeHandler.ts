@@ -10,6 +10,7 @@ import type {
 } from "../types";
 
 import { HeroUIManager } from "../uiManager";
+import { onTypedEvent } from "../../core/typedEvents";
 
 export class ModeHandler {
     constructor(
@@ -134,14 +135,14 @@ export class ModeHandler {
 
     private setupEventListeners(): void {
         // T204: 1. beforeExit Stage
-        window.addEventListener("before-exit-mode", ((e: CustomEvent<ModeChangedDetail>) => {
-            this.beforeExit(e.detail.from);
-        }) as EventListener);
+        onTypedEvent<ModeChangedDetail>("before-exit-mode", (detail) => {
+            this.beforeExit(detail.from);
+        });
 
         // T204: 4. afterEnter Stage (Replaces old mode-changed listener for lifecycle integration)
-        window.addEventListener("after-enter-mode", ((e: CustomEvent<ModeChangedDetail>) => {
-            this.afterEnter(e.detail.from, e.detail.to);
-        }) as EventListener);
+        onTypedEvent<ModeChangedDetail>("after-enter-mode", (detail) => {
+            this.afterEnter(detail.from, detail.to);
+        });
 
         // Artwork Idle Slide
         window.addEventListener("artwork-idle-slide", () => {
@@ -149,8 +150,8 @@ export class ModeHandler {
         });
 
         // 幻燈片控制 (Slideshow Control)
-        window.addEventListener("slideshow-control", ((e: CustomEvent<SlideshowControlDetail>) => {
-            const { action, isArtwork } = e.detail;
+        onTypedEvent<SlideshowControlDetail>("slideshow-control", (detail) => {
+            const { action, isArtwork } = detail;
 
             if (action === "start") {
                 const minImages = Math.max(
@@ -180,11 +181,11 @@ export class ModeHandler {
                 this.slideshowManager.stop();
                 this.uiManager.updateArtworkModeUI(false);
             }
-        }) as EventListener);
+        });
 
         // Legacy bridge: welcome-mode -> transition-mode
-        window.addEventListener("welcome-mode", ((e: CustomEvent<WelcomeModeDetail>) => {
-            const { active, targetMode } = e.detail;
+        onTypedEvent<WelcomeModeDetail>("welcome-mode", (detail) => {
+            const { active, targetMode } = detail;
 
             let to: AppMode;
             if (active) {
@@ -200,6 +201,6 @@ export class ModeHandler {
             }
 
             window.dispatchEvent(new CustomEvent("transition-mode", { detail: { to } }));
-        }) as EventListener);
+        });
     }
 }

@@ -23,6 +23,7 @@
 - **可見性單一控制源**：元素的模式相關可見性必須統一由 CSS body-class 後代選擇器控制（CSS-driven visibility）。JS 層僅負責切換 body class，嚴禁在 JS 層直接操作 `style.display` / `style.opacity` 來控制模式相關可見性。
 - **Fullscreen 生命週期整合**：全螢幕進入/退出必須作為模式轉換生命週期(`afterEnter` 階段)的一部分執行，嚴禁在事件處理器中散落呼叫 `requestFullscreen()` / `exitFullscreen()`。
 - **原子化拆分**：任何模組超過 300 行必須進行職責拆分；任何內聯 `<style>` 超過 100 行必須外部化。
+- **原子化設計 (Atomic Design)**：CSS 與 TS 模組遵循 `atoms → molecules → organisms → template → media-queries` 分層。大檔案轉換為聚合器（CSS `@import`）或薄協調器（TS thin orchestrator），子模組按職責拆分至同名子目錄。
 
 ### III. 類型安全不可協商 (Type Safety Non-Negotiable)
 
@@ -116,7 +117,7 @@
 - 修訂憲章需附帶變更摘要與影響分析。
 - 執行階段的細節指引請參閱 `.agent/CODING_STANDARDS.md` 與 `.agent/NAMING_STANDARDS.md`。
 
-**版本**：1.1.0 | **通過日期**：2026-02-17 | **最後修訂**：2026-02-17
+**版本**：1.3.0 | **通過日期**：2026-02-17 | **最後修訂**：2026-03-04
 
 ### 修訂記錄
 
@@ -125,3 +126,4 @@
 | 1.0.0 | 2026-02-17 | 初始版本                                                                |
 | 1.1.0 | 2026-02-17 | 新增 FSM 正規化原則、模式轉換效能要求（rAF 批次、CLS 零容忍）           |
 | 1.2.0 | 2026-02-17 | 新增可見性單一控制源原則、Fullscreen 生命週期整合原則、CSS 動畫協調要求 |
+| 1.3.0 | 2026-03-04 | 新增原子化設計 (Atomic Design) 方法論原則，CSS/TS 分層標準化            |

@@ -2,6 +2,7 @@ import type { HeroIdleManager } from "../idleManager";
 import type { RenderPanelsDetail, ToggleGridViewDetail } from "../types";
 import type { HeroUIManager } from "../uiManager";
 import { uiToggleManager } from "../../app/uiToggleManager";
+import { onTypedEvent } from "../../core/typedEvents";
 
 export class PanelUIHandler {
     constructor(
@@ -77,14 +78,14 @@ export class PanelUIHandler {
 
     private bindEvents(): void {
         // 切換網格視圖 (Toggle Grid View)
-        window.addEventListener("toggle-grid-view", ((e: CustomEvent<ToggleGridViewDetail>) => {
-            this.uiManager.toggleGridView(e.detail.show);
-        }) as EventListener);
+        onTypedEvent<ToggleGridViewDetail>("toggle-grid-view", (detail) => {
+            this.uiManager.toggleGridView(detail.show);
+        });
 
         // 渲染面板 (Render Panels)
-        window.addEventListener("render-panels", ((e: CustomEvent<RenderPanelsDetail>) => {
-            this.uiManager.updatePanelsForType(e.detail.type);
-        }) as EventListener);
+        onTypedEvent<RenderPanelsDetail>("render-panels", (detail) => {
+            this.uiManager.updatePanelsForType(detail.type);
+        });
 
         // 隱藏面板 (Hide Panels)
         window.addEventListener("hide-panels", () => {

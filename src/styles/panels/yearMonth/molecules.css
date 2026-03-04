@@ -18,7 +18,7 @@
     height: 1px;
     background: linear-gradient(90deg,
             transparent 0%,
-            rgba(212, 175, 55, 0.15) 50%,
+            rgba(var(--gold-accent-rgb), 0.15) 50%,
             transparent 100%);
     margin: 8px 0;
     width: 100%;

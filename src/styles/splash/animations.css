@@ -1,0 +1,55 @@
+@keyframes loadingTextBreath {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 25px rgba(var(--gold-accent-rgb), 0.4));
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        filter: drop-shadow(0 0 45px rgba(var(--gold-accent-rgb), 0.6));
+        transform: translateY(0) scale(1.02);
+    }
+}
+
+@keyframes statusListEntrance {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Staggered Entrance Elements --- */
+.hero-header {
+    transform: translateY(-20px);
+    opacity: 0;
+    transition:
+        transform var(--duration-hero-entrance) var(--ease-zen),
+        opacity var(--duration-hero-entrance) var(--ease-standard) !important;
+}
+
+body.app-loaded:not(.initial-welcome) .hero-header {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.hero-dock-wrapper {
+    transform: translateX(-50%) translateY(40px);
+    opacity: 0;
+    transition:
+        transform var(--duration-panel-transition) var(--ease-zen),
+        opacity var(--duration-panel-transition) var(--ease-standard) !important;
+    transition-delay: 0.2s !important;
+}
+
+body.app-loaded:not(.initial-welcome) .hero-dock-wrapper {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+#panelToday {
+    transition:
+        opacity var(--duration-hero-entrance) var(--ease-standard),
+        transform var(--duration-hero-entrance) var(--ease-entrance) !important;
+    transition-delay: 0.3s !important;
+}

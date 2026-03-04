@@ -1,6 +1,9 @@
 /**
  * Panel Event Handlers
  * 負責面板相關的事件處理 (Responsible for panel-related event handling)
+ * 
+ * Visibility control follows the constitution's CSS-driven principle:
+ * JS sets body[data-active-panel], CSS rules in mode-visibility.css handle display.
  */
 
 import type { PanelRenderers } from "./panelRenderers";
@@ -24,7 +27,6 @@ export class PanelEventHandlers {
         this.setupClickHandlers();
 
         // 處理由於腳本載入順序導致的競爭條件 (Handle race conditions due to script loading order)
-        // Check if we are already in welcome mode or if a panel is already marked as active
         const isActiveToday = document.body.getAttribute("data-active-panel") === "today";
         const isInitialWelcome = document.body.classList.contains("initial-welcome");
 
@@ -33,9 +35,8 @@ export class PanelEventHandlers {
             const today = new Date();
             this.renderers.renderTodayPanel(today.getFullYear(), today.getMonth(), today.getDate());
 
-            // If it's active but not shown yet (due to race), show it
+            // CSS handles display via body[data-active-panel="today"]
             if (isActiveToday && this.panelToday) {
-                this.panelToday.style.display = "flex";
                 this.panelToday.classList.add("bottom-panel");
             }
         }
@@ -87,31 +88,25 @@ export class PanelEventHandlers {
             }, { passive: true });
         }
 
-        // Global Click Listener
+        // Global Click Listener — use data-active-panel for visibility check
         document.addEventListener("click", (e: MouseEvent) => {
             if (!this.panelYearMonth || !this.panelToday) return;
 
-            const isYearMonthVisible = this.panelYearMonth.style.display === "block";
-            const isTodayVisible =
-                this.panelToday.style.display === "block" ||
-                this.panelToday.style.display === "flex";
+            const activePanel = document.body.getAttribute("data-active-panel");
+            if (!activePanel) return;
 
-            if (isYearMonthVisible || isTodayVisible) {
-                const target = e.target as HTMLElement;
+            const target = e.target as HTMLElement;
 
-                if (isYearMonthVisible && target.closest("#panelYearMonth")) return;
-                // 防止全域點擊事件干擾面板內部的點擊處理 (Defer to panel's own handler)
-                if (isTodayVisible && target.closest("#panelToday")) return;
+            if (activePanel === "yearMonth" && target.closest("#panelYearMonth")) return;
+            if (activePanel === "today" && target.closest("#panelToday")) return;
+            if (target.closest(".nav-box") || target.closest(".dock-item")) return;
 
-                if (target.closest(".nav-box") || target.closest(".dock-item")) return;
-
-                handleClosePanel();
-            }
+            handleClosePanel();
         });
     }
 
     private setupEventListeners(): void {
-        // Render Panels
+        // Render Panels — CSS-driven: only render content, visibility via data-active-panel
         window.addEventListener("render-panels", (e: any) => {
             const { selectedDay, selectedMonth, selectedYear, today, type } = e.detail;
 
@@ -119,34 +114,28 @@ export class PanelEventHandlers {
                 const todayObj = new Date(today);
                 this.renderers.renderYearMonthPanel(selectedYear, selectedMonth, todayObj);
                 if (this.panelYearMonth) {
-                    this.panelYearMonth.style.display = "block";
                     this.panelYearMonth.classList.add("bottom-panel");
                 }
-                if (this.panelBackOverlay) this.panelBackOverlay.style.display = "block";
+                // Visibility handled by CSS: body[data-active-panel="yearMonth"] #panelYearMonth
             } else if (type === "today") {
                 try {
                     this.renderers.renderTodayPanel(selectedYear, selectedMonth, selectedDay);
                     if (this.panelToday) {
-                        this.panelToday.style.display = "flex";
                         this.panelToday.classList.add("bottom-panel");
                     }
-                    if (this.panelBackOverlay) this.panelBackOverlay.style.display = "block";
+                    // Visibility handled by CSS: body[data-active-panel="today"] .suspension-panel#panelToday
                 } catch (err) {
                     console.error("[Floater] Error rendering today panel:", err);
                     if (this.panelToday) {
                         this.panelToday.innerHTML = `<div style="padding:20px;text-align:center;">載入失敗，請稍後再試</div>`;
-                        this.panelToday.style.display = "block";
                     }
-                    if (this.panelBackOverlay) this.panelBackOverlay.style.display = "block";
                 }
             }
         });
 
-        // Hide Panels
+        // Hide Panels — CSS-driven: remove data-active-panel attribute
         window.addEventListener("hide-panels", () => {
-            if (this.panelYearMonth) this.panelYearMonth.style.display = "none";
-            if (this.panelToday) this.panelToday.style.display = "none";
-            if (this.panelBackOverlay) this.panelBackOverlay.style.display = "none";
+            document.body.removeAttribute("data-active-panel");
         });
 
         // Show Welcome Panel (Today Content)

@@ -29,6 +29,11 @@
     animation: fadeIn 0.4s ease;
 }
 
+.panel-back-overlay.note-mode,
+.panel-back-overlay.active {
+    display: block;
+}
+
 @keyframes panelPopUp {
     from {
         opacity: 0;

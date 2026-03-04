@@ -4,6 +4,7 @@ import type { HeroSlideshowManager } from "../slideshowManager";
 import type { NavigateMonthDetail, RenderHeroDetail } from "../types";
 
 import { HeroUIManager } from "../uiManager";
+import { onTypedEvent } from "../../core/typedEvents";
 
 export class NavigationHandler {
     constructor(
@@ -11,7 +12,7 @@ export class NavigationHandler {
         private imageManager: HeroImageManager,
         private slideshowManager: HeroSlideshowManager,
         private uiManager: HeroUIManager,
-    ) {}
+    ) { }
 
     public handleNavigation(direction: number): void {
         this.idleManager.resetInteraction();
@@ -46,15 +47,15 @@ export class NavigationHandler {
 
     private bindGlobalEvents(): void {
         // 渲染 Hero (Render Hero)
-        window.addEventListener("render-hero", ((e: CustomEvent<RenderHeroDetail>) => {
-            const { changeBg, date, lunar, transitionOverride } = e.detail;
+        onTypedEvent<RenderHeroDetail>("render-hero", (detail) => {
+            const { changeBg, date, lunar, transitionOverride } = detail;
             this.imageManager.updateHeroLogic(
                 changeBg !== undefined ? changeBg : false,
                 transitionOverride || null,
                 typeof date === "string" ? new Date(date) : date,
                 lunar,
             );
-        }) as EventListener);
+        });
     }
 
     private bindNavigationEvents(): void {

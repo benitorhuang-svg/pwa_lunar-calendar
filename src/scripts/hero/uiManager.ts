@@ -1,9 +1,11 @@
 import type { RequestHeroChangeDetail } from "./types";
 
+import { uiToggleManager } from "../app/uiToggleManager";
+import { hideTodayCard, restoreTodayCard } from "../panels/common/atoms";
 import { HeroGalleryManager } from "./galleryManager";
 import { HeroLayoutManager } from "./ui/layoutManager";
 import { HeroModeUIManager } from "./ui/modeUIManager";
-import { uiToggleManager } from "../app/uiToggleManager";
+import { showToast, hapticFeedback, initToastContainer } from "../core/feedback";
 
 /**
  * Hero UI Manager (Facade)
@@ -22,8 +24,6 @@ export class HeroUIManager {
     private layoutManager: HeroLayoutManager;
 
     private modeUIManager: HeroModeUIManager;
-
-    private toastContainer: HTMLElement | null = null;
     private zenGestureHint: HTMLElement | null = null;
 
     constructor() {
@@ -196,18 +196,6 @@ export class HeroUIManager {
         });
     }
 
-    public hapticFeedback(style: "heavy" | "light" | "medium" = "light"): void {
-        if (!("vibrate" in navigator)) return;
-
-        const patterns = {
-            heavy: [40, 30, 40],
-            light: [10],
-            medium: [20],
-        };
-
-        navigator.vibrate(patterns[style]);
-    }
-
     // --- 代理子管理器方法 (Delegate Methods) ---
 
     // Layout
@@ -226,7 +214,7 @@ export class HeroUIManager {
         this.modeUIManager.init();
 
         this.zenGestureHint = document.getElementById("zenGestureHint");
-        this.toastContainer = document.getElementById("toastContainer");
+        initToastContainer(document.getElementById("toastContainer"));
         this.btnFaq = document.getElementById("btnFaq");
 
         this.bindGlobalActions();
@@ -259,49 +247,6 @@ export class HeroUIManager {
 
     public showInstallButton(): void {
         this.layoutManager.showInstallButton();
-    }
-
-    public showToast(
-        message: string,
-        type: "error" | "info" = "info",
-        action?: { callback: () => void; label: string },
-    ): void {
-        if (!this.toastContainer) return;
-
-        const toast = document.createElement("div");
-        toast.className = `toast ${type === "error" ? "toast-error" : ""}`;
-
-        const content = document.createElement("span");
-        content.innerHTML = `<span class="toast-icon">${type === "error" ? "⚠️" : "✨"}</span> ${message}`;
-        toast.appendChild(content);
-
-        if (action) {
-            const btn = document.createElement("button");
-            btn.className = "toast-action";
-            btn.textContent = action.label;
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                action.callback();
-                toast.classList.add("hiding");
-                setTimeout(() => toast.remove(), 400);
-                this.hapticFeedback("light");
-            };
-            toast.appendChild(btn);
-        }
-
-        this.toastContainer.appendChild(toast);
-
-        setTimeout(
-            () => {
-                if (toast.parentElement) {
-                    toast.classList.add("hiding");
-                    toast.addEventListener("animationend", () => {
-                        toast.remove();
-                    });
-                }
-            },
-            action ? 6000 : 3000,
-        );
     }
 
     public showZenHint(): void {
@@ -352,20 +297,6 @@ export class HeroUIManager {
 
     private bindFaqButton(): void {
         const panelFAQ = document.getElementById("panelFAQ");
-        const panelToday = document.getElementById("panelToday");
-
-        const hideTodayCard = () => {
-            if (panelToday) {
-                panelToday.style.opacity = "0";
-                panelToday.style.pointerEvents = "none";
-            }
-        };
-        const restoreTodayCard = () => {
-            if (panelToday) {
-                panelToday.style.opacity = "";
-                panelToday.style.pointerEvents = "";
-            }
-        };
 
         // Register FAQ with UIToggleManager
         uiToggleManager.register({
@@ -392,7 +323,7 @@ export class HeroUIManager {
             const isVisible = panelFAQ.classList.contains("panel-force-show");
             uiToggleManager.toggle("faq", isVisible);
 
-            this.hapticFeedback("light");
+            hapticFeedback("light");
         });
 
         // Close FAQ when clicking its background area
@@ -418,20 +349,20 @@ export class HeroUIManager {
             const btn = document.getElementById("btnShareCard");
             btn?.addEventListener("click", () => {
                 this.shareAppContent();
-                this.hapticFeedback("medium");
+                hapticFeedback("medium");
             });
         });
 
         // Add haptic to dock items
         const dockItems = document.querySelectorAll(".hero-dock-item");
         dockItems.forEach((item) => {
-            item.addEventListener("click", () => this.hapticFeedback("light"));
+            item.addEventListener("click", () => hapticFeedback("light"));
         });
     }
 
     private async shareAppContent(): Promise<void> {
         if (!navigator.share) {
-            this.showToast("您的瀏覽器不支援原生分享", "info");
+            showToast("您的瀏覽器不支援原生分享", "info");
             return;
         }
 

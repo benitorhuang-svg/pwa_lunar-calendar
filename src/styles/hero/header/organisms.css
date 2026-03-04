@@ -1,0 +1,74 @@
+/* --- Organisms: Self-contained Functional Blocks --- */
+
+/* Year/Month Selector Group */
+.hero-year-month-selector {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-family: var(--font-serif-num);
+}
+
+/* Hide in Artwork Mode */
+body.mode-artwork .hero-year-month-selector {
+    display: none !important;
+}
+
+/* Function Group (Calendar Title) */
+.hero-function-group {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.hero-function-group .calendar-title {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.hero-function-group .title-row-flat {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.hero-function-group .lunar-group {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+/* Slideshow Settings Block */
+.slideshow-settings {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2200;
+    pointer-events: auto;
+    display: none;
+    /* only show in artwork mode via body.mode-artwork */
+}
+
+body.mode-artwork .slideshow-settings {
+    display: block;
+}
+
+/* Slideshow Dropdown Menu */
+.slideshow-settings-menu {
+    position: absolute;
+    top: 56px;
+    left: 0;
+    min-width: 160px;
+    background: rgba(18, 18, 18, 0.95);
+    border-radius: 8px;
+    padding: 8px 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 2300;
+}
+
+.slideshow-settings-menu[aria-hidden="false"] {
+    display: flex;
+}

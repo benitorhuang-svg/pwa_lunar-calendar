@@ -1,7 +1,6 @@
 import type { HeroIdleManager } from "../idleManager";
 import type { HeroSlideshowManager } from "../slideshowManager";
 import type { SlideshowControlDetail } from "../types";
-import type { HeroUIManager } from "../uiManager";
 
 export class SlideshowSettingsHandler {
     private btn: HTMLElement | null = null;
@@ -9,9 +8,8 @@ export class SlideshowSettingsHandler {
 
     constructor(
         private slideshowManager: HeroSlideshowManager,
-        private uiManager: HeroUIManager,
         private idleManager: HeroIdleManager,
-    ) {}
+    ) { }
 
     public init(): void {
         // ModeUIManager keeps many elements; for simplicity query DOM directly
@@ -91,7 +89,7 @@ export class SlideshowSettingsHandler {
                 new CustomEvent<SlideshowControlDetail>("slideshow-control", { detail }),
             );
             // Reset idle so user won't be kicked out of immersion
-            this.idleManager.reset();
+            this.idleManager.resetInteraction();
         }
     }
 

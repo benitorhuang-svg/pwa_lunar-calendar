@@ -1,4 +1,3 @@
-import { NavArrowAtom } from "./atoms";
 import { WeekHeaderOrganism, DaysGridOrganism } from "./organisms";
 
 /* Calendar Page Template - Atomic Structure */

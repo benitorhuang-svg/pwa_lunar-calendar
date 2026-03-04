@@ -1,0 +1,196 @@
+/* =========================================
+   Mode Visibility Rules
+   模式可見性規則（基於 SDD/UI_FLOW_LOGIC.md）
+   ========================================= */
+
+/* --- Core Loading Protection --- */
+body:not(.app-loaded) #appContainer,
+body:not(.app-loaded) .app-container,
+body:not(.app-loaded) .hero-header,
+body:not(.app-loaded) .hero-dock-wrapper,
+body:not(.app-loaded) #calendarSection,
+body:not(.app-loaded) .suspension-panel,
+body:not(.app-loaded) #welcomeInteractionOverlay {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Ensure the loading overlay itself is solid and opaque */
+#loadingOverlay {
+    background-color: #0f0f1a !important;
+    /* Absolute dark fallback */
+    background-color: var(--color-pwa-bg, #0f0f1a) !important;
+}
+
+/* --- UI State Management (Based on SDD/UI_FLOW_LOGIC.md) --- */
+
+/* 1. Immersion Mode: Cleanest state, background only */
+/* Note: We exclude panelToday when in initial-welcome mode */
+/* 1. Immersion Mode: Cleanest state, background only */
+body.immersion-mode:not(.initial-welcome) .hero-header,
+body.immersion-mode:not(.initial-welcome) .hero-dock-wrapper,
+body.immersion-mode:not(.initial-welcome) .music-control-wrapper,
+body.immersion-mode:not(.initial-welcome) #calendarSection,
+body.immersion-mode:not(.initial-welcome) .suspension-panel:not(#panelToday):not(.panel-force-show) {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+    transition:
+        opacity var(--duration-slow) var(--ease-out-expo),
+        visibility var(--duration-slow);
+}
+
+/* 1.1 Artwork Mode Overlay: Restore HUD visibility when explicitly in Artwork mode */
+body.mode-artwork.immersion-mode .hero-header,
+body.mode-artwork.immersion-mode .hero-dock-wrapper,
+body.mode-artwork.immersion-mode .music-control-wrapper {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+}
+
+/* Specific exclusion for initial-welcome to override immersion-mode hiding */
+body.immersion-mode.initial-welcome #panelToday {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+/* Ensure Today card disappears instantly without moving when idle timeout hits */
+body.immersion-mode:not(.initial-welcome) #panelToday {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: none !important;
+    /* No fade out */
+    /* Maintain centered position while hidden to prevent "jumping" if it briefly shows */
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    position: absolute !important;
+}
+
+/* 2. Welcome Mode: Focus on Today card, hide other HUD components */
+body.initial-welcome #calendarSection,
+body.initial-welcome .hero-dock-wrapper,
+body.initial-welcome .hero-header,
+body.initial-welcome .suspension-panel:not(#panelToday):not(.panel-force-show) {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+    display: none !important;
+}
+
+/* Force-show override for panels (e.g., FAQ) that need to appear in any mode */
+.suspension-panel.panel-force-show {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    z-index: 100002 !important;
+}
+
+/* 3. Artwork Mode Specific Adjustments */
+body.mode-artwork .hero-header .hero-info-strip,
+body.mode-artwork .hero-header .hero-calendar-btn {
+    display: none !important;
+}
+
+body.mode-artwork #btnYearMonth {
+    display: none !important;
+}
+
+/* T214/T215: Gallery Control Visibility - Always visible as 5th icon */
+#galleryControlWrapper {
+    display: flex;
+}
+
+/* Gallery Empty Notice */
+#galleryEmptyNotice {
+    display: none;
+}
+
+body[data-gallery-empty="true"] #galleryEmptyNotice {
+    display: flex;
+}
+
+/* 5. Panel-driven HUD Visibility (CSS-driven visibility unification) */
+body[data-active-panel="today"] .hero-dock-wrapper,
+body[data-active-panel="today"] .hero-header,
+body[data-active-panel="yearMonth"] .hero-header:not(.mode-artwork .hero-header),
+body:has(#calendarSection.show-grid) .hero-header {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
+/* Ensure Top Right Utility Controls (Music, Pen, etc) remain visible as requested */
+body.initial-welcome .music-control-wrapper {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    display: flex !important;
+    z-index: 100001;
+    /* High enough to be above overlay */
+}
+
+/* Stable centering for Today Card in Welcome Screen */
+/* Center and Style Today Panel (Standard for both Welcome and Calendar selection) */
+/* Today Panel State Control (Centering/Dimensions inherited from .glass-card-template) */
+.suspension-panel#panelToday {
+    display: none;
+    /* Controlled by JS display: flex */
+    opacity: 0;
+    visibility: hidden;
+    z-index: 10000 !important;
+    transition: opacity var(--duration-base) var(--ease-out-expo), transform var(--duration-base) var(--ease-out-expo);
+}
+
+body.initial-welcome .suspension-panel#panelToday,
+body[data-active-panel="today"] .suspension-panel#panelToday {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+/* CSS-driven YearMonth Panel Visibility */
+#panelYearMonth {
+    display: none;
+}
+
+body[data-active-panel="yearMonth"] #panelYearMonth {
+    display: block !important;
+}
+
+/* CSS-driven Back Overlay Visibility */
+#panelBackOverlay {
+    display: none;
+}
+
+body[data-active-panel="today"] #panelBackOverlay,
+body[data-active-panel="yearMonth"] #panelBackOverlay {
+    display: block !important;
+}
+
+.suspension-panel#panelToday .panel-main-content {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+}
+
+@keyframes welcomeCardSlideEntrance {
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* removed body.immersion-mode #welcomeInteractionOverlay to prevents high z-index overlay blocking clicks in Artwork/Zen mode */
+
+body.initial-welcome #welcomeInteractionOverlay {
+    display: block !important;
+    z-index: 9999;
+    /* Base welcome overlay */
+}

@@ -1,0 +1,13 @@
+/* --- Templates: Header Container & Layout --- */
+
+.hero-header {
+    position: absolute;
+    top: var(--hero-control-top);
+    left: 20px;
+    z-index: 2100;
+    pointer-events: auto;
+    transition: opacity var(--duration-base) var(--ease-out-expo);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}

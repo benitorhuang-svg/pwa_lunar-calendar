@@ -11,6 +11,7 @@ import type {
     ToggleGridViewDetail,
     UpdateCalendarTitleDetail,
 } from "./types";
+import { onTypedEvent } from "../core/typedEvents";
 
 export class CalendarEventHandlers {
     private calendarSection: HTMLElement | null = null;
@@ -74,22 +75,20 @@ export class CalendarEventHandlers {
 
     private setupGlobalListeners(): void {
         // 渲染日曆 (Render Calendar)
-        window.addEventListener("render-calendar", ((e: CustomEvent<RenderCalendarDetail>) => {
-            const { month, selectedDay, today, year } = e.detail;
+        onTypedEvent<RenderCalendarDetail>("render-calendar", (detail) => {
+            const { month, selectedDay, today, year } = detail;
             this.renderer.renderCalendar(year, month, today, selectedDay);
-        }) as EventListener);
+        });
 
         // 更新日曆標題 (Update Calendar Title)
-        window.addEventListener("update-calendar-title", ((
-            e: CustomEvent<UpdateCalendarTitleDetail>,
-        ) => {
-            this.renderer.updateTitle(e.detail);
-        }) as EventListener);
+        onTypedEvent<UpdateCalendarTitleDetail>("update-calendar-title", (detail) => {
+            this.renderer.updateTitle(detail);
+        });
 
         // 切換網格視圖 (Toggle Grid View)
-        window.addEventListener("toggle-grid-view", ((e: CustomEvent<ToggleGridViewDetail>) => {
+        onTypedEvent<ToggleGridViewDetail>("toggle-grid-view", (detail) => {
             if (!this.calendarSection) return;
-            const { show } = e.detail;
+            const { show } = detail;
 
             if (show) {
                 this.calendarSection.classList.remove("hidden");
@@ -113,7 +112,7 @@ export class CalendarEventHandlers {
                 // 備用超時 (Backup timeout in case transitionend fails)
                 setTimeout(onTransitionEnd, 550);
             }
-        }) as EventListener);
+        });
     }
 
     private setupSwipeHandler(): void {

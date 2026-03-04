@@ -4,6 +4,9 @@
  * Manages gallery submenu, radio stations, and image upload logic
  */
 import { uiToggleManager } from "../app/uiToggleManager";
+import { hideTodayCard, restoreTodayCard } from "../panels/common/atoms";
+import { onTypedEvent } from "../core/typedEvents";
+
 export class HeroGalleryManager {
     private btnGalleryAdd: HTMLElement | null = null;
     private btnGalleryAddFolder: HTMLElement | null = null;
@@ -28,19 +31,6 @@ export class HeroGalleryManager {
         onStationDelete?: (id: string, name: string) => void;
     }): void {
         // Register Gallery with UIToggleManager
-        const panelToday = document.getElementById("panelToday");
-        const hideTodayCard = () => {
-            if (panelToday) {
-                panelToday.style.opacity = "0";
-                panelToday.style.pointerEvents = "none";
-            }
-        };
-        const restoreTodayCard = () => {
-            if (panelToday) {
-                panelToday.style.opacity = "";
-                panelToday.style.pointerEvents = "";
-            }
-        };
 
         uiToggleManager.register({
             close: () => {
@@ -205,8 +195,8 @@ export class HeroGalleryManager {
         });
 
         // Listen for music restored event
-        window.addEventListener("music-restored", ((e: CustomEvent) => {
-            const url = e.detail.url;
+        onTypedEvent<any>("music-restored", (detail) => {
+            const url = detail.url;
             if (!url) return;
 
             const allRadioItems = document.querySelectorAll(".radio-item, .radio-item-mini");
@@ -218,7 +208,7 @@ export class HeroGalleryManager {
             if (match) {
                 match.classList.add("active");
             }
-        }) as EventListener);
+        });
 
         // Initial check for static items
         const lastUrl = localStorage.getItem("zen_music_last_url");

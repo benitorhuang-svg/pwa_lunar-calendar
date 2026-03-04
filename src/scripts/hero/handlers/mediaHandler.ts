@@ -2,13 +2,14 @@ import type { HeroImageManager } from "../imageManager";
 import type { HeroMusicPlayer } from "../musicPlayer";
 
 import { HeroUIManager } from "../uiManager";
+import { showToast } from "../../core/feedback";
 
 export class MediaHandler {
     constructor(
         private imageManager: HeroImageManager,
         private musicPlayer: HeroMusicPlayer,
         private uiManager: HeroUIManager,
-    ) {}
+    ) { }
 
     public init(): void {
         this.bindGalleryControls();
@@ -28,7 +29,7 @@ export class MediaHandler {
                 await this.renderCustomStationsFromStorage();
 
                 console.log("[Hero] All custom media cleared");
-                this.uiManager.showToast("已清空所有自選媒體");
+                showToast("已清空所有自選媒體");
             },
             onFileSelect: async (files: FileList) => {
                 const { galleryStorage } = await import("../galleryStorage");
@@ -96,7 +97,7 @@ export class MediaHandler {
             (id: string, name: string) => {
                 // Bridge to implementation
                 this.deleteCustomStation(id, name);
-                this.uiManager.showToast(`已刪除電台「${name}」`);
+                showToast(`已刪除電台「${name}」`);
             },
             (_name: string, url: string) => {
                 // onSelect

@@ -5,8 +5,12 @@
 @media (min-width: 1024px) and (min-height: 551px) {
     .gallery-submenu {
         right: 88px;
-        top: 50%;
-        transform: translateY(-50%) translateX(0);
+        top: 24px;
+        transform: translateY(-10px);
+    }
+
+    .gallery-submenu.show {
+        transform: translateY(0);
     }
 
     .submenu-main-container {
@@ -47,12 +51,15 @@
 @media (max-height: 550px) and (min-width: 600px) {
     .gallery-submenu {
         right: 68px;
-        /* Slightly closer to dock */
-        top: 0;
-        transform: translateY(-35%);
+        top: 16px;
+        transform: translateY(-10px);
         /* Significant upward shift to avoid bottom cropping */
         max-height: 95vh;
         overflow-y: auto;
+    }
+
+    .gallery-submenu.show {
+        transform: translateY(0);
     }
 
     .submenu-main-container {
@@ -114,9 +121,9 @@
 @media (max-width: 600px) and (min-height: 551px) {
     .gallery-submenu {
         right: 50px;
-        top: auto;
-        bottom: 70px;
-        transform: translateY(20px);
+        bottom: auto;
+        top: 24px;
+        transform: translateY(-20px);
     }
 
     .gallery-submenu.show {

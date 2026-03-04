@@ -1,0 +1,52 @@
+/* --- Organisms: Self-contained Functional Blocks --- */
+
+/* Header Section */
+.note-pad-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), transparent);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Body Section */
+.note-pad-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    min-height: 0;
+}
+
+/* List View */
+.note-list-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.note-list-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.note-list-scroll::-webkit-scrollbar-thumb {
+    background: rgba(var(--gold-accent-rgb), 0.3);
+    border-radius: 10px;
+}
+
+/* List Items */
+.note-list-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.note-list-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(var(--gold-accent-rgb), 0.2);
+    transform: translateX(4px);
+}

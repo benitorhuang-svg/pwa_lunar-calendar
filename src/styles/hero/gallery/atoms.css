@@ -38,9 +38,9 @@
 }
 
 .mode-btn.active {
-    background: rgba(212, 175, 55, 0.12);
-    border-color: rgba(212, 175, 55, 0.4);
-    color: #d4af37;
+    background: rgba(var(--gold-accent-rgb), 0.12);
+    border-color: rgba(var(--gold-accent-rgb), 0.4);
+    color: var(--gold-accent, #d4af37);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -71,7 +71,7 @@
     align-items: center;
     gap: 8px;
     margin: 8px 0 4px;
-    color: #d4af37;
+    color: var(--gold-accent, #d4af37);
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -102,9 +102,9 @@
 }
 
 .radio-item-mini.active {
-    background: rgba(212, 175, 55, 0.15);
-    border-color: rgba(212, 175, 55, 0.4);
-    color: #d4af37;
+    background: rgba(var(--gold-accent-rgb), 0.15);
+    border-color: rgba(var(--gold-accent-rgb), 0.4);
+    color: var(--gold-accent, #d4af37);
 }
 
 .radio-del-small {

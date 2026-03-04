@@ -1,0 +1,45 @@
+/* --- Molecules: Combined Elements --- */
+
+/* Header Section */
+.faq-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), transparent);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.faq-controls {
+    display: flex;
+    gap: 12px;
+}
+
+/* Question Row (Mark + Text) */
+.faq-question {
+    width: 100%;
+    padding: 16px;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    text-align: left;
+    color: #fff;
+}
+
+/* Answer Collapsible Area */
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    padding: 0 24px 0 62px;
+    opacity: 0;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 500px;
+    padding-bottom: 24px;
+    opacity: 1;
+}

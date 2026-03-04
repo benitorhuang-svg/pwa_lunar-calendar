@@ -1,0 +1,34 @@
+/* --- Media Queries: Responsive Overrides --- */
+
+@media (min-width: 1024px) {
+    .music-control-wrapper {
+        top: calc(50% - 225px) !important;
+        transform: none !important;
+        right: calc(52% - 460px - 32px) !important;
+    }
+}
+
+@media (min-width: 1440px) {
+    .music-control-wrapper {
+        top: calc(50% - 245px) !important;
+        right: calc(52% - 500px - 40px) !important;
+    }
+}
+
+@media (max-width: 1023px) and (min-width: 769px) {
+    .music-control-wrapper {
+        right: 16px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .music-control-wrapper {
+        right: 12px;
+        gap: 8px;
+    }
+
+    .utility-btn {
+        width: 38px;
+        height: 38px;
+    }
+}

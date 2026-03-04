@@ -7,7 +7,7 @@
     --gold-accent: #d4af37;
     /* 金色 */
     --gold-accent-rgb: 212, 175, 55;
-    --gold-glow: rgba(212, 175, 55, 0.4);
+    --gold-glow: rgba(var(--gold-accent-rgb), 0.4);
 
     --ink-black: #1a1a1a;
     --paper-white: #fdfbf7;
