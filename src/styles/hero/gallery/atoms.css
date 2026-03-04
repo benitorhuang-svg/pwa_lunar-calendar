@@ -1,12 +1,15 @@
 /* --- Atoms: Buttons, Titles, Dividers --- */
 
 .column-title {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: rgba(255, 255, 255, 0.4);
-    font-weight: 700;
-    margin-bottom: 4px;
+    /* Reference to NotePad/GlassCard Titles */
+    font-family: var(--font-calligraphy);
+    font-size: 1.35rem;
+    /* Slightly smaller than Notepad to fit 2 columns */
+    color: var(--gold-accent, #d4af37);
+    letter-spacing: 0.12em;
+    margin: 0;
+    text-shadow: 0 4px 12px rgba(var(--gold-accent-rgb), 0.2);
+    margin-bottom: 8px;
 }
 
 .mode-btn {
@@ -45,8 +48,8 @@
 }
 
 .action-btn {
-    background: rgba(100, 100, 100, 0.1);
-    border: 1px dashed rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.8);
     padding: 10px 12px;
     border-radius: 12px;
@@ -62,17 +65,39 @@
 
 .action-btn:hover {
     background: rgba(255, 255, 255, 0.1);
-    border-style: solid;
     border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Music Radio Specifics */
+.radio-item.default-music {
+    /* Larger prominent button for default music */
+    width: 100%;
+    margin-bottom: 12px;
+    background: rgba(var(--gold-accent-rgb), 0.05);
+    border: 1px solid rgba(var(--gold-accent-rgb), 0.2);
+    color: var(--gold-accent, #d4af37);
+    padding: 12px 16px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.radio-item.default-music:hover {
+    background: rgba(var(--gold-accent-rgb), 0.15);
+    transform: translateY(-1px);
 }
 
 .radio-header-mini {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 8px 0 4px;
+    margin: 12px 0 6px;
     color: var(--gold-accent, #d4af37);
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-weight: 700;
@@ -80,13 +105,13 @@
 
 .radio-item-mini {
     flex: 1;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     color: rgba(255, 255, 255, 0.7);
-    padding: 10px 12px;
-    border-radius: 10px;
-    font-size: 0.75rem;
-    text-align: left;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    text-align: center;
     cursor: pointer;
     transition: all 0.25s;
     white-space: nowrap;
@@ -96,15 +121,16 @@
 }
 
 .radio-item-mini:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.1);
     color: #fff;
     border-color: rgba(255, 255, 255, 0.2);
 }
 
 .radio-item-mini.active {
-    background: rgba(var(--gold-accent-rgb), 0.15);
-    border-color: rgba(var(--gold-accent-rgb), 0.4);
+    background: rgba(var(--gold-accent-rgb), 0.2);
+    border-color: rgba(var(--gold-accent-rgb), 0.5);
     color: var(--gold-accent, #d4af37);
+    font-weight: 600;
 }
 
 .radio-del-small {
@@ -123,8 +149,8 @@
 
 .column-divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.06);
-    margin: 4px 0;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08), transparent);
+    margin: 12px 0;
 }
 
 .vertical-column-divider {

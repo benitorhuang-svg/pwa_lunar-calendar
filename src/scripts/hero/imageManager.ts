@@ -366,13 +366,17 @@ export class HeroImageManager {
         // The rest can be loaded predictionally or on-demand
         const highPriority = this.heroList.slice(0, 5); // Preload first 5 images immediately (was 15)
 
-        const preloadPromises = highPriority.map(async (src) => {
-            if (this.heroCache[src]) return; // Already cached
+        const preloadPromises = highPriority.map(async (src, idx) => {
+            if (this.heroCache[src]) {
+                if (idx === 0) window.dispatchEvent(new CustomEvent("hero-first-ready"));
+                return;
+            }
 
             return new Promise<void>((resolve) => {
                 const img = new Image();
                 img.onload = img.onerror = () => {
                     this.heroCache[src] = img;
+                    if (idx === 0) window.dispatchEvent(new CustomEvent("hero-first-ready"));
                     resolve();
                 };
                 img.src = src;
@@ -428,7 +432,7 @@ export class HeroImageManager {
                     currentItem.parentNode.removeChild(currentItem);
                 }
                 newItem.style.zIndex = "";
-            }, 800); // Reduced timeout to match CSS (0.7s) + buffer
+            }, 900); // Wait for transition (0.8s) + buffer
         });
     }
 }

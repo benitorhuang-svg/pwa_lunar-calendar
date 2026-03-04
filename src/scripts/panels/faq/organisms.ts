@@ -47,6 +47,6 @@ export function renderFAQ(container: HTMLElement): void {
 
     container.appendChild(list);
 
-    // Default: expand all items
-    expandAllItems(container);
+    // Default: collapse all items
+    collapseAllItems(container);
 }

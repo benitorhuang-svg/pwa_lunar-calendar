@@ -80,14 +80,25 @@ export function preloadAssets(): void {
     markActive("heroAll");
     markActive("audio");
 
-    // Audio
+    // Audio Preload: Sync with the actual last song if possible
     const baseDir = APP_BASE_URL || "/";
-    const audioSrc = (baseDir + "assets/audio/ambient.mp3").replace(/\/+/g, "/");
+    let audioSrc = (baseDir + "assets/audio/ambient.mp3").replace(/\/+/g, "/");
+
+    try {
+        const lastUrl = localStorage.getItem("zen_music_last_url");
+        // Only use the last URL if it's a web URL (not a dead blob URL from previous session)
+        if (lastUrl && !lastUrl.startsWith("blob:")) {
+            audioSrc = lastUrl;
+        }
+    } catch (e) {
+        console.warn("[Loader] Failed to read zen_music_last_url", e);
+    }
+
     const audio = new Audio();
     audio.oncanplaythrough = () => markDone("audio");
     audio.onerror = () => markDone("audio");
     audio.src = audioSrc;
-    setTimeout(() => markDone("audio"), 2000); // Timeout
+    setTimeout(() => markDone("audio"), 3500); // Slightly longer timeout for remote radio
 
     // Images
     const m = new Date().getMonth() + 1;
@@ -96,11 +107,16 @@ export function preloadAssets(): void {
     else if (m >= 5 && m <= 7) season = "summer";
     else if (m >= 8 && m <= 10) season = "autumn";
 
+    // Instead of preloading a guessed image, we wait for the ImageManager to signal the ACTUAL first image
+    window.addEventListener("hero-first-ready", () => markDone("heroFirst"));
+    // Safety timeout for heroFirst if manager fails
+    setTimeout(() => markDone("heroFirst"), 5000);
+
     importGalleryAndLoad(season);
 }
 
 function importGalleryAndLoad(season: string): void {
-    const baseDir = APP_BASE_URL || "/";
+    // We still preload the rest of the seasonal gallery in the background to fill heroAll
     const manifest = GALLERY_MANIFEST as any;
     let list = manifest[season] || [];
     if (!list.length) {
@@ -108,18 +124,12 @@ function importGalleryAndLoad(season: string): void {
     }
 
     if (!list.length) {
-        markDone("heroFirst");
+        // markDone("heroFirst"); // Handled by event now
         markDone("heroAll");
         return;
     }
 
-    // Load First
-    const img = new Image();
-    img.onload = () => markDone("heroFirst");
-    img.onerror = () => markDone("heroFirst");
-    img.src = (baseDir + "assets/gallery/" + season + "/" + list[0]).replace(/\/+/g, "/");
-
-    // Wait for full preload signal
+    // Wait for full preload signal from ImageManager
     if ((window as any).__APP_IMAGES_PRELOADED__) {
         markDone("heroAll");
     } else {

@@ -1,5 +1,6 @@
 import type { HeroIdleManager } from "../idleManager";
 import type { HeroImageManager } from "../imageManager";
+import type { HeroMusicPlayer } from "../musicPlayer";
 import type { HeroSlideshowManager } from "../slideshowManager";
 import type {
     AppMode,
@@ -18,6 +19,7 @@ export class ModeHandler {
         private imageManager: HeroImageManager, // Needed for reset logic? Or just slideshowManager handles it.
         private slideshowManager: HeroSlideshowManager,
         private uiManager: HeroUIManager,
+        private musicPlayer: HeroMusicPlayer,
     ) { }
 
     public init(): void {
@@ -147,6 +149,14 @@ export class ModeHandler {
         // Artwork Idle Slide
         window.addEventListener("artwork-idle-slide", () => {
             this.imageManager.switchHero(1, true);
+        });
+
+        // T204 Stage 4: Sync Music Playback on first interaction (Welcome -> Artwork)
+        onTypedEvent<ModeChangedDetail>("after-enter-mode", (detail) => {
+            if (detail.from === "welcome" && detail.to === "artwork") {
+                console.log("[Hero] Auto-playing music after welcome entry");
+                this.musicPlayer.play();
+            }
         });
 
         // 幻燈片控制 (Slideshow Control)

@@ -71,6 +71,7 @@ export class HeroEventHandlers {
             this.imageManager,
             this.slideshowManager,
             this.uiManager,
+            this.musicPlayer,
         );
 
         this.mediaHandler = new MediaHandler(this.imageManager, this.musicPlayer, this.uiManager);

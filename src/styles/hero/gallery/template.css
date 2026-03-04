@@ -2,33 +2,40 @@
 
 .gallery-submenu {
     position: fixed;
+    /* Default positioning for mobile/portrait */
     right: 58px;
-    top: -22%;
-    transform: translateX(20px);
+    top: 50%;
+    transform: translateY(-50%) translateX(20px);
     opacity: 0;
     visibility: hidden;
     transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
     pointer-events: none;
-    z-index: 100002;
-    filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.5));
+    z-index: 100003;
+    /* Match Notepad z-index priority */
+    filter: drop-shadow(0 40px 100px rgba(0, 0, 0, 0.4));
 }
 
 .gallery-submenu.show {
     opacity: 1;
     visibility: visible;
-    transform: translateX(0);
+    transform: translateY(-50%) translateX(0);
     pointer-events: auto;
 }
 
 .submenu-main-container {
-    background: rgba(14, 14, 18, 0.92);
-    backdrop-filter: blur(50px) saturate(180%);
-    -webkit-backdrop-filter: blur(50px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
+    /* Synchronized with NotePad configuration */
+    background: rgba(15, 15, 20, 0.85);
+    backdrop-filter: blur(40px) saturate(160%) contrast(110%);
+    -webkit-backdrop-filter: blur(40px) saturate(160%) contrast(110%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 32px;
+    /* Base radius */
     padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 20px;
     width: 320px;
+    box-shadow:
+        0 40px 100px rgba(0, 0, 0, 0.6),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }

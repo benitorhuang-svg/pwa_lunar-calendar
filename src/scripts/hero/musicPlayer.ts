@@ -156,7 +156,7 @@ export class HeroMusicPlayer {
         if (this.fadeTimer) clearInterval(this.fadeTimer);
 
         const audio = this.bgMusic;
-        const duration = 1000;
+        const duration = 800; // Synchronized with CSS 0.8s
         const steps = 20;
         const interval = duration / steps;
         const stepAmount = 1 / steps;

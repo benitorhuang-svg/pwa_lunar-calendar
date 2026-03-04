@@ -20,6 +20,21 @@
 
     color: var(--faq-text-main);
     overflow: hidden;
-    width: 92% !important;
     transition: transform var(--duration-base) var(--ease-out-expo), opacity var(--duration-base) var(--ease-out-expo);
+}
+
+/* --- Responsive Layout Synchronization --- */
+@media (min-width: 1024px) {
+    #panelFAQ {
+        /* Align width with Calendar and Notepad */
+        width: 720px !important;
+        border-radius: 44px;
+    }
+}
+
+@media (min-width: 1440px) {
+    #panelFAQ {
+        width: 780px !important;
+        border-radius: 52px;
+    }
 }

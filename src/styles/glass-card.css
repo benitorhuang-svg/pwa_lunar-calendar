@@ -77,27 +77,29 @@
     }
 }
 
-/* 1. Wide Layout: Desktop - Premium Landscape Mode */
+/* 1. Wide Layout: Desktop - Magnified & Tightened Proportions */
 @media (min-width: 1024px) {
     .glass-card-template {
-        width: min(90%, 920px) !important;
-        /* Enlarge to a comfortable landscape width */
-        min-height: 480px !important;
-        max-height: 80dvh !important;
-        left: 48% !important;
-        /* Balanced visual center */
-        transform: translate(-50%, -50%) !important;
-        padding: 0;
-        /* Template handles own padding */
-        border-radius: 64px;
-        /* More pronounced curves for larger scale */
+        /* Reduce width to prevent 'stretched' look, focus on 'magnified' elements */
+        width: min(82%, 720px) !important;
+        min-height: 440px !important;
+        max-height: 85dvh !important;
+        left: 45% !important;
+        /* Premium horizontal balance */
+        top: 48% !important;
+        transform: translate(-49%, -49%) !important;
+        padding: 16px 20px;
+        /* Increased internal padding */
+        border-radius: 44px;
     }
 }
 
 /* Ultra Wide */
 @media (min-width: 1440px) {
     .glass-card-template {
-        width: 1000px !important;
-        min-height: 520px !important;
+        width: 780px !important;
+        left: 46% !important;
+        border-radius: 52px;
+        padding: 20px 24px;
     }
 }

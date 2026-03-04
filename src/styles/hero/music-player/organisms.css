@@ -69,27 +69,27 @@ body.fullscreen-active #btnImmersion .icon-exit-fullscreen {
     order: 2;
 }
 
-.music-toggle-btn {
+.note-btn {
     order: 3;
 }
 
-.note-btn {
+.gallery-control-wrapper {
     order: 4;
 }
 
-.gallery-control-wrapper {
+.immersion-btn {
     order: 5;
 }
 
-.immersion-btn {
+.music-toggle-btn {
     order: 6;
 }
 
 /* Reorder in Artwork Mode: Immersion moves UP (above Gallery) */
 body.mode-artwork .immersion-btn {
-    order: 5;
+    order: 4;
 }
 
 body.mode-artwork .gallery-control-wrapper {
-    order: 6;
+    order: 5;
 }

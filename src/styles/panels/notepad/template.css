@@ -5,9 +5,10 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.95);
-    width: 92%;
-    max-width: 520px;
-    height: 75vh;
+    width: min(84%, var(--app-max-width, 100%));
+    min-height: 320px;
+    height: auto;
+    max-height: 62dvh;
 
     /* Premium Glassmorphism */
     background: rgba(15, 15, 20, 0.85);
@@ -37,4 +38,44 @@
     pointer-events: auto;
     transform: translate(-50%, -50%) scale(1);
     visibility: visible;
+}
+
+/* --- Responsive Breakpoints (Synchronized with glass-card.css) --- */
+@media (max-height: 550px) {
+    .note-pad-overlay {
+        max-height: 85dvh;
+        width: calc(100% - 100px);
+        left: 45%;
+        transform: translate(-49%, -49%) scale(0.95);
+    }
+
+    .note-pad-overlay.active {
+        transform: translate(-49%, -49%) scale(1);
+    }
+}
+
+@media (min-width: 1024px) {
+    .note-pad-overlay {
+        /* Sync with Magnified & Tightened Proportions */
+        width: min(82%, 720px);
+        min-height: 440px;
+        max-height: 85dvh;
+        left: 45%;
+        transform: translate(-49%, -49%) scale(1);
+        padding: 0;
+        /* Template handles internal padding via children */
+        border-radius: 44px;
+    }
+
+    .note-pad-overlay.active {
+        transform: translate(-49%, -49%) scale(1);
+    }
+}
+
+@media (min-width: 1440px) {
+    .note-pad-overlay {
+        width: 780px;
+        left: 46%;
+        border-radius: 52px;
+    }
 }

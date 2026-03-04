@@ -3,40 +3,25 @@
 .mode-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    gap: 12px;
+    /* Increased gap for premium feel */
 }
 
 .action-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: auto;
-    gap: 10px;
+    gap: 12px;
 }
 
 .action-btn:first-child {
     grid-column: span 2;
 }
 
-.radio-item.default-music {
-    background: rgba(var(--gold-accent-rgb), 0.06);
-    border: 1px solid rgba(var(--gold-accent-rgb), 0.2);
-    width: 100%;
-    padding: 12px 16px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--gold-accent);
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: all 0.3s;
-    font-family: inherit;
-}
-
 .radio-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 10px;
 }
 
 .radio-row {
@@ -55,7 +40,7 @@
 .add-custom {
     border-style: dashed;
     text-align: center;
-    color: #a0a0a0;
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .action-btn.clear-btn {
@@ -64,6 +49,7 @@
     border-color: rgba(255, 100, 100, 0.15);
     color: rgba(255, 120, 120, 0.8);
     width: 100%;
+    margin-top: 4px;
 }
 
 .action-btn.clear-btn:hover {

@@ -2,16 +2,18 @@
 
 @media (min-width: 1024px) {
     .music-control-wrapper {
-        top: calc(50% - 225px) !important;
-        transform: none !important;
-        right: calc(52% - 460px - 32px) !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        right: 32px !important;
+        gap: 16px;
+        /* Slightly larger gaps for desktop legibility */
     }
 }
 
 @media (min-width: 1440px) {
     .music-control-wrapper {
-        top: calc(50% - 245px) !important;
-        right: calc(52% - 500px - 40px) !important;
+        right: 48px !important;
+        gap: 20px;
     }
 }
 

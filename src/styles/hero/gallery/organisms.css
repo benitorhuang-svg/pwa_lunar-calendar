@@ -13,3 +13,10 @@
     flex-direction: column;
     gap: 16px;
 }
+
+.radio-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    /* Consistent internal gap for music sources */
+}

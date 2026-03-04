@@ -76,35 +76,5 @@
     }
 }
 
-/* Tablet and Desktop scaling disabled to match mobile layout */
-/*
-@media (min-width: 768px) {
-    .calendar-section {
-        padding: 50px 24px 30px;
-    }
-
-    .week-header {
-        font-size: 1.25rem;
-        padding: 0 0 10px 0;
-        gap: 8px;
-    }
-
-    .days-grid {
-        grid-auto-rows: minmax(65px, 1fr);
-        gap: 8px;
-    }
-}
-*/
-
-@media (min-width: 1024px) {
-    .calendar-section {
-        width: var(--mobile-ui-width, 420px) !important;
-        left: 45% !important;
-        /* Premium Gap alignment */
-        transform: translateX(-50%) !important;
-        padding: 30px 20px;
-        height: auto !important;
-        max-height: 80dvh;
-        margin: 0 !important;
-    }
-}
+/* Tablet and Desktop specific scaling handled by .glass-card-template */
+/* (Previous @media (min-width: 1024px) block removed to ensure consistent glass-card behavior) */

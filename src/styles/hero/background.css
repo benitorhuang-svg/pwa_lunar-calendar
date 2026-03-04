@@ -24,8 +24,8 @@
     opacity: 1;
     transform: translateX(0);
     transition:
-        opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+        opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* 1. Next Interaction (>) : Slide Everything to the LEFT (Standard Gallery) */
@@ -64,8 +64,7 @@
 }
 
 /* Premium Ken Burns (Only for static state, disabled during transition) */
-#heroBgContainer.idle-motion
-    .hero-bg-item:not(.is-next):not(.is-prev):not(.is-leaving-next):not(.is-leaving-prev) {
+#heroBgContainer.idle-motion .hero-bg-item:not(.is-next):not(.is-prev):not(.is-leaving-next):not(.is-leaving-prev) {
     animation: kenBurnsSmooth 60s ease-in-out infinite alternate;
 }
 
