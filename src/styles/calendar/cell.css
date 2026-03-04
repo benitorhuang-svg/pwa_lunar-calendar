@@ -40,9 +40,9 @@
 }
 
 .gregorian-num {
-    font-size: 1.15rem;
-    /* 稍微放大增加層次 */
-    font-weight: 300;
+    font-size: 1.6rem;
+    /* Enlarge for elderly readability */
+    font-weight: 500;
     line-height: 1;
     color: inherit;
     font-family: var(--font-serif-num);
@@ -55,12 +55,12 @@
 
 .lunar-text {
     font-family: var(--font-calligraphy);
-    font-size: 0.65rem;
-    /* Slightly larger for better readability with calligraphy */
+    font-size: 0.9rem;
+    /* Enlarge for elderly readability */
     color: var(--cal-lunar-text);
     margin-top: -2px;
-    font-weight: 500;
-    opacity: 0.7;
+    font-weight: 600;
+    opacity: 0.8;
     /* Increased opacity */
     letter-spacing: 0.05em;
     transform: translate(4px, 1px);
@@ -96,8 +96,8 @@
     font-weight: 500;
     border-radius: 50%;
     /* Perfect circle for today often looks more special */
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     margin: auto;
 }
 

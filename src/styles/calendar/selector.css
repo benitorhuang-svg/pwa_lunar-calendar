@@ -48,8 +48,9 @@
     color: rgba(255, 255, 255, 0.85);
     /* Light text for dark bg */
     font-family: var(--font-serif-num);
-    font-size: 1rem;
-    padding: 8px 12px;
+    font-size: 1.25rem;
+    /* Enlarge for elderly readability */
+    padding: 10px 14px;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;

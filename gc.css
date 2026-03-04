@@ -17,9 +17,9 @@
     display: flex;
     flex-direction: column;
     height: auto !important;
-    min-height: 380px;
+    min-height: 440px;
     max-height: 75dvh;
-    /* Increased to accommodate long cultural content and avoid clipping */
+    /* Increased from 380px to accommodate larger text */
     padding-bottom: 20px;
     /* Standardized bottom safe zone */
 

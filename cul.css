@@ -50,10 +50,10 @@
 }
 
 .pentad-tag-box {
-    font-size: 0.8rem;
+    font-size: 1.1rem;
     background: var(--cal-card-accent, rgba(255, 255, 255, 0.1));
     border: 0.5px solid var(--cal-card-border, rgba(255, 255, 255, 0.15));
-    padding: 2px 7px;
+    padding: 3px 9px;
     border-radius: 4px;
     color: var(--cal-card-text-muted, rgba(255, 255, 255, 0.7));
     letter-spacing: 0.05em;
@@ -72,10 +72,10 @@
 
 /* 銝?鈭?閰拚?批捆?? (Content Text) */
 .pentad-content-text {
-    font-size: 1.35rem;
-    /* Reduced from 1.5rem to fit sentences better */
-    line-height: 1.1;
-    /* Tightened for calligraphy feel */
+    font-size: 1.6rem;
+    /* Enlarge for elderly readability */
+    line-height: 1.2;
+    /* Increased for readability */
     text-align: center;
     padding: 10px 5px;
     margin: 5px 0;
@@ -112,8 +112,10 @@
 /* 閰拚?誨????閮?(Poem Dynasty/Author) */
 .poem-author-line {
     text-align: right;
-    font-size: 0.9rem;
-    opacity: 0.6;
+    font-size: 1.1rem;
+    /* Enlarge */
+    opacity: 0.8;
+    /* Increased from 0.6 */
     margin-top: 12px;
     font-family: var(--font-serif);
     letter-spacing: 0.1em;

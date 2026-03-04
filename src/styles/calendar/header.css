@@ -32,8 +32,9 @@
     color: #1a1a1a;
     cursor: pointer;
     transition: all 0.3s var(--ease-premium);
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
+    /* Enlarge from 34px */
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -67,8 +68,8 @@
     backdrop-filter: blur(12px);
     border: 1px solid rgba(0, 0, 0, 0.08);
     color: #1a1a1a;
-    padding: 3px 8px;
-    /* More compact */
+    padding: 6px 14px;
+    /* Enlarge padding */
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -86,8 +87,8 @@
 .calendar-header-simple .header-year,
 .calendar-header-simple .header-month {
     font-family: var(--font-serif-num);
-    font-size: 1.35rem;
-    /* Slightly smaller */
+    font-size: 1.75rem;
+    /* Enlarge for elderly readability */
     font-weight: 700;
     letter-spacing: 0.02em;
     color: inherit;
@@ -95,15 +96,16 @@
 
 .calendar-header-simple .unit {
     font-family: var(--font-calligraphy);
-    font-size: 0.85rem;
-    opacity: 0.8;
+    font-size: 1.1rem;
+    /* Enlarge unit label */
+    opacity: 0.9;
     color: inherit;
 }
 
 .calendar-header-simple .header-lunar {
     font-family: var(--font-calligraphy);
-    font-size: 1.35rem;
-    /* Slightly smaller */
+    font-size: 1.75rem;
+    /* Enlarge for elderly readability */
     color: var(--cal-lunar-text, #8b0000);
     margin: 0 4px;
     letter-spacing: 0.08em;
@@ -114,11 +116,11 @@
     background: rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.12);
     color: #2c2c2c;
-    padding: 3px 12px;
+    padding: 4px 16px;
     border-radius: 18px;
     font-family: var(--font-calligraphy);
-    font-size: 0.9rem;
-    cursor: pointer;
+    font-size: 1.2rem;
+    /* Enlarge for elderly readability */
     transition: all 0.3s var(--ease-premium);
     font-weight: 500;
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4);
